@@ -1,0 +1,92 @@
+
+---
+title: Template for .Rmd
+output: 
+  pdf_document:
+    latex_engine: xelatex
+    toc:  TRUE
+    toc_depth:  1
+fontsize: 12pt
+geometry: margin=0.5in,top=0.25in
+#  md_document:
+#  html_document:
+#    toc: true
+#  	toc_float: true
+#    css: styles.css
+---
+
+---
+TODO -- replace title, dir etc with R expressions
+comments
+.
+
+/home/jim/.config/nvim/templates/skeleton.Rmd
+comments
+---
+
+<!--  commments -->
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE, collapse=TRUE)
+```
+
+```{r library, include=FALSE} 
+here()
+```
+
+```{r render, eval=FALSE, echo=FALSE	}
+p  <- fs::path()
+w  <- fs::path_wd()
+w
+here()
+file=""
+dir=""
+
+ren_pdf(file,dir)
+ren_github(file, dir)
+
+#knitr::knit_exit()
+
+# To Render
+ren_pdf  <- function(file, dir) {
+rmarkdown::render(
+									here( dir, file), 
+									output_dir="~/Downloads/print_and_delete") 
+}
+ren_pdf(file, dir)
+
+ren_github  <- function(file, dir) {
+rmarkdown::render(
+									here(dir, file) 
+									output_format="github_document",
+									output_dir="~/Downloads/print_and_delete") 
+}
+ren_github(file, dir)
+```
+
+```{r hannay_data, eval=FALSE	 }
+devtools::install_bitbucket(repo="khannay/hannayintrostats.git") #install the class R package
+```
+```{r}
+library(HannayIntroStats)
+library(ggplot2)
+library(tibble)
+data("college_food")
+```
+```{r 12.}
+glimpse(food_college)
+boxplot(food_college$weight~food_college$Gender, 
+				col="skyblue", 
+				main='Weight of College Students', 
+				xlab="Gender", 
+				ylab="Weight (lbs)")
+
+g  <- ggplot(food_college , aes(x=Gender, y=weight)) +
+	geom_box()
+
+```
+
+
+
+
+

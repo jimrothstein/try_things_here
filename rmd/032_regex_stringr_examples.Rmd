@@ -1,0 +1,478 @@
+---
+title: "032_regex_stringr_examles.Rmd"
+output:  
+  html_document:
+    toc: yes
+    toc_depth:  1
+    number_sections: no 
+  pdf_document:
+    toc: yes
+geometry: margin=0.5in, bottom=.75in
+editor_options:
+  chunk_output_type: console
+---
+
+### CONSOLIDATE here:   regex,stringr (+ related testthat)
+### some REQUIREs  X11
+### REF:   
+###		stringr & regex cheatsheet (rstudio)
+###   stat545.com/block028_character-data.html
+###		JENNYBC
+### =====================================
+
+#### 000_setup
+```{r setup, include=FALSE}
+	# collapse=TRUE, combines code and output one block
+	knitr::opts_chunk$set(echo = TRUE, comment="        ...##",
+							collapse=TRUE)
+	library(tidyverse)
+	library(testthat)
+	library(here)
+```
+
+##### base::trimws()
+```{r}
+	x <- c(" hello", " hello ", "hello ")
+	base::trimws(x)
+```
+
+#### 002_basics_using HTML (see stringr cheat)
+```{r basics, eval=FALSE, echo=FALSE, include=FALSE}
+# from cheatsheet, render as html (cute!)
+
+see <- function(rx) stringr::str_view_all("abc ABC 123\t.!?\\(){}\n", pattern = rx)
+see1 <- function(rx) stringr::str_view_all("abc ABC 123 ^ \t.!?\\(){}\n", pattern = rx)
+
+see("a") # a
+see("\\.")
+see("[[:blank:]]")
+see("[[:space:]]")    # note!   \n  is a 'space' charcter, 
+```
+
+#### 003_string_is_a_string  !# {{{
+```{r}
+info  <- function(x) {
+
+	# bug .. what is 'TRUENULL'
+	print(
+				cat(is.character(x), 
+						"|", 
+						is.vector(x)	)
+	)
+	length(x) }
+
+# all TRUE
+info("a")
+info("aa")
+info(c("a","aa"))
+```# }}}
+
+
+#### 003_how_R_sees_string_AFTER_parsing# {{{
+```{r}
+# writeLines(<type this>)   #     R sees this is regex	
+
+# writeLines("<regex>")    # 
+writeLines("\\")   # \
+writeLines(".")    # .
+writeLines("[[:alpha:]]") # [[:alpha:]]
+```# }}}
+
+
+
+#### 002A-stringr, detect META char
+```{r}
+s <- "abc^def^^" 
+stringr::str_detect(s, "\\^+") # TRUE
+stringr::str_detect(s, "\\*") # FALSE
+
+# WORKS
+stringr::str_replace_all(s, "\\^+", "_")
+```
+
+
+#### 0004_find_replace_spaces
+```{r}
+s <- "one      two three "
+stringr::str_view_all(s, "[[:blank:]]+")
+
+# works!
+stringr::str_replace_all(s, "[[:blank:]]+", "_")
+```
+
+#### 0005_find_replace_lead_digits
+```{r}
+s <- "012345_junk_99"
+stringr::str_replace_all(s, "^[[:digit:]]{4,6}", "")
+```
+
+#### 0006_test_that
+```{r}
+s <- "012345_junk_99"
+stringr::str_replace_all(s, "^[[:digit:]]{4,6}", "")
+
+
+f <- function(string="abc",
+			  pattern="[[:alpha:]]", 
+			  with="!"){
+					stringr::str_replace_all(string, pattern, with)
+}
+
+f()
+testthat::test_that("remove leading digits", {
+	expect_equal(f(string="012345_junk_99",
+				   pattern = "^[[:digit:]]{4,6}",
+				   with = ""),
+				 
+				   "_junk_99")
+	
+	expect_equal(f(string="012345_junk_012345",
+				   pattern = "^[[:digit:]]{4,6}",
+				   with = ""),
+				   "_junk_012345")
+}
+)
+```
+
+####010_regex_in_R_help
+```{r}
+help.search("^geom_[abcd]",
+			package="ggplot2")
+
+
+```
+
+
+####007_replace_multiple_dashes
+```{r}
+s <- "a____b_c__d_"
+stringr::str_replace_all(s, "_+","_")  # a_b_c_d_   (_ after d, yes)
+
+s <- "a'b'c"
+stringr::str_replace_all(s, "'","_")  # a_b_c   
+
+s <- 'a"b"c'
+stringr::str_replace_all(s, '"',"_")  # a_b_c   
+
+s <- "a'b'c"
+writeLines("'")
+writeLines('"')
+
+# not quite
+stringr::str_replace_all(s, "'",'"')  # "a\"b\"c"   is what R displays
+
+# remove NA, unless followed by alphanumeric
+s <- "one_NA_two_NAME"
+stringr::str_replace_all(s, "NA[^[[:alnum:]]]","")  # "one_two_NAME"
+```
+#### 0010.tidyr::extract.with regex
+```{r tidry::extract}
+t <- tribble(
+			 ~code, 
+			 "S01E01",
+			 "S02E01",
+			 "S03E02"
+			 )
+t %>% tidyr::extract(code, c("season","number"), 
+					 regex="S(.*)E(.*)",convert=TRUE,
+			  			remove=FALSE)  
+```
+####008_regex_tibble_column
+```{r}
+t <- tibble(original = c("one_two____three",
+						 "NA_john_denver"))
+t<- t %>% mutate(col2 = stringr::str_replace_all(original, "_+", "_") ) 
+t
+```
+```{r render,include=FALSE, eval=FALSE}
+#rmarkdown::render("032_regex_stringr_examples.Rmd", output_dir="html")
+#rmarkdown::render("032_regex_stringr_examples.Rmd", output_format="pdf_document", output_dir="pdf")
+```
+
+#### misc stringr:: practice ####
+```{r eval=FALSE}
+commas <- function(...) stringr::str_c(..., collapse = ", ")
+commas1 <- function(...) stringr::str_c(...)
+what_is_it(letters)
+print (letters)  # vector of 26 letters
+commas1(letters)
+commas1(letters, collapse = ", ")
+what_is_it(commas(letters))	# char vector of length 1, ie string
+
+commas1(letters, collapse = "-")	# works
+
+# char vector becomes 1 string
+letters # vector, 26
+paste(letters, collapse = "+")
+
+# remove 1 layer, list of lists, into simple vector
+?purrr::flatten_dbl
+
+# z is list containing 2 lists, each of these is single list
+z = list(a = list(as.double(c(1,2))), 
+	 b = list(as.double(c(10,11)))
+	 )
+	 
+z[["a"]][[1]][2]	# 2
+what_is_it(z[[1]])	# list of 1 elemnt, a list
+what_is_it(z["a"])
+z["a"]
+what_is_it(z[a]) # fails
+what_is_it(z)
+y <- flatten(z["a"])
+what_is_it(y)
+y
+str(y)
+
+#################
+# ---- fruit ----
+#################
+fruit    # character vector
+what_is_it(fruit)  # returns char vector, size 80
+stringr::str_detect(string=fruit, pattern="fruit") # returns logical 
+what_is_it ( stringr::str_detect(string=fruit, pattern="fruit") )# logical
+
+# returns character vector
+(my_fruit<-stringr::str_subset(string=fruit, pattern="fruit"))
+what_is_it (my_fruit)  # character vector, length 8
+
+(z<-str_split(my_fruit, pattern=" "))
+what_is_it (z) # a list of char vectors,  fruits containing space, get split
+
+(z1 <-str_split_fixed(my_fruit, pattern=" ", n=2))
+what_is_it(z1)  # vector of typke character, length = 16
+
+# collapse
+str_c(my_fruit,collapse= " ")
+str_c(my_fruit,collapse= ".")
+str_c(my_fruit,collapse= "|")
+```
+#### 0009_EXPERIMENTS,  NASTY string replacements
+```{r}
+
+{
+	remove_weird  <- function(v) { 
+	step2 <- stringr::str_replace_all(v,"[:punct:]+","_") 
+	return (step2)
+	}
+}
+# Works
+	expr = "!@#%*-?,'"
+	remove_weird(expr)
+
+# Fails
+	# ^$.()
+	remove_weird("^")  # FAILS
+
+# TODO must remove ^
+	{
+	test_that("remove_weird removes '", {
+							expect_equal(remove_weird("abc'def''ghi"),"abc_def_ghi")
+							expect_equal(remove_weird("abc'''def''ghi'"), "abc_def_ghi_")
+							expect_equal(remove_weird("%%"), "_")
+							expect_equal(remove_weird(expr), "_")
+							})
+	}
+
+# FAILS
+	stringr::str_replace_all("!?",fixed("!\\?"),"_")
+stop()
+```
+
+#### stringr, grepl (need X11, html)
+```{r}
+val <- function(r) stringr::str_view_all("1.11.111.011", r)
+val("[1]{2}")
+val("^1{2}")
+val("^[1]{2}")
+val("[1]{2}")
+# render as html
+val <- function(r) stringr::str_view_all("1.11.111.011", r)
+val("[1]{2}")
+val("^1{2}")
+val("^[1]{2}")
+# render as html
+val <- function(r) stringr::str_view_all("1.11.111.011", r)
+val("^[1]{2}")
+val("\^[1]{2}")
+val("[1]{2}")
+val("^1{2}")
+val("^[1]{2}")
+val("a")
+# render as html
+val <- function(r) stringr::str_view_all("1.11.111.011.a1", r)
+val("a")
+# render as html
+val <- function(r) stringr::str_view_all(c("1.11.111.011.a1"), r)
+val("[1]{2}")
+# render as html
+val <- function(r) { stringr::str_view_all(
+c("1.11.111.011", "a1"), r)
+}
+val("[1]{2}")
+val("^1{2}")
+val("a")
+val("^a")
+grepl(pattern="[01]+", c(1,"2","a1","1",00,01,11,000,010,011))
+grepl(pattern="^[0,1]{2,3}", c(1,"2","a1","1",00,01,11,000,010,011))
+grepl(pattern="^[01]{2,3}", c(1,"2","a1","1","00",01,11,000,010,011))
+grepl(pattern="^[0,1]{2,3}", as_character(c(1,"2","a1","1",00,01,11,000,010,011)))
+grepl(pattern="^[0,1]{2,3}", c(1,"2","a1","1",00,01,11,000,010,011))
+grepl(pattern="^[0,1]{2,3}", as.character(c(1,"2","a1","1",00,01,11,000,010,011)))
+grepl(pattern="^[01]{2,3}", c(1,"2","a1","1","00",01,11,000,010,011))
+as.character(c("1",1,9))
+grepl(pattern="^[01]{2,3}", as.character(c(1,"2","a1","1",00,01,11,000,010,011)))
+grepl(pattern="^[01]{2,3}", c(1,"2","a1","1","00",01,11,000,010,011))
+as.character(c(1,"2","a1","1",00,01,11,000,010,011))
+
+```
+
+#### STRINGR
+# ============
+
+#### 001-stringr, regex:  find patterns
+```{r}
+
+# view matches (needs browser, html)
+s <- "a.aa.aaa.aaa"
+stringr::str_view_all(s, "a{3}")
+
+# or TRUE or FALSE
+stringr::str_detect(s,"a{3}")
+```
+
+#### 002-stringr, regex practice
+```{r}
+
+```
+
+#### 002A-stringr, detect META char
+```{r}
+s <- "abc^def^^" 
+stringr::str_detect(s, "\\^+") # TRUE
+stringr::str_detect(s, "\\*") # FALSE
+
+# WORKS
+stringr::str_replace_all(s, "\\^+", "_")
+
+
+```
+#### 003 stringr, remove number
+```{r}
+# remove prefix
+s <- "00001_file"
+s <- stringr::str_remove(s,pattern = "^[:digit:]{4,6}")
+s
+
+# prepend prefix
+s <- stringr::str_c("00001",s)
+s
+```
+
+####004_stringr practice with tribble - practice
+```{r}
+toy <- tribble(
+  ~x,
+  "apple",
+  "0001cherry",
+  "000002orange"
+)
+
+# new cleaner col
+toy %>% mutate(new = stringr::str_remove(x,  "^[:digit:]{4,6}"))
+```
+
+###  BELOW:   Development work for pkg_mp3_files
+# =================================================
+```{r}
+
+
+#### 0000_PATH (TO DO:  should not need)
+setwd("~/code/r_try_things_here")
+getwd()
+here::here()
+
+#### 0001_function
+# What does terminal think?
+get_terminal_dir <- function(){ list(proj_path(), proj_get() )}
+get_terminal_dir()
+
+##### 0010_simple cleaning example ----
+# =============================
+t <- tibble::tibble(original = c("one_two____three", "NA_john_denver"))
+t
+t<- t %>% mutate(col2 = stringr::str_replace_all(original, "_+", "_") ) 
+t
+
+# BEGIN
+# =======
+
+#	remove_comma
+# ==============
+remove_comma  <- function(v){  stringr::str_replace_all(v,",+","_") }
+remove_comma(c("abc,def,,ghi", ",,,",",jim,"))
+
+remove_underscore <- function(v){  stringr::str_replace_all(v,"_+","_") }
+
+# remove_appostrope
+# ===================
+remove_appostrope  <- function(v){stringr::str_replace_all(v,"'+","_")}
+remove_appostrope(c("abc'def'ghi", "'''","'jim'"))
+
+# remove_caret (special META)
+# ==============
+remove_caret  <- function(v){stringr::str_replace_all(v,"\\^+", "_")}
+s <- "abc^def^^" 
+remove_caret(s)
+
+remove_dash  <- function(v){stringr::str_replace_all(v,"\\-+", "_")}
+
+
+# example: str_detect
+# =====================
+s <- "abc^def^^" 
+stringr::str_detect(s, "\\^+") # TRUE
+stringr::str_detect(s, "\\*") # FALSE
+
+
+# PUT it together?   (try glue?   fancier way to concatinate multiple regex?)
+v  <- "-abc__d-ef^^_gh'_^,'"
+remove_underscore(remove_dash(remove_caret (remove_appostrope(remove_comma(v)))))
+
+
+# remove_multiple
+# =================
+# any 1 or more of _ ' , ^ - <space>     Last 3 are META, so esccape
+remove_multiple  <- function(v){stringr::str_replace_all(v,"[_',\\^\\-]+","_")}
+remove_multiple(v)
+
+# Add error checking
+# ====================
+
+# even handles a char[]
+remove_multiple1  <- function(v){
+	if(is.null(v)) stop("please supply a string")
+	if(!is.character(v)) stop("please supply a character string")
+	stringr::str_replace_all(v,"[_',\\^\\-\\s]+","_")}
+}
+v  <- c("-abc__d-ef^^_gh'_^,'","'''"," 3    ")
+remove_multiple1 (v)
+
+# Testing (move to test folder)
+# =========
+test_that("remove_comma removes ','", {
+						expect_equal(remove_comma("abc,def,,ghi"),"abc_def_ghi") })
+
+test_that("remove_appostrope removes '", {
+						expect_equal(remove_appostrope("abc'def''ghi"),"abc_def_ghi")
+						expect_equal(remove_appostrope("abc'''def''ghi'"), "abc_def_ghi_")
+						})
+
+
+
+test_that("str_length is number of characters", {
+  expect_equal(str_length("a"), 1)
+  expect_equal(str_length("ab"), 2)
+  expect_equal(str_length("abc"), 3)
+	expect_equal(str_length("abcd"),4)
+})

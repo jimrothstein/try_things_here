@@ -1,0 +1,27 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+#037A_binonial.R
+
+
+#### roll size, what is cummulative mean?
+```{r}
+library(tidyverse)
+```
+
+```{r}
+# 1/n converges slowly!
+size <- 100000
+t <- tibble(x=sample(x=c(1,0),size=size, replace = TRUE),
+			run_avg = dplyr::cummean(x)
+			) %>% 
+	mutate(line = 1:size)
+
+t$run_avg %>% tail()
+t %>% ggplot(aes(x=line, y=run_avg)) +
+	geom_point()
+	
+```
+

@@ -1,0 +1,152 @@
+---
+title:  "010_dplyr_misc_factor_hadley.Rmd"
+output: 
+  html_document:
+    toc: yes
+    number_sections: yes
+editor_options: 
+  chunk_output_type: console
+---
+# 010_dplyr_misc_factor_hadley.R
+```{r}
+library(tidyverse)
+# Tags:  stop(), str_c(), function(...), row_number()
+```
+#### stop(), throws error 
+```{r}  
+x <- 0
+if (x == 0) stop("this is msg")   
+print("never gets here")
+```
+#### 0040_use of "..."
+```{r}
+# ---- str_c, f( ... ) -----------------------
+stringr::str_c("a", "b")   # ab
+commas <- function(...) {
+        # pass ... to functions inside
+        # collapse into single string
+        stringr::str_c(..., collapse=", ")
+}
+
+commas(letters[1:10])           # a, b, c, d, e 
+
+stringr::str_c("a","b", "c", sep=", ")
+```
+
+#### 0050_factors (r4ds: Chapter 15, forcats)
+#### factor: Peng, think ints with each having a label
+```{r}
+# create factors
+levels <- c("a","b")
+
+# "c" becomes "NA"  NO ERROR
+x <- c("a","b","b","b","c")
+
+x <- c("a","b","b","b")
+
+
+# factor: closer look
+y <- factor(x, levels=levels)
+y
+
+typeof(y)
+class(y)
+attributes(y)  # tells most
+levels(y)
+str(y)
+
+# nice features
+table(y)
+names(y)
+labels(y)
+
+unclass(y)	# underneath, stored as ints
+names(unclass(y))
+labels(unclass(y))
+```
+
+####10_base sort
+```{r}
+# create data another way
+levels=c("a","b")
+x <- rep(c("a","b"),6)
+y <- factor(x, levels=levels)
+y
+
+
+sort(y)
+```
+
+####0020_forcats::fct_*
+```{r}
+# create random data from 0:9
+x <- 0:9
+x
+
+# samle of 100
+y <- sample(x, size=100, replace=TRUE)
+y
+
+
+# only change is create factor
+z <- factor(y, levels=0:9)
+z
+####
+# Data does not change
+# Only order of factors
+####
+
+# order factors by freq
+forcats::fct_infreq(z)
+
+
+# order factors by 1st appearance
+forcats::fct_inorder(z)
+
+# shuffle
+forcats::fct_shuffle(z)
+
+# again
+forcats::fct_shuffle(z)
+```
+```{r}
+#  using  7 %% 2 as 7 mod(2) is equal 1
+#  8 %% 2 = 0
+
+even <- 
+```
+
+
+
+
+```{r}
+# ---- rank, row_number() -------------
+
+t <- tibble(x = 10:1,
+            letters = letters[1:10])
+t %>% factor(letters)
+t 
+
+# each group, find lowest 2 scores, print original line#
+df %>% as.tibble() %>%
+        group_by(factor) %>%
+        mutate(n = row_number()) %>%  #note:  WITHIN group
+                       select(n,factor,score) %>%
+       
+        arrange(desc(factor), desc(score)) %>%
+        top_n(-2)
+       
+```
+```{r}
+
+
+# ---- show SQL -----------------
+q <- df %>% as.tibble() %>%
+        group_by(factor) %>%
+        mutate(n = row_number()) %>%  #note:  WITHIN group
+        select(n,factor,score) 
+q %>% dplyr::show_query()
+q %>% explain()
+
+```
+

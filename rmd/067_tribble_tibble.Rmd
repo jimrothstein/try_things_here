@@ -1,0 +1,31 @@
+---
+title: "tribble_tibble"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+
+from JennyBC,  tribble
+create row by row  (but end result becomes tibble)
+
+```{r tribble}
+x <- tribble(
+	~a , ~b,
+	1, 2,
+	3, 4
+)
+x
+```
+
+same but  tibble
+create column by  column
+```{r tibble}
+y <- tibble(
+	a=c(1,3),
+	b=c(2,4)
+)
+```

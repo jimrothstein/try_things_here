@@ -1,0 +1,104 @@
+
+---
+title: Template for .Rmd
+output: 
+  pdf_document:
+    latex_engine: xelatex
+fontsize: 12pt
+geometry: margin=0.5in,top=0.25in
+#  md_document:
+#  html_document:
+#    toc: true
+#  	toc_float: true
+#    css: styles.css
+---
+
+## 
+
+---
+# PATTERN:
+#````
+text & open fold marker
+#````
+
+#```{r code}
+#codde
+end fold markers
+#```
+--- 
+
+````
+To Render# {{{  
+````
+```{r render, eval=FALSE, echo=FALSE	}
+# To Render
+library(here)
+dir="r_try_things_here"
+file="9999_covid_plots.Rmd"
+
+ren  <- function() {
+rmarkdown::render(
+									here(dir, file), 
+									output_format="pdf_document",
+									output_dir="~/Downloads/print_and_delete") 
+}
+ren()
+
+ren2  <- function() {
+rmarkdown::render(
+									here(dir, file), 
+									output_format="github_document",
+									output_dir="~/Downloads/print_and_delete") 
+}
+ren2()
+```
+
+```{r one, include=FALSE} 
+knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE, collapse=TRUE)
+library(magrittr)
+library(lobstr)
+library(here) # }}}
+
+```
+
+
+#### covid-19: For a given percent daily increase in cases;  plot days to double
+```{r covid-19}
+library(ggplot2)
+library(tibble)
+r  <- seq(.01, .40, by=.01)
+r
+
+# log is base e
+days  <- function(r) log(2)/log(1+r)
+
+n  <- round(days(r), 0)
+n
+
+t  <- tibble(r = r, days=n)
+
+ggplot(t, aes(x=r, y=days)) +
+			 geom_point()
+
+```
+***
+```{r daily_tests}
+
+# US daily testing, ~ 500,000 per day
+
+pop  <- 330e6
+tests  <- seq(.3, 2.0, by=.1)
+tests  <- tests * 1e6
+
+f  <- function(tests) pop/(tests*365)
+
+t  <- tibble(daily_tests=tests, years=f(tests))
+
+
+h  <- ggplot(t, aes(x=daily_tests, y=years)) +
+			 geom_point()
+h
+
+```
+
+

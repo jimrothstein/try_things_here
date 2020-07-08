@@ -1,0 +1,124 @@
+-https://mblz.io/x6TUAA--
+title: "053_md_examples.Rmd"
+output: 
+  html_document: 
+    highlight: espresso
+    theme: readable
+editor_options: 
+  chunk_output_type: console  
+params:  
+  d:  !r Sys.Date()
+---
+\underline{\textsc{\today}}
+```{r}
+params$d
+```
+
+**To Render**
+```{r ren_pdf, eval=FALSE	 }
+library(here)
+ren  <- function() {
+	rmarkdown::render(
+									here::here("r_try_things_here","053_md_examples.Rmd"), 
+									output_format="pdf_document", 
+									output_dir="~/Downloads/print_and_delete/"
+									)
+}
+ren()
+```
+
+<!-- This is a comment -->
+
+---
+
+Another comment.  Be sure leave blank lines
+
+---
+
+Practice:  .md, knitr
+
+See:  
+064_  for Knitr chunks, YAML
+
+***  
+###	Header 3  
+####	Header 4  
+#####	Header 5  
+
+***
+
+This is **ordered list**
+
+1.	Item One
+2.	Item TWo
+3.	Item Three
+	i) Sub-item one
+	ii) Sub-item two
+4.	Item Four
+
+***
+
+This is `verbatim code`
+
+>This is block quote
+>
+
+>This is longer block quote. This is longer block quote.  This is longer block
+quote.  This is longer block quote. This is longer block quote. This is longer
+block quote. This is longer block quote. This is longer block quote. 
+>
+
+
+```
+Leave blank lines so knitr isn't confused.
+This is longer block quote. This is longer block quote.  This is longer block
+quote.  This is longer block quote. 
+
+```
+
+
+***
+
+`***` adds a horizontal line
+
+***
+
+~~~
+fenced by ~
+~~~
+
+***
+
+This is UNordered list
+
+*	Item One
+	+ Sub-Item One
+	- Sub-Item Two
+	* Sub-Item Three
+*	Item Two
+
+****
+
+Definition 1
+
+:  Definition Unlawful is ....
+
+Definition 2
+:  Definition 2 means ...
+
+****
+
+And now an R chunk?
+
+``` {r eval=FALSE}
+rmarkdown::render("053_md_examples.Rmd", output_dir="html")
+```
+```{r render,include=FALSE, eval=FALSE}
+#rmarkdown::render("032_regex_stringr_examples.Rmd", output_dir="html")
+#rmarkdown::render("032_regex_stringr_examples.Rmd", output_format="pdf_document", output_dir="pdf")
+```
+
+
+\underline{underline}
+\textsc{\today}
+\pagebreak

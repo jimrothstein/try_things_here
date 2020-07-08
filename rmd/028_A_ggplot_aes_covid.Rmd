@@ -1,0 +1,299 @@
+---
+title:  "028_ggplot_aes.R"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+####  Purpose
+-  aes() starrting from very simple ... on
+
+####  Sources
+
+-  [r4ds](http://r4ds.had.co.nz/)
+-  [ggplot2](https://ggplot2-book.org)
+-  [Gregor](https://stackoverflow.com/questions/40391272/ggplot-object-not-found-error-when-adding-layer-with-different-data/40391432#40391432)
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+#### 01_r4ds_Ch_3
+```{r }
+
+# review mpg
+mpg %>% glimpse()
+
+# 1 layer, same
+g <- ggplot(data = mpg, mapping=aes(x=displ, y=hwy)) + 
+        geom_point()
+g
+
+# SAME
+g <- ggplot(data = mpg) + 
+        geom_point(mapping = aes(x = displ, y = hwy))
+g
+```
+
+#### 02_r4ds_Ch_3.3
+```{r}
+# add color aesthetic;  class is categorical
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = class))
+
+# SAME
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = class)) + 
+  geom_point()
+
+# Works, but shape=class, size=class,  but limited symbols yields warnings (and doesn't look good)
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, shape = class)) + 
+  geom_point()
+
+```
+```{r}
+
+ggplot(data = mpg, mapping  = aes(x=displ, y=hwy)) + 
+  geom_point(color="blue")
+# SAME  
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy), color = "blue") +
+  geom_vline(xintercept=3)  # color returns to DEFAULT
+
+# all pink!
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color="blue")) + 
+  geom_point()
+
+# all black (no change)
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy), color="blue") + 
+  geom_point()
+```
+
+
+#### 99_knitr_exit()
+```{r}
+knitr::knit_exit()
+```
+
+
+```{r eval=FALSE}
+# select only "2seater", plot in red
+
+#z <- filter(mpg, class == '2seater')
+
+# combine filter into data=  (works!)
+h <- ggplot(data=filter(mpg, class == '2seater' )) +
+        geom_point(mapping = aes(x=displ, y=hwy), color="red")
+
+# combine!
+g <- ggplot(data = mpg) + 
+        geom_point(mapping = aes(x = displ, y = hwy)) +
+        geom_point(data=filter(mpg, class == '2seater'), 
+                   mapping=aes(x=displ, y=hwy), color="red")
+g
+####
+
+# ---- 3.3 Aesthetics ----
+# now color  - different for every group of 'class'
+ggplot(data = mpg) + 
+        geom_point(mapping = aes(x = displ, y = hwy, color = class))
+
+# BUT, error ...
+ggplot(data = mpg) + 
+        geom_point(mapping = aes(x = displ, y = hwy), color=class)
+
+
+# Gives Warning: class is not ordered (size requires number, or converts to number)
+ggplot(data = mpg) + 
+        geom_point(mapping = aes(x = displ, y = hwy, size = class))
+
+
+# works: alpha (transparency) is discrete, not ordered? (like color)
+ggplot(data = mpg) + 
+        geom_point(mapping = aes(x = displ, y = hwy, alpha = class))
+
+# Works: shape is discrete, not ordered
+# Warnings, because limited number of shapes make sense:
+ggplot(data = mpg) + 
+        geom_point(mapping = aes(x = displ, y = hwy, shape = class))
+
+
+# It tries! (1st 6)  MAP continuous variable to discrete: (cty ~ 21 discrete values)
+ggplot(data = mpg) +
+        geom_point(mapping = aes(x= displ, y=hwy, color = cty)) +
+        labs(title = "MAP continuous cty to color",
+             subtitle = "subtitle",
+             caption = "caption")
+```
+
+
+```{r eval=FALSE }
+# ---- 5.3 basic ----
+df <- data.frame(x = c(3,1,5),
+                 y = c(2,3,6),
+                 labels = c("pt A", "pt B", "pt C"))
+df
+
+g <- ggplot(df, aes(x = x, y = y, label = labels))
+g + geom_point()
+
+g + geom_point() + xlab(NULL) + ylab(NULL) # omit labeling x, y axes
+
+g <- ggplot(df, aes(x = x))
+g + geom_bar()  # count
+
+g <- g  + geom_bar(stat="identity")
+g
+# ---- 5.4 ----
+g <- ggplot(diamonds, aes(x=price)) 
+g + geom_histogram(aes(y=..density..), binwidth = 0.1)
+g + geom_histogram(aes(y =..count..), binwidth = .1)
+
+# ---- EX:  ..density... ----
+# source: https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf 
+
+a <- ggplot(mpg, aes(hwy))
+a + geom_histogram(binwidth = 5)
+a + geom_histogram(aes(y=..density..), binwidth=2)
+a + geom_histogram(binwidth=5, alpha = 0.2, 
+                   color="yellow", fill="blue",
+                   linetype=2, size=2,   # type and thickness
+                   weight=2)
+?linetype
+ggplot(mpg, aes(cty, hwy)) + geom_quantile()
+
+```
+
+#### 02-gaussian
+```{r}
+library(tidyverse)
+# from ggplot2 cheatsheet!
+
+d <- ggplot(mpg,aes(fl))        # fl is discrete
+d + geom_bar()
+```
+
+```{r}
+c <- ggplot(mpg, aes(hwy))
+
+c + geom_density(kernel="gaussian", aes(fill="yellow", alpha=0.3)) +
+ geom_vline(aes(xintercept=25.1 ), linetype = 2) + 
+        geom_point(x=30,y=0, shape=4, aes(color="blue", size=4))
+
+#c + geom_point(aes(y=mpg))
+```
+
+
+```{r eval=FALSE}
+
+library(tidyverse)
+
+# expose lhs names to the rhs?  
+density(rnorm(1000, 0, 1)) %>%
+    data.frame(y=y) 
+  
+    mutate(area = dplyr::between(x, 1.5, 2.6)) %>%
+    ggplot(aes(x = x, ymin = 0, ymax = y)) +
+    geom_ribbon(aes(fill = "Outside")) +
+    geom_ribbon(aes(fill = "Inside"), data = function(df) df %>% filter(area))
+```
+
+
+####  
+```{r}
+library(tidyverse)
+## case_when(  cond1 ~ TRUE, cond2 ~ FALSE, cond3 ~ y=3, ....)
+
+t <- tibble(x=rnorm(1000)) %>% 
+  mutate(reject = dplyr::case_when(x > 2.0 ~ TRUE, x <= 2.0 ~ FALSE)) 
+
+t_reject <- t %>% filter(reject == TRUE)
+t_fail_to_reject <- t %>% filter(reject == FALSE) 
+
+
+# color = outline
+# fill = interior
+# if applies to ALL data, outside aes()   
+
+# all black
+g <- ggplot(data=t, aes(x=x, ymin=0,ymax=dnorm(x) )) +
+  geom_ribbon(data=t_fail_to_reject)  +
+  geom_ribbon(data=t_reject )
+
+
+# 2 - works! | 2 strange colors | but fill="white" never works
+g <- ggplot(data=t, aes(x=x, ymin=0,ymax=dnorm(x), fill=reject)) +
+  geom_ribbon(data=t_fail_to_reject)  +
+  geom_ribbon(data=t_reject )
+
+# 3  works!| red & white | no legend | fill=reject ignored? in ggplot line
+g <- ggplot(data=t, aes(x=x, ymin=0,ymax=dnorm(x), fill=reject)) +
+  geom_ribbon(data=t_fail_to_reject, fill="white")  +
+  geom_ribbon(data=t_reject, fill="red" )
+
+# color appears to set outline
+# 4 works!| red & white fill | black outline ONLY not reject| 1 color legend TRUE
+g <- ggplot(data=t, aes(x=x, ymin=0,ymax=dnorm(x), color=reject)) +
+  geom_ribbon(data=t_fail_to_reject, fill="white", color="black")  +
+  geom_ribbon(data=t_reject, fill="red"  )
+
+# ALMOST
+# 5 like #4 | LOSE legend | but fills and colors all correct!
+#  | color="black" in ggplot, anywhere - not work
+g <- ggplot(data=t, aes(x=x, ymin=0,ymax=dnorm(x))) +
+  geom_ribbon(data=t_fail_to_reject, fill="white", color="black")  +
+  geom_ribbon(data=t_reject, fill="red", color="black"  )
+g
+```
+
+
+#### hadley- Ch 5.1
+```{r}
+library(tidyverse)
+data(Oxboys, package = "nlme")
+head(Oxboys)    # 'Subject'(ie 26  boys) & 'Occasion' (#9) are ordinal(?) 
+ggplot(Oxboys, aes(age, height, group = Subject)) + 
+  geom_point() + 
+  geom_line()
+```
+
+#### covid-19: For a given percent daily increase in cases;  plot days to double
+```{r covid-19}
+library(ggplot2)
+library(tibble)
+r  <- seq(.01, .40, by=.01)
+r
+
+# log is base e
+days  <- function(r) log(2)/log(1+r)
+
+n  <- round(days(r), 0)
+n
+
+t  <- tibble(r = r, days=n)
+
+ggplot(t, aes(x=r, y=days)) +
+			 geom_point()
+
+```
+```{r daily_tests}
+
+# US daily testing, ~ 500,000 per day
+
+pop  <- 330e6
+tests  <- seq(.1, 10.0, by=.1)
+tests  <- tests * 1e6
+
+f  <- function(tests) pop/(tests*365)
+
+t  <- tibble(daily_tests=tests, years=f(tests))
+
+
+h  <- ggplot(t, aes(x=daily_tests, y=years)) +
+			 geom_point()
+h
+
+```
+
+

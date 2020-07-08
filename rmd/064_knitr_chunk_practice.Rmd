@@ -1,0 +1,107 @@
+---
+title: "064_knitr:: chunk practice"
+output:
+  html_document: 
+    code_folding: show
+    highlight: tango
+    number_sections: yes
+    theme: sandstone
+    toc: yes
+    toc_depth: 2
+  pdf_document:
+    toc: yes
+    number_sections: TRUE
+geometry: margin=1in
+editor_options: 
+  chunk_output_type: console
+---
+
+echo[TRUE] print code  
+eval[TRUE] eval cod  
+include[TRUE] print output  
+
+# 0-setup, no output
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,  comment="      ##", z=TRUE, collapse=TRUE)
+library(knitr)
+```
+
+## 1-evaluate, but include no output
+```{r test, eval=TRUE, include=FALSE}
+print("hi")
+x=4
+show_text=TRUE
+```
+
+### 2-output, but do not evaluate
+```{r check, eval=FALSE}
+print(x)
+```
+
+3-nothing!
+```{r check1, eval=FALSE, include=FALSE}
+print(x+2)
+```
+
+3A-results='hide', code only
+```{r results='hide'}
+print(x+2)
+print("3A-results=hide")
+```
+
+3B-NOT results='hide'
+```{r collapse=TRUE}
+print(x+2)
+print("3B-results=NOT hide")
+```
+
+4A-conditional
+```{r conditional_block, echo=show_text, eval=show_text, include=show_text }
+
+# see in 1-setup
+print("show_text is TRUE")
+```
+
+4B-conditional
+```{r conditional_blockB, echo=!show_text, eval=!show_text, include=!show_text }
+
+# see in 1-setup
+print("show_text is TRUE")
+```
+
+7A-collapse=TRUE
+```{r collapse=TRUE }
+print("one")
+print("two")
+```
+
+7B-collapse=FALSE
+```{r collapse=FALSE}
+print("one")
+print("two")
+```
+
+
+20-list extra-all chunk options
+```{r chunk_options, include=show_text, collapse=TRUE}
+str(knitr::opts_chunk$get())
+```
+
+STop
+```{r}
+knitr::knit_exit()
+```
+
+render from code, to html
+```{r eval=FALSE}
+rmarkdown::render(
+	"~/code/r_try_things_here/064_knitr_chunk_practice.html", 
+	rmarkdown::html_document(), output_dir="./html") 
+```
+
+render from code, to pdf
+```{r eval=FALSE}
+rmarkdown::render(
+	"~/code/r_try_things_here/064_knitr_chunk_practice.html", 
+	rmarkdown::pdf_document()) 
+```

@@ -1,0 +1,145 @@
+
+---
+title: Template for .Rmd
+output: 
+  pdf_document:
+    latex_engine: xelatex
+    toc:  TRUE
+    toc_depth:  1
+fontsize: 12pt
+geometry: margin=0.5in,top=0.25in
+#  md_document:
+#  html_document:
+#    toc: true
+#  	toc_float: true
+#    css: styles.css
+---
+
+---
+TODO -- replace title, dir etc with R expressions
+comments
+.
+
+/home/jim/.config/nvim/templates/skeleton.Rmd
+comments
+---
+
+<!--  commments -->
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE, collapse=TRUE)
+```
+
+```{r library, include=FALSE} 
+library(ggplot2)
+library(tibble)
+here()
+
+```
+
+```{r render, eval=FALSE, echo=FALSE	}
+p  <- fs::path()
+w  <- fs::path_wd()
+w
+here()
+file="0100_matrix_.Rmd"
+dir=""
+
+ren_pdf(file,dir)
+ren_github(file, dir)
+
+#knitr::knit_exit()
+
+# To Render
+ren_pdf  <- function(file, dir) {
+rmarkdown::render(
+									here( dir, file), 
+									output_dir="~/Downloads/print_and_delete") 
+}
+ren_pdf(file, dir)
+
+ren_github  <- function(file, dir) {
+rmarkdown::render(
+									here(dir, file) 
+									output_format="github_document",
+									output_dir="~/Downloads/print_and_delete") 
+}
+ren_github(file, dir)
+```
+
+
+```{r plot_unit_square}
+# 4 vectors, each point of unit sq
+t  <- tribble(
+							~x, ~y,
+							0,0,
+							1,0,
+							1,1,
+							0,1
+							)
+
+g  <- ggplot(t, aes(xmin=0, xmax=1, ymin=0, ymax=1)) +
+	geom_rect(aes(fill="red"))
+g
+```
+
+Ax
+
+```{r}
+
+A  <- matrix(c(1,0,0,1), nrow=2)
+A
+
+# point
+x  <- c(1,0)
+A %*% x
+
+```
+
+edX .. Harvard's PH525.2x course (Rafael)
+
+```{r }
+X  <- matrix(1:1000,100,10)  # 100 x 10
+nrow(X) # 100
+X[25,3]
+
+x  <- 1:10
+m  <- cbind(x, x2 = 2*x, x3= 3*x, x4= 4*x, x5= 5*x)
+m
+str(m)
+class(m)
+
+sum(m[7,])  #105
+```
+
+```{r not_quite}
+
+library(purrr)
+x  <- 1:10
+f  <- function(n) n*x
+x  <- cbind(x, map_dbl(1:5, ~f(.x)) )
+x
+map(1:5, ~f(.x))
+x[2,]
+
+x  <- 1:10
+z  <- cbind(x, 2*x)
+z  <- cbind(z, 3*x)
+z
+
+l1  <- c(1,2,3)
+l2  <- list(10,2,3)
+cbind(l1,l2)
+
+```
+
+```{r}
+library(HistData)
+data(Galton)
+
+```
+
+
+
+
+

@@ -1,0 +1,174 @@
+---
+title:  "007_Hadley_dplyr_vignette_2.Rmd"
+author:
+editor_options: 
+  chunk_output_type: console
+output: 
+  html_document: 
+    toc: yes
+---
+**PART 2 of basic dplyr article (hadley)**
+Starts with "Patterns of  Operations" 
+see: https://dplyr.tidyverse.org/articles/dplyr.html#patterns-of-operations
+#### 00-initialize
+```{r}
+
+#rmarkdown::render("./007_Hadley_dplyr_vignette_2_semantics.Rmd",output_dir = "./plots/")
+
+# Choose one:
+
+## prints source only,  no eval
+#knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
+
+## print source, results and print errors, but do not stop
+knitr::opts_chunk$set(echo = TRUE, error=TRUE)
+```
+
+#### 01-setup
+```{r}
+library(tidyverse)
+library(nycflights13)
+flights %>% glimpse()
+```
+
+
+#### 02-summarize()-------------------------------------------
+```{r}
+by_tailnum <- group_by(flights, tailnum)
+delay <- summarise(by_tailnum,
+                   count = n(),
+                   dist = mean(distance, na.rm = TRUE),
+                   delay = mean(arr_delay, na.rm = TRUE))
+delay <- filter(delay, count > 20, dist < 2000)
+
+# Interestingly, the average delay is only slightly related to the
+# average distance flown by a plane.
+ggplot(delay, aes(dist, delay)) +
+        geom_point(aes(size = count), alpha = 1/2) +
+        geom_smooth() +
+        scale_size_area()
+```
+
+
+#### 03-summarize() + aggregate functions() ------------------------
+```{r}
+# take vector (column), return single number
+destinations <- group_by(flights, dest)  #336776 x 19   
+summarise(destinations,
+          planes = n_distinct(tailnum),   # number, not list
+          flights = n()                   # number
+) %>% head(3)
+```
+
+#### 03A-summarize() + aggregrage + rollup (skipped) ---------------
+```{r}
+```
+
+#### 04-selecting operations -Semantics ----------------------------
+```{r}
+# Definitions
+#       'Column names'  or 'column positions'
+#       'Bare variable names'
+#       'syntax - symbol to put where
+#       'semantics'  - meaning;  same symbol in select has different
+#       meaning in mutate
+
+#       '
+# tibble:   When referring to columns:   Position or column naame
+# works for select, not mutuate
+```
+
+#### 05-position vs bare column names ------------------------------
+```{r}
+flights %>% base::colnames()
+
+## SAME
+select(flights, year) %>% 
+  head(3)   # Works (Column 1 = year, Column 5 = sched dep time)
+
+select(flights, 1) %>% 
+  head(3) # Works
+```
+
+#### 06-context matters! -------------------------------------------
+```{r}
+## Goal:  display  "sched_dep_time"    (col 5)
+
+select(flights,5) %>% 
+  head(3) # Works
+# but ...       
+year<- 5   
+select(flights, year) %>% 
+  head(3) # Fails, displays "year" (col 1)
+```
+
+#### 06A-but ....helper function do NOT put the column names into scope 
+```{r}
+##  Display columns begin with dep
+select(flights, starts_with("dep")) %>% head(3)    # Works
+# but ..
+year <- "dep"
+select(flights, starts_with(year)) %>% head(3)     # still Works!
+```
+
+#### 07-sublties - identity() -----------------------------------
+```{r}
+# compare above to (identity returns argument, IN Context). 
+
+# identity forces evaluation BEFORE invoking all the column names!
+
+year <- 5
+select(flights, year, base::identity(year)) %>% head(3)     # Works, get col 1 (year) AND col 5 (sched_dep_time)
+
+## 08-dplyr (>= 0.6) understands col names (as well as position)
+
+vars <- c("year","month")
+select(flights, vars, day,7) %>% head(3)     # Works, col7 = 'arrival time'
+```
+
+#### 09-!!  --------------------------------------------------------
+```{r}
+# identity() is useful, but UNSAFE   if var were really col name
+
+# unquote !!   is more general and safer:       
+# This tells dplyr to bypass the data frame and to directly look in the context: 
+
+flights$vars <- flights$year   
+flights %>% glimpse()  # vars
+vars <- c("year","month","day")
+select(flights, !! vars) %>% head(3)        # Works! cols for year,month, day, not col 'vars'
+
+# just to be sure
+select(flights, !! vars, vars) %>% head(3)    # Works!  now includes col name 'vars'
+```
+
+#### 10-MUTATE -----------------------------------------------------
+```{r}
+# rmarkdown::render("./007_Hadley_dplyr_vignette_2_semantics.R",
+                  #output_format="pdf_document")
+
+# mutuate     need vector
+dim(flights)
+
+mutate(flights,year) %>% head(3)# ignores
+mutate(flights, 2) %>% head(3) # adds column "2"
+mutate(flights,"year",2) %>% head(3) # adds both
+mutate(flights, year+10) %>% head(3)
+colnames(mutate(flights, year+10))  # doesn't save new column
+
+colnames(flights)
+select(flights, "year+10")
+
+var <- seq(1:nrow(flights))
+length(var)
+
+## get confused!
+
+# demands a vector!
+flights$day %>% row_number() %>% head(3)
+# behave like []
+flights$day %>% min() #1
+flights$day %>% max() # 31
+flights$day %>% row_number() %>% max()   # 336776
+# STOP --------------------------------------
+```

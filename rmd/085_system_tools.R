@@ -1,0 +1,146 @@
+---
+title: "085_system_tools.Rmd"
+output:  
+  pdf_document:
+geometry: "left=2cm,right=2cm,top=2cm,bottom=2cm"
+fontsize: 12pt
+---
+#### 0-setup
+knitr::opts_chunk$set(echo = TRUE, comment = "        ..##")
+library(tidyverse)
+library(reprex)
+
+#### 1-params$name
+print(params$name )
+
+#### 2-$R_HOME 
+# /usr/lib/R
+(r_home <-R.home(component="home"))
+
+#### 3-search(), vector: gives all env + attached pkgs
+(t_search <- search())
+
+#### 4-.libPaths(), list all paths, purpose, name
+#### see also ~/.Renviron
+
+t_libPaths <- tibble(.libPaths()) %>% 
+  mutate(
+    purpose =  c("added packages", ".Library.site", ".Library.site", "base R pkgs"),  
+    quantity  = c("many", "Empty", "Empty", "many")  ,
+	env_var = c("R_LIBS_USER","","","R_LIBS?"),
+    aka = c("",".Library.site", ".Library.site", ".Library.site, .Library")
+       )
+t_libPaths
+
+
+#### another way to list ALL pkgs
+lapply(.libPaths(), dir)   # dir() returns <list>
+
+#### same?
+#### returns <list> of char[]	
+lapply(.libPaths(), list.dirs, recursive = FALSE)
+
+#### 5-.Rprofile
+file.exists(
+  file.path(r_home, "etc", "Rprofile.site"))			# TRUE
+
+file.exists("~/dotfiles/.Rprofile")                     # TRUE
+
+#### 6-.Renviron 
+file.exists(file.path(r_home, "etc", "Renviron.site"))  # TRUE,empty
+file.exists("~/dotfiles/.Renviron")                     # TRUE
+
+#### 7- list options() (returns <list>)
+t <- tibble(options = options())
+t
+#### TODO
+t %>% tidyr::unnest_wider(options)
+tidyr::unnest_auto(t, options)
+
+#### another way
+l  <- options()
+names(l) #88
+
+#### find element of vector
+l["warning.length"]
+l["pdfviewer"]	  # /usr/bin/xdg-open
+l["keep.source"]  # TRUE
+l["browser"]	 # croutonurlhandler
+
+#### 8- versions
+packageVersion("rmarkdown") # 1.10
+R.version.string     # 3.5.1
+getwd()                 # ~/code/r_
+list.files()            # list filesin wd
+
+##### 9- find dependencies for <pkg>
+#### return list of character vectors, ~15,293 
+	l <- tools::package_dependencies()
+	l
+#### dep is just content , a chr[]
+	t  <- tibble(pkg = names(l), dep= purrr::pluck(l ))
+	t
+
+##### 010-for <pkg>, find packages dependent upon it
+
+
+######  011_update all packages - 
+# available.packages()  	# A LOT!
+
+# uncomment (takes time)
+# update.packages(ask = FALSE, repos = 'https://cran.r-project.org')
+
+
+###### 012_update knitr
+install.packages('knitr', repos = c('https://xran.yihui.name', 'https://cran.r-project.org'))
+
+
+##### 013_jennyBC
+####  from https://github.com/smithjd/explore-libraries/blob/master/01_explore-libraries_jenny.R
+ipt <- installed.packages() %>%
+  as_tibble()
+
+ipt %>% glimpse()
+nrow(ipt)
+dim(ipt)
+
+####' 014_Exploring the packages
+
+####   * tabulate by LibPath, Priority, or both
+#### base: 14, recommended:15, my library:165
+ipt %>%
+  count(LibPath, Priority)
+
+####   * what proportion need compilation?
+####   2nd line produces 3 rows x 2 (NeedCompliation n)
+ipt %>%
+  count(NeedsCompilation) %>%
+  mutate(prop = n / sum(n))
+
+#### 015_remove pkg
+
+#### Find (and remove) package BH (it is gone!)
+ipt %>% filter(Package=="BH") 
+
+uninstall(BH)
+
+#### 016_Internactive session?
+base::interactive() #### TRUE (run a line at a time) 
+
+#### 017_R_LIBS_USER
+Sys.getenv("R_LIBS_USER")
+
+#### OR, 1st element of 
+.libPaths()
+
+#### 018_List all files in project/pkg
+#### current dir
+base::dir()
+base::dir(recursive = TRUE)  #### recurse directories
+base::dir(all.files = TRUE)	 #### include hidden
+
+#### examine project (source) directory
+base::dir(path = "../r_mp3_files/", all.files = TRUE)	 #### include hidden
+
+base::dir(path = "../r_mp3_files/", all.files = TRUE, recursive = TRUE)	 #### includ directories 
+

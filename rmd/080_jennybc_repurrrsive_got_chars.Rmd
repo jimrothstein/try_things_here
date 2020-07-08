@@ -1,0 +1,77 @@
+---
+title: "080_lists_repurrsive_examples.Rmd"
+output:
+  html_document:
+    df_print: paged
+editor_options:
+  chunk_output_type: console
+---
+
+### Main example:  https://github.com/jennybc/repurrrsive
+
+
+### Tidyr 1.0.0 tools to unpack nested Lists
+
+### Reference:
+-https://tidyr.tidyverse.org/articles/rectangle.html
+-https://jennybc.github.io/purrr-tutorial/
+-https://github.com/jennybc/repurrrsive
+
+####  01-setup
+```{r}
+library(tidyverse)
+library(purrr)
+library(repurrrsive)
+```
+
+
+#### 02_explore_list (simple)
+```{r}
+# got_chars is list containing unamed 30 objects
+length(got_chars)
+
+
+# grab 1st object of 30, contains 1 unamed object
+l <- got_chars[1]
+length(l)
+
+# grab 1st object inside l, o contains 18 named objects
+o <- got_chars[1][[1]]
+length(o)
+names(o)
+
+
+# grab 2nd of 18
+o.2 <- o[[1]]
+```
+  
+#### 03_map_* to retreive as vector
+```{r}
+# return vector of chars [30]
+(nms <- map_chr(got_chars, "name")) 
+(map_chr(got_chars, "url"))
+```
+
+#### 04_map_df* to retrieve as tibble
+```{r}
+# return tibbles
+  (map_dfr(got_chars, `[`, c("name")) )
+t <-  map_dfr(got_chars, `[`, c("name", "gender", "culture", "born")) 
+  
+```
+
+
+#### 05 sw_*
+```{r}
+# sw_films,  7
+length(sw_films)
+
+# sw_films OMITS top level;  ie list of films is top level; so this works:
+map_chr(sw_films, "title") 
+```
+
+
+```{r}
+knitr::knit_exit()
+
+```

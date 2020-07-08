@@ -1,0 +1,56 @@
+---
+title: "055_sample_Wong_letter"
+date:
+output: 
+  pdf_document:
+    toc: true
+    keep_tex: true
+  geometry:
+    top=4in
+    left=3in
+    right=0.5in
+  fontsize: 10pt
+---
+
+```{zsh, echo=FALSE}
+echo "hello"
+```
+
+Patient name: **Jim Rothstein**  
+Date of birth: 12/23/1955   
+Gender: M  
+To:
+Wayne Wong, MD
+
+From:
+Jim Rothstein^[patient]
+
+Sent:
+4/26/2019  4:54 PM PDT
+
+    
+##Dear Dr Wong:##
+
+Saw HIGH result (fecal test #2) and rec'd call from your office. Called back but long hold times this afternoon. Note: 1st fecal test is STILL reporting incorrectly.
+
+Eager to proceed, but concern similar to those in fax i sent while back:
+
+    -   diagnosis and confidence correct; that interventions will end hyperoxaluria.
+    -   of course, want to know pro/con of proposed interventions.
+
+Please do not be annoyed. I stuffed myself with fat for 6 days (coconut to eggs to avacado to ice cream - no potato chips). So much could not eat much on 7th or 8th day (have diet & rowing records to beginning of time ~2014). No diarrhea, on the contrary stool was "normal" and one was a swollen huge banana like pre-medications. Thought maybe some benefit to "keto" (high fat) diets.
+What percentage of people with "pancrease insufficiency" have these symptoms?
+
+thx.
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+

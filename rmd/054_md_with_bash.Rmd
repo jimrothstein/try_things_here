@@ -1,0 +1,38 @@
+# rmarkdown, but using bash code!
+---
+output:	html_document
+---
+```{r}
+names(knitr::knit_engines$get())
+```
+
+
+this is bash code
+```{bash}
+echo "hello"
+```
+
+
+### regex examples,   loses highlighting!
+```{bash}
+echo "tea toe toad tad"	| grep -E 't[eo]e' -
+```
+
+### zsh  example
+```{zsh}
+$SHELL --version
+```
+
+### declare x to int, read-only
+```{zsh}
+unset x
+declare -ir x
+
+declare -p x
+
+```
+
+### now, try to reset x
+```{zsh}
+x=3
+```

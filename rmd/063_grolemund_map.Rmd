@@ -1,0 +1,141 @@
+---
+title: '063_grolemund_map.Rmd'
+output: html_document    
+date:  '`r format(Sys.Date(), "%B %d, %Y")`'
+editor_options: 
+  chunk_output_type: console
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+https://resources.rstudio.com/webinars/how-to-work-with-list-columns-garrett-grolemund"
+```{r message=FALSE}
+library(tidyverse)
+library(babynames)
+Sys.Date()
+```
+
+create tibble
+```{r}
+y <- tibble(
+		a = c(1.0, 2.0, 3.14),
+		b = c( "a","b","c"),
+		c = c(TRUE, FALSE, FALSE),
+		d = list(as.integer(c(1,2,3)), TRUE, 2L)
+	)
+y
+```
+
+dplyr::mutate: tibble->tibble;   
+sqrt: vector -> dbl vector
+```{r}
+y %>% mutate(asc_a =  sqrt(a)) %>% print()
+```
+*
+Error:  sqrt rejects list
+```{r error=TRUE}
+y %>% mutate(asc_d = sqrt(d) %>% print())
+```
+
+- **instead**, dplyr::map applies list to sqrt, element-by-element and repackages as list.
+```{r}
+y %>% mutate(asc_d = map(d, sqrt)) %>% print()
+```
+
+## Babynames, filter names present every year
+```{r}
+everpresent <- babynames %>%
+	group_by(name, sex) %>%
+	summarize(years = n()) %>%
+	ungroup %>%
+	filter(years == max(years))
+```
+
+## Keep all rows (and fields) in x which match group_by in y
+```{r}
+babynames <- babynames %>%
+	semi_join(everpresent)
+```
+
+## most popular, each year
+```{r}
+babynames %>%
+	group_by(year,sex) %>% 
+	filter(prop == max(prop))
+```
+## (test)
+```{r}
+mtcars %>%
+	group_by(cyl)  %>%
+	top_n(1,hp)
+```
+```{r}
+babynames %>%
+	group_by(year,sex) %>% 
+	top_n(1,prop) %>%
+	arrange(desc(year))
+```
+
+## select joe, all years
+```{r}
+joe <- babynames %>%
+	filter(name == "Joe")
+joe %>%
+	ggplot(aes(x=year,y=prop)) +
+	geom_point() +
+	geom_line() +
+	geom_smooth(method=lm,se=FALSE)
+
+```
+
+## is linear a good fit for joe?
+```{r}
+fit <-  lm (prop ~ year, data=joe)
+library(broom)
+pluck(coef(fit),"year")
+pluck(glance(fit), "r.squared")
+```
+
+@32:00
+model for every name in babynames
+```{r}
+babynames %>%
+	group_by(name,sex) %>%
+	nest()
+```
+
+retrieve Mary
+```{r}
+babynames %>%
+	group_by(name,sex) %>%
+	nest() %>%
+	pluck("data") %>%
+	pluck(1)
+```
+
+use map to run lm interatively over list "data"
+```{r}
+d<-babynames %>%
+	group_by(name,sex) %>%
+	nest() %>%
+	mutate(model =
+		   	map(data,
+				 ~lm(prop ~ year, data=.x)),
+		   slope =
+		   	map_dbl(model,
+		   			~pluck(coef(.x), "year")),
+			r2 =
+				map_dbl(model, 
+					~pluck(glance(.x), "r.squared"))
+	)
+save(d,file="baby_model")
+
+```
+
+verify "Mary"
+
+```{r}
+d %>% pluck("name") %>% pluck(1)
+d %>% pluck("model") %>% pluck(1)
+```
