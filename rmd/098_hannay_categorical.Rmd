@@ -62,7 +62,7 @@ data(package="HannayIntroStats")
 
 ```{r 12.}
 
-tibble::glimpse(food_college)
+#tibble::glimpse(food_college)
 boxplot(food_college$weight~food_college$Gender, 
 				col="skyblue", 
 				main='Weight of College Students', 
@@ -74,10 +74,28 @@ boxplot(food_college$weight~food_college$Gender,
 ```{r box_ggplot}
 
 g  <- ggplot2::ggplot(food_college , aes(x=Gender, y=weight)) +
-	geom_point()
+	geom_boxplot()
 g
 
 ```
+```{r lm }
+class(food_college$Gender)
+lm(weight~Gender, data=food_college)
+
+# ==========================
+# f  <- tibble::as_tibble(food_college)
+# f  %>% lm(weight~Gender)
+
+```
+```{r lm_summary}
+
+lm.weight  <- lm(weight~Gender, data=food_college)
+summary(lm.weight)
+
+confint(lm.weight, level=0.99)
+
+```
+
 
 
 
