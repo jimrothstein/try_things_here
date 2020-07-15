@@ -70,6 +70,34 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy), color="blue") +
   geom_point()
 ```
 
+x is categorical, geom_bar(), change x-axis order
+```{r simple_bar_chart}
+
+# default, in asc order cyl
+ggplot(mtcars, aes(cyl)) +
+			 geom_bar() 
+	 
+
+# inroduce factor, then manually choose order
+ggplot(mtcars, aes(factor(cyl))) +
+			 geom_bar() +
+			 scale_x_discrete(limits=c(8,4,6))
+
+# fancier, reorder, in frequency order (desc)
+library(forcats)
+
+ggplot(mtcars, aes(forcats::fct_infreq(factor(cyl))) ) +
+	geom_bar() 
+
+# SAME, reorder, in frequency order (asc)
+library(forcats)
+
+ggplot(mtcars, aes(forcats::fct_rev(fct_infreq(factor(cyl))))) +
+	geom_bar() 
+
+
+```
+
 
 #### 99_knitr_exit()
 ```{r}
