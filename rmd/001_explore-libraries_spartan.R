@@ -2,6 +2,7 @@
 # see /rstd.io/forgot  (sends to github page)
 
 
+
 #' Which libraries does R search for packages?
 
 library(tidyverse)
