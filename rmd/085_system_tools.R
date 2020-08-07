@@ -12,6 +12,8 @@ library(reprex)
 
 #### 1-params$name
 print(params$name )
+mem_used()/1e6
+
 
 #### 2-$R_HOME 
 # /usr/lib/R
@@ -73,15 +75,31 @@ R.version.string     # 3.5.1
 getwd()                 # ~/code/r_
 list.files()            # list filesin wd
 
-##### 9- find dependencies for <pkg>
+##### 9- find dependencies for <pkg>, only pkgs installed.
 #### return list of character vectors, ~15,293 
-	l <- tools::package_dependencies()
-	l
+	
+l <- tools::package_dependencies(
+							"tibble",
+							db=installed.packages(),
+							reverse=TRUE	)
+l
+
+# And "tibble" is dependenat upon:
+l <- tools::package_dependencies(
+							"tibble",
+							reverse=FALSE		)
+l
 #### dep is just content , a chr[]
 	t  <- tibble(pkg = names(l), dep= purrr::pluck(l ))
 	t
 
 ##### 010-for <pkg>, find packages dependent upon it
+
+
+
+##	remove a pacakge
+	##	not run
+#remove.packages("cellranger")
 
 
 ######  011_update all packages - 
