@@ -13,7 +13,7 @@ editor_options:
 ---
 
 ### CONSOLIDATE here:   regex,stringr (+ related testthat)
-### some REQUIREs  X11
+### some REQUIREs  X11 
 ### REF:   
 ###		stringr & regex cheatsheet (rstudio)
 ###   stat545.com/block028_character-data.html
@@ -22,18 +22,21 @@ editor_options:
 
 #### 000_setup
 ```{r setup, include=FALSE}
-	# collapse=TRUE, combines code and output one block
-	knitr::opts_chunk$set(echo = TRUE, comment="        ...##",
-							collapse=TRUE)
-	library(tidyverse)
-	library(testthat)
-	library(here)
+# collapse=TRUE, combines code and output one block
+knitr::opts_chunk$set(echo = TRUE, 
+												comment="        ...##",
+												collapse=TRUE)
+library(tidyverse)
+library(testthat)
+library(here)
+library(jimTools)
 ```
 
-##### base::trimws()
+To remove whitespace
+USE:  base::trimws()
 ```{r}
-	x <- c(" hello", " hello ", "hello ")
-	base::trimws(x)
+x <- c(" hello", " hello ", "hello ")
+base::trimws(x)
 ```
 
 #### 002_basics_using HTML (see stringr cheat)
@@ -41,7 +44,6 @@ editor_options:
 # from cheatsheet, render as html (cute!)
 
 see <- function(rx) stringr::str_view_all("abc ABC 123\t.!?\\(){}\n", pattern = rx)
-see1 <- function(rx) stringr::str_view_all("abc ABC 123 ^ \t.!?\\(){}\n", pattern = rx)
 
 see("a") # a
 see("\\.")
@@ -49,7 +51,7 @@ see("[[:blank:]]")
 see("[[:space:]]")    # note!   \n  is a 'space' charcter, 
 ```
 
-#### 003_string_is_a_string  !# {{{
+#### 003_string_is_a_string  !# 
 ```{r}
 info  <- function(x) {
 
@@ -65,10 +67,10 @@ info  <- function(x) {
 info("a")
 info("aa")
 info(c("a","aa"))
-```# }}}
+``` 
 
 
-#### 003_how_R_sees_string_AFTER_parsing# {{{
+#### 003_how_R_sees_string_AFTER_parsing# 
 ```{r}
 # writeLines(<type this>)   #     R sees this is regex	
 
@@ -76,7 +78,7 @@ info(c("a","aa"))
 writeLines("\\")   # \
 writeLines(".")    # .
 writeLines("[[:alpha:]]") # [[:alpha:]]
-```# }}}
+```# 
 
 
 
@@ -145,8 +147,12 @@ help.search("^geom_[abcd]",
 
 ####007_replace_multiple_dashes
 ```{r}
+# replace one or more, 
 s <- "a____b_c__d_"
-stringr::str_replace_all(s, "_+","_")  # a_b_c_d_   (_ after d, yes)
+s1  <- stringr::str_replace_all(s, "_+","_")  # a_b_c_d_   (_ after d, yes)
+
+stringr::str_replace_all(s1, "_$","")  # a_b_c_d   
+
 
 s <- "a'b'c"
 stringr::str_replace_all(s, "'","_")  # a_b_c   
