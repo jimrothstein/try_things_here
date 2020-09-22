@@ -5,23 +5,36 @@ output:
 geometry: "left=2cm,right=2cm,top=2cm,bottom=2cm"
 fontsize: 12pt
 ---
-#### 0-setup
+
+ERROR: 
+also try:   usethis::edit_r_environ()
+```{r setup}
 knitr::opts_chunk$set(echo = TRUE, comment = "        ..##")
 library(tidyverse)
 library(reprex)
+```
 
+```{r mem}
 #### 1-params$name
 print(params$name )
 mem_used()/1e6
 
 
-#### 2-$R_HOME 
+#### 2-$R_HOME and ENV variables
 # /usr/lib/R
 (r_home <-R.home(component="home"))
+Sys.getenv("R_HOME") 			# /usr/lib/R ; where R installed
+Sys.getenv("R_LIBS_USER") # ~R/x86 .../4.0
+Sys.getenv("R_HIST_SIZE")
+Sys.getenv("R_BROWSER")   # croutonurlhandler
+
+Sys.getenv()		# all all env
 
 #### 3-search(), vector: gives all env + attached pkgs
 (t_search <- search())
+```
 
+```{r .libPaths)
 #### 4-.libPaths(), list all paths, purpose, name
 #### see also ~/.Renviron
 
@@ -33,8 +46,9 @@ t_libPaths <- tibble(.libPaths()) %>%
     aka = c("",".Library.site", ".Library.site", ".Library.site, .Library")
        )
 t_libPaths
+```
 
-
+```{r}
 #### another way to list ALL pkgs
 lapply(.libPaths(), dir)   # dir() returns <list>
 
@@ -161,4 +175,4 @@ base::dir(all.files = TRUE)	 #### include hidden
 base::dir(path = "../r_mp3_files/", all.files = TRUE)	 #### include hidden
 
 base::dir(path = "../r_mp3_files/", all.files = TRUE, recursive = TRUE)	 #### includ directories 
-
+```
