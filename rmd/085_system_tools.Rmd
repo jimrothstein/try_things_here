@@ -33,6 +33,11 @@ Sys.getenv()		# all all env
 #### 3-search(), vector: gives all env + attached pkgs
 (t_search <- search())
 ```
+```{r pkg_location}
+# returns full path to package location
+base::system.file(package="base")
+base::system.file(package="tibble")
+```
 
 ```{r .libPaths)
 #### 4-.libPaths(), list all paths, purpose, name

@@ -1,14 +1,26 @@
----
-title:  "028_ggplot_aes.R"
-output: html_document
-editor_options: 
-  chunk_output_type: console
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+--- 
+# Spaces, no Tabs
+title: Template for .Rmd 
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
 ---
 
-####  Purpose
+<!-- 
+/home/jim/.config/nvim/templates/skeleton.Rmd
+set cul   "cursorline
+cc=+1			"colorcolumn is 1 more than tw
+-->
+
+##  Purpose
 -  aes() starrting from very simple ... on
 
-####  Sources
+##  Sources
 
 -  [r4ds](http://r4ds.had.co.nz/)
 -  [ggplot2](https://ggplot2-book.org)
@@ -18,9 +30,10 @@ editor_options:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(jimTools)
 ```
 
-#### 01_r4ds_Ch_3
+01_r4ds_Ch_3
 ```{r }
 
 # review mpg
@@ -324,4 +337,13 @@ h
 
 ```
 
+RENDER
+```{r render, eval=FALSE	} 
+# "%p
+file <-  "rmd/028_A_ggplot_aes_covid.Rmd"
+file  <- basename(file) 
+dir <-"rmd"
 
+jimTools::ren_pdf(file,dir)
+jimTools::ren_github(file, dir)
+```
