@@ -1,14 +1,13 @@
 	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
 --- 
-# Spaces, no Tabs
-title: Template for .Rmd 
+title: 028_A_ggplot_aes_examples.Rmd 
 output: 
   pdf_document: 
     latex_engine: xelatex
 toc: TRUE 
 toc_depth:  1 
-fontsize: 12pt 
-geometry: margin=0.5in,top=0.25in 
+fontsize: 11pt 
+geometry: margin=0.3,top=0.25in 
 ---
 
 <!-- 
@@ -28,9 +27,14 @@ cc=+1			"colorcolumn is 1 more than tw
 
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+kexamples.Rmdnitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(jimTools)
+```
+```{r curve}
+# part of graphics (ie plot) but neds X11
+curve(qnorm)
+curve(sin, -1, 1)
 ```
 
 01_r4ds_Ch_3
@@ -340,7 +344,7 @@ h
 RENDER
 ```{r render, eval=FALSE	} 
 # "%p
-file <-  "rmd/028_A_ggplot_aes_covid.Rmd"
+file <-  "028_A_ggplot_aes_examples.Rmd"
 file  <- basename(file) 
 dir <-"rmd"
 
