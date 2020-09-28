@@ -6,19 +6,33 @@ geometry: "left=2cm,right=2cm,top=2cm,bottom=2cm"
 fontsize: 12pt
 ---
 
-ERROR: 
-also try:   usethis::edit_r_environ()
+ includes:  021_efficient_coding	
+
 ```{r setup}
 knitr::opts_chunk$set(echo = TRUE, comment = "        ..##")
-library(tidyverse)
-library(reprex)
+#library(tidyverse)
+library(tibble)
 ```
 
 ```{r mem}
-#### 1-params$name
 print(params$name )
 mem_used()/1e6
+```
+system.time vs proc.time()
+```{r system.time}
+# returns dbl[3]
+system.time( r  <- rnorm(1000))
 
+
+{
+begin  <- proc.time()
+r  <- rnorm(1000)
+end  <- proc.time() - begin
+end
+}
+```
+
+```{r}
 
 #### 2-$R_HOME and ENV variables
 # /usr/lib/R
@@ -70,10 +84,21 @@ file.exists("~/dotfiles/.Rprofile")                     # TRUE
 #### 6-.Renviron 
 file.exists(file.path(r_home, "etc", "Renviron.site"))  # TRUE,empty
 file.exists("~/dotfiles/.Renviron")                     # TRUE
+```
+```{r options}
 
-#### 7- list options() (returns <list>)
-t <- tibble(options = options())
+# options() (returns <list>)
+
+t <- tibble(name = names(options()),
+						values = options())
 t
+typeof(pluck(t,2,1))
+typeof(pluck(t,2,2))
+typeof(pluck(t,2,5))
+pluck(t,2,5)
+pluck(t,2,10, 1)
+pluck(t,2,10, 1)
+
 #### TODO
 t %>% tidyr::unnest_wider(options)
 tidyr::unnest_auto(t, options)
@@ -88,11 +113,16 @@ l["pdfviewer"]	  # /usr/bin/xdg-open
 l["keep.source"]  # TRUE
 l["browser"]	 # croutonurlhandler
 
+```
+```{r versions}
+
 #### 8- versions
 packageVersion("rmarkdown") # 1.10
 R.version.string     # 3.5.1
 getwd()                 # ~/code/r_
 list.files()            # list filesin wd
+```
+```{r dependencies}
 
 ##### 9- find dependencies for <pkg>, only pkgs installed.
 #### return list of character vectors, ~15,293 
@@ -180,4 +210,86 @@ base::dir(all.files = TRUE)	 #### include hidden
 base::dir(path = "../r_mp3_files/", all.files = TRUE)	 #### include hidden
 
 base::dir(path = "../r_mp3_files/", all.files = TRUE, recursive = TRUE)	 #### includ directories 
+```
+
+
+R help
+```{r}
+# REF https://csgillespie.github.io/efficientR/set-up.html
+
+?mpg   # mpg is dataset (if loaded)
+?stats  # package
+?reprex # function
+?ggplot   # function
+??reprex  # topic
+??ggplot   # topic 
+??pch      # topic 
+??regression
+
+help.search("pch")  # long form
+
+
+# returns named named chr[]: attr(l, "names")
+l  <- Sys.info()  # Linux 4.4.52 - ....
+t  <- tibble(name = names(l),
+							value = l)
+
+
+list.files(all.files = TRUE) # show hidden too
+
+# ---- 001 monitor -----
+# BIG
+
+elements <- 1e8   # 1e9 and laptop crashes, rebootsS
+X <- as.data.frame(
+        matrix(rnorm(elements), nrow=elements/10)
+)
+
+r1 <- lapply(X,median)
+
+r2 <- parallel::mclapply(X, median)
+
+```
+
+```{r update_packages}
+
+# ---- 002 update  all R packages ----
+#update.packages(ask = FALSE)
+
+
+# ----  003 view all installed R packages? ----
+# at cmd line  which needed?
+# apt-get cache search "^r-*" | sort
+
+```
+
+```{r startup}
+
+# ---- 004 R startup ----
+
+# In this order, R seeks .Rprofile $R_HOME, $HOME, project directory
+?Startup
+R.home() # /usr/lib/R
+site_path = R.home(component = "home") # /usr/lib/R
+fname = file.path(site_path, "etc", "Rprofile.site") # /usr/lib/R/etc/Rprofile.site
+
+file.exists(fname) # True
+```
+
+```{r Rprofile}
+
+file.exists("~/.Rprofile") # True, also
+
+options()
+# 2 sign digits  (3.7)
+options(prompt = "R> ", digits = 2, show.signif.stars = FALSE, continue = "  ")
+
+getOption("repos")  # cran.rstudio.com
+
+fortunes::fortune(50)  # error
+.Last = function() {
+        
+        message("Goodbye at ", date(), "\n")
+}
+.Last()
 ```

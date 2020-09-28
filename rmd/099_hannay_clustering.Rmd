@@ -64,23 +64,7 @@ data(package="HannayIntroStats")
 
 ```{r 12.}
 data(package="cluster")
-# can not find his code
+
 cluster_obj <- kmeans(practice_cluster, centers=2, nstart=25)
-```
-
-```{r 5.2.0.1}
-data("crime_cluster")
-head(crime_cluster)
-n  <- rownames(crime_cluster)
-
-l  <- purrr::map(crime_cluster, ~scale(.x)) 
-
-df  <- as.data.frame(l, row.names = n)
-is.data.frame(df)
-head(df)
-
-cl2  <- StatePlot(2, df)
-help(package="HannayIntroStats")
-
 ```
 

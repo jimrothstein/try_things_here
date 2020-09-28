@@ -34,3 +34,36 @@ f(x <- x+1)
 f(x  <- x+1)
 f(x  <- x+1)
 x
+
+
+#  
+# ======================
+##		ifelse
+# ======================
+ifelse(5>3, "yes", "no")
+
+
+x  <- c(1,5,10)
+# return vector of length(x) and each element 'yes' or 'no'
+ifelse(x > 5, "yes", "no")  # 'no' 'no' 'yes'
+
+
+#  
+# ======================
+##	 unlist()	
+# ======================
+
+x  <- list(1,2,3)
+unlist(x)  # returns vector
+
+x  <- list(c(1,2), c(3,4), c(5,6))
+unlist(x)  # flattens to single vector 1 2 3 4 5 6
+
+
+# SAME 
+x  <- list(list(1,2), c(3,4), c(5,6))
+unlist(x)				# flatten to vector
+
+x  <- list(list("a","b"), c(3,4), c(5,6))
+unlist(x)				# flatten to character vector
+
