@@ -9,6 +9,37 @@ editor_options:
 ###  Begin, simple Z, T
 ###  Also, FAT tail discussion
 
+Need X11
+```{r curve}
+curve(sin, -1, 1)
+
+curve(dnorm, -3, +3)
+
+# CDF - beautiful!
+curve(pnorm, -3, +3)
+curve(pnorm)  # clips the x axis
+
+curve(qnorm)  # indep variable is now alpha, area (0,1)
+```
+
+```{r chi-squared}
+curve(
+			dchisq(x, df=3),
+			xlim=c(0,10),
+			ylim=c(0,1),
+			col="blue"
+)
+
+# use ADD to include 2nd graph
+curve(
+			pchisq(x, df=3),
+			xlim=c(0,10),
+			add=TRUE,
+			col="red"
+)
+```
+
+
 
 #### 00-Given Area(1 tail), find z
 ```{r}

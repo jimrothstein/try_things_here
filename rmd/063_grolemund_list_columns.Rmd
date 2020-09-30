@@ -16,6 +16,64 @@ library(babynames)
 Sys.Date()
 ```
 
+```{r basics}
+# create your own data type?  use class() and attributes
+
+x  <- c(1L, 2L, 3L)
+typeof(x) # integer
+
+# make it Date
+class(x)   <- "Date"
+x
+typeof(x) # STILL an integer
+attributes(x) # only 1
+
+
+```
+factor or categorical variable
+```{r categorical}
+# same x (integer)
+levels(x)  <- c("BLUE", "BROWN", "BLACK")
+class(x)  <- "factor"
+x
+typeof(x)   # STILL an integer
+attributes(x) # now 2!
+```
+
+matrix
+```{r matrix}
+# same x (integer)
+dim(x)  <- c(3,1)
+
+# equivalent way
+# attr(x, "dim")  <- c(3,1)
+
+x
+typeof(x)   # STILL an integer
+attributes(x)  #  now 3!
+
+```
+
+HOW TO MIX data types in 1 container?
+use list
+```{r list}
+l  <- list(a=c(1,2,3), b=c(TRUE, TRUE, FALSE	))
+typeof(l)  # list
+attributes(l) #names
+```
+
+data tables
+```{r table}
+class(l)  <- "data.frame"
+typeof(l) # STILL a list
+attributes(l)   #names and class
+rownames(l)  <- c("1", "2", "3") 
+attributes(l)   # now 3
+l
+
+```
+
+
 create tibble
 ```{r}
 y <- tibble(
