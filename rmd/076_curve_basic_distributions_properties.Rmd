@@ -4,12 +4,14 @@ output: html_notebook
 editor_options: 
   chunk_output_type: console
 ---
-
+* using curve() to explore districtions.
 ## Roughly follows:   OpenInfo
 ###  Begin, simple Z, T
 ###  Also, FAT tail discussion
 
 Need X11
+
+curve() - examples
 ```{r curve}
 curve(sin, -1, 1)
 
