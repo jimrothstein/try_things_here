@@ -1,0 +1,109 @@
+
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+	 
+--- 
+# Spaces, no Tabs
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
+---
+
+REF:   See Rlang Cheatsheet
+---
+othercomments
+---
+
+<!-- 
+set cul   "cursorline
+cc=+1			"colorcolumn is 1 more than tw
+-->
+
+<!--  commments -->
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  
+											comment="      ##",  
+											error=TRUE, 
+											collapse=TRUE) 
+```
+
+<!--  RENDER:  see bottom -->
+
+```{r library, include=FALSE		}
+library(jimTools) 
+``` 
+
+expr()
+```{r begin}
+# a, b are undefined
+# expr() simply stores expression for future evaluation
+e   <- expr(a + b)
+```
+
+
+evaluate e
+```{r evaluat}
+a  <- 1 
+b  <- 2
+eval(e)
+
+a  <- 10
+b   <- 11
+eval(e)
+```
+
+expressions
+```{r b}
+expr(log(e))    # log(e)
+expr(log(!!e))  # log(a + b)
+
+
+expr(log(!!a + b))   # log(10 + b)
+expr(log(!!(a+b)))   # log(21)
+
+# use with care...
+log(!!(a+b))   #   0
+eval(log(!!(a+b)))  #0
+eval(3)							# 3
+```
+
+use eval to get number, result
+```{r get-result}
+
+log(eval(e))   # 1.1
+
+
+# error:
+log(eval(!!e))
+eval(log(e))
+eval(log(!!e))
+```
+
+
+k
+
+
+
+***
+
+```{r knit_exit()} 
+knitr::knit_exit() 
+```
+
+/newpage
+
+```{r render, eval=FALSE	} 
+file <- "" 
+file  <- basename(file) 
+dir <-"rmd"
+
+jimTools::ren_pdf(file,dir)
+jimTools::ren_github(file, dir)
+```

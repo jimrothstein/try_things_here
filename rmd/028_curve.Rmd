@@ -27,7 +27,7 @@ cc=+1			"colorcolumn is 1 more than tw
 
 
 ```{r setup, include=FALSE}
-kexamples.Rmdnitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(jimTools)
 ```
