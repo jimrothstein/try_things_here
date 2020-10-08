@@ -1,4 +1,3 @@
-
 	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
 	 
 --- 
@@ -15,9 +14,6 @@ fontsize: 12pt
 geometry: margin=0.5in,top=0.25in 
 ---
 
----
-othercomments
----
 
 * Checking normality, qq, REF Hannay
    [REF:  hannay](https://faculty.nps.edu/rbassett/_book/continuous-random-variables.html)
@@ -39,6 +35,8 @@ knitr::opts_chunk$set(echo = TRUE,
 
 ```{r library, include=FALSE		}
 library(jimTools) 
+library(tibble)
+library(ggplot2)
 ``` 
 
 
@@ -49,9 +47,10 @@ Create SAMPLE
 ```{r assess_normality}
 # REF:  hannay https://faculty.nps.edu/rbassett/_book/continuous-random-variables.html
 # Chapter 8.5 Assessing Normality
+
 set.seed(2020)
 B  <- 1000
-fake.data  <- rnorm(B) # 100 points
+fake.data  <- rnorm(B) # B points
 
 # B bins
 # exclude 0, 1 (z not finite)
@@ -64,26 +63,56 @@ seq(1/(B+1), B/(B+1), 1/(B+1))
 # histogram
 
 ```
-Some ratios
-```{r ratios}
 
-# Actuals
+Some ratios, fake.data
+```{r ratios}
 sd(fake.data) # 1.12 (vs 1.0 theory)
 
+# Given area to left, what is quantile (value for x)
 quantile(fake.data, 1/4)
+quantile(fake.data, 1/2)
 quantile(fake.data, 3/4)
 
+# find IQR
 quantile(fake.data, 3/4) - quantile(fake.data, 1/4)
 IQR(fake.data) # 1.3 (vs 1.3 theory
 
+# ratio
 IQR(fake.data)/sd(fake.data)   # 1.16 (vs 1.3 theory)
-# 
+```
+
+
+scale, repeat for scaled fake.data
+```{r scale}
+z  <- scale(fake.data)
+sd(z)
+
+# quantiles
+quantile(z, 1/4)
+quantile(z, 1/2)
+quantile(z, 3/4)
+
+
+
+# find IRQ
+quantile(z,probs=c(3/4)) - quantile(z, probs=c(1/4)) 
+IQR(z)
+# (theory) because (look at CDF-1 graph)
+qnorm(p = c(3/4)) - qnorm(p = c(1/4))
+
+
+# ratio
+IQR(z)/sd(z)
+```
+
+qq
 ```{r plot}
 t  <- tibble(fake.data = fake.data)
 
 g  <- ggplot(t, aes(sample=fake.data) ) +
-	stat_qq() +
-	stat_qq_line()
+  stat_qq() +
+  stat_qq_line()
+
 # save last plot
 ggsave("~/Downloads/print_and_delete/qq.png", device = "png")
 ```

@@ -10,16 +10,12 @@ output:
 editor_options: 
   chunk_output_type: console
 ---
-### Basic sampling, percentile, quartile
-* Basic sampling verbs:  rnorm, sample, rep, percentile, quartile
-  [source Rafal Chapter 14:](https://rafalab.github.io/dsbook/probability.html#discrete-probability)
 
-<!-- 
-set cul   "cursorline
-cc=+1			"colorcolumn is 1 more than tw
--->
+## Basic sampling, 
+* Verbs:   sample, rep, repetition
+* Collect all examples HERE
+* [source Rafal Chapter 14:](https://rafalab.github.io/dsbook/probability.html#discrete-probability)
 
-<!--  commments -->
 
 ```{r setup, include=FALSE		}
 knitr::opts_chunk$set(echo = TRUE,  
@@ -35,7 +31,7 @@ library(jimTools)
 ``` 
 
 \newpage
-rep
+replicate vector
 ```{r rep}
 # return a vector, containing x  3 times (3 elments)
 rep(x=5,times = 3)  # 5 5 5	
@@ -44,7 +40,7 @@ rep(x=5,times = 3)  # 5 5 5
 v <- rep(x=letters[10:11], times=6)
 ```
 
-seq
+generate seq
 ```{r seq}
 seq(from = 1, to = 10, by=0.1)
 
@@ -53,34 +49,54 @@ x
 rep(x, 3) # 1...10 1 ...10  1...10
 ```
 
-sample
+take a sample, returns vector
 ```{r sample}
-
 sample(x=c(0,1), size= 7, replace=TRUE)
 
 sample(x=c("blue","red"), size=20, replace=TRUE, prob=c(0.8,0.2))
 
-#### 0040_matrix()
+# note:
 m <- matrix(data=1:100, nrow=25) # fills 1st column, then second ...
-m
+head(m)
 
-# 7 or 11
+# find all 7 or 11
 sample(1:6,2)
-
+```
+game
+```{r game}
 # game:  roll 2 dice, 7 or 11?
 # construct matrix of 2 cols, so simulate throwing 2 die, 50x.
+
 B  <- 50  # experiments (rows)
-n  <- 2   # per die experiment
+n  <- 2   # each experment, 2 dice
 
 s <- sample(1:6,B*n, replace=TRUE) # returns vector
 m <- matrix(s, nrow= B, ncol=n)
-m
+head(m)
 ```
+
 ```{r norm}
 
 #### 0050_from_norm
 df <- data.frame(matrix(rnorm(1000), ncol =10))
 head(df)	
+
+```
+```{r coin flip1}
+N  <- 10000
+roll <- sample(x=c(-1,1),size=N,replace=TRUE, prob=c(0.5,0.5))
+roll  <- as.integer(roll)
+is_integer(roll)
+is_vector(roll)# T
+is_atomic(roll)
+str(roll)
+
+
+t  <- tibble(raw =roll,
+	     cum_total = cumsum(raw))
+print(t, n=20)
+tail(t)
+plot( x=1:N, y=t$cum_total)
 
 ```
 ```{r coin_flip}
@@ -131,7 +147,7 @@ knitr::knit_exit()
 ```
 
 ```{r render, eval=FALSE	} 
-file <- "" 
+file <- "rmd/050_basic_sampling.Rmd" 
 file  <- basename(file) 
 dir <-"rmd"
 

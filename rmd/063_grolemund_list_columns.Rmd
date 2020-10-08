@@ -169,6 +169,8 @@ m
 ```
 
 BEGIN HERBEGIN HEREE.
+```{r}
+
 # Tibble does it better than df.
 y <- tibble(
 		a = c(1.0, 2.0, 3.14),
@@ -183,6 +185,13 @@ R has tools for atomic vectors and for data tables.
 Less so for lists.
 
 dplyr::mutate: tibble->tibble;   
+```{r}
+# challenge:   convert to 10 x 3 tibble, all int[]
+test <- tibble(a = 1:10, b = tibble(x = 11:20, y = 21:30))
+typeof(test)
+str(test)
+```
+
 sqrt: vector -> dbl vector
 ```{r}
 y %>% mutate(asc_a =  sqrt(a)) %>% print()

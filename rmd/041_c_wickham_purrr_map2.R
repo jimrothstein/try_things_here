@@ -84,3 +84,23 @@ str(list_named)
 plots <- map2(.x = df, .y = names, .f = f)
 
 map2( .x = df, .y=countries, ~ggsave(.x, plot= , device="png")
+
+
+# =============================
+# simple split , map example?
+# =============================
+mtcars %>% 
+  split(.$cyl)->data
+data
+
+# not a summary, why do this?
+# each group, add count column  with number of entries of this am.
+purrr::map(data,~dplyr::add_count(.,am))->op1
+op1
+
+# this is gives summary:
+purrr::map(data,~dplyr::count(.,am))->op1
+op1
+
+purrr::map(data,~dplyr::filter(.,mpg>=20))->op2
+op2

@@ -5,6 +5,8 @@ editor_options:
   chunk_output_type: console
 ---
 * using curve() to explore districtions.
+
+* MOVE 028_  here
 ## Roughly follows:   OpenInfo
 ###  Begin, simple Z, T
 ###  Also, FAT tail discussion
@@ -17,9 +19,11 @@ curve(sin, -1, 1)
 
 curve(dnorm, -3, +3)
 
+
 # CDF - beautiful!
 curve(pnorm, -3, +3)
 curve(pnorm)  # clips the x axis
+
 
 curve(qnorm)  # indep variable is now alpha, area (0,1)
 ```
