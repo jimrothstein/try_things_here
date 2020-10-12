@@ -10,31 +10,32 @@ fontsize: 12pt
 
 ```{r setup}
 knitr::opts_chunk$set(echo = TRUE, comment = "        ..##")
-#library(tidyverse)
+knitr::current_input()  # NUL
 library(tibble)
+library(tidyr)
+library(purrr)
+library(dplyr)
+library(magrittr)
 ```
 
 ```{r mem}
-print(params$name )
 mem_used()/1e6
+xfun::is_unix()
 ```
 system.time vs proc.time()
 ```{r system.time}
 # returns dbl[3]
 system.time( r  <- rnorm(1000))
-
-
-{
-begin  <- proc.time()
-r  <- rnorm(1000)
-end  <- proc.time() - begin
-end
-}
+  {
+    begin  <- proc.time()
+    r  <- rnorm(1000)
+    end  <- proc.time() - begin
+    end
+  }
 ```
 
+ENV variables
 ```{r}
-
-#### 2-$R_HOME and ENV variables
 # /usr/lib/R
 (r_home <-R.home(component="home"))
 Sys.getenv("R_HOME") 			# /usr/lib/R ; where R installed
@@ -42,13 +43,14 @@ Sys.getenv("R_LIBS_USER") # ~R/x86 .../4.0
 Sys.getenv("R_HIST_SIZE")
 Sys.getenv("R_BROWSER")   # croutonurlhandler
 
-Sys.getenv()		# all all env
+# too lengthy
+if  (FALSE) Sys.getenv()		
 
-#### 3-search(), vector: gives all env + attached pkgs
+# search(), vector: gives all env + attached pkgs
 (t_search <- search())
 ```
+find package locations
 ```{r pkg_location}
-# returns full path to package location
 base::system.file(package="base")
 base::system.file(package="tibble")
 ```
@@ -59,39 +61,84 @@ base::system.file(package="tibble")
 
 t_libPaths <- tibble(.libPaths()) %>% 
   mutate(
-    purpose =  c("added packages", ".Library.site", ".Library.site", "base R pkgs"),  
-    quantity  = c("many", "Empty", "Empty", "many")  ,
-	env_var = c("R_LIBS_USER","","","R_LIBS?"),
-    aka = c("",".Library.site", ".Library.site", ".Library.site, .Library")
-       )
+  purpose =  c("added packages", 
+               ".Library.site", 
+               ".Library.site", 
+               "base R pkgs"),  
+
+  quantity  = c("many", "Empty", "Empty", "many")  ,
+  env_var = c("R_LIBS_USER","","","R_LIBS?"),
+  aka = c("",".Library.site", ".Library.site", ".Library.site, .Library"))
+
 t_libPaths
 ```
 
-```{r}
-#### another way to list ALL pkgs
-lapply(.libPaths(), dir)   # dir() returns <list>
+other ways to list all pkgs
+```{r all_pkgs}
+# too much output
+if (FALSE) {
+  #### another way to list ALL pkgs
+  # For each element of .libPaths(), dir() returns list of ALL files/directories.
+  lapply(.libPaths(), dir)   # dir() returns <list>
 
-#### same?
-#### returns <list> of char[]	
-lapply(.libPaths(), list.dirs, recursive = FALSE)
+  #### returns <list> of char[]	
+  lapply(.libPaths(), list.dirs, recursive = FALSE)
+}
 
-#### 5-.Rprofile
+```
+
+```{r .Rprofile}
 file.exists(
-  file.path(r_home, "etc", "Rprofile.site"))			# TRUE
+  file.path(r_home, 
+  "etc", 
+  "Rprofile.site")
+)	
 
 file.exists("~/dotfiles/.Rprofile")                     # TRUE
+file.exists("~/.Rprofile")
+```
 
-#### 6-.Renviron 
+.Renviron
+```{r .Renviron}
 file.exists(file.path(r_home, "etc", "Renviron.site"))  # TRUE,empty
 file.exists("~/dotfiles/.Renviron")                     # TRUE
+file.exists("~/.Renviron")                     # TRUE
+
 ```
+options()
 ```{r options}
-
+library(purrr)
+library(dplyr)
 # options() (returns <list>)
+# Tibble 87 x 2.  values is list-column.
+# Goal:  longer tibble, with 1 row for each value
 
-t <- tibble(name = names(options()),
-						values = options())
-t
+l  <- options()
+# find TRUE
+
+
+l2  <- purrr::discard(l, ~is_function(.x))
+l2
+l3   <- purrr::discard(l2, ~(typeof(.x) == "language"))
+length(l3)
+
+l3[31:40]
+l  <- l3
+t <- tibble(name = names(l), values = l)
+map(t$values, ~typeof(pluck(1)))
+t$typeof  <- typeof(pluck(t$values, 1)) 
+head(t)
+
+# Problem, options()[[5]] is 'closure' and not a vector, list.
+t %>% tidyr::unchop(values)
+
+options() %>% dplyr::filter(rlang::is_list(values))
+
+
+typeof(options()[[5]])
+t %>% unchop(values)
+
+
 typeof(pluck(t,2,1))
 typeof(pluck(t,2,2))
 typeof(pluck(t,2,5))
@@ -114,17 +161,20 @@ l["keep.source"]  # TRUE
 l["browser"]	 # croutonurlhandler
 
 ```
+
+Versions
 ```{r versions}
 
-#### 8- versions
 packageVersion("rmarkdown") # 1.10
 R.version.string     # 3.5.1
 getwd()                 # ~/code/r_
 list.files()            # list filesin wd
+dir()
 ```
+Dependncies
 ```{r dependencies}
 
-##### 9- find dependencies for <pkg>, only pkgs installed.
+# For each installed pkg, find its dependencies
 #### return list of character vectors, ~15,293 
 	
 l <- tools::package_dependencies(
@@ -134,22 +184,20 @@ l <- tools::package_dependencies(
 l
 
 # And "tibble" is dependenat upon:
-l <- tools::package_dependencies(
-							"tibble",
-							reverse=FALSE		)
+l <- tools::package_dependencies("tibble", reverse=FALSE)
+str(l) # named list, 1 elemnt named tibble,  a chr[12]
 l
-#### dep is just content , a chr[]
-	t  <- tibble(pkg = names(l), dep= purrr::pluck(l ))
-	t
 
+t  <- tibble(pkg=l$tibble)
+t
 ##### 010-for <pkg>, find packages dependent upon it
 
 
+```
+```{r remove_package}
+if (FALSE) remove.packages("cellranger")
 
-##	remove a pacakge
-	##	not run
-#remove.packages("cellranger")
-
+#### BEGIN HERE!
 
 ######  011_update all packages - 
 # available.packages()  	# A LOT!
@@ -293,3 +341,39 @@ fortunes::fortune(50)  # error
 }
 .Last()
 ```
+```{r from_tan}
+library(tidyverse)
+l <- options() %>% 
+  list() %>% 
+  tibble() %>% 
+  unnest_longer(1,indices_to = "option",values_to = "value")
+l
+```
+```{r enframe}
+library(tibble)
+library(purrr)
+options()
+# list  -> nested tibble?
+t  <- tibble::enframe(options())
+head(t)
+
+l  <- map(t$value, ~typeof(.))
+l[41:60]
+c   <- map_chr(t$value, ~typeof(.))
+c
+# add column for typeof
+t$c  <- c
+head(t)
+#
+# define process!
+# process  <- function(type){
+#   if (type == logical)
+#   if (type == closure)
+#     ...
+# 
+ 
+map(t$value, ~process)
+t$value[[1]]
+```
+
+
