@@ -39,9 +39,6 @@ library(ggplot2)
 ``` 
 
 
-```{r begin}
-```
-
 Create SAMPLE
 ```{r assess_normality}
 # REF:  hannay https://faculty.nps.edu/rbassett/_book/continuous-random-variables.html
@@ -54,8 +51,6 @@ fake.data  <- rnorm(B) # B points
 # B bins
 # exclude 0, 1 (z not finite)
 seq(1/(B+1), B/(B+1), 1/(B+1))
-
-
 ```
 ```{r histogram}
 

@@ -49,9 +49,13 @@ hist(
 ```
 Be lazy, sample N=50
 ```{r}
+set.seed(1942)
 N=50
-# 5.43, close!
-mean(sample(heights, replace=FALSE , size=N))
+one_sample_x  <- sample(heights, replace = FALSE  , size=N)
+
+mean(one_sample_x)  #5.53 
+# this just sd of sample, NOT sd of means
+sd(one_sample_x)   # 0.327  
 
 ```
 
@@ -65,9 +69,13 @@ sample_mean  <- function(N=50){
   mean(sample(heights, replace=FALSE , size=N))
 }
 
+# store is set of mean heights
 store  <- replicate(B, sample_mean(N))
 mean(store) # 5.49
 sd(store)  # 0.0486 (vs 0.047 - theory)_
+
+theory_sd  <- sqrt( (1/3)^2/N )
+theory_sd   # 0.0471
 hist(
      store, 
      col='coral', 
