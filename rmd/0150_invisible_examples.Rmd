@@ -1,0 +1,54 @@
+<!--
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+-->	 
+--- 
+# Spaces, no Tabs
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
+---
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  
+											comment="      ##",  
+											error=TRUE, 
+											collapse=TRUE) 
+```
+
+```{r library, include=FALSE		}
+library(jimTools) 
+``` 
+
+     This function can be useful when it is desired to have functions
+     return values which **can be assigned,** but which **do not print** when they
+     are not assigned.
+```{r invisible}
+
+f  <- function(x) {
+  return(x)}
+
+# not assigned, but prints
+f(2)
+
+# still assigned normally
+y  <- f(2)
+y
+
+
+# SAME, but do NOT send to console
+g  <- function(x) {
+  invisible(x)}
+
+# not assigned, no print
+g(3)
+
+y  <- g(3)
+y
+```

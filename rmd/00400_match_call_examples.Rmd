@@ -1,0 +1,138 @@
+
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+	 
+--- 
+# Spaces, no Tabs
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
+---
+
+---
+othercomments
+---
+
+<!-- 
+set cul   "cursorline
+cc=+1			"colorcolumn is 1 more than tw
+-->
+
+<!--  commments -->
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  
+											comment="      ##",  
+											error=TRUE, 
+											collapse=TRUE) 
+```
+
+<!--  RENDER:  see bottom -->
+
+```{r library, include=FALSE		}
+library(jimTools) 
+``` 
+
+match.call() 
+* use inside a function.
+* returns list.
+* [1] is name of function.
+* [2:n] are UNevaluated args.  (ie symbols are ok)
+```{r match.call}
+g  <- function(x, y, z){
+  return(as.list(match.call()))
+}
+
+# Examples
+g(1,2,3)
+g(a,b,c)
+
+# Study
+l  <- g(a,b,c)
+l
+str(l)
+
+# Example
+l  <- g(1+3, b, c+0)
+l
+str(l)
+
+
+match.call , in real life
+```{r begin}
+f <- function(x, y, z) {
+  do.call("sum", as.list(match.call()[-1])) 
+}
+
+f(1, 2, 3)
+```
+
+list
+```{r list}
+l  <- list(a=1, b=2)
+l
+l[-1]   # b only
+l[-2]   # a only
+l[c(-1)]  # b only
+
+# hmmm?
+l[c(-1,-2)]
+l[-2:-1]
+l[-3:-1]
+l[0]
+
+```
+random:
+How to use unicode!
+```{r random}
+letters <- c(1, 2, 3, 4)
+names(letters) <- c("a", "b", "c", "\U1F409")
+letters
+```
+match.arg, limit possible input values
+```{r match.arg}
+f  <- function(type=c("a", "b"))
+  type  <- match.arg(type)
+
+(f("b"))  # chr[]   "b"
+(f("c")) #Error, not "a" or "b"
+```
+
+```{r UseMethod}
+f  <- function(x) {
+  UseMethod(x) 
+}
+
+f.character <- function(x) print("character")
+f.numeric  <- function(x) print("numeric")
+
+f("a")
+f(2)
+```
+
+
+
+
+
+***
+
+```{r knit_exit()} 
+knitr::knit_exit() 
+```
+
+/newpage
+
+```{r render, eval=FALSE	} 
+file <- "" 
+file  <- basename(file) 
+dir <-"rmd"
+
+jimTools::ren_pdf(file,dir)
+jimTools::ren_github(file, dir)
+```

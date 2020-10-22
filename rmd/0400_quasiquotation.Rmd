@@ -17,6 +17,14 @@ geometry: margin=0.5in,top=0.25in
 
 REF:   See Rlang Cheatsheet
 REF:   Advr v2  Chaptr 17+
+REF:  (defuse)[https://rlang.r-lib.org/reference/nse-defuse.html]
+
+practice for:
+* expr()
+* enexpr()
+* plural forms: exprs(), enexprs()
+
+* sym()
 
 
 ```{r setup, include=FALSE		}
@@ -30,6 +38,8 @@ knitr::opts_chunk$set(echo = TRUE,
 
 ```{r library, include=FALSE		}
 library(jimTools) 
+
+get_typeof  <- function(x) typeof(x)
 ``` 
 
 expr()
@@ -72,7 +82,7 @@ a few properties of expr()
 ```{r expr_are_lists}
 f  <- expr(f(x=1, y=2))
 f
-typeof(f) # language
+get_typeof(f)  # language
 
 # add element
 f$z  <- 3
@@ -152,9 +162,64 @@ log(eval(!!e))
 eval(log(e))
 eval(log(!!e))
 ```
+more fun with expr() symbol
+```{r symbol}
+s  <- expr(syb)
+get_typeof(s)  # symbol
+
+s <-expr(x)
+typeof(s)   # symbol
+typeof(expr(x))  # symbol
+
+get_typeof(expr(5)) # double
+
+get_typeof( d  <-  expr(5)) # double
+get_typeof(d) #double
+ 
+get_typeof(c  <- expr("5")) # character
+
+get_typeof(s  <- expr(c(x,y))) # language
+x  <- 2
+y   <- 3
+eval(s)  # 2 3
+
+```
+```{r plurals}
+
+z  <- exprs(several, such, symbols)
+get_typeof(z)  # language
+get_typeof(z[[1]]) # symbol
+
+```
+
+capture expr PLUS env
+```{r quo}
+quo(letters)
+q  <- quo(x)
+x  <- 1
+eval(!!q)
+
+```
+create sym and call 
+```{r call}
+# create sym for y
+expr(y)
+sym("y")
+
+c  <- expr(mean(y)) 
+c
+
+get_typeof(c)
+c  <- expr(f(1,2,3))
+c
+get_typeof(c)
+
+c  <- call("mean", y, na.rm=TRUE)
+get_typeof(c)
 
 
-k
+```
+
 
 
 

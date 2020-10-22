@@ -364,6 +364,27 @@ c
 # add column for typeof
 t$c  <- c
 head(t)
+
+# examine t$value[[5]] # closure
+t$value[[5]]
+
+
+# make it expr
+z  <- rlang::expr(t$value[[5]])
+# return original state 
+eval(z)
+
+# easier?
+get_typeof  <- function(o) {
+  typeof(o)}
+get_typeof("a")
+get_typeof(z)
+get_typeof(t$value[[5]])
+get_typeof(function(x) {x})  # closure
+
+map_chr(t$value, ~get_typeof(.))
+
+
 #
 # define process!
 # process  <- function(type){

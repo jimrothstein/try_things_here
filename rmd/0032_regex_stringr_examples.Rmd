@@ -14,13 +14,14 @@ editor_options:
 
 ### CONSOLIDATE here:   regex,stringr (+ related testthat)
 ### some REQUIREs  X11 
+### FOR fs::   see 066_
 ### REF:   
 ###		stringr & regex cheatsheet (rstudio)
 ###   stat545.com/block028_character-data.html
 ###		JENNYBC
 ### =====================================
 
-#### 000_setup
+ 000_setup
 ```{r setup, include=FALSE}
 # collapse=TRUE, combines code and output one block
 knitr::opts_chunk$set(echo = TRUE, 
@@ -32,14 +33,13 @@ library(here)
 library(jimTools)
 ```
 
-To remove whitespace
 USE:  base::trimws()
 ```{r}
 x <- c(" hello", " hello ", "hello ")
 base::trimws(x)
 ```
 
-#### 002_basics_using HTML (see stringr cheat)
+002_basics_using HTML (see stringr cheat)
 ```{r basics, eval=FALSE, echo=FALSE, include=FALSE}
 # from cheatsheet, render as html (cute!)
 
@@ -51,7 +51,7 @@ see("[[:blank:]]")
 see("[[:space:]]")    # note!   \n  is a 'space' charcter, 
 ```
 
-#### 003_string_is_a_string  !# 
+003_string_is_a_string  !# 
 ```{r}
 info  <- function(x) {
 
@@ -70,7 +70,7 @@ info(c("a","aa"))
 ``` 
 
 
-#### 003_how_R_sees_string_AFTER_parsing# 
+003_how_R_sees_string_AFTER_parsing# 
 ```{r}
 # writeLines(<type this>)   #     R sees this is regex	
 
@@ -82,7 +82,7 @@ writeLines("[[:alpha:]]") # [[:alpha:]]
 
 
 
-#### 002A-stringr, detect META char
+ 002A-stringr, detect META char
 ```{r}
 s <- "abc^def^^" 
 stringr::str_detect(s, "\\^+") # TRUE
@@ -93,7 +93,7 @@ stringr::str_replace_all(s, "\\^+", "_")
 ```
 
 
-#### 0004_find_replace_spaces
+ 0004_find_replace_spaces
 ```{r}
 s <- "one      two three "
 stringr::str_view_all(s, "[[:blank:]]+")
@@ -102,13 +102,13 @@ stringr::str_view_all(s, "[[:blank:]]+")
 stringr::str_replace_all(s, "[[:blank:]]+", "_")
 ```
 
-#### 0005_find_replace_lead_digits
+ 0005_find_replace_lead_digits
 ```{r}
 s <- "012345_junk_99"
 stringr::str_replace_all(s, "^[[:digit:]]{4,6}", "")
 ```
 
-#### 0006_test_that
+ 0006_test_that
 ```{r}
 s <- "012345_junk_99"
 stringr::str_replace_all(s, "^[[:digit:]]{4,6}", "")
@@ -136,7 +136,7 @@ testthat::test_that("remove leading digits", {
 )
 ```
 
-####010_regex_in_R_help
+010_regex_in_R_help
 ```{r}
 help.search("^geom_[abcd]",
 			package="ggplot2")
@@ -145,7 +145,7 @@ help.search("^geom_[abcd]",
 ```
 
 
-####007_replace_multiple_dashes
+007_replace_multiple_dashes
 ```{r}
 # replace one or more, 
 s <- "a____b_c__d_"
@@ -171,7 +171,7 @@ stringr::str_replace_all(s, "'",'"')  # "a\"b\"c"   is what R displays
 s <- "one_NA_two_NAME"
 stringr::str_replace_all(s, "NA[^[[:alnum:]]]","")  # "one_two_NAME"
 ```
-#### 0010.tidyr::extract.with regex
+ 0010.tidyr::extract.with regex
 ```{r tidry::extract}
 t <- tribble(
 			 ~code, 
@@ -183,7 +183,7 @@ t %>% tidyr::extract(code, c("season","number"),
 					 regex="S(.*)E(.*)",convert=TRUE,
 			  			remove=FALSE)  
 ```
-####008_regex_tibble_column
+008_regex_tibble_column
 ```{r}
 t <- tibble(original = c("one_two____three",
 						 "NA_john_denver"))
@@ -195,7 +195,7 @@ t
 #rmarkdown::render("032_regex_stringr_examples.Rmd", output_format="pdf_document", output_dir="pdf")
 ```
 
-#### misc stringr:: practice ####
+ misc stringr:: practice 
 ```{r eval=FALSE}
 commas <- function(...) stringr::str_c(..., collapse = ", ")
 commas1 <- function(...) stringr::str_c(...)
@@ -230,9 +230,9 @@ what_is_it(y)
 y
 str(y)
 
-#################
+#############
 # ---- fruit ----
-#################
+#############
 fruit    # character vector
 what_is_it(fruit)  # returns char vector, size 80
 stringr::str_detect(string=fruit, pattern="fruit") # returns logical 
@@ -253,7 +253,7 @@ str_c(my_fruit,collapse= " ")
 str_c(my_fruit,collapse= ".")
 str_c(my_fruit,collapse= "|")
 ```
-#### 0009_EXPERIMENTS,  NASTY string replacements
+ 0009_EXPERIMENTS,  NASTY string replacements
 ```{r}
 
 {
@@ -285,7 +285,7 @@ str_c(my_fruit,collapse= "|")
 stop()
 ```
 
-#### stringr, grepl (need X11, html)
+ stringr, grepl (need X11, html)
 ```{r}
 val <- function(r) stringr::str_view_all("1.11.111.011", r)
 val("[1]{2}")
@@ -333,10 +333,10 @@ as.character(c(1,"2","a1","1",00,01,11,000,010,011))
 
 ```
 
-#### STRINGR
+ STRINGR
 # ============
 
-#### 001-stringr, regex:  find patterns
+ 001-stringr, regex:  find patterns
 ```{r}
 
 # view matches (needs browser, html)
@@ -347,12 +347,12 @@ stringr::str_view_all(s, "a{3}")
 stringr::str_detect(s,"a{3}")
 ```
 
-#### 002-stringr, regex practice
+ 002-stringr, regex practice
 ```{r}
 
 ```
 
-#### 002A-stringr, detect META char
+ 002A-stringr, detect META char
 ```{r}
 s <- "abc^def^^" 
 stringr::str_detect(s, "\\^+") # TRUE
@@ -363,19 +363,29 @@ stringr::str_replace_all(s, "\\^+", "_")
 
 
 ```
-#### 003 stringr, remove number
+ 003 stringr, remove number
 ```{r}
 # remove prefix
 s <- "00001_file"
 s <- stringr::str_remove(s,pattern = "^[:digit:]{4,6}")
 s
 
+```
+add a prefix to string, prepend
+```{r prepend}
+
 # prepend prefix
 s <- stringr::str_c("00001",s)
 s
+
+
+# Prefix: Exammple 2
+old <- "old_name"
+prefix  <- "0"
+stringr::str_c(prefix, old)
 ```
 
-####004_stringr practice with tribble - practice
+004_stringr practice with tribble - practice
 ```{r}
 toy <- tribble(
   ~x,
@@ -393,17 +403,17 @@ toy %>% mutate(new = stringr::str_remove(x,  "^[:digit:]{4,6}"))
 ```{r}
 
 
-#### 0000_PATH (TO DO:  should not need)
+ 0000_PATH (TO DO:  should not need)
 setwd("~/code/r_try_things_here")
 getwd()
 here::here()
 
-#### 0001_function
+ 0001_function
 # What does terminal think?
 get_terminal_dir <- function(){ list(proj_path(), proj_get() )}
 get_terminal_dir()
 
-##### 0010_simple cleaning example ----
+# 0010_simple cleaning example ----
 # =============================
 t <- tibble::tibble(original = c("one_two____three", "NA_john_denver"))
 t

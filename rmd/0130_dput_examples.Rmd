@@ -1,6 +1,6 @@
-
+<!--
 	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
-	 
+-->	 
 --- 
 # Spaces, no Tabs
 title: Template for .Rmd 
@@ -15,14 +15,6 @@ fontsize: 12pt
 geometry: margin=0.5in,top=0.25in 
 ---
 
-
-<!-- 
-set cul   "cursorline
-cc=+1			"colorcolumn is 1 more than tw
--->
-
-<!--  commments -->
-
 ```{r setup, include=FALSE		}
 knitr::opts_chunk$set(echo = TRUE,  
 											comment="      ##",  
@@ -30,14 +22,50 @@ knitr::opts_chunk$set(echo = TRUE,
 											collapse=TRUE) 
 ```
 
-<!--  RENDER:  see bottom -->
-
 ```{r library, include=FALSE		}
 library(jimTools) 
 ``` 
 
 
-```{r begin}
+dput:  
+```{r dput}
+test <- data.frame(x = 1, y = 1)
+test
+typeof(test)  # list
+
+# structure
+output <- dput(test) # output is to console
+output
+typeof(output)  # list
+
+# write structure to file
+if (FALSE )
+  dput(test, "junk.txt")
+
+
+# capture.output()
+v  <- capture.output(dput(test))
+v  
+typeof(v) # char[]
+
+# collapse to single ch[]
+paste0(v, collapse="/n")
+
+
+# function?
+# as chr[] vector
+capture.output(dput(paste0))
+
+# single chr[]
+s  <- paste0(capture.output(dput(paste0)), collapse = "/n")
+s
+
+```
+
+```{r dput_expr}
+z  <- expr(dput(test))
+z
+c  <- eval(z)
 ```
 
 ***
@@ -49,7 +77,7 @@ knitr::knit_exit()
 /newpage
 
 ```{r render, eval=FALSE	} 
-file <- "junk.Rmd" 
+file <- "" 
 file  <- basename(file) 
 dir <-"rmd"
 

@@ -36,6 +36,14 @@ curve(
 			col="blue"
 )
 
+curve(
+			dchisq(x, df=6),
+			xlim=c(0,10),
+			ylim=c(0,1),
+      add=TRUE,
+			col="green"
+)
+
 # use ADD to include 2nd graph
 curve(
 			pchisq(x, df=3),

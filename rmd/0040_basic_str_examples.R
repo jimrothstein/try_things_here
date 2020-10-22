@@ -1,24 +1,18 @@
-# 040_jennybc_stat_purrr_tutorial
+# rmd/040_basic_str_examples.R 
 
-rm(list=ls())
-
+# ===================================================
+# FUTURE
+#   BASIC str( X, max.level, vec.length)  examples.
 # see:
-# 
 # http://stat545.com/block006_care-feeding-data.html
+# ===================================================
 
 library(purrr)
 library(repurrrsive)
 library(listviewer)
 
-# play with map
-(z <- map (c(4,16,64), sqrt))  # apply function to vector, always returns list
-str(z, max.level = 1)   # a list of 3, each num
 
-
-#######################
-able3 # tb rates
-
-?repurrrsivi
+# Clean up
 str(got_chars, max.level = 1)
 str(got_chars[1], max.level = 2)        # 1st character, 
 str(got_chars[1]$titles, max.level = 2)        # 1st character, 

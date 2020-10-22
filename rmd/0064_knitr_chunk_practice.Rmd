@@ -24,6 +24,7 @@ include[TRUE] print output
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,  comment="      ##", z=TRUE, collapse=TRUE)
 library(knitr)
+library(jimTools)
 ```
 
 ## 1-evaluate, but include no output
@@ -87,6 +88,21 @@ print("two")
 str(knitr::opts_chunk$get())
 ```
 
+
+
+21-knitr::read_chunk from external .R file WORKS!
+[REF:] (https://bookdown.org/yihui/rmarkdown-cookbook/read-chunk.html)
+```{r read, cache=FALSE }
+  knitr::read_chunk('~/code/r_try_things_here/rmd/file_for_read_chunk.R')
+
+```
+
+22-test_a
+```{r, test_a}
+
+```
+
+
 STop
 ```{r}
 knitr::knit_exit()
@@ -104,4 +120,5 @@ render from code, to pdf
 rmarkdown::render(
 	"~/code/r_try_things_here/064_knitr_chunk_practice.html", 
 	rmarkdown::pdf_document()) 
+jimTools::ren_pdf("064_knitr_chunk_practice.Rmd", "rmd")
 ```
