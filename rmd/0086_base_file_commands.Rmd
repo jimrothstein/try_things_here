@@ -1,0 +1,61 @@
+
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+	 
+--- 
+# Spaces, no Tabs
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
+---
+
+## base:: files and dir commands
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  
+											comment="      ##",  
+											error=TRUE, 
+											collapse=TRUE) 
+library(jimTools) 
+```
+
+<!--  RENDER:  see bottom -->
+
+
+base:: commands (why use fs:: ?)
+```{r begin}
+list.files("./rmd", pattern="*.Rmd")
+list.files("./rmd", full.names = TRUE ,pattern="*.Rmd")
+
+if (FALSE)
+  # file.rename()
+  # file.move()
+  # file.create()
+  # basename()
+  # dirname()
+  #
+  # list.dirs()
+  # dir()
+```
+
+***
+
+```{r knit_exit()} 
+knitr::knit_exit() 
+```
+
+/newpage
+
+```{r render, eval=FALSE	} 
+file <- "" 
+file  <- basename(file) 
+dir <-"rmd"
+
+jimTools::ren_pdf(file,dir)
+jimTools::ren_github(file, dir)
+```

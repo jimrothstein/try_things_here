@@ -171,6 +171,9 @@ stringr::str_replace_all(s, "'",'"')  # "a\"b\"c"   is what R displays
 s <- "one_NA_two_NAME"
 stringr::str_replace_all(s, "NA[^[[:alnum:]]]","")  # "one_two_NAME"
 ```
+
+
+
  0010.tidyr::extract.with regex
 ```{r tidry::extract}
 t <- tribble(
@@ -396,6 +399,33 @@ toy <- tribble(
 
 # new cleaner col
 toy %>% mutate(new = stringr::str_remove(x,  "^[:digit:]{4,6}"))
+```
+
+
+Extract D from string "Suzanne Bonimizi (D)"
+```{r}
+party  <- function(str=NULL, pat="\\(.\\)"){
+  # extract "(.)", single char surrounded by paratheses
+ x  <-  stringr::str_extract(str,pat)
+
+# from x, extract the upper case letter D, R , I ...
+y  <- stringr::str_extract(x, "[:upper:]")
+return(y)
+}
+
+
+str = "Suzanne Bonimizi (D)"
+party(str)
+party(str, pat)
+
+str = "Bernie (I)"
+
+# fail, 2 letters
+str = "Justin A (LI)"
+
+str = "mark meadows (R)"
+party(str,pat)
+
 ```
 
 ###  BELOW:   Development work for pkg_mp3_files

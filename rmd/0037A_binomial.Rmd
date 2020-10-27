@@ -25,3 +25,34 @@ t %>% ggplot(aes(x=line, y=run_avg)) +
 	
 ```
 
+odds choosing 6 out 9 Catholic justices?
+```{r SCOTUS}
+# Catholics = 23% of US
+# prob = 0.23
+# n = 9
+# k = 6 successes
+
+# exactly 6 ,   0.00568
+dbinom(x=6, size=9, prob=0.23)
+
+# exactly 5 ,   0.0285
+dbinom(x=5, size=9, prob=0.23)
+pbinom
+```
+
+ 
+odds gettin at least 6,   (ie 6 + 7 + 9)
+```{r at_least}
+dbinom(6:9, size=9, prob=0.23)
+
+# cum odds
+# 0.00646 (P[X >= 6)
+sum( dbinom(6:9, size=9, prob=0.23))
+```
+
+odds throw N coins and all N are heads?
+```{r}
+# if N=7, prob = .00781
+dbinom(x=7, size=7, prob=0.5)
+```
+
