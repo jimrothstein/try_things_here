@@ -1,0 +1,360 @@
+
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+	 
+--- 
+# Spaces, no Tabs
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
+---
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  
+											comment="      ##",  
+											error=TRUE, 
+											collapse=TRUE) 
+```
+
+<!--  RENDER:  see bottom -->
+
+```{r library, include=FALSE		}
+library(jimTools) 
+``` 
+### Basics & trivial
+
+logical(0) means?
+* vector, logical, but length=0
+* not TRUE or false
+```{r logical}
+x <- logical(length = 0)
+is.logical(x)  # TRUE
+is.object(x)   # FALSE   !
+is.null(x)     # FALSE  
+```
+
+""
+```{r empty}
+"" == TRUE
+"" == FALSE
+is.na("")
+is.null("")
+```
+
+NULL
+* special type
+```{r null}
+length(NULL)  #0
+is.list(NULL) # FALSE
+
+# If list has no names,  then names returns NULL.
+# To catch, this fact is important
+is.null(NULL)   # TRUE
+```
+
+NA
+```{r na}
+na<- x
+is.na(x)
+```
+Even though cheating, purrr is best way to see how various pieces work
+```{r purrr }
+L  <- list(NULL, "", NA, logical(0))
+purrr::map(L, is.na)
+
+purrr::map(L,is.na)
+g  <- function(x) x == ""
+
+purrr::map(L, g)
+
+```
+
+STUDY: https://github.com/r-lib/gh/blob/master/R/utils.R
+ORIGINAL version
+```{r has_name }
+## original version
+## as seen in purrr, with the name `has_names()`
+has_name_orig <- function(x) {
+ 
+  nms <- names(x)
+  if (is.null(nms)) {
+    rep_len(FALSE, length(x))
+  } else {
+    !(is.na(nms) | nms == "")
+  }
+}
+
+
+# IMPROVED version
+has_name <- function(x) {
+  if (!is.list(x)) stop("Please enter a list")
+  nms <- names(x)
+  if (is.null(nms)) {
+    rep_len(FALSE, length(x))
+  } else {
+    !(is.na(nms) | nms == "")
+  }
+}
+
+```
+
+All possible cases to test?
+has_name
+
+
+COLLECT all the test cases for has_name()
+## MUST know what each of these return to names()
+## Then must know how names() responses to each piece
+* is.null(names())
+* is.na(names())
+* names() == ""
+```{r}
+
+x  <- NULL
+x   <- ""
+x   <- NA
+x  <- "hello"
+x   <- list()
+x    <- list(1,2)
+x  <- list(a=1, 2)
+x  <- list(a=1, b=2)
+
+L1  <- list( "", NA, "hello", list(), list(1,2), list(a=1,2),
+           list(a=1, b=2))
+L  <- list(NULL, "", NA, "hello", list(), list(1,2), list(a=1,2),
+           list(a=1, b=2))
+names("")
+names(NA)
+```
+
+Purrr is best way to see how everything behaves
+```{r purrr_is_great}
+
+purrr::map(L, names)
+purrr::map(L, length)
+purrr::map(L, is.list)
+purrr::map(L, is.na)
+```
+
+Must modify get_name()
+```{r begin_tests}
+# logical(0) has lenth(0), but neither TRUE or FALSE   
+# NULL is not a list
+# so this a problem.
+
+
+has_name_orig(NULL)
+
+```
+
+Use improved has_name()
+* test collection with vapply
+* purrr
+```{r improved}
+
+has_name(NULL)
+has_name("")
+has_name()
+has_name(list())
+has_name(list(a=1, b=2))
+has_name(list(a=1, 2))
+has_name(list(1, 2))
+
+
+
+vapply(L1, has_name, logical(1))
+vapply(list(1,2), has_name, logical(1))
+
+```
+
+
+remove?
+```{r begin}
+f  <- function(x = NULL) {
+  paste0("x has length= ", length(x), " and is.list? ", is.list(x))
+  cat(is.list(x), " ", "length= ", length(x), "\n")
+  cat(is.na(x), "\n")
+}
+# x undefined
+x
+f(x)
+
+x  <- NULL
+f(x)
+
+x  <- ""
+f(x)
+
+# ERROR
+is.list()
+f()
+
+x  <- list()
+f(x)
+
+na<-x
+f(x)
+is.na(x)
+```
+
+```{r vapply}
+x  <- list(NULL, "", NA, list())
+vapply(x, length, logical(c(0,1)))
+vapply(x, f, logical(1))
+```
+
+
+Once we have names, use purrr to run against each step in code.
+* use purrr to run names() against test collection
+* use purrr to run is.list, has_names() against test collection
+
+```{r nms}
+x  <- list()
+x  <- list(1,2)
+x  <- list(a=1, b=2)
+x   <- list(1, b=2)
+
+L  <- list(list(1,2), list(a=1, b=2), list(1, b=2))
+
+x  <- NULL
+x  <- ""
+x  <- NA
+
+names(list(1,2)) == ""
+nms  <- names(list(1,2))
+nms
+is.na(nms)
+nms==""
+
+vapply(L, names, character)
+purrr::map_chr(L, names)
+nms  <- names(x) 
+nms
+length(nms)
+is.na(nms)
+nms == ""
+
+
+}
+```
+
+
+CLEAN UP ABOVE
+Then work here.
+
+unlist
+```{r unlist}
+x  <- list(1, 2, 3)
+x
+y  <- unlist(x)  # returns dbl atomic vector
+typeof(y)
+
+x  <- list(c(1, 2), c(3, 4), c(5, 6))
+y  <- unlist(x)  # flattens to single dbl vector 1 2 3 4 5 6
+y
+typeof(y)
+
+
+x  <- list(list("a","b"), c(3,4), c(5,6))
+x
+y  <- unlist(x)				# flatten to character vector
+typeof(y)
+y
+
+LEGACY, from advancedR  006_functions.R
+
+
+# 1st unlist
+l  <- list(a=c(10,20,30), b=c(TRUE,FALSE), c=c("hello", "bye"))
+# return named chr[] vector
+y  <- unlist(l)
+names(y)
+y
+
+# 2nd code:
+base::Filter
+lapply
+
+
+# return list
+lapply(l, is.numeric)
+
+# extracts only numeric, returns as atomic 
+Filter(is.numeric, l)
+
+# to see why, run Filter's code, step-by-step
+
+    f  <-  function(x) is.numeric(x)
+    unlist(lapply(l,f))# atomic, logical, plus names
+    as.logical(unlist(lapply(l,f))) # atomic, logical vector, no names
+
+ind  <- as.logical(unlist(lapply(l,f))) 
+which(ind) # return index which are TRUE
+# same as Filter:
+l[which(ind)] # subset original list, see all atomic elemtns
+```
+```{r list_of_lists}
+
+l1  <- 0:9
+l2   <-  letters[10:19]
+
+L  <- list(l1, l2)
+L
+str(L)
+is.null(l1)
+names(l1)
+is.na(names(l1))
+```
+
+has_name
+```{r has_name}
+has_name  <- function(x) { 
+if (!is.list(x)) stop("Please provide list")
+nms  <- names(x)
+if ( is.null(nms) ) {
+  base::rep_len(FALSE  , length(x))
+}
+else !(is.na(x) | nms=="")
+}
+
+has_name(NULL)
+has_name("")
+has_name(list())
+has_name(logical(0))
+has_name(NA)
+
+# problems
+has_name(list(a=1, 2))
+
+v  <- ""
+is.null(v)
+is.na(v)
+
+v  <- NULL
+is.null(v)
+is.na(v)
+
+
+```
+***
+
+```{r knit_exit()} 
+knitr::knit_exit() 
+```
+
+/newpage
+
+```{r render, eval=FALSE	} 
+file <- "" 
+file  <- basename(file) 
+dir <-"rmd"
+
+jimTools::ren_pdf(file,dir)
+jimTools::ren_github(file, dir)
+```

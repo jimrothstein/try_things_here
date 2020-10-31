@@ -1,0 +1,99 @@
+
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+	 
+--- 
+# Spaces, no Tabs
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
+---
+
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  
+											comment="      ##",  
+											error=TRUE, 
+											collapse=TRUE) 
+```
+
+
+```{r library, include=FALSE		}
+library(jimTools) 
+``` 
+
+```{r begin}
+#' @title Name all chunks
+#'
+#' @description
+#' Names all chunks of all Rmd files using the pattern `[file-name]-[number]`.
+#'
+#' @export
+name_chunks_mlr3book = function() {
+  root <- "~/code/r_try_things_here"
+  the_dir  <- "rmd/"
+  path <-  file.path(root, the_dir)
+  rmds = list.files(
+    path, pattern = "\\.Rmd$", 
+    full.names = TRUE, 
+    recursive = TRUE)
+  rmds
+  pattern = "^([[:space:]]*```\\{[rR])([[:alnum:] -]*)(.*\\})[[:space:]]*$"
+
+  for (rmd in rmds) {
+    rmd  <- rmds[[1]]
+    message(sprintf("Renaming chunks in '%s'", basename(rmd)))
+
+    lines = readLines(rmd)
+    # ii = line # with begin with pattern
+    ii = which(
+      stringi::stri_detect_regex(
+        lines, 
+        "^[[:space:]]*```\\{[rR].*\\}$")
+    )
+    # removes .Rmd, appends index, saves in labels
+    labels = sprintf(
+      "%s-%03i", 
+      # replace str, pat, with, 
+      stringi::stri_replace_last_fixed(
+        basename(rmd), 
+        ".Rmd", 
+        ""), 
+    seq_along(ii))
+
+    # prep new lines
+    lines[ii] = stringi::stri_replace_first_regex(
+      lines[ii], 
+      pattern, 
+      sprintf("$1 %s$3", labels))
+
+    #writeLines(stringi::stri_trim_right(lines), con = rmd)
+  }
+
+  invisible(TRUE)
+}
+
+```
+
+***
+
+```{r knit_exit()} 
+knitr::knit_exit() 
+```
+
+/newpage
+
+```{r render, eval=FALSE	} 
+file <- "" 
+file  <- basename(file) 
+dir <-"rmd"
+
+jimTools::ren_pdf(file,dir)
+jimTools::ren_github(file, dir)
+```
