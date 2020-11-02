@@ -342,6 +342,66 @@ is.na(v)
 
 
 ```
+list2env
+* pull out each named element into desired Env
+```{r}
+a  <- NULL
+l  <- list(a=letters, b=0:9)
+list2env(l, .GlobalEnv)
+a
+```
+
+study unlist
+unlist(x, recursive=TRUE, use.names=TRUE )
+```{r study_unlist}
+l  <- list(a=letters[1:5], b=0:4)
+unlist(l)
+unlist(l, use.names=FALSE )
+
+
+A  <- list(letters[25:26])
+A
+B <- list(0:6)
+B
+
+l  <- list(A,B)
+l                    # mess
+
+unlist(l)            # back to simple
+# here breaks in 1 level of lists, but no deeper
+unlist(l, recursive=FALSE , use.names=FALSE )
+
+```
+
+
+Loads,  but does not attach; TRUE if able to load.
+```{r}
+check_suggests <- function(package) {
+  if (!requireNamespace(package, quietly = TRUE)) {
+    #stop("Suggested package '{package}' not present.")
+    stop("Not found")
+  }
+}
+check_suggests("tibble")
+check_suggests("joke")
+check_suggests("glue")
+check_suggests("ggplot2")
+
+
+
+```
+
+```{r unlist_tibble}
+t  <- tibble::tibble(colA = 0:9, colB=10:19, colC=letters[1:10])
+t
+unlist(t, use.names=FALSE )
+unlist(t, recursive= FALSE   )
+unlist(t, recursive= FALSE, use.names=FALSE    )
+str(t)
+```
+
+
+
 ***
 
 ```{r knit_exit()} 
