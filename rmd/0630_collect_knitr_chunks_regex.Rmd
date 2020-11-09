@@ -14,7 +14,7 @@ Neatly rename the chunks!
 
 
 ```{r include=FALSE }
-knitr::opts_chunk$set(echo = TRUE, comment="")
+knitr::opts_chunk$set(echo = TRUE, comment = "")
 library(here)
 library(fs)
 library(lubridate)
@@ -144,7 +144,6 @@ kable_styling(latex_options = c("striped", "scale_down"))
 # customH <-  c("", "", "\\")
 
 # customH <- if (booktabs) c('', '', '', '', '\\addlinespace') else '\\hline'
-
 
 # ------- Working ------
 customH <-  c("", "", c("\\hline","\\addlinespace"))
