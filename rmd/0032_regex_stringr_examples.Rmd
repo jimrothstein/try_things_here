@@ -12,14 +12,21 @@ editor_options:
   chunk_output_type: console
 ---
 
-### CONSOLIDATE here:   regex,stringr (+ related testthat)
-### some REQUIREs  X11 
-### FOR fs::   see 066_
-### REF:   
-###		stringr & regex cheatsheet (rstudio)
-###   stat545.com/block028_character-data.html
-###		JENNYBC
-### =====================================
+==========================================================
+ CONSOLIDATE here:   regex,stringr (+ related testthat)
+==========================================================
+*  some REQUIREs  X11 
+*  SEE:   stringr & regex cheatsheet (rstudio)
+*  stat545.com/block028_character-data.html JENNYBC
+*  FOR fs::   see 066_
+##  TODO
+*  Clean up
+*  need mp3 stuff ?  
+ =====================================
+
+`?` match prior character 0, 1
+`+` match 1, n
+`*` match 0,1,n
 
  000_setup
 ```{r setup, include=FALSE}
@@ -27,7 +34,9 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE, 
 												comment="        ...##",
 												collapse=TRUE)
-library(tidyverse)
+library(stringr)
+library(tibble)
+library(purrr)
 library(testthat)
 library(here)
 library(jimTools)
@@ -39,7 +48,7 @@ x <- c(" hello", " hello ", "hello ")
 base::trimws(x)
 ```
 
-002_basics_using HTML (see stringr cheat)
+002_basics_ str_view uses using HTML (see stringr cheat)
 ```{r basics, eval=FALSE, echo=FALSE, include=FALSE}
 # from cheatsheet, render as html (cute!)
 
@@ -81,6 +90,43 @@ writeLines("[[:alpha:]]") # [[:alpha:]]
 ```# 
 
 
+str_detect returns t/f
+more regex, from http::url.r
+```{r}
+# When FALSE?
+pat  <- ";(.*)$"
+x  <- c("a;", ";b", "b;c", ";", " ; ")
+stringr::str_detect(x, pat)
+
+stringr::str_match(x, pat)
+```
+
+
+Greedy vs non-Greedy,   Role of ?
+```{r greedy}
+s  <- "XabcXabcXabcX"
+pat  <- "X.*X"   # any char, repeated 0,1,n times
+stringr::str_extract(s, pat)   # Greed ... whole thing returned
+
+# Here, ? is turning OFF greedy, ie lazy
+pat  <- "X.*?X"
+stringr::str_extract(s, pat)   # smallest possible match 
+```
+
+example from docs
+```{r from_docs}
+library(stringr)
+     shopping_list <- c("apples x4", "bag of flour", "bag of sugar", "milk x2")
+     str_extract(shopping_list, "\\d")
+     str_extract(shopping_list, "[a-z]+")
+     str_extract(shopping_list, "[a-z]{1,4}")
+     str_extract(shopping_list, "\\b[a-z]{1,4}\\b")
+     
+     # Extract all matches
+     str_extract_all(shopping_list, "[a-z]+")
+     str_extract_all(shopping_list, "\\b[a-z]+\\b")
+     str_extract_all(shopping_list, "\\d")
+```
 
  002A-stringr, detect META char
 ```{r}
@@ -92,6 +138,16 @@ stringr::str_detect(s, "\\*") # FALSE
 stringr::str_replace_all(s, "\\^+", "_")
 ```
 
+str_match returns matrix
+```{r str_match}
+#  (.*?)  the `?` turns off GREEDY (see example above)
+
+     x <- c( "<a> <b>", "<a> <>", "<a>", "<axxxxa> <b>", "<a>  <b>","", NA)
+
+     x  <- c("<aaa> <b>", "<abbbabab> <c>")  
+     stringr::str_match(x, "<(.*?)> <(.*?)>")
+     stringr::str_match(x, "<(.*)> <(.*)>")
+```
 
  0004_find_replace_spaces
 ```{r}
@@ -140,10 +196,7 @@ testthat::test_that("remove leading digits", {
 ```{r}
 help.search("^geom_[abcd]",
 			package="ggplot2")
-
-
 ```
-
 
 007_replace_multiple_dashes
 ```{r}
@@ -350,10 +403,6 @@ stringr::str_view_all(s, "a{3}")
 stringr::str_detect(s,"a{3}")
 ```
 
- 002-stringr, regex practice
-```{r}
-
-```
 
  002A-stringr, detect META char
 ```{r}
