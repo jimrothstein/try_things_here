@@ -37,14 +37,11 @@ if (FALSE)
   # dir()
 ```
 
-prepend "0" to file names (put into jimTools)
 ```{r prepend_file_name}
 prepend  <- "0"
 old  <- list.files("./rmd", pattern="*.Rmd")
-old
 new  <- paste0(prepend, old)
-new
-file.rename(here("rmd", old), here("rmd", new))
+file.move
 ```
 
 sprintf has some nice features!

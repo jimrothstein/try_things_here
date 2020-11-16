@@ -390,7 +390,7 @@ as.character(c(1,"2","a1","1",00,01,11,000,010,011))
 ```
 
  STRINGR
-# ============
+============
 
  001-stringr, regex:  find patterns
 ```{r}

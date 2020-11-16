@@ -64,7 +64,7 @@ sd(one_sample_x)   # 0.327
 * replicate()
 ```{r estimator}
 # take B samples (large)
-B  <- 10000
+B <- 10000
 sample_mean  <- function(N=50){
   mean(sample(heights, replace=FALSE , size=N))
 }
@@ -113,7 +113,7 @@ knitr::knit_exit()
 ```{r render, eval=FALSE	} 
 file <- "rmd/099_hannay_chapter_09_sampling.Rmd" 
 file  <- basename(file) 
-dir <-"rmd"
+dir <- "rmd"
 
 jimTools::ren_pdf(file,dir)
 jimTools::ren_github(file, dir)

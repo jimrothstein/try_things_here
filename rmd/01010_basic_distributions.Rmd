@@ -25,7 +25,7 @@ curve(pnorm, -3, +3)
 curve(pnorm)  # clips the x axis
 
 
-curve(qnorm)  # indep variable is now alpha, area (0,1)
+curve(qnorm)  # indep variable is now alpha, (area) (0,1)
 ```
 
 ```{r chi-squared}

@@ -1,4 +1,3 @@
-
 ---
 title: "090_data_table.R"
 output:  
@@ -8,13 +7,15 @@ fontsize: 12pt
 ---
 
 ```
-##	REF: http://rdatatable.github.io
+REF: [http://rdatatable.github.io](rdatatable)
 ##		Vignette:  Intro
 ##		example(data.table)
 
 # =======
 # SETUP
 # =======
+```{r setup}
+
 library(magrittr)
 library(data.table)
 citation("data.table")
@@ -27,6 +28,9 @@ input <- if (file.exists("./data/flights14.csv")) {
 # 2.2 MM
 flights <- fread(input)
 flights
+```
+```{r lazy }
+
 # I'm lazy!  use DT[]
 DT <- flights
 colnames(flights)
@@ -110,3 +114,18 @@ dt  <- as.data.table(df)
 for(i in 1:100)dt[i, v := i]
 head(dt)
 
+Challenge Problem
+# for each ID, count rows with non-zero values, build list of types (with
+non-zero values)
+my_tibble <- tidyr::tibble(
+  ID = c(1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5),
+  value = c(0,0,0,0,
+            1,1,0,1,
+            1,1,1,1,
+            0,1,0,1,
+            1,0,0,0),
+  type = rep(c("a", "b", "c", "d"), 5)
+)
+my_tibble
+t  <- my_tibble
+```

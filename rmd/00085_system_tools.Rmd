@@ -105,10 +105,9 @@ file.exists("~/dotfiles/.Renviron")                     # TRUE
 file.exists("~/.Renviron")                     # TRUE
 
 ```
+TODO
 options()
 ```{r options}
-library(purrr)
-library(dplyr)
 # options() (returns <list>)
 # Tibble 87 x 2.  values is list-column.
 # Goal:  longer tibble, with 1 row for each value
@@ -172,6 +171,7 @@ list.files()            # list filesin wd
 dir()
 ```
 Dependncies
+TODO:   utils::depends(pkg =  c(), dependencies=c ())
 ```{r dependencies}
 
 # For each installed pkg, find its dependencies
@@ -191,9 +191,8 @@ l
 t  <- tibble(pkg=l$tibble)
 t
 ##### 010-for <pkg>, find packages dependent upon it
-
-
 ```
+
 ```{r remove_package}
 if (FALSE) remove.packages("cellranger")
 
@@ -233,7 +232,7 @@ ipt %>%
   mutate(prop = n / sum(n))
 
 #### 015_remove pkg
-
+# uninstall()  vs remove.packages() ??
 #### Find (and remove) package BH (it is gone!)
 ipt %>% filter(Package=="BH") 
 
