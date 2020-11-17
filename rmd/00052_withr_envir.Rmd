@@ -1,0 +1,153 @@
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+--- 
+# Spaces, no Tabs
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
+---
+
+ ======================================================
+withr::  way to temporily change values and then reset
+ ======================================================
+
+<!-- 
+set cul   "cursorline
+cc=+1			"colorcolumn is 1 more than tw
+
+vim: to format all urls for md
+s/https.*/[&]()/g
+-->
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = TRUE)
+```
+
+
+```{r library, include=FALSE		}
+library(jimTools)
+library(withr)
+``` 
+
+change state:   poor
+```{r begin}
+sloppy <- function(x, sig_digits) {
+  options(digits = sig_digits)
+  print(x)
+}
+# old state
+old  <- getOption("digits")    # 3
+old
+pi
+
+# now
+sloppy(pi, 4)
+# but state has changed!
+pi
+
+
+#  reset
+options("digits"  = old)
+pi
+```
+withr
+```{r withr}
+neater <- function(x, sig_digits) {
+  # store old in op; 
+  op <- options(digits = sig_digits)
+  # put on LIFO stack, to change back when functions ends
+  withr::defer(options(op))
+  print(x)
+}
+
+pi
+neater(pi, 7)
+pi
+```
+
+One defer, put on stop of defer stack
+```{r lifo}
+defer_stack <- function() {
+  cat("put on socks\n")
+ withr::defer(cat("take off socks\n"))
+}
+
+defer_stack()
+```
+
+Two defer, use LIFO 
+```{r lifo2}
+defer_stack <- function() {
+
+ cat("put on socks\n")
+ withr::defer(cat("1-take off socks\n"))  # on stack
+
+  cat("put on shoes\n")
+  withr::defer(cat("2-take off shoes\n")) # on top of stack
+}
+defer_stack()  # use LIFO
+```
+Want FIFO?
+```{r fifo}
+# use priorty = last
+defer_queue <- function() {
+  cat("Adam gets in line for ice cream\n")
+  withr::defer(cat("Adam gets ice cream\n"), priority = "last")
+
+  cat("Beth gets in line for ice cream\n")
+  withr::defer(cat("Beth gets ice cream\n"), priority = "last")
+}
+defer_queue()
+```
+
+
+BEGIN HERE:   stuck on environments again.
+improved neater
+```{r improve}
+sys.nframe()  # Global
+local_digits <- function(sig_digits, envir = parent.frame()) {
+  op <- options(digits = sig_digits)
+  print(envir)
+  withr::defer(options(op), envir = envir)
+
+}
+parent.frame()  # Global
+
+neato <- function(x, digits) {
+  sys.nframe()
+  local_digits(digits)
+  print(x)
+}
+pi
+local_digits(3)
+neato(pi, 7)
+pi
+
+
+```
+
+***
+
+```{r knit_exit()} 
+knitr::knit_exit()
+```
+
+/newpage
+
+```{r render, eval=FALSE	} 
+file <- ""
+file  <- basename(file)
+dir <- "rmd"
+
+jimTools::ren_pdf(file,dir)
+jimTools::ren_github(file, dir)
+```

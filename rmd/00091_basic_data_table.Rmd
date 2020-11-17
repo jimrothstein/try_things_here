@@ -34,16 +34,109 @@ knitr::opts_chunk$set(echo = TRUE,
 ```{r library, include=FALSE		}
 library(jimTools) 
 library(data.table)
+
+vignette(package="data.table")
+vignette("datatable-intro", package = "data.table")
+
+vignette("datatable-reference-semantics", package = "data.table")
+# this opens in new Chrome Tab!
+# http://127.0.0.1:22091/library/data.table/doc/datatable-intro.html  
+
 ``` 
 
 
 SEE example(data.table)
+SEE vignette(package=)
 ```{r begin}
 dt  <- data.table(x = rep(c("b", "a", "c"), each = 3),
                   y = c(1, 3, 6),
                   v = 1:9)
 dt
 ```
+
+```{r list_exists}
+dt1  <- setDT(x = list(1:9))
+dt1
+```
+
+```{r meaning}
+# DT[i, j, by]
+
+##   R:                 i                 j        by
+## SQL:  where | order by   select | update  group by
+
+dt[x == "a",]
+dt[x == "a" & y == 1,]
+dt[order(y, -x),]   # y is asc, x in desc
+
+dt[, list(y)]
+dt[, .(y)]
+dt[, y]  # as vector!
+
+
+dt[, .(x, v)]  # return BOTH as list, ie new data.table
+
+
+dt[, sum(v)]  # summarizes
+dt[, sum(v), by = x]  # summarizes
+
+dt[, .(sum = sum(v)), by = x]  # summarizes, with new variable
+
+# DEEP COPY
+old  <- data.table::copy(dt)
+old
+
+## Because modification (by reference) changes objects and 
+##   anything points to it
+
+new  <- dt[, new := 3*v]
+new
+dt
+
+old
+
+# now change back
+dt  <- copy(old)
+dt
+
+```
+unique
+```{r unique}
+dt
+uniqueN(dt, by = "x")
+uniqueN(dt, by = c("x", "y"))
+
+
+# count unique rows
+dt[, .N, by = .(x,y)]
+dt[, .N, by = .(x)]
+
+```
+subset
+```{r subset}
+dt[, .SD[1]]  # 1st row
+dt[, .SD[1:4]]  # 1st 4 rows
+
+```
+
+
+.N, count
+```{r N}
+dt[, .N]
+dt[ x == "a", .N]
+
+```
+
+TODO:  charcter to numeric?
+FIx
+```{r convert}
+
+dt[(sum(x,y) > 6)]
+dt[with(dt, x + y) > 6, ]
+
+```
+
+
 
 ***
 
