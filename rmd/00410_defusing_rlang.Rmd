@@ -17,7 +17,7 @@ geometry: margin=0.5in,top=0.25in
 
 (Ref defuse)[https://rlang.r-lib.org/reference/nse-defuse.html]
 
-For introdution:   see 400_quasi_
+For introduction:   see 400_quasi_
 REF:   See Rlang Cheatsheet
 REF:   Advr v2  Chaptr 17+
 

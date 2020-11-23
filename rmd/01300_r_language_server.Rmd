@@ -1,0 +1,63 @@
+
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+--- 
+# Spaces, no Tabs
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
+---
+
+<!-- 
+set cul   "cursorline
+cc=+1			"colorcolumn is 1 more than tw
+
+vim: to format all urls for md
+s/https.*/[&]()/g
+-->
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = TRUE)
+```
+
+<!--  RENDER:  see bottom -->
+
+```{r library, include=FALSE		}
+library(jimTools)
+library(languageserver)
+
+``` 
+
+NOTES:
+Using plug for neovim's own lsp
+* In R, installed R package "languageserver"
+
+```{r begin}
+```
+
+***
+
+```{r knit_exit()} 
+knitr::knit_exit()
+```
+
+/newpage
+
+```{r render, eval=FALSE	} 
+
+file <- ""
+file  <- basename(file)
+dir <- "rmd"
+
+jimTools::ren_pdf(file,dir)
+jimTools::ren_github(file, dir)
+```
