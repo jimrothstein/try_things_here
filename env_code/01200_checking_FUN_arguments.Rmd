@@ -44,7 +44,7 @@ typeof(formals(f))
 environment(f)
 
 # compare
-g  <- function(x = 3) x
+g  <- function(x ) x
 formals(g)
 ```
 args, for interactive use
@@ -82,9 +82,9 @@ r
 
 
 ```
+
+enexprs
 ```{r user_args}
-
-
 
 g  <- function(x, ...) {
   rlang::enexprs( ... )
@@ -99,24 +99,37 @@ names(l)
 str(l)
 ```
 
-
-
-
-
 ```{r begin}
 # return list of non-NULL 
 f  <-  function(x=NULL, y = NULL, z = NULL, w = NULL, v = NULL) {
   l  <- formals(f)
    lapply(l, is.null)
 }
-rm(f)
-r  <- f(y = 1)
-r
 
-formals(f)
-typeof(formals(f))
-environment(f)
+# WORKS
+f  <-  function(x=NULL, y = NULL, z = NULL, w = NULL, v = NULL) {
+  rlang::enexprs(x,y)
+}
 
+# chr[] names of all args
+f(x = 3, y=2)
+
+
+# FAILS, errors
+g  <-  function(x=NULL, y = NULL, z = NULL, w = NULL, v = NULL) {
+  rlang::enexprs(...)
+}
+g(x=2)
+```
+
+
+```{r composite}
+g   <- function(x) x
+f  <- function(x) paste0("hello"," ", x)
+
+f(g("jim"))
+f(g)("jim")  # erroo
+(f(g))("jim") #error
 ```
 
 ***
