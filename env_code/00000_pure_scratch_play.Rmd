@@ -1,0 +1,172 @@
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+--- 
+# Spaces, no Tabs
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
+---
+
+SCRATCH
+
+If it is good code,  move it!
+OTHERWISE ... it is junk
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = TRUE)
+
+library(jimTools)
+
+```
+
+Do NOT UNDERSTAND this
+```{r}
+x  <- 1
+e  <- new.env()
+e$x  <- 2
+e$g  <- function() x + 1
+
+# interesting!
+e$g()   # 2, not 3
+
+# however, these make sense
+e$x     #2
+ls(e)
+get("x", envir=e)  # 2
+```
+
+
+makes sense
+```{r}
+x  <- 1
+g  <- function() {
+  x  <- 2
+  x + 1
+}
+g()   # 3
+
+```
+
+
+```{r enclosing}
+e  <- new.env()
+e$g  <- function(x) x + 1
+e$x  <- 2
+
+environment(g)   # error, no g
+environment(e$g)  # global 
+environment(e)   # NULL
+
+# all errors
+if (FALSE ){
+  g(x)
+  g(1)
+  g()
+  e$g()
+  e$g(x)
+}
+
+e$g(5)   # 6
+e$g(e$x) #3
+
+
+environment(e$g)  <- e
+environment(e$g)   # 0x59dd....  (not global)
+e$g(e$x)  # 3
+e$g(5)   # 6
+
+```
+
+
+
+get(x, envir=environment(pos), pos= -1 ...)
+```{r}
+x  <- 2
+get("x") # req'd to be string #2
+
+# in calling env of  get
+get("x", envir=as.environment(-1)) #2
+
+
+f  <- function() {
+  x  <- 4
+  get("x", envir=as.environment(-1)) 
+}
+f()  # 4
+
+f  <- function() {
+  x  <- 4
+  get("x", envir=globalenv())
+}
+f()   # 2
+
+f2  <- function() {
+  get("x", envir=as.environment(-1)) 
+}
+f2()  # 2
+
+```
+
+
+Change f's environment
+```{r}
+x  <- "hello"
+f  <- function() x
+f()  # "hello"
+
+
+# create practice env, e
+e  <- new.env()
+e$x  <- "bye"
+
+environment(f)  <- e
+f()  # "bye"
+```
+
+change a function env
+```
+
+
+
+
+
+Does what?
+```{r begin}
+
+get_environment  <- function() {
+
+# each row is char[1]	, 82 x 1
+# 
+t <- tibble::tibble(environment = Sys.getenv())
+
+# z  <- tibble::tibble(env=names(t$environment),
+#                   values = t[[1]])
+
+}
+```
+
+***
+
+```{r knit_exit()} 
+knitr::knit_exit()
+```
+
+/newpage
+
+```{r render, eval=FALSE	} 
+file <- ""
+file  <- basename(file)
+dir <- "rmd"
+
+jimTools::ren_pdf(file,dir)
+jimTools::ren_github(file, dir)
+```

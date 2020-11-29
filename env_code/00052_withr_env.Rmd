@@ -16,27 +16,20 @@ geometry: margin=0.5in,top=0.25in
  ======================================================
 withr::  way to temporily change values and then reset
  ======================================================
+ REF: jenny bryan
+ https://www.tidyverse.org/blog/2020/04/self-cleaning-test-fixtures/
 
-<!-- 
-set cul   "cursorline
-cc=+1			"colorcolumn is 1 more than tw
-
-vim: to format all urls for md
-s/https.*/[&]()/g
--->
 
 ```{r setup, include=FALSE		}
 knitr::opts_chunk$set(echo = TRUE,
                       comment = "      ##",
                       error = TRUE,
                       collapse = TRUE)
+library(jimTools)
+library(withr)
 ```
 
 
-```{r library, include=FALSE		}
-library(jimTools)
-library(withr)
-``` 
 
 change state:   poor
 ```{r begin}
@@ -59,13 +52,13 @@ pi
 options("digits"  = old)
 pi
 ```
-withr
+
+withr::
 ```{r withr}
 neater <- function(x, sig_digits) {
   # store old in op; 
   op <- options(digits = sig_digits)
-  # put on LIFO stack, to change back when functions ends
-  withr::defer(options(op))
+  withr::defer(options(op))   # LIFO
   print(x)
 }
 
@@ -74,7 +67,7 @@ neater(pi, 7)
 pi
 ```
 
-One defer, put on stop of defer stack
+One defer, runs at end 
 ```{r lifo}
 defer_stack <- function() {
   cat("put on socks\n")
@@ -87,18 +80,17 @@ defer_stack()
 Two defer, use LIFO 
 ```{r lifo2}
 defer_stack <- function() {
-
  cat("put on socks\n")
  withr::defer(cat("1-take off socks\n"))  # on stack
 
-  cat("put on shoes\n")
-  withr::defer(cat("2-take off shoes\n")) # on top of stack
+ cat("put on shoes\n")
+ withr::defer(cat("2-take off shoes\n")) # on top of stack
 }
 defer_stack()  # use LIFO
 ```
-Want FIFO?
+
+Want FIFO? priority = last
 ```{r fifo}
-# use priorty = last
 defer_queue <- function() {
   cat("Adam gets in line for ice cream\n")
   withr::defer(cat("Adam gets ice cream\n"), priority = "last")
@@ -107,6 +99,60 @@ defer_queue <- function() {
   withr::defer(cat("Beth gets ice cream\n"), priority = "last")
 }
 defer_queue()
+```
+
+```{r local1}
+x  <- 1
+local( {
+  x  <- 2
+  print(x)
+})
+print(x)
+```
+
+set, reset an option
+```{r}
+print(pi)
+
+sig_digits  <- 7   # set
+op <- options(digits = sig_digits)
+print(pi)
+
+options(op)  # reset
+print(pi)
+```
+
+basic use of local({}, envir = )
+```{r}
+x  <- 0
+e1  <- new.env()
+e1$x  <- 1
+
+e2  <- new.env()
+e2$x   <- 2
+
+local( envir = globalenv(), {print(x)})
+local( envir = e1, {print(x)})
+local( envir = e2, {print(x)})
+x
+
+```
+
+local(exprs, envir=env.new())
+```{r local}
+print(pi)
+local( {
+  browser() 
+  old  <- getOption("digits")    # 3
+  options(digits = 7)
+  print(pi)
+  options(digits = old)   # reset, quote req'd
+  }
+)
+print(pi)
+
+options(digits =4)
+options(digits =3  )
 ```
 
 

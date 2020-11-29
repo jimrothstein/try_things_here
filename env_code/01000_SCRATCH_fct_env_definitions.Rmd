@@ -12,10 +12,6 @@ toc_depth:  1
 fontsize: 12pt 
 geometry: margin=0.5in,top=0.25in 
 ---
-<!--
-vim: to format all urls for md
-s/https.*/[&]()/g
--->
 
 ## Concise, basic Definitions Related to R **Functions & Environments:**
 (1 page?)
@@ -46,13 +42,63 @@ ls()
 objects()
 ```
 
+### basic:  change FUN environment
+```{r simple_change}
+x  <- "hello"
+f  <- function() x
+f()  # "hello"
+
+# create practice env, e
+e  <- new.env()
+e$x  <- "bye"
+
+# one line
+environment(f)  <- e
+f()  # "bye"
+
+
+environment(f)  <- globalenv()
+f()  # "hello"
+
+#  NOTE: WRONG, all give errors
+# f(env = )
+# f(envir =)
+```
+
+### change FUN environment, programmatically:
+```{r 0001  }
+x  <- "hello"
+f  <- function() x
+f()  #hello
+
+# change
+g  <- function(.f, .e = globalenv() ) {
+    environment(f)  <- .e
+    f()
+}
+g(f)  # returns "hello"
+
+
+# create practice env, e
+e  <- new.env()
+e$x  <- "bye"
+
+environment(f)  <- e
+f()
+g(f,.e=e) # "bye" 
+g(f, .e = globalenv()) # "hello"
+
+if (FALSE ) g(f, .e = baseenv())   # Error:  no `x` in baseenv
+
+```
+
 * Hierachcy of Environments
 ```{r heirarchy}
 
   search()
 ```
-* Calling Environment (aka parent.frame())
 
+* Calling Environment (aka parent.frame())
 ```{r calling}
 x  <- 2
 y  <- 3
@@ -67,9 +113,6 @@ g  <- function(x,y) {x + y}
 # g carries it's calling env with it  and this differs!
 g(x,y)  # 5
 f()     # 50
-
-
-
 ```
 
 carries it's env around, here:  explicitly!
