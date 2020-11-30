@@ -1,6 +1,4 @@
-	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
 --- 
-# Spaces, no Tabs
 title: Template for .Rmd 
 date: "`r paste('last updated', 
     format(lubridate::now(), '%H:%M, %d %B %Y'))`"
@@ -9,7 +7,7 @@ output:
     latex_engine: xelatex
 toc: TRUE 
 toc_depth:  1 
-fontsize: 12pt 
+fontsize: 10pt 
 geometry: margin=0.5in,top=0.25in 
 ---
 
@@ -28,15 +26,30 @@ To find what "user" actually sent to function, use rlang::enexprs(), inside f.
 
 * Environment
 
+  * frame - set of named objects
+  * pointer - parent 
+
   from Peng 2019, 
   https://bookdown.org/rdpeng/rprogdatascience/scoping-rules-of-r.html
-
 
   " An environment is a collection of (symbol, value) pairs, i.e. x is a symbol
   and 3.14 might be its value. Every environment has a parent environment and
   it is possible for an environment to have multiple “children”. The only
   environment without a parent is the empty environment.  "
+
 * Global Environment
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = TRUE)
+```
+
+
+```{r library, include=FALSE		}
+library(jimTools)
+``` 
 ```{r global}
 ls()
 objects()
@@ -52,7 +65,7 @@ f()  # "hello"
 e  <- new.env()
 e$x  <- "bye"
 
-# one line
+# change f's environment
 environment(f)  <- e
 f()  # "bye"
 
@@ -60,7 +73,7 @@ f()  # "bye"
 environment(f)  <- globalenv()
 f()  # "hello"
 
-#  NOTE: WRONG, all give errors
+#  NOTE: Can not change f environment this way: WRONG, all give errors
 # f(env = )
 # f(envir =)
 ```
@@ -73,8 +86,8 @@ f()  #hello
 
 # change
 g  <- function(.f, .e = globalenv() ) {
-    environment(f)  <- .e
-    f()
+    environment(.f)  <- .e
+    .f()
 }
 g(f)  # returns "hello"
 
@@ -94,7 +107,6 @@ if (FALSE ) g(f, .e = baseenv())   # Error:  no `x` in baseenv
 
 * Hierachcy of Environments
 ```{r heirarchy}
-
   search()
 ```
 
@@ -293,25 +305,6 @@ g()
 * Permant vs Temporal Environments
 
 
-```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,
-                      comment = "      ##",
-                      error = TRUE,
-                      collapse = TRUE)
-```
-
-<!--  RENDER:  see bottom -->
-
-```{r library, include=FALSE		}
-library(jimTools)
-``` 
-
-
-```{r begin}
-```
-
-***
-
 ```{r knit_exit()} 
 knitr::knit_exit()
 ```
@@ -319,9 +312,9 @@ knitr::knit_exit()
 /newpage
 
 ```{r render, eval=FALSE	} 
-file <- ""
+file <- "01000_SCRATCH_fct_env_definitions.Rmd"
 file  <- basename(file)
-dir <- "rmd"
+dir <- "env_code"
 
 jimTools::ren_pdf(file,dir)
 jimTools::ren_github(file, dir)
