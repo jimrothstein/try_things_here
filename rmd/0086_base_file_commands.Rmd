@@ -22,7 +22,7 @@ knitr::opts_chunk$set(echo = TRUE,
 library(jimTools) 
 ```
 
-base:: commands (why use fs:: ?)
+## base:: commands (why use fs:: ?)
 ```{r begin}
 list.files("./rmd", pattern="*.Rmd")
 list.files("./rmd", full.names = TRUE ,pattern="*.Rmd")
@@ -37,7 +37,17 @@ if (FALSE)
   # dir()
 ```
 
-prepend "0" to file names (put into jimTools)
+
+## base::find.package()
+```{r find.package}
+find.package("jimTools")
+find.package("purrr")
+
+
+path.package("jimTools")
+```
+
+### prepend "0" to file names (put into jimTools)
 ```{r prepend_file_name}
 prepend  <- "0"
 old  <- list.files("./rmd", pattern="*.Rmd")
@@ -47,7 +57,7 @@ new
 file.rename(here("rmd", old), here("rmd", new))
 ```
 
-sprintf has some nice features!
+## sprintf has some nice features!
 ```{r sprint}
 sprintf("hello %s", "jim")
 
@@ -72,10 +82,7 @@ the_prefixes  <- stringr::str_extract(the_files, "^[0-9]*[A-Z]?_" )
 the_prefixes
 
 ```
-
-
 ***
-
 ```{r knit_exit()} 
 knitr::knit_exit() 
 ```
@@ -83,10 +90,15 @@ knitr::knit_exit()
 /newpage
 
 ```{r render, eval=FALSE	} 
-file <- "" 
+file <- "0086_base_file_commands.Rmd" 
+
 file  <- basename(file) 
 dir <-"rmd"
 
+rmarkdown::render(file, output_format="html_document",
+                  output_dir="~/Downloads/print_and_delete")
+
+jimTools::ren_file(here(dir,file), output_format="html_document")
 jimTools::ren_pdf(file,dir)
 jimTools::ren_github(file, dir)
 ```
