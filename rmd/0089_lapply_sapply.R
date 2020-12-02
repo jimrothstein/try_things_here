@@ -34,4 +34,29 @@ runif(3)
 lapply(1:4,runif) # treats 1:4 as list, retuns list
 ```
 
+#  #####
+#  integer(1) creates 0
+#  integer(2)         0 0
+#
+n  <- 10^6
+
+## atomic int[]  fastest?
+##
+# create int[] of length n, filled with 1:n
+if (FALSE )
+  seq_len(n)
+
+# fills x 1:n
+x  <- vapply(seq_len(n), function(i) {i}, integer(1))
+head(x)
+
+x  <- NULL
+
+
+# creates all zeroes
+x  <- vapply(seq_len(n), function(i) {integer(1)}, integer(1))
+head(x)
+
+
+
 
