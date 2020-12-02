@@ -4,13 +4,13 @@ output: html_document
 editor_options: 
   chunk_output_type: console
 ---
+
+## httr:: Examples
 Ref: https://httr.r-lib.org//reference/GET.html
 * vignette - uses httpbin.org as practice
-* Wiki for REST (an architetusing, using HTTP, URIs, payloads ....)
+* Wiki for REST (an architet using, using HTTP, URIs, payloads ....)
 * Study various options, httr_options()
 * Specific option:   curl_docs("useragent")
-
-
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -19,7 +19,7 @@ library(httr)
 library(jsonlite)
 ```
 
-001_google
+## simple google search
 ```{r}
 r<- GET("http://google.com/", 
         path = "search", 
@@ -40,11 +40,10 @@ content(r, "text")
 ```
 
 
-modify_url()
+## httr::modify_url()
 ```{r}
 the_base  <- "https://httpbin.org"
 r  <- httr::GET(the_base)
-
 
 # usually, we have some kind of path or endpoint
 the_url  <- modify_url(the_base, path="/get")
@@ -78,7 +77,7 @@ with_config(the_url, user_agent("httr"))
 
 
 Focus on httpbin.org practice
-headers
+## headers
 ```{r}
 # add header
 base_url <- "http://httpbin.org"
@@ -87,12 +86,13 @@ r <- httr::GET("http://httpbin.org/get",
 r
 ```
 
+```{r debug}
 Verbose, useful to debug
 '<-' header in
 '<<' data in
 '*'  msg from curl
 ```
-verbose, content
+## verbose, content
 ```{r verbose}
 r  <- httr::GET(base_url, verbose())
 http_type(r)
@@ -113,9 +113,8 @@ r  <- httr::GET(base_url, query=list(name="jim", occupation="student"))
 r
 ```
 
-Return json and process
+## Return json and process
 ```{r json}
-
 # api says add /json
 r  <- GET(modify_url(base_url, path="/json"))
 http_type(r)
@@ -126,14 +125,12 @@ content(r, as="text") %>% jsonlite::fromJSON()
 
 verbose, body
 ```{r}
-
 Use body, to pass parameters
 r  <- with_verbose(GET(base_url, body=list(name="jim", encode="json"),
                        content_type_json()))
 ```
 
-
-Use S3 to examine response
+## Use S3 to examine response
 ```{r S3}
 # make function
 httpbin_api  <- function(path){
