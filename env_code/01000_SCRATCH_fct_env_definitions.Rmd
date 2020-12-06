@@ -26,7 +26,7 @@ To find what "user" actually sent to function, use rlang::enexprs(), inside f.
 
 * Environment
 
-  * frame - set of named objects
+  * frame - set of named objects (or is it symbols and BINDINGS to the object?)
   * pointer - parent 
 
   from Peng 2019, 
@@ -44,12 +44,8 @@ knitr::opts_chunk$set(echo = TRUE,
                       comment = "      ##",
                       error = TRUE,
                       collapse = TRUE)
-```
-
-
-```{r library, include=FALSE		}
 library(jimTools)
-``` 
+```
 ```{r global}
 ls()
 objects()
@@ -173,9 +169,70 @@ environment(g)  <- J
 g()
 ls(envir  = J)
 objects(J)
-
-
 ```
+
+AAA Example:   objects in calling env() (or parent.frame())
+https://stackoverflow.com/questions/28641395/what-is-parent-frame-of-r
+```{r}
+
+
+# objects in parent.frame (calling env)
+parentls <- function() {
+  ls(envir = parent.frame())
+}
+
+a<-function() {
+    x <- 5
+    parentls()
+}
+
+b <- function() {
+    z <- 10
+    parentls()
+ }
+
+a() # objects in a's environment
+b()
+parentls()
+```
+
+AAA How many levels down ?  0=GlobalEnv
+```{r nframe}
+parentls <- function() {
+  cat("nframe = ", sys.nframe() , "\n")
+}
+
+
+a  <- function() {
+  cat("nframe = ", sys.nframe() , "\n")
+  b()
+}
+
+b   <- function(){ 
+  cat("nframe = ", sys.nframe() , "\n")
+  c()
+}
+
+c  <- function(){ 
+  cat("nframe = ", sys.nframe() , "\n")
+}
+
+
+cat("nframe = ", sys.nframe() , "\n")
+a() # objects in a's environment
+```
+recursive!
+sys.nframe()
+```{r loop}
+a  <- function() {
+  if (sys.nframe() == 9) return()
+  cat("nframe = ", sys.nframe() , "\n")
+  a()
+}
+a()
+```
+
+
 
 Should give 200, it does NOT ???
 ```{r}

@@ -52,8 +52,43 @@ g  <- function() {
   x  <- 2
   x + 1
 }
-g()   # 3
+x  <- 100
+g()   # 3   # finds x uses its defined env, not calling
 
+```
+
+case 1
+g finds x in defined enviroment
+```{r}
+x  <- 1
+
+
+f  <- function() {
+  
+  x  <- 10
+  g  <- function() x
+  g
+}
+f()
+f()()   #10 
+environment(f)
+environment(f())
+names(global_env())
+names(environment(f))
+names(environment(g))
+```
+case 2
+g finds x in parent of defined environment
+```{r}
+x  <- 1
+
+f  <- function() {
+  # x  <- 10
+  g  <- function() x
+  g()
+}
+
+f()
 ```
 
 

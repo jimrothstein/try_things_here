@@ -160,3 +160,52 @@ environment(g)
 g()
 
 show_env(cat("hello"))
+
+
+## show_env - tools
+```{r show_env}
+show_env <- function(){
+  list(ran.in = environment(),     # temporary (active, or runtime) env
+    parent = parent.env(environment()),# parent 
+    objects = ls.str(environment())
+  )
+}
+show_env()
+```
+
+```{r example}
+# call env = global
+# origin env = global
+# runtime env = 0x....
+#
+# enlcosing env =
+# binding env = 
+#
+x  <- 1
+f  <- function() {
+  show_env()
+}
+environment(f)
+f()
+```
+
+```{r step2}
+# function g
+# call env  = global
+# origin env = runtime of f
+# runtime env  = child of f's runtime
+
+f  <- function() {
+  x  <- 10
+  y  <- environment()
+  function() { 
+    list(x = x, "runtime(f)" = y, show_env(), "env(g)" = environment(g))
+  }
+}
+
+
+f
+g  <- f()
+g
+g()
+environment(g)

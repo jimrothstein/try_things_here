@@ -17,6 +17,13 @@ library(purrr)
 library(dplyr)
 library(magrittr)
 ```
+```{r tidyverse}
+# anything out-of-date?
+tidyverse::tidyverse_update()
+
+# list packages  .. anything to remove?
+devtools::session_info(c("tidyverse"))
+```
 
 ```{r mem}
 mem_used()/1e6
