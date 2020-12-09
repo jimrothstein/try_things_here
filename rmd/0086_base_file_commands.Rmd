@@ -1,4 +1,5 @@
 	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+
 --- 
 # Spaces, no Tabs
 title: Template for .Rmd 
@@ -24,8 +25,10 @@ library(jimTools)
 
 ## base:: commands (why use fs:: ?)
 ```{r begin}
+# pattern is regex
 list.files("./rmd", pattern="*.Rmd")
 list.files("./rmd", full.names = TRUE ,pattern="*.Rmd")
+list.files("./rmd", pattern="^[0-9]*")
 
 if (FALSE)
   # file.rename()
@@ -82,6 +85,40 @@ the_prefixes  <- stringr::str_extract(the_files, "^[0-9]*[A-Z]?_" )
 the_prefixes
 
 ```
+ToDO
+Propose new numbering prefix for all files
+```{r examle}
+
+OLD_NAMES  <- list.files("./rmd", pattern="^[0-9]*")
+OLD_NAMES
+the_files   <- OLD_NAMES
+N  <- length(the_files)
+N
+
+# remove current prefix
+the_files  <- base::sub(pattern = "^[0-9]*","", the_files)
+the_files
+
+# propose new prefix, min of 5 digits
+
+# sprintf("hello %04i", 23)         # int, min of 4 digits
+sprintf("%05i", 1:N)
+
+the_prefixs  <- sprintf("%05i", 1:N)
+the_prefixs
+
+# glue together 
+NEW_NAMES  <- paste0("./rmd/",the_prefixs, the_files)
+
+OLD_NAMES  <- paste0("./rmd/", OLD_NAMES)
+
+# change on disk
+OLD_NAMES
+NEW_NAMES
+base::file.rename( OLD_NAMES, NEW_NAMES)
+
+```
+
 ***
 ```{r knit_exit()} 
 knitr::knit_exit() 
