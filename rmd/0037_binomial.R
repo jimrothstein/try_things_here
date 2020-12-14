@@ -11,14 +11,17 @@
 ## for full-line comments
 # ---- 000-big sections ----------- for big sections
 
-library(tidyverse)
-library(jimPackage)
+# library(tidyverse)
+library(tibble)
+library(jimTools)
 
 #####  Binomial #####
 dbinom(x=1:5,size=400, prob=0.2)
 
 
-# pmf - binomial, x=# success, size=throws
+# pmf(density) - binomial, prob of x=# success, size=throws
+# usu written as choose(n,x) (p^n) (1-p)^(k-n)
+# x may be vector
 
 dbinom(x=0,size=2, prob=0.5) # n=2, x=0  prob = 0.25
 dbinom(x=1, size =2 , prob=0.5) # n=2, x=1 # 0.5
@@ -156,3 +159,87 @@ hist(colSums(m))
 
 head(m)
 dim(m)
+
+## What does CI (Confidence Interval)  mean?
+#  ============================================
+## Suppose want to find percentage of students (many) with tatoos
+##
+## How ?   SAMPLE
+p = 0.4  # (usually do not know)
+n = 75   # students, sample size
+## FACT
+## se_bar = sqrt( p_bar * (1 - p_bar)/n)
+##
+
+## Take a Sample  (ie string of yes/no, 1,0
+r  <- sample(x = 0:1,
+             size = 75,
+             replace = TRUE, 
+             prob = c(0.6, 0.4))
+r
+sum(r) #31
+p_bar = sum(r)/n
+p_bar   # 0.413
+
+## And the 95% CI?
+se_bar = sqrt( p_bar * (1 - p_bar)/n)
+se_bar   # 0.0569
+L  <- p_bar - 1.96*se_bar
+U  <- p_bar + 1.96*se_bar
+cat("p_bar = ", p_bar, "\n", "CI = ", "(", L, ", ", U, ")",  "\n")
+contains_TRUE =  p_bar >= L   && p_bar <= U
+contains_TRUE
+
+#####   OR 
+# ===========================================
+## What does 95% confident actually mean??
+## rbinom (n=1, size = 75, prob= 0.4)retrun string of yes/no, 1,0  (size # trials)
+## To me:  n=1 means 1 SAMPLE, 
+## size=throws in 1 SAMPLE, 
+## return is # successes in 1 SAMPLE
+##
+## n =2 means, return will be 2 values, one for each sample
+##
+###  FUNCTION
+###
+ N=75
+t  <- tibble::tibble()
+one_sample  <- function(DUMMY = null) {  # 1 sample
+
+    prob = 0.4
+    p_bar  <- rbinom(n=1, size=75, prob = prob)/N
+    ## And the range?
+    se_bar = sqrt( p_bar * (1 - p_bar)/N)
+    L  <- p_bar - 1.96*se_bar
+    U  <- p_bar + 1.96*se_bar
+    # cat("p_bar = ", p_bar, "\n", "CI = ", "(", L, ", ", U, ")",  "\n")
+    contains_TRUE =  (L < prob)   && ( prob < U )
+    new  <- tibble::tibble(p_bar = p_bar, L=L, U=U, contains_TRUE = contains_TRUE)
+    t <<- rbind(t, new)
+    invisible()
+}
+
+
+ans  <- lapply(0:99, one_sample)
+
+# view
+t
+print(t, n=100)
+
+# to see only FALSE   
+t[!t$contains_TRUE,]
+t[!t$contains_TRUE,]
+
+# order
+print(t[order(-t$L),], n=100)
+
+###
+f  <- function(x) invisible(print("hi"))
+f()
+r  <- lapply(0:1, f)
+
+
+#### ARGH!  need dummy variable
+f  <- function(dummy) {print("hi")}
+
+l  <-   lapply (1:2, f)
