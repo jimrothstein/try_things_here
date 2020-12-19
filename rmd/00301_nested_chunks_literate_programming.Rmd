@@ -1,0 +1,84 @@
+<!--
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+   -->
+--- 
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
+---
+
+<!-- 
+set cul   "cursorline
+cc=+1			"colorcolumn is 1 more than tw
+
+vim: to format all urls for md
+s/https.*/[&]()/g
+-->
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = TRUE)
+```
+
+<!--  RENDER:  see bottom -->
+
+```{r library, include=FALSE		}
+library(jimTools)
+``` 
+Chapter 14  
+https://bookdown.org/yihui/rmarkdown-cookbook/reuse-chunks.html
+See also chunk reference labels {r name, label.ref= c('labela', 'labelb')}
+in same Chapter.
+
+
+Nested Chunks:  
+  - top level chunk: f2c  
+
+Calls:  
+  - chunk called:  check-arg  
+  - chunk called:  convert  
+
+```{r, f2c}
+F2C <- function(x) {
+  <<check-arg>>
+  <<convert>>
+}
+
+F2C(30)
+```
+
+First, we check if the input value is numeric:
+
+```{r, check-arg, eval=FALSE}
+  if (!is.numeric(x)) stop("The input must be numeric!")
+```
+
+Then we do the actual conversion:
+
+```{r, convert, eval=FALSE}
+  (x - 32) * 5/ 9
+```
+
+```{r knit_exit()} 
+knitr::knit_exit()
+```
+
+/newpage
+
+```{r render, eval=FALSE	} 
+file <- "00301_nested_chunks_literate_programming.Rmd"
+file  <- basename(file)
+dir <- "rmd"
+
+jimTools::ren_pdf(file,dir)
+jimTools::ren_github(file, dir)
+```

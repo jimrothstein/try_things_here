@@ -1,19 +1,26 @@
-#037_binonial.R
 
-######################
-#  Use to explain code
-#
-#
-#
-#  End of explain..
-######################
+---
+title:  037_binonial.R
+output:
+  pdf_document
+---
 
-## for full-line comments
-# ---- 000-big sections ----------- for big sections
+## Binomial
 
-# library(tidyverse)
+
+Notation:
+  -  p prob success, just 1 event
+  -  n obs in 1 sample
+  -  k success in 1 sample
+  -  B number of repeat samples
+
+```{r begin}
+
 library(tibble)
+library(ggplot2)
 library(jimTools)
+```
+```{r first}
 
 #####  Binomial #####
 dbinom(x=1:5,size=400, prob=0.2)
@@ -45,10 +52,15 @@ dbinom (90, prob=0.2, size=400)				# 0.02
 
 # or
 sum(dbinom(60:100, prob=0.2, size=400))			# 0.99   (99% succcess bet 60, 100)
-#####
-qbinom( c(0.8), prob=0.2, size=400)			# 87    (80% of successes, 87 or less successes)
-##### 002 Plot Binomial pmf, Pr(X = some x) ####
-# TODO(jim, add density, ie superimpose normal)
+qbinom( c(0.8), prob=0.2, size=400)	# 87 (80% of successes, 87 or less successes)
+
+## 002 Plot Binomial pmf, Pr(X = some x) 
+```
+
+TODO(jim, add density, ie superimpose normal)
+
+```{r fix}
+
 t <- tibble(x = c(0:n), y = dbinom(x, size=10, prob=0.9))
 
 g <- ggplot(t, aes(x,y))
@@ -87,26 +99,36 @@ pnorm(c(z_low,z_high), mean=0, sd =1)
 
 pnorm(z_high, mean=0, sd=1) - pnorm(z_low, mean=0, sd=1)  # 0.120 (approx)
 # Normal
+```
 
 
-# ========
-# rbinom
-# ========
-# sucesses if toss coin 100 times 
+
+## rbinom
+
+sucesses if toss coin 100 times 
+```{r rbinom}
+
 set.seed(2020) # 52
+
+# 1 sample(set 100 obs)
 x <- rbinom(1, size=100, p=0.5)
 x #52
 
 # SAME, but repeat the experiment 40 times
 # returns int[] of successes
+
 x <- rbinom(40, size=100, p=0.5)
 x # int[40], number of heads each experiment
 
 # of the 40 experiments, how many returned > 55 heads?
-table(x > 55) # 10	;
-table(x > 57) # 2	;
+
+table(x) # of 40 samples, distribution of success totals 
+
+table(x  >  55)   # of 40 samples(each 100), how many more than 55 successes
+
+table(x  >  57) # 
+
 table(x > 60) # 0
-# =================
 
 
 
@@ -123,8 +145,8 @@ x  <- sample(x =  c("H","T"),
 		prob = c(0.5,0.5)
 		)
 x
-what_is_it(x)
-y  <- str_c(x, collapse="")		# collapse
+
+y  <- stringr::str_c(x, collapse="")		# collapse
 # [1] "TTTHTHTTTHTHHTTHTTTTHHHTTTTHHTTHTTTTHTHTTHHHHHTHTHTHHHTTHHTHTHHHHTHTHTHHHTHTHTHTHHTTTTTTTTTHHTHHHHHHTTHHHTTHHHHHTHTHHHTTHTTTHTTTTHTTTTHTHTHHHHHHHTHHTTHHTTTHTTHTHTTTHTTTTTTTTTTHHTTTHTHHHTTHTHTHTTTHHTHHHTHTTHTHTTHTTHTTTTTHHHHTTHHHTTTTHTHTTTTHHTTHTTTHTHHHTHTTHHTHTTTHTHHHTTHHTHHTTHHHHTTTHHTTHTTHTHHTHHHHHHHHTHTHHHHHTTHTHTHHTTTHTTTHTTHHHHTTTTHTTTHHHTHHTHTTHHTHTHTHHHHHHTHHHHHTTHTHHTTHHTTTHTTHHHHTHTTTHTTTTHHTHHTHTHTTTHHTTHTTTHTHTHTTHHHTHHTHTTTTHTTTHTTTHTHHTTTHTTTTHHHTTHHHHHTHHHHTHHHHHTTHTTTTHHTTTTTTHTHHTTHHHHTHTTHTTTHHHHTHTTHTTHTTTHTTTTTTTHHTTTTTHHHHHTTTHTHHHTTHTHTTTHTTTHHHTTHHHHHHTHHTHTTTTHHHTHHTHTTHHTHHTTTTTTTTHTTTHHTTTTTHHTTTHTHHTHHHHHTHTHTHTHTHHTTTHHHTHHHTTHTTTTHHTHHHTTTHTTTHTTHTHHTTHHHHTTTHTHHHTHTTTTHHHHTTHTTTHTHTHTHTHTTHHTHHHHTTHTHTTTHHTTHHTTHHHHTTHTTTTTHTTTHTTHTTTHTTTHHHTHHTTHTTHTHHTTTHHTHHTTHTTTHHTHHTTHHTHHTTTHTHTHTHHHHHHHHTTTHHHHHHTHTHHTHHTTTTTTTTTHHTTHTTHHTHTHTTTTHTTTTTHHHHHHTHTTTTTHHHHTHTHTTTHTHTHHTTTTHHHHTHTHTHTHHTHTHTHHHTTTHHHTTTTHTTHHTHTTHTTTHHHHHTHTTTHTHTTHHTTTHTTTHHTTHTHTHHHHTT"
 # FOR REAL
 set.seed(1492)
@@ -136,7 +158,7 @@ X  <- sample(x = c(1,0),
 		prob= c(0.5,0.5)
 		)
 #X # VECTOR_DBL, ATOMIC
-what_is_it(x)	# 100,000
+
 #M <- AS.MATRIX(X, NROW = NtHROWs, ncol=nExp, byrow=TRUE)
 ## matrix fill first by column, then next row
 m <- matrix(rbinom(n=nExp*nThrows, 
@@ -171,7 +193,7 @@ n = 75   # students, sample size
 ## se_bar = sqrt( p_bar * (1 - p_bar)/n)
 ##
 
-## Take a Sample  (ie string of yes/no, 1,0
+## Take a Sample  (ie string of yes/no, 1,0)
 r  <- sample(x = 0:1,
              size = 75,
              replace = TRUE, 
@@ -243,3 +265,9 @@ r  <- lapply(0:1, f)
 f  <- function(dummy) {print("hi")}
 
 l  <-   lapply (1:2, f)
+```
+```{r render, eval=FALSE  }
+rmarkdown::render("rmd/0037_binomial.Rmd",  
+                  output_file="~/Downloads/print_and_delete/out.pdf") 
+```
+
