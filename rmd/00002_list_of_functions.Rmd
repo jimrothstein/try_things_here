@@ -1,4 +1,4 @@
-	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+  vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
 --- 
 # Spaces, no Tabs
 title: Template for .Rmd 
@@ -28,6 +28,8 @@ knitr::opts_chunk$set(echo = TRUE,
 
 ```{r library, include=FALSE		}
 library(jimTools)
+  
+
 ``` 
 
 

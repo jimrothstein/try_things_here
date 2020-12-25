@@ -19,6 +19,7 @@ editor_options:
 *  SEE:   stringr & regex cheatsheet (rstudio)
 *  stat545.com/block028_character-data.html JENNYBC
 *  FOR fs::   see 066_
+*  blob to regex?  use glob2rx()
 ##  TODO
 *  Clean up
 *  need mp3 stuff ?  
@@ -46,6 +47,11 @@ USE:  base::trimws()
 ```{r}
 x <- c(" hello", " hello ", "hello ")
 base::trimws(x)
+```
+
+Glob to regex !
+```{r blogr2x}
+glob2rx("*.R")
 ```
 
 002_basics_ str_view uses using HTML (see stringr cheat)

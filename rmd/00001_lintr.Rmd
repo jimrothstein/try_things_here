@@ -13,6 +13,8 @@ toc_depth:  1
 fontsize: 12pt 
 geometry: margin=0.5in,top=0.25in 
 ---
+lintr:: Ref manual:
+https://cran.r-project.org/web//packages/lintr/lintr.pdf
 
 <!-- 
 set cul   "cursorline
@@ -33,7 +35,7 @@ knitr::opts_chunk$set(echo = TRUE,
 
 ```{r library, include=FALSE		}
 library(jimTools)
-
+library(lintr)
 
 ``` 
 
@@ -45,10 +47,19 @@ x  <- 1 + 1
 x
 
 # run code to find suggestions
-lint(here("rmd","00001_lintr.Rmd"))
+lint(here("rmd", "00001_lintr.Rmd"))
 ```
+learn about lintr::
+```{r learn}
+length(default_settings)
+default_settings   # lenght 9
 
-```{r Reditor}
+
+```
+change defaults?
+```{r with}
+my_linters <- with_defaults(line_length_linter = line_length_linter(120))
+my_linters <- with_defaults(trailing_white_space = FALSE)
 
 ```
 
