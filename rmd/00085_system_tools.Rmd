@@ -214,12 +214,17 @@ if (FALSE) remove.packages("cellranger")
 
 ###### 012_update knitr
 install.packages('knitr', repos = c('https://xran.yihui.name', 'https://cran.r-project.org'))
+```
 
+```{r install_packages}
 
 ##### 013_jennyBC
 ####  from https://github.com/smithjd/explore-libraries/blob/master/01_explore-libraries_jenny.R
 ipt <- installed.packages() %>%
   as_tibble()
+
+installed_pkgs  <- ipt %>% select("Package")
+print(installed_pkgs, n=200)
 
 ipt %>% glimpse()
 nrow(ipt)
