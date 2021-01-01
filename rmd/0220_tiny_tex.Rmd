@@ -1,0 +1,89 @@
+
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+--- 
+# Spaces, no Tabs
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
+---
+
+<!-- 
+set cul   "cursorline
+cc=+1			"colorcolumn is 1 more than tw
+
+vim: to format all urls for md
+s/https.*/[&]()/g
+-->
+
+READ:  TinyTex and why Latex can be a pain
+https://yihui.name/tinytex/r/
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = TRUE)
+```
+
+<!--  RENDER:  see bottom -->
+
+```{r library, include=FALSE		}
+library(jimTools)
+``` 
+
+install
+```{r install, eval = FALSE }
+remotes::install_github('yihui/tinytex')
+
+# update, SILENT, and ~ 1 min
+tlmgr_update()
+```
+help
+```{r}
+library(tinytex)
+?tinytex::tlmgr
+
+# read log
+tinytex::parse_packages()
+```
+
+missing ulem.sty?
+```{r add_package}
+tlmgr_install( pkgs = c("ulem"))
+```
+
+
+latexmk ... only for .tex files
+bauks if sees any .md file 
+```{r compile}
+?latexmk
+
+latexmk(file=file)
+
+```
+
+
+
+***
+
+```{r knit_exit()} 
+knitr::knit_exit()
+```
+
+/newpage
+
+```{r render, eval=FALSE	} 
+file <- ""
+file  <- basename(file)
+dir <- "rmd"
+
+jimTools::ren_pdf(file,dir)
+jimTools::ren_github(file, dir)
+```
