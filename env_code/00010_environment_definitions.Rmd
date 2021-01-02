@@ -1,0 +1,93 @@
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+--- 
+# Spaces, no Tabs
+title: `knitr::content_input()` 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
+---
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = TRUE)
+
+
+```
+
+Environment consists of 
+  - frame:  set of named objects
+  - pointer:  to enclosing frame.
+
+
+Visually, environemnts appear tree-like
+TODO:  insert latex
+
+
+<e> notation for environment
+
+Scope: Rules R uses to find objects by name
+  - R first looks in runtime <e>
+  - Then to parent.env()
+
+```{r env}
+e  <- environment()
+parent.env(e)
+```
+
+Two environment equal if:
+```{r identical}
+e  <- environment()
+f   <- environment()
+identical(e, f)
+```
+
+Special Environments
+```{r special}
+emptyenv()
+baseenv()
+globalenv()
+
+search()
+```
+
+See objects in Environment
+```{r ls}
+ls(envir = environment())
+ls(envir = emptyenv())
+head(ls(envir = baseenv()), n = 10L)
+ls(envir = parent.env(environment() ))
+```
+
+
+
+
+```{r knit_exit()} 
+# knitr::knit_exit()
+```
+
+
+```{r render, eval=FALSE	} 
+
+# TODO:  file is found when knitr runs (see above)
+
+# file must be of form:
+# dir/name_of_this_file    where dir is relative to project root
+dir  <- "env_code"
+file  <- here(dir, "")
+
+file
+"
+
+rmarkdown::render(file,
+                  #output_format = "pdf_document",
+                  output_format = "html_document",
+                  output_file = "~/Downloads/print_and_delete/out")
+```
