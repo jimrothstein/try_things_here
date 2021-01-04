@@ -1,5 +1,5 @@
-
 	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+
 ---
 title: "050A_basic_samping"
 output: 
@@ -17,16 +17,6 @@ editor_options:
 * [source Rafal Chapter 14:](https://rafalab.github.io/dsbook/probability.html#discrete-probability)
 
 	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
----
-title: "050A_basic_samping"
-output: 
-  html_document: 
-    highlight: pygments
-    theme: cerulean
-    toc: yes
-editor_options: 
-  chunk_output_type: console
----
 
 ## Basic sampling, 
 * Verbs:   sample, rep, repetition
@@ -40,8 +30,6 @@ knitr::opts_chunk$set(echo = TRUE,
 											error=TRUE, 
 											collapse=TRUE) 
 ```
-
-<!--  RENDER:  see bottom -->
 
 ```{r library, include=FALSE		}
 library(jimTools) 

@@ -3,28 +3,34 @@
 -->
 
 --- 
-# Spaces, no Tabs
-title: Template for .Rmd 
+title:  "`r knitr::current_input()`"
 date: "`r paste('last updated', 
-    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+    format(lubridate::now(), ' %d %B %Y'))`"
 output: 
+  html_document:  
+    toc: true 
+    toc_depth:  2 
+    toc_float:  true   
   pdf_document: 
+    toc: true 
+    toc_depth:  2 
     latex_engine: xelatex
-toc: TRUE 
-toc_depth:  1 
-fontsize: 12pt 
-geometry: margin=0.5in,top=0.25in 
+    fontsize: 10pt 
+    geometry: margin=0.5in,top=0.25in 
 ---
 
+
+## Chi-Squared, Sampling ,  is Sample from Normal?
 
 * Simulate k iid random variables, from N(0,1)
 * Square and then sum
 * Does this look like chi-squared?
+
 ```{r setup, include=FALSE		}
 knitr::opts_chunk$set(echo = TRUE,  
 											comment="      ##",  
 											error=TRUE, 
-											collapse=TRUE) 
+											collapse=FALSE  ) 
 ```
 
 ```{r library, include=FALSE		}
@@ -33,7 +39,7 @@ library(tibble)
 library(ggplot2)
 ``` 
 
-Ch 9.1.1 - fake population 
+### Ch 9.1.1 - fake population 
 ```{r one}
 set.seed(2020)
 heights<-rnorm(1200, mean=5.5, sd=4/12.0)
@@ -59,6 +65,10 @@ mean(one_sample_x)  #5.53
 sd(one_sample_x)   # 0.327  
 
 ```
+```{r exit}
+knitr::knit_exit()
+```
+
 
 ```{r sampling_k}
 library(magrittr)
@@ -153,10 +163,9 @@ knitr::knit_exit()
 /newpage
 
 ```{r render, eval=FALSE	} 
-file <- "rmd/099_hannay_chapter_09_sampling.Rmd" 
-file  <- basename(file) 
-dir <-"rmd"
-
-jimTools::ren_pdf(file,dir)
-jimTools::ren_github(file, dir)
+file <- "rmd/01040_chi_squared_sampling.Rmd" 
+rmarkdown::render(file,
+                  output_format = "pdf_document",
+#                  output_format = "html_document",
+                  output_file = "~/Downloads/print_and_delete/out")
 ```

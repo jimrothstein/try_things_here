@@ -2,6 +2,7 @@
 ---
 title:  037_binonial.R
 output:
+  html_document 
   pdf_document
 ---
 
@@ -15,10 +16,8 @@ Notation:
   -  B number of repeat samples
 
 ```{r begin}
-
 library(tibble)
 library(ggplot2)
-library(jimTools)
 ```
 ```{r first}
 

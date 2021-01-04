@@ -28,13 +28,27 @@ data(gss_cat)
 x1 <- c("Dec", "Apr", "Jan", "Mar")
 x1
 
+
+# alpha order
+sort(x1)
+
 # dictionary order?
 month_levels <- c(
   "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 )
 x2 <- factor(x1, levels=month_levels)
-x2
+x2  # no change to data, but levels are correct
+
+t  <- tribble(~"month", ~"count",
+        "Dec", 23,
+        "Apr",  0)
+
+t
+
+forcats::fct_
+
+sort(x1)
 
 x1 %>% fct_reorder(x2)
 ,
