@@ -10,6 +10,10 @@ editor_options:
   chunk_output_type: console
 ---
 
+DUPLICATE?
+REMOVE?
+
+
  =====================
 Rename:  knitr chunks
 =====================
@@ -51,49 +55,6 @@ t <- as_tibble( fs::dir_info(here("rmd"))) %>%
 t
 ```
 
-(I stole this code)
-figure this out!
-* find all chunks
-* neatly numbers them?
-
-```{r challenge_regex}
-
-name_chunks_mlr3book = function() {
-
-  here()
-  # full.names = FALSE for file names only
-  rmds = list.files(here("rmd"), 
-    pattern = "\\.Rmd$", full.names = TRUE, recursive = TRUE)
-
-  rmds
-
-  pattern = "^([[:space:]]*```\\{[rR])([[:alnum:] -]*)(.*\\})[[:space:]]*$"
-  
-  for (rmd in rmds) {
-    message(sprintf("Renaming chunks in '%s'", basename(rmd)))
-
-    # read all the lines
-    lines = readLines(rmd)
-
-    # which lines, spaces, then ```, anything, then }
-    # misses a few with ::spaces:: after final }
-    ii  <- which(
-                 stringr::str_detect(
-                                     lines, 
-                                     "^[[:space:]]*```\\{[rR].*\\}$"))
-
-
-    # START HERE
-    labels = sprintf("%s-%03i", stringi::stri_replace_last_fixed(basename(rmd), ".Rmd", ""), seq_along(ii))
-
-    lines[ii] = stringi::stri_replace_first_regex(lines[ii], pattern, sprintf("$1 %s$3", labels))
-
-    writeLines(stringi::stri_trim_right(lines), con = rmd)
-  }
-
-  invisible(TRUE)
-}
-```
 
 ```{r}
 knitr::knit_exit()

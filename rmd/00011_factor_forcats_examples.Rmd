@@ -1,55 +1,51 @@
 
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+
 --- 
-title:  "`r knitr::current_input()`"
+title: "`r knitr::current_input()`"
 date: "`r paste('last updated', 
     format(lubridate::now(), ' %d %B %Y'))`"
-output: 
+output:   
   html_document:  
-    toc: true 
-    toc_depth:  2 
-    toc_float:  true   
-    number_sections: yes
-  pdf_document: 
-    toc: true 
-    toc_depth:  2 
-    latex_engine: xelatex
-    fontsize: 10pt 
-    geometry: margin=0.5in,top=0.25in 
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+    fontsize: 11pt   
+    geometry: margin=0.5in,top=0.25in   
 ---
-## Misc useful stuff
-## Tags:  stop(), str_c(), function(...), row_number(),  factor, forcats
+
+<!-- 
+set cul   "cursorline
+cc=+1			"colorcolumn is 1 more than tw
+
+vim: to format all urls for md
+s/https.*/[&]()/g
+-->
 
 ```{r setup, include=FALSE		}
 knitr::opts_chunk$set(echo = TRUE,
                       comment = "      ##",
                       error = TRUE,
                       collapse = FALSE   ) # easier to read
+```
+
+
+```{r library, include=FALSE		}
+file  <- knitr::current_input() 
+
+library(jimTools)
 library(forcats)
-library(dplyr)
-library(stringr)
-library(knitr)
+``` 
+
+
+```{r begin}
+print(file)
 ```
 
-#### stop(), throws error 
-```{r}  
-x <- 0
-if (x == 0) stop("this is msg")   
-print("never gets here")
-```
-
-#### use of "..."
-```{r}
-stringr::str_c("a", "b")   # ab
-commas <- function(...) {
-        # pass ... to functions inside
-        # collapse into single string
-        stringr::str_c(..., collapse=", ")
-}
-
-commas(letters[1:10])           # a, b, c, d, e 
-
-stringr::str_c("a","b", "c", sep=", ")
-```
 from Grolemund - categorical variables
 Ref: https://rstudio-education.github.io/hopr/r-objects.html Ch 5.5.2
 
@@ -184,51 +180,110 @@ levels(g)
 
 fct_inseq(g)
 ```
+## Begin examples from FORCATS:: cheat sheet
+```{r begin_cheat}
+library(forcats)
+f <- base::factor(c("a", "c", "b", "a"),
+ levels = c("a", "b", "c")) 
+f
 
-```{r mod}
-#  using  7 %% 2 as 7 mod(2) is equal 1
-#  8 %% 2 = 0
+levels(f)
 
-even <- 
+unclass(f) # structure
 ```
 
-
-
-
-```{r dplyr}
-# ---- rank, row_number() -------------
-
-t <- tibble(x = 10:1,
-            letters = letters[1:10])
-t %>% factor(letters)
-t 
-
-# each group, find lowest 2 scores, print original line#
-df %>% as.tibble() %>%
-        group_by(factor) %>%
-        mutate(n = row_number()) %>%  #note:  WITHIN group
-                       select(n,factor,score) %>%
-       
-        arrange(desc(factor), desc(score)) %>%
-        top_n(-2)
-       
+```{r fct_count}
+fct_count(f)
+fct_count(f, sort = FALSE  )
 ```
-```{r sQL}
 
+```{r fct_unique}
+fct_unique(f)
+```
+Concatenate data
+```{r combine}
+f1 <- factor(c("a", "c"))
+f1
+f2 <- factor(c("b", "a"))
+f2
 
-# ---- show SQL -----------------
-q <- df %>% as.tibble() %>%
-        group_by(factor) %>%
-        mutate(n = row_number()) %>%  #note:  WITHIN group
-        select(n,factor,score) 
-q %>% dplyr::show_query()
-q %>% explain()
+fct_c(f1, f2)
+```
+
+manually, reorder factors
+```{r fct_relevel}
+fct_relevel(f, c("b", "c", "a"))
+```
+
+highest is first
+```{r fct_infreq}
+f
+fct_infreq(f)
+
+f3 <- factor(c("c", "c", "a"))
+f3
+fct_infreq(f3) 
+```
+
+set factors in order of appearance in data
+```{r fct_inorder}
+f2
+fct_inorder(f2)
+```
+
+fct_reorder
+```{r fct_reorder}
+str(iris)  # Species is categorical (factor)
+
+# initial ordering
+levels(iris$Species)
+head(iris$Species, n = 20L)
+
+pdf("~/Downloads/print_and_delete/forcats.pdf")
+#plot(x, r, col = 2, ylim = c(-5, 5))
+# abline(h = 0)
+boxplot(data = iris, Sepal.Width ~ Species)
+# boxplot(data = iris, Sepal.Width ~ fct_reorder(Species, Sepal.Width)) 
+dev.off()
+```
+## Redo boxplot but  in asc or desc order
+```{r reorder}
+# .f = factor
+# for each .f, group .x (a variable) and apply .fun 
+# sort based on .fun(.x) in asc order 
+# fct_reorder(.f, .x, .fun=median, .desc = FALSE)
+
+f   <- iris$Species # a factor
+x   <- iris$Sepal.Width
+library(dplyr)
+
+x  <- fct_reorder(iris$Species, iris$Sepal.Width)
+levels(x)
+pdf("~/Downloads/print_and_delete/forcats.pdf")
+boxplot(data = iris, Sepal.Width ~ fct_reorder(Species, Sepal.Width)) 
+dev.off()
 
 ```
-```{r render, eval=FALSE    }
+
+  
+
+
+***
+
+```{r knit_exit(), include = FALSE  , eval=FALSE } 
+# knitr::knit_exit()
+```
+
+/newpage
+
+```{r render, eval=FALSE	} 
+# TODO:  file is found when knitr runs (see above)
+
+# file must be of form:
+# dir/name_of_this_file    where dir is relative to project root
 
 file  <- here("", "")
-file  <- "rmd/00010_dplyr_misc_factor_examples.Rmd"
+file
 
 # in general, pdf will look nicer
 rmarkdown::render(file,

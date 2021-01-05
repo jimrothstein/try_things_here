@@ -1,5 +1,7 @@
 ---
-title: "064_knitr:: chunk practice"
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
 output:
   html_document: 
     code_folding: show
@@ -8,6 +10,7 @@ output:
     theme: sandstone
     toc: yes
     toc_depth: 2
+    toc_float: true
   pdf_document:
     toc: yes
     number_sections: TRUE
@@ -16,13 +19,18 @@ editor_options:
   chunk_output_type: console
 ---
 
+## Collect knitr:: here
+
 echo[TRUE] print code  
 eval[TRUE] eval cod  
 include[TRUE] print output  
 
-# 0-setup, no output
+## 0-setup, no output
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE,  comment="      ##", z=TRUE, collapse=TRUE)
+knitr::opts_chunk$set(echo = TRUE,  
+                      comment="      ##", 
+                      z=TRUE, 
+                      collapse=TRUE)
 library(knitr)
 library(jimTools)
 ```
@@ -34,12 +42,12 @@ x=4
 show_text=TRUE
 ```
 
-### 2-output, but do not evaluate
+## 2-output, but do not evaluate
 ```{r check, eval=FALSE}
 print(x)
 ```
 
-3-nothing!
+## 3-nothing!
 ```{r check1, eval=FALSE, include=FALSE}
 print(x+2)
 ```
@@ -70,27 +78,27 @@ print("show_text is TRUE")
 print("show_text is TRUE")
 ```
 
-7A-collapse=TRUE
+## 7A-collapse=TRUE
 ```{r collapse=TRUE }
 print("one")
 print("two")
 ```
 
-7B-collapse=FALSE
+## 7B-collapse=FALSE
 ```{r collapse=FALSE}
 print("one")
 print("two")
 ```
 
 
-20-list extra-all chunk options
+## 20-list extra-all chunk options
 ```{r chunk_options, include=show_text, collapse=TRUE}
 str(knitr::opts_chunk$get())
 ```
 
 
 
-21-knitr::read_chunk from external .R file WORKS!
+## 21-knitr::read_chunk from external .R file WORKS!
 [REF:] (https://bookdown.org/yihui/rmarkdown-cookbook/read-chunk.html)
 ```{r read, cache=FALSE }
   knitr::read_chunk('~/code/r_try_things_here/rmd/file_for_read_chunk.R')
@@ -103,6 +111,49 @@ str(knitr::opts_chunk$get())
 ```
 
 
+(I stole this code)
+figure this out!
+* find all chunks
+* neatly numbers them?
+
+```{r challenge_regex, eval=FALSE , echo=FALSE  }
+
+name_chunks_mlr3book = function() {
+
+  here()
+  # full.names = FALSE for file names only
+  rmds = list.files(here("rmd"), 
+    pattern = "\\.Rmd$", full.names = TRUE, recursive = TRUE)
+
+  rmds
+
+  pattern = "^([[:space:]]*```\\{[rR])([[:alnum:] -]*)(.*\\})[[:space:]]*$"
+  
+  for (rmd in rmds) {
+    message(sprintf("Renaming chunks in '%s'", basename(rmd)))
+
+    # read all the lines
+    lines = readLines(rmd)
+
+    # which lines, spaces, then ```, anything, then }
+    # misses a few with ::spaces:: after final }
+    ii  <- which(
+                 stringr::str_detect(
+                                     lines, 
+                                     "^[[:space:]]*```\\{[rR].*\\}$"))
+
+
+    # START HERE
+    labels = sprintf("%s-%03i", stringi::stri_replace_last_fixed(basename(rmd), ".Rmd", ""), seq_along(ii))
+
+    lines[ii] = stringi::stri_replace_first_regex(lines[ii], pattern, sprintf("$1 %s$3", labels))
+
+    writeLines(stringi::stri_trim_right(lines), con = rmd)
+  }
+
+  invisible(TRUE)
+}
+```
 STop
 ```{r}
 knitr::knit_exit()
@@ -110,15 +161,11 @@ knitr::knit_exit()
 
 render from code, to html
 ```{r eval=FALSE}
+file  <- "rmd/00064_knitr_chunk_practice.Rmd"
 rmarkdown::render(
-	"~/code/r_try_things_here/064_knitr_chunk_practice.html", 
-	rmarkdown::html_document(), output_dir="./html") 
+	file, 
+	rmarkdown::html_document(), 
+	#rmarkdown::pdf_document()) ,
+  output_file="~/Downloads/print_and_delete/out") 
 ```
 
-render from code, to pdf
-```{r eval=FALSE}
-rmarkdown::render(
-	"~/code/r_try_things_here/064_knitr_chunk_practice.html", 
-	rmarkdown::pdf_document()) 
-jimTools::ren_pdf("064_knitr_chunk_practice.Rmd", "rmd")
-```

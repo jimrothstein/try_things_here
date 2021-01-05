@@ -1,0 +1,80 @@
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: hide
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+    fontsize: 11pt   
+    geometry: margin=0.5in,top=0.25in   
+---
+
+## Base R plot() examples
+Ref:https://dcgerard.github.io/stat234/base_r_cheatsheet.html 
+
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = FALSE   ) # easier to read
+library(ggplot2) # only for databas
+```
+## Base:: plots
+- set the params in pdf(...)
+- plot
+- dev.off() to complete
+}
+
+
+```{r plots, eval=FALSE }
+pdf("~/Downloads/print_and_delete/04_lm_residuals.pdf")
+plot(x, r, col = 2, ylim = c(-5, 5))
+abline(h = 0)
+dev.off()
+```
+
+```{r density}
+density_object <- density(mpg$hwy)
+pdf("~/Downloads/print_and_delete/out.pdf")
+plot(density_object)
+dev.off()
+```
+
+```{r png_example}
+filename  <- "~/Downloads/print_and_delete/out.png"
+png(filename = filename,
+         width = 480, height = 480, units = "px", pointsize = 12)
+plot(density_object)
+dev.off()
+```
+
+```{r in_line_html}
+plot(density_object)
+```
+
+
+/newpage
+
+```{r render, eval=FALSE	} 
+# TODO:  file is found when knitr runs (see above)
+
+# file must be of form:
+# dir/name_of_this_file    where dir is relative to project root
+
+file  <- here("", "")
+file  <- "rmd/1040_base_plot_examples.Rmd"
+
+# in general, pdf will look nicer
+rmarkdown::render(file,
+                  #output_format = "pdf_document",
+                  output_format = "html_document",
+                  output_file = "~/Downloads/print_and_delete/out")
+```
