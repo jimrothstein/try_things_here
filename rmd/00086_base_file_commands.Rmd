@@ -1,6 +1,4 @@
-	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
---- 
-# Spaces, no Tabs
+---
 title: Template for .Rmd 
 date: "`r paste('last updated', 
     format(lubridate::now(), '%H:%M, %d %B %Y'))`"
@@ -14,6 +12,9 @@ geometry: margin=0.5in,top=0.25in
 ---
 
 ## base:: files and dir commands
+### Includes, base commands to rename files in directory.
+
+
 ```{r setup, include=FALSE		}
 knitr::opts_chunk$set(echo = TRUE,  
 											comment="      ##",  
@@ -24,6 +25,9 @@ library(jimTools)
 
 base:: commands (why use fs:: ?)
 ```{r begin}
+the_dir  <- "~/mp3/from_youtube/"
+pat  <-  "^_[:digit:]{5}"
+
 list.files("./rmd", pattern="*.Rmd")
 list.files("./rmd", full.names = TRUE ,pattern="*.Rmd")
 
@@ -35,6 +39,51 @@ if (FALSE)
   #
   # list.dirs()
   # dir()
+```
+
+
+WOKRING CODE 
+special case
+* pat  =  "^_[[:digit:]]{5}"
+* Find files in from_youtube, that have begin with _ddddd  
+* (These are gone now!)
+* Using gsub to remove _ddddd
+* change name on disk, using dir_path + new names
+```
+
+```
+if (FALSE ) {
+  pat  <-  "^_[[:digit:]]{4,6}"
+  pat  <-  `'^_'`
+  pat <- `'^_00056'`
+
+  pat <- "^_[[:digit:]]{5}"
+}
+```
+
+
+```{r special}
+the_dir  <- "~/Downloads/mp3/from_youtube/"
+the_dir
+list.files(path = the_dir)
+
+list.files(path = the_dir, pattern = pat)
+old <- list.files(path = the_dir, pattern = pat)
+old
+new  <- gsub(pattern = pat, replace="_", x = v)
+new
+
+old  <- paste0(the_dir,old)
+old
+
+
+new  <- paste0(the_dir,new)
+new
+
+file.rename(
+            from = old, 
+            to = new)
+
 ```
 
 ```{r prepend_file_name}
