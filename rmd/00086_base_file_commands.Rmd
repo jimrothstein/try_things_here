@@ -12,6 +12,7 @@ geometry: margin=0.5in,top=0.25in
 ---
 
 ## base:: files and dir commands
+## Collect HERE
 ### Includes, base commands to rename files in directory.
 
 
