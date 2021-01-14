@@ -75,6 +75,18 @@ replicate(n =3,  mean(rnorm(10)))
 
 ```
 
+Construct list of vectors for lapply
+  *  replicate is version of sapply
+  *  simply=FALSE ; returns list of vectors
+  *  DEFAULT would return array or matrix
+
+```{r }
+n  <- 3
+l  <- replicate(3, rnorm(5), simplify = FALSE )
+l
+
+lapply(l, mean)
+``
 game
 ```{r game}
 # game:  roll 2 dice, 7 or 11?

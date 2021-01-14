@@ -1,0 +1,117 @@
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+    fontsize: 11pt   
+    geometry: margin=0.5in,top=0.25in   
+---
+
+PURPOSE:   Examples of lapply, sapply.
+
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = FALSE   ) # easier to read
+```
+
+lapply: a function works on list, returns a list.
+```{r simple_list}
+
+l  <- list(a = rnorm(5), b = rnorm(5))
+l
+
+lapply(l, mean)
+
+```
+
+
+Construct list of vectors for lapply
+  *  replicate is version of sapply
+  *  simply=FALSE ; returns list of vectors
+  *  DEFAULT would return array or matrix
+
+```{r }
+n  <- 3
+l  <- replicate(3, rnorm(5), simplify = FALSE )
+l
+
+lapply(l, mean)
+```
+
+```{r}
+
+# sapply is 'smarter', see scalers and returns vector[] instead.
+sapply(v, mean) # return vector!
+
+# ?
+l <- list(a=1:5, b=6:10)
+
+sapply(l, `[`)
+
+#-----------------
+# runif | runif(n) returns double[] n values from uniform distr
+# ---------
+
+# to check
+args(runif)
+
+runif(3)
+
+lapply(1:4,runif) # treats 1:4 as list, retuns list
+```
+```{r todo}
+
+#  #####
+#  integer(1) creates 0
+#  integer(2)         0 0
+#
+n  <- 10^6
+
+## atomic int[]  fastest?
+##
+# create int[] of length n, filled with 1:n
+if (FALSE )
+  seq_len(n)
+
+# fills x 1:n
+x  <- vapply(seq_len(n), function(i) {i}, integer(1))
+head(x)
+
+x  <- NULL
+
+
+# creates all zeroes
+x  <- vapply(seq_len(n), function(i) {integer(1)}, integer(1))
+head(x)
+```
+
+
+
+
+```{r render, eval=FALSE, include=FALSE 	} 
+# TODO:  file is found when knitr runs (see above)
+
+# file must be of form:
+# dir/name_of_this_file    where dir is relative to project root
+
+file  <- here("", "")
+file  <-"rmd/0089_lapply_sapply.Rmd" 
+
+# in general, pdf will look nicer
+rmarkdown::render(file,
+                  #output_format = "pdf_document",
+                  output_format = "html_document",
+                  output_file = "~/Downloads/print_and_delete/out")
+```
