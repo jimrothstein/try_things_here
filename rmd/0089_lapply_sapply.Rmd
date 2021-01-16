@@ -16,7 +16,7 @@ output:
     geometry: margin=0.5in,top=0.25in   
 ---
 
-PURPOSE:   Examples of lapply, sapply.
+PURPOSE:   Examples of lapply, sapply, vapply
 
 
 ```{r setup, include=FALSE		}
@@ -26,14 +26,13 @@ knitr::opts_chunk$set(echo = TRUE,
                       collapse = FALSE   ) # easier to read
 ```
 
-lapply: a function works on list, returns a list.
+### lapply: a function works on list, returns a list.
 ```{r simple_list}
 
 l  <- list(a = rnorm(5), b = rnorm(5))
 l
 
 lapply(l, mean)
-
 ```
 
 
@@ -71,16 +70,15 @@ runif(3)
 
 lapply(1:4,runif) # treats 1:4 as list, retuns list
 ```
-```{r todo}
 
-#  #####
+### vapply(x, fun(x), typeof(x))
+```{r vapply}
+
 #  integer(1) creates 0
 #  integer(2)         0 0
 #
-n  <- 10^6
+n  <- 10^3
 
-## atomic int[]  fastest?
-##
 # create int[] of length n, filled with 1:n
 if (FALSE )
   seq_len(n)
@@ -88,16 +86,23 @@ if (FALSE )
 # fills x 1:n
 x  <- vapply(seq_len(n), function(i) {i}, integer(1))
 head(x)
-
 x  <- NULL
-
-
+```
+### vapply examples
+```{r vapply_examples}
+n  <- 10^3
 # creates all zeroes
 x  <- vapply(seq_len(n), function(i) {integer(1)}, integer(1))
 head(x)
+
+
+# remove entries 
+v  <- double()
+v  <- c(1,2,3, 2019, 2020, 2021, 2022)
+typeof(v)
+
+vapply(v, function(x) {if (x > 2020) x  <- NA; x}, double(1))
 ```
-
-
 
 
 ```{r render, eval=FALSE, include=FALSE 	} 

@@ -9,7 +9,8 @@ font_size: 10
 
 ---
 
-# Binomial Sampling
+Binomial Sampling
+Purpose:   Examples of sampling from binomial distribution
 
 
 ## Notation:
@@ -25,11 +26,12 @@ knitr::opts_chunk$set(echo = TRUE,
 											comment="      ##",  
 											error=TRUE, 
 											collapse=FALSE  ) 
-```
-```{r begin}
+
 library(tibble)
-\tiny{library(ggplot2)}
 ```
+
+
+
 ###  Toss coin 100 times, return # SUCCCESSES
 ```{r rbinom}
 # 1 sample(set 100 obs)
@@ -42,14 +44,18 @@ set.seed(2020) # 52 successes
 
 x <- rbinom(n = B , size=n, p=p)
 x #52
+```
 
-# SAME, but repeat the experiment 40 times
+
+SAME, but repeat the experiment 40 times
+```{r repeat_experiment}
 
 x <- rbinom(B  <- 40, size=n, p=0.5)
 x # int[B], vector of size B, number of SUCCESSes in each  
 
 # of the 40 experiments, how many returned > 55 heads?
-
+hist(x)
+knitr::()
 table(x) # of 40 samples, distribution of success totals 
 
 table(x  >  55)   # of 40 samples(each 100), how many more than 55 successes
@@ -224,9 +230,37 @@ f  <- function(dummy) {print("hi")}
 
 l  <-   lapply (1:2, f)
 ```
+## plots
+```{r plot}
+
+file  <- "out"
+png(filename = paste0("~/Downloads/print_and_delete/" , file,".png"),
+         width = 480, height = 480, units = "px", pointsize = 12,
+          bg = "white",  res = NA,
+         type = c("cairo", "cairo-png", "Xlib", "quartz")
+)
+
+ hist(x)
+# boxplot(x, col="green", names=c("UrOx"))
+
+stripchart(x = x, 
+           ylim=c(0, 225),
+           pch = 1, 
+           cex = 0.5,
+           frame = TRUE, 
+           vertical = TRUE,
+           main = "24-hour Ur Ox")
+
+abline(h = 35, col=2)
+
+# plot(x, fake, ylim = c(-5, 5), sub = "t-value = 21.5", type = "p")
+# abline(h = fake_mean, col=2)
+dev.off()
+```
 
 ```{r render, eval=FALSE  }
-rmarkdown::render("rmd/01060_sampling_binom.Rmd",  
+file  <- "rmd/01060_sampling_BINOM.Rmd"
+rmarkdown::render(file,  
                   output_format = "html_document",
                   output_file="~/Downloads/print_and_delete/out") 
 ```

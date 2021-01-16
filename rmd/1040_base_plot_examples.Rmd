@@ -60,6 +60,29 @@ dev.off()
 plot(density_object)
 ```
 
+stripchart()
+```{r sripchart}
+
+png(filename = paste0("~/Downloads/print_and_delete/" , file,".png"),
+         width = 480, height = 480, units = "px", pointsize = 12,
+          bg = "white",  res = NA,
+         type = c("cairo", "cairo-png", "Xlib", "quartz")
+)
+
+stripchart(x = x, 
+           ylim=c(0, 225),
+           pch = 1, 
+           cex = 0.5,
+           frame = TRUE, 
+           vertical = TRUE,
+           main = "24-hour Ur Ox")
+
+abline(h = 35, col=2)
+
+# plot(x, fake, ylim = c(-5, 5), sub = "t-value = 21.5", type = "p")
+# abline(h = fake_mean, col=2)
+dev.off()
+```
 
 /newpage
 
