@@ -50,42 +50,75 @@ dbinom(x =k , size =n, prob=0.5) # 0.25
 
 
 p  <- 0.5
-n  <- 10^3
-k  <- 1:n
+n  <- 10 # (size)
+k  <- 1:n # (x)
 B  <- 1
 z  <- dbinom(x =k , size =n, prob=0.5) # 0.25
+z
 
-hist(z)
+## SEPARATE file, *.png
+filename  <- "~/Downloads/print_and_delete/out.png"
+png(filename = filename,
+         width = 480, height = 480, units = "px", pointsize = 12)
+plot(z, main ="Binomial Distribution: n=10 throws, probably heads 1:n", 
+     ylab = "dbinom",
+     xlab = "k successes, 1:n"
+)
+# hist(z)
+dev.off()
 
-knitr::knit_exit()
 
+## INLINE 
+plot(z, main ="Binomial Distribution: n=10 throws, probably heads 1:n", 
+     ylab = "dbinom",
+     xlab = "k successes, 1:n"
+)
 
-#####  Binomial #####
-dbinom(x=200,size=400, prob=0.5)
+# knitr::knit_exit()
+```
 
-dbinom(x=1:5,size=400, prob=0.2)
-
+### pmf (density) - prob of exactly k (x) success, n throws
+```{r }
 
 # pmf(density) - binomial, prob of x=# success, size=throws
 # usu written as choose(n,x) (p^n) (1-p)^(k-n)
-# x may be vector
+# x = k (successes) may be vector
 
 dbinom(x=0,size=2, prob=0.5) # n=2, x=0  prob = 0.25
 dbinom(x=1, size =2 , prob=0.5) # n=2, x=1 # 0.5
+dbinom(x=c(0,1), size=2, prob=0.5) # n=2, x=0  prob = 0.25
 
-#  size = 1000, prob=.5,   number of heads =?
+# Odds exactly 200 heads, out of 400 throws
+n  <- 400
+k  <- 200
+
+dbinom(x=200,size=400, prob=0.5)
+
+#  size = 1000, prob=.5,   number of heads =?  (tiny)
 dbinom(x=1, size=1000, prob=0.5)
+
+# But .. sum to one
 sum(dbinom(x=0:2,size=2, prob=0.5)) # SUM = 1
 
-sum(dbinom(x=1:5, size=400, prob=.2))
 sum(dbinom(x=1:400, size=400, prob= .2))
 
+```
 
-## n throws,  # of success below X
+pbinom
+*  cum prob
+*  prob of k (x) or less successes, n throws
+```{r pbinom}
+
+## n throws,  # of success below k
+
 ######   Pr (# of successes X <= value x)
-pbinom(400, prob=0.2, size=400)				# 1, no suprise
+n  <- 400
+k  <- 400
+p  <- 0.5
+
+pbinom(k, prob=p, size=n)				# 1, no suprise
 pbinom(80, prob=0.2, size=400)				# 53.0% will be less than 80
-pbinom(100, prob=0.2, size=400)				# 99.3% will be less or = 100 success
+pbinom(c(0, k/4, k/2, 3*k/4, k), prob=p , size = n)
 
 ######	Pr (# of successes X = value x)
 dbinom (80, prob=0.2, size=400)				# 0.05
@@ -357,6 +390,21 @@ dbinom(x=7, size=7, prob=0.5)
 
 ```{r knit_exit(), include = FALSE  , eval=FALSE } 
 # knitr::knit_exit()
+```
+
+```{r plot_density, eval=FALSE  }
+density_object <- density(mpg$hwy)
+pdf("~/Downloads/print_and_delete/out.pdf")
+plot(density_object)
+dev.off()
+```
+
+```{r plot_png_example, eval=FALSE  }
+filename  <- "~/Downloads/print_and_delete/out.png"
+png(filename = filename,
+         width = 480, height = 480, units = "px", pointsize = 12)
+plot(density_object)
+dev.off()
 ```
 
 ```{r render, eval=FALSE, include=FALSE 	} 
