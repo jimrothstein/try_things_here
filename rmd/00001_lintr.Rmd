@@ -19,7 +19,6 @@ https://cran.r-project.org/web//packages/lintr/lintr.pdf
 <!-- 
 set cul   "cursorline
 cc=+1			"colorcolumn is 1 more than tw
-
 vim: to format all urls for md
 s/https.*/[&]()/g
 -->
