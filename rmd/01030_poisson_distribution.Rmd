@@ -1,0 +1,90 @@
+
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+    fontsize: 11pt   
+    geometry: margin=0.5in,top=0.25in   
+---
+
+<!-- 
+code_folding: hide   to turn off
+
+set cul   "cursorline
+cc=+1			"colorcolumn is 1 more than tw
+
+vim: to format all urls for md
+s/https.*/[&]()/g
+-->
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = FALSE   ) # easier to read
+
+file  <- knitr::current_input() 
+library(jimTools)
+```
+
+
+
+plot poisson distribution
+```{r dpois}
+lambda = 1    # rate of 1 per unit
+x  <- 0:10    # how many counts?
+z  <- dpois(x = x, lambda = lambda)
+plot(z, main ="Poisson Distribution: upto n=10 counts, lambda=1",
+     ylab = "dpois",
+     xlab = "counts, 1:n"
+)
+
+```
+
+***
+
+```{r knit_exit(), include = FALSE  , eval=FALSE } 
+# knitr::knit_exit()
+```
+
+/newpage
+
+```{r plot_density, eval=FALSE  }
+density_object <- density(mpg$hwy)
+pdf("~/Downloads/print_and_delete/out.pdf")
+plot(density_object)
+dev.off()
+```
+
+```{r plot_png_example, eval=FALSE  }
+filename  <- "~/Downloads/print_and_delete/out.png"
+png(filename = filename,
+         width = 480, height = 480, units = "px", pointsize = 12)
+plot(density_object)
+dev.off()
+```
+```{r render, eval=FALSE, include=FALSE 	} 
+# TODO:  file is found when knitr runs (see above)
+
+# file must be of form:
+# dir/name_of_this_file    where dir is relative to project root
+
+file  <- here("", "")
+file  <- "rmd/01030_poisson_distribution.Rmd"
+
+# in general, pdf will look nicer
+rmarkdown::render(file,
+                  #output_format = "pdf_document",
+                  output_format = "html_document",
+                  output_file = "~/Downloads/print_and_delete/out")
+```

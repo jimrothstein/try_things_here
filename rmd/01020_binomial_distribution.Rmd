@@ -36,7 +36,7 @@ Notation:
   -  B number of repeat samples
 
 
-## prob density , dbinom, n throws, prob of x successes
+### prob density , dbinom, n throws, prob of x successes
 ```{r first}
 p  <- 0.5
 n  <- 2  
@@ -48,6 +48,11 @@ dbinom(x =1, size =2, prob=0.5)
 dbinom(x =0, size =2, prob=0.5) # 0.25
 dbinom(x =k , size =n, prob=0.5) # 0.25
 
+# another way:   each flip is sample (n=1), repeat B throws
+B  <- 2 
+k  <- 0:2  # success in B thros 
+dbinom(x = k, size = 1*B, prob = p)
+
 
 p  <- 0.5
 n  <- 10 # (size)
@@ -56,19 +61,7 @@ B  <- 1
 z  <- dbinom(x =k , size =n, prob=0.5) # 0.25
 z
 
-## SEPARATE file, *.png
-filename  <- "~/Downloads/print_and_delete/out.png"
-png(filename = filename,
-         width = 480, height = 480, units = "px", pointsize = 12)
-plot(z, main ="Binomial Distribution: n=10 throws, probably heads 1:n", 
-     ylab = "dbinom",
-     xlab = "k successes, 1:n"
-)
-# hist(z)
-dev.off()
-
-
-## INLINE 
+## INLINE  (knitr)
 plot(z, main ="Binomial Distribution: n=10 throws, probably heads 1:n", 
      ylab = "dbinom",
      xlab = "k successes, 1:n"
@@ -78,11 +71,10 @@ plot(z, main ="Binomial Distribution: n=10 throws, probably heads 1:n",
 ```
 
 ### pmf (density) - prob of exactly k (x) success, n throws
+*  pmf(density) - binomial, prob of x=# success, size=throws
+*  usu written as choose(n,x) (p^n) (1-p)^(k-n)
+*  x = k (successes) may be vector
 ```{r }
-
-# pmf(density) - binomial, prob of x=# success, size=throws
-# usu written as choose(n,x) (p^n) (1-p)^(k-n)
-# x = k (successes) may be vector
 
 dbinom(x=0,size=2, prob=0.5) # n=2, x=0  prob = 0.25
 dbinom(x=1, size =2 , prob=0.5) # n=2, x=1 # 0.5
@@ -396,6 +388,20 @@ dbinom(x=7, size=7, prob=0.5)
 density_object <- density(mpg$hwy)
 pdf("~/Downloads/print_and_delete/out.pdf")
 plot(density_object)
+dev.off()
+```
+
+## SEPARATE file, *.png
+```{r separate_png, eval=FALSE  }
+
+filename  <- "~/Downloads/print_and_delete/out.png"
+png(filename = filename,
+         width = 480, height = 480, units = "px", pointsize = 12)
+plot(z, main ="Binomial Distribution: n=10 throws, probably heads 1:n", 
+     ylab = "dbinom",
+     xlab = "k successes, 1:n"
+)
+# hist(z)
 dev.off()
 ```
 

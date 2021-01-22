@@ -1,0 +1,102 @@
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+    fontsize: 11pt   
+    geometry: margin=0.5in,top=0.25in   
+---
+
+<!-- 
+code_folding: hide   to turn off
+
+set cul   "cursorline
+cc=+1			"colorcolumn is 1 more than tw
+
+vim: to format all urls for md
+s/https.*/[&]()/g
+-->
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = FALSE   ) # easier to read
+file  <- knitr::current_input() 
+library(jimTools)
+```
+
+Create atomic vector, slice and dice:
+```{r create}
+v  <- 1:1000
+head(v)
+
+# first 100
+first  <- v[1:100]
+first
+
+# rest 
+rest  <- v[-(1:100)]
+rest
+head(rest)
+
+```
+
+### Use cut, split - FAIL!
+*  cut   is used to create intevals?  (factors?) 
+*  split is used to chop vector based on a FACTOR
+```{r cut}
+```
+
+
+
+```{r begin}
+print(file)
+```
+
+***
+
+```{r knit_exit(), include = FALSE  , eval=FALSE } 
+# knitr::knit_exit()
+```
+
+/newpage
+
+```{r plot_density, eval=FALSE  }
+density_object <- density(mpg$hwy)
+pdf("~/Downloads/print_and_delete/out.pdf")
+plot(density_object)
+dev.off()
+```
+
+```{r plot_png_example, eval=FALSE  }
+filename  <- "~/Downloads/print_and_delete/out.png"
+png(filename = filename,
+         width = 480, height = 480, units = "px", pointsize = 12)
+plot(density_object)
+dev.off()
+```
+```{r render, eval=FALSE, include=FALSE 	} 
+# TODO:  file is found when knitr runs (see above)
+
+# file must be of form:
+# dir/name_of_this_file    where dir is relative to project root
+
+file  <- here("", "")
+file
+
+# in general, pdf will look nicer
+rmarkdown::render(file,
+                  #output_format = "pdf_document",
+                  output_format = "html_document",
+                  output_file = "~/Downloads/print_and_delete/out")
+```

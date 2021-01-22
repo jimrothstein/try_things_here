@@ -38,6 +38,8 @@ if (FALSE)
   # basename()
   # dirname()
   #
+  # file.copy(from, to, overwrite = recursive, recursive = FALSE,
+  #               copy.mode = TRUE, copy.date = FALSE)
   # list.dirs()
   # dir()
 ```
@@ -46,20 +48,17 @@ if (FALSE)
 WOKRING CODE 
 special case
 * pat  =  "^_[[:digit:]]{5}"
-* Find files in from_youtube, that have begin with _ddddd  
-* (These are gone now!)
-* Using gsub to remove _ddddd
-* change name on disk, using dir_path + new names
-```
 
-```
+```{r works}
+
 if (FALSE ) {
   pat  <-  "^_[[:digit:]]{4,6}"
-  pat  <-  `'^_'`
-  pat <- `'^_00056'`
+  pat  <-  "^_"
+  pat <- `"^_00056"`
 
   pat <- "^_[[:digit:]]{5}"
 }
+
 ```
 
 
@@ -87,6 +86,8 @@ file.rename(
 
 ```
 
+
+## prepend
 ```{r prepend_file_name}
 prepend  <- "0"
 old  <- list.files("./rmd", pattern="*.Rmd")
@@ -94,7 +95,7 @@ new  <- paste0(prepend, old)
 file.move
 ```
 
-sprintf has some nice features!
+## sprintf has some nice features!
 ```{r sprint}
 sprintf("hello %s", "jim")
 

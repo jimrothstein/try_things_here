@@ -61,13 +61,14 @@ sample(x=1:5, size=50, replace=TRUE)
 # note:
 m <- matrix(data=1:100, nrow=25) # fills 1st column, then second ...
 head(m)
-
 ```
+
 
 
 ## replicate, apply verb repeatedly
 * n = repeat number of times
 * expr = ususally a call, such as mean(rnorm(10)) to repeat
+
 ```{r replicate}
 
 replicate(n =3 , mean(1:100))
@@ -80,13 +81,16 @@ Construct list of vectors for lapply
   *  simply=FALSE ; returns list of vectors
   *  DEFAULT would return array or matrix
 
-```{r }
+```{r lapply }
 n  <- 3
 l  <- replicate(3, rnorm(5), simplify = FALSE )
 l
 
 lapply(l, mean)
-``
+```
+
+LEGACY (below)  move to 1060_sample binom?
+======
 game
 ```{r game}
 # game:  roll 2 dice, 7 or 11?

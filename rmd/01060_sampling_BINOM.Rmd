@@ -1,19 +1,19 @@
 ---
-title:  rmd/01060_sampling_binom.Rmd
+title:  "`r knitr::current_input()`"
+date: "`r lubridate::today()`"
 output:
     html_document:
         toc: true 
-        toc_depth: 2
+        toc_depth: 3
         toc_float: true
 font_size: 10
-
 ---
 
-Binomial Sampling
+## Binomial Sampling
 Purpose:   Examples of sampling from binomial distribution
 
 
-## Notation:
+### Notation:
   -  p prob success, just 1 event
   -  n obs in 1 sample (size)
   -  k success in 1 sample
@@ -31,12 +31,11 @@ library(tibble)
 ```
 
 
-
-###  Toss coin 100 times, return # SUCCCESSES
+##  Toss coin 100 times, # heads?
 ```{r rbinom}
 # 1 sample(set 100 obs)
 
-n  <- 100
+n  <- 100 # in 1 sample
 p  <- 0.5
 B  <- 1
 
@@ -47,15 +46,46 @@ x #52
 ```
 
 
-SAME, but repeat the experiment 40 times
+## Repeat 40 times, each one is 100 flips, # heads? 
 ```{r repeat_experiment}
+B  <- 40
 
-x <- rbinom(B  <- 40, size=n, p=0.5)
+x <- rbinom(n=B, size=n, p=0.5)
 x # int[B], vector of size B, number of SUCCESSes in each  
 
-# of the 40 experiments, how many returned > 55 heads?
 hist(x)
-knitr::()
+```
+
+## Want to see each H,T for 100 throws?
+```{r sample}
+
+n  <- 100
+B  <- 1
+
+x  <- rbinom(n = n, size = B, p =p)
+head(x)
+```
+### Same, using sample() for nicer way to see H,T for 100 throws.
+```{r using_sample}
+# syntax a little differnt (no B, repeated samples)
+x  <- sample(x =  c("H","T"),
+		size = n,
+		replace = TRUE,
+		prob = c(0.5,0.5)
+		)
+head(x)
+
+# creates 1 long string
+# y  <- stringr::str_c(x, collapse="")		# collapse
+# head(y)
+
+knitr::knit_exit()
+```
+
+```{r counting}
+
+# of the 40 experiments, how many returned > 55 heads?
+knitr::knit_exit()
 table(x) # of 40 samples, distribution of success totals 
 
 table(x  >  55)   # of 40 samples(each 100), how many more than 55 successes
@@ -74,41 +104,19 @@ table(x > 60) # 0
 # int[10]
 n  <- 100 # (sample size)
 p  <- 0.5
-B  <- 10
+B  <- 10  # take B samples (each n)
 
 # throw dice 100 times, count heads (repeat 10)
 rbinom(n = B,size=n, prob=0.5)
-
 ```
 
 
-Raw Data, 0 or 1
-sample() returns each outcome, unlike rbinom() which returns total successes
-int[n]
-Notation:
-n = sample size or number of throws
-replace
-s
-```{r sample}
 
-# instead:
-
-n  <- 100
-x  <- sample(x =  c("H","T"),
-		size = n,
-		replace = TRUE,
-		prob = c(0.5,0.5)
-		)
-x
-
-y  <- stringr::str_c(x, collapse="")		# collapse
-```
-
-```{r knit_exit()} 
+```{r knit_exit(), eval=FALSE } 
 knitr::knit_exit() 
 ```
 
-/newpage
+\newpage
 BEGIN HERE, CI
 ```{r BEGIN}
 
@@ -190,6 +198,7 @@ contains_TRUE
 ###
  N=75
 t  <- tibble::tibble()
+
 one_sample  <- function(DUMMY = null) {  # 1 sample
 
     prob = 0.4
