@@ -1,8 +1,20 @@
+
 ---
-title:  "076_basic_pnorm_qnorm.Rmd"
-output: html_notebook
-editor_options: 
-  chunk_output_type: console
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+    fontsize: 11pt   
+    geometry: margin=0.5in,top=0.25in   
 ---
 * using curve() to explore districtions.
 
@@ -14,7 +26,7 @@ editor_options:
 Need X11
 
 curve() - examples
-```{r curve}
+```{r curve, eval=FALSE }
 curve(sin, -1, 1)
 
 curve(dnorm, -3, +3)
@@ -27,6 +39,14 @@ curve(pnorm)  # clips the x axis
 
 curve(qnorm)  # indep variable is now alpha, (area) (0,1)
 ```
+
+```{r t_distribution}
+x  <- function(x) dt(x, df=25)
+curve(x, -3, 3,)
+knitr::knit_exit()
+
+```
+
 
 ```{r chi-squared}
 curve(
@@ -185,4 +205,16 @@ tibble(ratio) %>%
        subtitle = "Ratio of S(X)^2/S(2X) from a Standard Normal")
 }
 g	
-``
+```
+```{r print, eval=FALSE}
+
+file  <- here("", "")
+
+file  <- "rmd/01010_basic_distributions.Rmd" 
+
+# in general, pdf will look nicer
+rmarkdown::render(file,
+                  #output_format = "pdf_document",
+                  output_format = "html_document",
+                  output_file = "~/Downloads/print_and_delete/out")
+```
