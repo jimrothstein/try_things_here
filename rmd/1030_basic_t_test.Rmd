@@ -1,7 +1,20 @@
 ---
-title:  basic t-test
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+    fontsize: 11pt   
+    geometry: margin=0.5in,top=0.25in   
 ---
-
 
 
 1030_basic_t_test.R
@@ -22,7 +35,7 @@ y  <- function(x) dt(x + 0.2, df=25) # shift "mean"
 
 curve(x, -3, 3, ylab="dt(df=25)", col="blue", )
 curve(y, -3, 3,  col="red", add = TRUE)
-knitr::knit_exit()
+# knitr::knit_exit()
 ```
 
 ```{r plots, eval=FALSE }
@@ -33,27 +46,60 @@ dev.off()
 ```
 
 
-Create fake random normal data about 2.0
-- if "TRUE mean" is 0, why is the t-value?
+Create fake random normal data 
+*  Ask:
+*  H0   mean =0
+*  H1   mean != 0
 
 ```{r t_test}
-N  <-  100
-fake_mean = 2.0
-fake  <- rnorm(n = N, mean = fake_mean, sd= 1 )
-fake
+set.seed(4643)
+N  <- 25 
+fake_mean = 0.0
+sd  <- 1
+fake1  <- rnorm(n = N, mean = fake_mean, sd= 1 )
+fake2  <- rnorm(n = N, mean = fake_mean, sd= 1 )
 
-x  <- rep(0, times=N)
-x
+m  <- c(mean(fake1),mean(fake2))
+m
+s  <- c(sd(fake1), sd(fake2))
 
-file  <- "1030_basic_t_test"
-pdf(paste0("~/Downloads/print_and_delete/" , file, ".pdf"))
+se  <- s/sqrt(N)
+t  <- (m-c(fake_mean, fake_mean))/se
+t
+```
+
+```{r plot}
+plot(x = jitter(rep(c(0,1), each = N)), c(fake1, fake2), 
+     xlim = c(-1,2), xlab="", ylab="", axes=FALSE )
+
+
+box()
+axis(side=1, at=0:1, labels=c("fake1", "fake2"))
+axis(side=2, at=seq(-3,3, 1))
+points(0, m, pch=15, col="red")
+# arrows(x0=c(0,1), y0=m-se, y1=m+se, code=3, angle=90, length=.15)kj
+# box()
+
+knitr::knit_exit()
+```
+```{r next}
+
+if (FALSE ){
+axis(side=1, at=0:1, labels=c("nonsmokers", "smokers"))
+axis(side=2, at=seq(14,22,2))
+points(c(0,1), m, pch=15, col="red")
+arrows(x0=c(0,1), y0=m-se, y1=m+se, code=3, angle=90, length=.15)
+}
+if (FALSE ){
+pdf(paste0("~/downloads/print_and_delete/" , file, ".pdf"))
 plot(x, fake, ylim = c(-5, 5), sub = "t-value = 21.5", type = "p")
 abline(h = 0)
 abline(h = fake_mean, col=2)
 dev.off()
+}
 
 # ratio of "error" (difference of expected) to "width" (standard error)
-t_value  <- (mean(fake) - 0)/ (sd(fake)/sqrt(N))
+t_value  <- (mean(fake) - 0)/ (sd(fake)/sqrt(n))
 t_value # 21.5  large!
 
 ```
