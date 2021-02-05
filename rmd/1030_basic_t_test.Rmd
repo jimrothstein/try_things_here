@@ -35,10 +35,15 @@ y  <- function(x) dt(x + 0.2, df=25) # shift "mean"
 
 curve(x, -3, 3, ylab="dt(df=25)", col="blue", )
 curve(y, -3, 3,  col="red", add = TRUE)
-# knitr::knit_exit()
+points(x =qt(p=c(0.975), df=25), pch=15, col="red")
+
+
+#  need to ADD quantiles:   95%,  90%,  32%, 50%
+t_95  <- qt(p=c(0.025, 0.05, 0.16, .50, 0.975 ), df=25)
+t_95
 ```
 
-```{r plots, eval=FALSE }
+```{r plots, eval=FALSE, include=FALSE   }
 pdf("~/Downloads/print_and_delete/04_lm_residuals.pdf")
 plot(x, r, col = 2, ylim = c(-5, 5))
 abline(h = 0)
@@ -46,42 +51,69 @@ dev.off()
 ```
 
 
-Create fake random normal data 
+## Create sample(s) random normal data 
+
 *  Ask:
 *  H0   mean =0
 *  H1   mean != 0
 
-```{r t_test}
+```{r samples}
 set.seed(4643)
 N  <- 25 
-fake_mean = 0.0
-sd  <- 1
-fake1  <- rnorm(n = N, mean = fake_mean, sd= 1 )
-fake2  <- rnorm(n = N, mean = fake_mean, sd= 1 )
+pop_mean = 0.0
+pop_sd  <- 1
+sample1  <- rnorm(n = N, mean = pop_mean, sd= pop_sd )
+sample2  <- rnorm(n = N, mean = pop_mean, sd= pop_sd )
+```
+## Plot samples
+```{r plot_sample}
 
-m  <- c(mean(fake1),mean(fake2))
+m  <- c(mean(sample1),mean(sample2))
 m
-s  <- c(sd(fake1), sd(fake2))
+s  <- c(sd(sample1), sd(sample2))
+s
+x  <- rep(c(0,1), each = N)
+x
+plot(x = jitter(x), y = c(sample1, sample2), 
+     xlim = c(-1,2), xlab="sample", ylab="value", axes=FALSE )
+
+box()
+axis(side=1, at=0:1, labels=c("sample1", "sample2"))
+axis(side=2, at=seq(-3,3, 1))
+
+# mean, 1 sd
+points(x =c(0,1), m, pch=15, col="red")
+arrows(x0=c(0,1), y0=m-se, y1=m+se, code=3, angle=90, length=.15)
+```
+
+
+## Calc t-value
+```{r t_test}
 
 se  <- s/sqrt(N)
-t  <- (m-c(fake_mean, fake_mean))/se
+se
+t  <- (m - 0)/se
 t
 ```
 
-```{r plot}
-plot(x = jitter(rep(c(0,1), each = N)), c(fake1, fake2), 
-     xlim = c(-1,2), xlab="", ylab="", axes=FALSE )
+## t.test()
+     t.test(x, y = NULL,
+            alternative = c("two.sided", "less", "greater"),
+            mu = 0, paired = FALSE, var.equal = FALSE,
+            conf.level = 0.95, ...)
+```{r  t_test2}
+t_95  <- qt(p=c(0.025, 0.05, 0.16, .50, 0.975 ), df=25)
+t_95
+
+t.test(x = sample1)
+```
 
 
-box()
-axis(side=1, at=0:1, labels=c("fake1", "fake2"))
-axis(side=2, at=seq(-3,3, 1))
-points(0, m, pch=15, col="red")
-# arrows(x0=c(0,1), y0=m-se, y1=m+se, code=3, angle=90, length=.15)kj
-# box()
+```{r }
 
 knitr::knit_exit()
 ```
+  
 ```{r next}
 
 if (FALSE ){
