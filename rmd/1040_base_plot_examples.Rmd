@@ -27,6 +27,20 @@ knitr::opts_chunk$set(echo = TRUE,
                       collapse = FALSE   ) # easier to read
 library(ggplot2) # only for databas
 ```
+
+
+## in X11
+```{r x11}
+capabilities()
+Sys.getenv("display")
+if (FALSE ) x11() #  opens  an blank screen | 
+.Devices  # list
+
+pdf.options()
+dev.cur()
+
+```
+
 ## Base:: plots
 - set the params in pdf(...)
 - plot
