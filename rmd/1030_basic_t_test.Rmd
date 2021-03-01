@@ -96,25 +96,32 @@ arrows(x0=c(0,1), y0=m-se, y1=m+se, code=3, angle=90, length=.15)
 ```
 
 
-## Calc t-value
+## Calc t-value, CI 
 ```{r t_test}
 m
 s
 se  <- s/sqrt(N)
 se
+
+# t is actually the 'random variable', and should fit T distribution.
 t  <- (m - 0)/se
 t
 t_95  <- qt(p=c(0.025, 0.975), df=df)
-
+t_95
 
 upper  <- m+ t_95*se
 lower  <- m-t_95*se
 lower[1]
 upper[1]
 
+
+# 95% CI (in green)
+points(x = c(0,1), upper, pch=15, col="green")
+points(x = c(0,1), lower, pch=15, col="green")
 ```
 
 ## t.test()
+Compare to my calc (above)
      t.test(x, y = NULL,
             alternative = c("two.sided", "less", "greater"),
             mu = 0, paired = FALSE, var.equal = FALSE,

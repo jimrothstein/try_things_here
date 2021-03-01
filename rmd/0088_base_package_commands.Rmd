@@ -1,0 +1,217 @@
+
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+fontsize: 11pt   
+geometry: margin=0.5in,top=0.25in   
+---
+
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = FALSE   ) # easier to read
+```
+
+
+```{r library, include=FALSE		}
+file  <- knitr::current_input() 
+library(jimTools)
+``` 
+
+## Where are we now?
+  * which dir are used?
+  * status of pkgs in each dir
+```{r now}
+x  <- packageStatus()
+print(x)
+{
+begin  <- Sys.time()
+
+if (FALSE ) upgrade (x, ask = FALSE , checkBuild=TRUE)
+upgrade (x, ask = FALSE , checkBuild=TRUE)
+
+end  <- Sys.time()
+diff  <- end - begin
+diff
+}
+# print updated summary table
+update(x, checkBuild=TRUE)
+
+```
+
+I installed R 4.0.4 from source on Raspberry Pi 400, which uses ARM processessors.  This seemed fine.
+
+However, when I tried to upgrade installed packages I ran into a few problems.
+
+My question is:  After installing R 4.0.4 but before upgrading packages, what
+steps should I take to insure the package upgrade will be successful?
+
+This is what I did do; which did not succeed:
+
+First, I ran packageStatus to see ~29 packages needed an upgrade.
+>> x  <- packageStatus()
+>> print(x)
+>>
+
+Then a did the upgrade which reported ~ 31 warnings (packages that had non-zero exit status).  About 1 or 2 packages did upgrade successfully.
+
+
+>> upgrade(x, ask=FALSE)
+>> update(x)
+>>
+However, I also noted errors during the upgrade such as:
+*  Wrong ELF class ELFCLASS64.
+*  lazy loading failed for package:   "DT"
+
+
+
+
+
+## Examine available.packages() (>17k)
+
+```{r begin}
+versions  <- available.packages()
+t  <- as_tibble(versions)
+t[,c(1,2,12:13,15:16)]
+str(versions)
+names(versions)
+typeof(versions)
+length(versions)
+versions[[4]]
+head(versions)
+```
+
+
+## Examine installed.packages
+```{r installed.packages}
+installed  <- as_tibble(installed.packages())
+head(installed) 
+str(installed)
+
+installed[,"NeedsCompilation" == "no"]
+```
+
+## install.packages (using DT)
+```{r installed_use_DT}
+library(data.table)
+dt  <- as.data.table(installed)
+names(dt)
+
+# remove uneeded fields
+# .()  is alias for list()
+dt  <- dt[, .(Package,  OS_type, NeedsCompilation, Built)]
+
+
+# count, for each grouping
+dt[,.(.N)    , by=.(Built)]
+
+dt[, .N, by = .(Built)]   
+
+dt[, .N, by = "OS_type"]  # all <NA>
+
+dt[, .N, by = .(NeedsCompilation)]   # 141 need!
+
+# as subset
+x  <- dt[NeedsCompilation == "yes"]
+x[1:100]
+
+
+
+```
+
+
+## All packages, by library location
+```{r library}
+library()
+
+(.packages())
+(.packages(all.available  = TRUE))
+```
+
+## Default Packages
+```{r default}
+getOption("defaultPackages")
+```
+
+## Basic installation
+  *  sudo R CMD INSTALL *.tar.gz
+```{r install}
+  install.packages("igraph", verbose=TRUE, dependencies=TRUE)
+```
+
+
+## workhorse
+```{r update}
+{
+begin  <- Sys.time()
+.libPaths()
+update.packages(ask=FALSE )
+end  <- Sys.time()
+diff  <- end - begin
+diff
+}
+```
+
+## Troubleshoot
+```{r trouble}
+{
+begin  <- Sys.time()
+
+# p  <- c("digest")
+# p  <- c("future")
+# p  <- c("httpuv")
+# p  <- c("jsonlite")
+# p  <- c("servr")
+## p  <- c("lattice")
+#p  <- c("utf8")
+p  <- c("rlang")
+
+install.packages(p, verbose=TRUE, dependencies = TRUE)
+# upgrade (p, ask = FALSE , checkBuild=TRUE)
+
+end  <- Sys.time()
+diff  <- end - begin
+diff
+}
+# print updated summary table
+
+```
+
+
+***
+
+```{r knit_exit(), include = FALSE  , eval=FALSE } 
+# knitr::knit_exit()
+```
+
+/newpage
+
+```{r render, eval=FALSE, include=FALSE 	} 
+# TODO:  file is found when knitr runs (see above)
+
+# file must be of form:
+# dir/name_of_this_file    where dir is relative to project root
+
+file  <- here("", "")
+file 
+# NOTE:   .tex only works with PDF
+# NOTE:    tex will NOT work with html
+# in general, pdf will look nicer
+rmarkdown::render(file,
+                  #output_format = "pdf_document",
+                  output_format = "html_document",
+                  output_file = "~/Downloads/print_and_delete/out")
+[``

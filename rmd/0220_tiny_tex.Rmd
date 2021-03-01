@@ -22,6 +22,9 @@ vim: to format all urls for md
 s/https.*/[&]()/g
 -->
 
+
+## Put TinyTex, Blogdown helpers HERE
+
 READ:  TinyTex and why Latex can be a pain
 https://yihui.name/tinytex/r/
 
@@ -36,13 +39,34 @@ knitr::opts_chunk$set(echo = TRUE,
 
 ```{r library, include=FALSE		}
 library(jimTools)
+library(tinytex)
 ``` 
 
-install
+## Update, per Yuhi (if already installed)
+```{r update}
+tinytex::tlmgr_update()
+
+# if this fails, follow this:
+tinytex::reinstall_tinytex()
+
+
+
+uninstall_tinytex(force = FALSE )
+```
+
+
+```{r remove}
+
+
+```
+
+
+install tinytex (R pkg)
 ```{r install, eval = FALSE }
 remotes::install_github('yihui/tinytex')
-
-# update, SILENT, and ~ 1 min
+install.packages('tinytex')
+## update, SILENT, and ~ 3 min  - PATIENCE!
+## had to sudo chmod -R a+w in directories
 tlmgr_update()
 ```
 help
@@ -63,9 +87,13 @@ tlmgr_install( pkgs = c("ulem"))
 latexmk ... only for .tex files
 bauks if sees any .md file 
 ```{r compile}
+# this is wrapper
 ?latexmk
 
 latexmk(file=file)
+
+# works 
+tinytex::pdflatex("~/code/tex_project//0001_hello.tex")
 
 ```
 

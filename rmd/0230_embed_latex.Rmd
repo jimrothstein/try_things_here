@@ -1,0 +1,93 @@
+
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+fontsize: 11pt   
+geometry: margin=0.5in,top=0.25in   
+---
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = FALSE   ) # easier to read
+```
+
+
+
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+
+\title{My beautiful PDF document}
+\author{Ed Rubin}
+\date{February 2017}
+
+\begin{document}
+
+\maketitle
+
+What a beautiful PDF.
+
+\end{document}
+
+
+### knitr unhappy about preamble; latex can't compile
+```{r library, include=FALSE		}
+file  <- knitr::current_input() 
+
+``` 
+
+
+```{r begin}
+# no code today
+```
+
+***
+
+```{r knit_exit(), include = FALSE  , eval=FALSE } 
+# knitr::knit_exit()
+```
+
+/newpage
+
+```{r plot_density, eval=FALSE  }
+density_object <- density(mpg$hwy)
+pdf("~/Downloads/print_and_delete/out.pdf")
+plot(density_object)
+dev.off()
+```
+
+```{r plot_png_example, eval=FALSE  }
+filename  <- "~/Downloads/print_and_delete/out.png"
+png(filename = filename,
+         width = 480, height = 480, units = "px", pointsize = 12)
+plot(density_object)
+dev.off()
+```
+```{r render, eval=FALSE, include=FALSE 	} 
+# TODO:  file is found when knitr runs (see above)
+
+# file must be of form:
+# dir/name_of_this_file    where dir is relative to project root
+
+file   <- "0230_embed_latex.Rmd"
+# NOTE:   .tex only works with PDF
+# NOTE:    tex will NOT work with html
+# in general, pdf will look nicer
+rmarkdown::render(file,
+                  output_format = "pdf_document",
+                  # output_format = "html_document",
+                  output_file = "~/Downloads/print_and_delete/out")
+```
