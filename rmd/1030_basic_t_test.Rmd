@@ -17,21 +17,24 @@ output:
 ---
 
 
-1030_basic_t_test.R
 
-Base:: plots
-- Knitr:  nothing special needed
-- For standalone (see bottom)
-- set the params in pdf(...)
-- plot
-- dev.off() to complete
+### Note:  
+Base:: plots  
+- With knitr:  nothing special needed  
+- For standalone example (see bottom)  
 
 
-## Use curve to plot t distribution
-     curve(expr, from = NULL, to = NULL, n = 101, add = FALSE,
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = TRUE   ) # FALSE  easier to read
+```
+### Use curve() to plot t distribution
+*  curve(expr, from = NULL, to = NULL, n = 101, add = FALSE,
            type = "l", xname = "x", xlab = xname, ylab = NULL,
            log = NULL, xlim = NULL, ...)
-* N=25 for most of this file, df = 24 (N-1)
+*  N=25 for most of this file, df = 24 (N-1)
 ```{r plot_t_dist}
 N  <- 25
 df  <- N-1
@@ -42,6 +45,9 @@ curve(x, -3, 3, ylab="dt(df=24)", col="blue", )
 curve(y, -3, 3,  col="red", add = TRUE)
 ```
 
+### Use  base::plot to :
+*   plot a number of t values  
+*   indicate (in red) a few quantiles for t
 ```{r annotate_t_plot}
 x  <- seq(-3, +3, 0.1)
 y  <- dt(x, df=df)
@@ -59,14 +65,17 @@ y  <- rep(c(0), length(t_values))
 y
 points(x =t_values, y=y, pch=15, col="red")
 
-# knitr::knit_exit()
 ```
 
-## Create sample(s) random normal data 
+### Create sample(s) random normal data  
+$$\mu=0$$
+$$\sigma=1$$
 
-*  Ask:
-*  H0   mean =0
-*  H1   mean != 0
+*  Then use t-test to evaluate:  
+*  H0   mean =0   
+*  H1   mean != 0   
+
+
 
 ```{r samples}
 set.seed(4643)
@@ -75,8 +84,10 @@ pop_mean = 0.0
 pop_sd  <- 1
 sample1  <- rnorm(n = N, mean = pop_mean, sd= pop_sd )
 sample2  <- rnorm(n = N, mean = pop_mean, sd= pop_sd )
+
+# knitr::knit_exit()
 ```
-## Plot samples
+### Plot samples
 ```{r plot_sample}
 
 m  <- c(mean(sample1),mean(sample2))
@@ -96,8 +107,23 @@ arrows(x0=c(0,1), y0=m-se, y1=m+se, code=3, angle=90, length=.15)
 ```
 
 
-## Calc t-value, CI 
-```{r t_test}
+### Calc se, t-value, 95% CI 
+```{r t-test}
+
+# first repeat above graph
+plot(x = jitter(x), y = c(sample1, sample2), 
+     xlim = c(-1,2), xlab="sample", ylab="value", axes=FALSE )
+
+box()
+axis(side=1, at=0:1, labels=c("sample1", "sample2"))
+axis(side=2, at=seq(-3,3, 1))
+
+# mean, 1 sd
+points(x =c(0,1), m, pch=15, col="red")
+arrows(x0=c(0,1), y0=m-se, y1=m+se, code=3, angle=90, length=.15)
+# end of repeat graph
+
+
 m
 s
 se  <- s/sqrt(N)
@@ -118,6 +144,20 @@ upper[1]
 # 95% CI (in green)
 points(x = c(0,1), upper, pch=15, col="green")
 points(x = c(0,1), lower, pch=15, col="green")
+```
+
+### Put mean and CI on density graph
+```{r compare}
+
+N  <- 25
+df  <- N-1
+x  <- function(x) dt(x, df=24)
+
+curve(x, -3, 3, ylab="dt(df=24)", col="blue", )
+points(x = c(lower[1], upper[1]),y=c(0,0),  pch=15, col="green")
+points(x = c(t_95[1], t_95[2]),y=c(0,0),  pch=15, col="red")
+
+knitr::knit_exit()
 ```
 
 ## t.test()
@@ -233,10 +273,9 @@ plot(x, r, col = 2, ylim = c(-5, 5))
 abline(h = 0)
 dev.off()
 ```
+
 ```{r render, eval=FALSE    }
-
-file  <- here("rmd", "1030_basic_t_test.Rmd")
-
+file  <- "1030_basic_t_test.Rmd" 
 # in general, pdf will look nicer
 rmarkdown::render(file,
                   #output_format = "pdf_document",

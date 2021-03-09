@@ -1,0 +1,147 @@
+
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(Sys.Date() , ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+fontsize: 11pt   
+geometry: margin=0.5in,top=0.25in   
+---
+
+
+
+
+## SEE also MAKE files
+
+
+*  lsblk     # see block devices  
+    Ex:   mmcblkp1  
+
+*   sudo blkid
+
+
+*  lsusb      #  
+    Ex: see Bus002 Device 002 JMicron  
+
+*  lspci  
+*  ls /dev/
+*  cat /etc/fstab  # mounted at boot  
+*  cat /etc/mtab  # mounted now  
+*  cat /proc/partitions   # fs table   
+*  mkfs.vfat       # latest is mkfs.exfat, but common is mkfs.vfat (such as
+  Regus  copie       Id=b is W95 or FAT32
+   mkfs.ext4  
+   sudo mkdfs is DEPRECATED  
+
+
+* Trick to see devices:
+    *  sudo dmesg -C    # clears
+    *   install device
+    *   sudo dmesg | tail  
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = FALSE ) 
+knitr::knit_exit()
+```
+
+
+
+### warmup
+```{zsh, zsh_script}
+echo $PATH
+```
+
+### 1.  look for 152d:1561 (JMicron) [idVendor, idProduct]
+```{zsh, adapter}
+sudo lsusb
+sudo lsusb -t
+```
+
+
+### 2. See /dev/s*   ?
+```{zsh dev, include=FALSE}
+ls /dev/s*
+```
+
+### 3. Any sign?  (NO)
+*  lsblk is recommended over sudo blkid
+```{zsh lsblk}
+lsblk -fp   # 
+```
+
+### 4. lspci  - ALL PCI bus devices
+```{zsh lscpi}
+lspci
+```
+### 5. cat
+```{zsh,  cat}
+# mounted at boot
+cat /etc/fstab
+
+# mounted now
+cat /etc/mtab
+
+# fs table
+cat /proc/partitions
+```
+
+
+```{zsh, adapter2, include=FALSE}
+
+sudo dmesg | grep usb
+```
+
+### This will force the pi to use regular driver
+### change file:  sudo nvim /boot/cmdline.txt
+### Insert usb-storage.quirks=152d:1561:u
+```{zsh, cmdline.txt}
+cat /boot/cmdline.txt
+```
+
+### reboot; check if quirks in place
+```{zsh, rboot}
+# sudo dmesg -C   clears
+sudo dmesg | grep usb
+```
+
+
+
+### parted (not run, does not see device)
+```{zsh parted}
+#sudo parted, print
+```
+
+
+
+
+
+
+***
+
+```{r knit_exit(), include = FALSE  , eval=FALSE } 
+# knitr::knit_exit()
+```
+
+/newpage
+
+```{r render, eval=FALSE, include=FALSE 	} 
+file   <- "/home/pi/code/zsh_scripts_project/080_run_zsh_cmds_inside_rmd.Rmd"
+# NOTE:   .tex only works with PDF
+# NOTE:    tex will NOT work with html
+# in general, pdf will look nicer
+rmarkdown::render(file,
+                  #output_format = "pdf_document",
+                  output_format = "html_document",
+                  output_file = "~/Downloads/print_and_delete/out")
