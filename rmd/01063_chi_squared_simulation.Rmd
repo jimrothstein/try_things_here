@@ -1,11 +1,11 @@
-<!--
+<!3.  --
 	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
 -->
 
 --- 
 title:  "`r knitr::current_input()`"
 date: "`r paste('last updated', 
-    format(lubridate::now(), ' %d %B %Y'))`"
+   format(lubridate::now(), ' %d %B %Y'))`"
 output: 
   html_document:  
     toc: true 
@@ -19,8 +19,11 @@ output:
     geometry: margin=0.5in,top=0.25in 
 ---
 
+## Use simulation to answer questions about squaring the normal distribution
+## Show chi-squared
 
-## Chi-Squared, Sampling ,  is Sample from Normal?
+Supose
+$X \sim N(0,1)$
 
 * Simulate k iid random variables, from N(0,1)
 * Square and then sum
@@ -33,45 +36,96 @@ knitr::opts_chunk$set(echo = TRUE,
 											collapse=FALSE  ) 
 ```
 
-```{r library, include=FALSE		}
+```{r library, include=FALSE, eval=FALSE		}
 library(tibble)
 library(ggplot2)
+
+# tinytex -misc 
+library(tinytex)
+ 
+
+# Missing .sty?
+# 1. find package where .sty located
+tlmgr_search("/lmodern.sty")
+
+# 2. install that package
+tlmgr_install("lm")
+
+# ... 3.  update
+tlmgr_update()
+
+
+tinytex::reinstall_tinytex()
 ``` 
 
-### Plot RV X and RV Y=X^2
+### Examine distribution of X and RV Y=X^2
 
+### Create sample of N(0,1)
 ```{r one}
 set.seed(2020)
-x  <- dnorm(seq(-5, 5, .1))
-x
+N  <- 1000 
+x  <- rnorm(n = N, mean = 0, sd = 1)
+
+hist(x, main="Histogram of X, sample from N(0,1),
+        xlab= "Are 68% of counts between 0 and 1 sd?")
+
+
 
 y  <- x^2
+hist(y,  main = "Histogram of X^2")
 
-plot(x)
-plot(y, color="red")
-heights<-rnorm(1200, mean=5.5, sd=4/12.0)
-mean(heights)  # 5.49
 
-hist(
-     heights, 
-     col='coral', 
-     main='Heights of Schreiner Students', 
-     ylab='Proportion of Students', 
-     xlab='Height (ft)', 
-     freq=FALSE)
-
+# hist(
+#      heights, 
+#      col='coral', 
+#      main='Heights of Schreiner Students', 
+#      ylab='Proportion of Students', 
+#      xlab='Height (ft)', 
+#      freq=FALSE)
+# 
 ```
-Be lazy, sample N=50
+
+$$\Y= \X_{1} + \X_{2}$$
+### Create more Xi
 ```{r}
-set.seed(1942)
-N=50
-one_sample_x  <- sample(heights, replace = FALSE  , size=N)
 
-mean(one_sample_x)  #5.53 
-# this just sd of sample, NOT sd of means
-sd(one_sample_x)   # 0.327  
+
+x1 = x
+x2  <- rnorm(n=N, mean=0, sd=1)
+x3  <- rnorm(n=N, mean=0, sd=1)
+x4  <- rnorm(n=N, mean=0, sd=1)
+x5  <- rnorm(n=N, mean=0, sd=1)
+x6  <- rnorm(n=N, mean=0, sd=1)
+x7  <- rnorm(n=N, mean=0, sd=1)
+
+y  <- x1^2 + x2^2 + x3^2 + x4^2 + x5^2 + x6^2 + x7^2
+hist(y)
 
 ```
+
+
+### use replicate
+```{r replicate, eval = FALSE}
+
+# replicate, apply verb repeatedly
+# use simplify=FALSE to return list of vectors
+# default:  array or matrix
+k = 10
+
+# x is list of k vectors, each with N doubles
+x  <- replicate(k, rnorm(n=N, mean=0, sd=1), simplify=FALSE)
+
+
+sq  <- function (x) { x^2}
+y  <- lapply(x, sq)
+length(y)
+str(y)
+y[1])
+
+```
+
+
+
 ```{r exit}
 knitr::knit_exit()
 ```
@@ -170,7 +224,7 @@ knitr::knit_exit()
 /newpage
 
 ```{r render, eval=FALSE	} 
-file <- "rmd/01040_chi_squared_sampling.Rmd" 
+file  <- "01063_chi_squared_simulation.Rmd"
 rmarkdown::render(file,
                   output_format = "pdf_document",
 #                  output_format = "html_document",

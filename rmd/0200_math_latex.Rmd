@@ -67,7 +67,6 @@ file <- "0200_math_latex.Rmd"
 file  <- basename(file)
 dir <- "rmd"
 
-rmarkdown::render(here(dir, file), output_dir="~/Downloads/print_and_delete/")
-jimTools::ren_pdf(file,dir)
-jimTools::ren_github(file, dir)
+rmarkdown::render(here(dir, file), 
+                  output_dir="~/Downloads/print_and_delete/")
 ```

@@ -23,7 +23,7 @@ s/https.*/[&]()/g
 -->
 
 
-## Put TinyTex, Blogdown helpers HERE
+## PURPOSE:  Put TinyTex, Blogdown helpers HERE
 
 READ:  TinyTex and why Latex can be a pain
 https://yihui.name/tinytex/r/
@@ -33,43 +33,38 @@ knitr::opts_chunk$set(echo = TRUE,
                       comment = "      ##",
                       error = TRUE,
                       collapse = TRUE)
+library(tinytex)
 ```
 
 <!--  RENDER:  see bottom -->
-
-```{r library, include=FALSE		}
-library(jimTools)
-library(tinytex)
-``` 
-
-## Update, per Yuhi (if already installed)
-```{r update}
-tinytex::tlmgr_update()
-
-# if this fails, follow this:
-tinytex::reinstall_tinytex()
-
-
-
-uninstall_tinytex(force = FALSE )
-```
-
-
-```{r remove}
-
-
-```
-
 
 install tinytex (R pkg)
 ```{r install, eval = FALSE }
 remotes::install_github('yihui/tinytex')
 install.packages('tinytex')
-## update, SILENT, and ~ 3 min  - PATIENCE!
-## had to sudo chmod -R a+w in directories
+    ## update, SILENT, and ~ 3 min  - PATIENCE!
+    ## had to sudo chmod -R a+w in directories
+
 tlmgr_update()
 ```
-help
+
+## Update tinytex::, per Yuhi (if already installed)
+```{r update}
+tinytex::tlmgr_update()
+
+# if this fails, follow this:
+tinytex::reinstall_tinytex()
+```
+
+## To remove tinytex::
+```{r remove}
+uninstall_tinytex(force = FALSE )
+```
+
+
+
+
+Misc tinytex 
 ```{r}
 library(tinytex)
 ?tinytex::tlmgr
@@ -78,11 +73,28 @@ library(tinytex)
 tinytex::parse_packages()
 ```
 
-missing ulem.sty?
+missing ulem.sty?  (easy way)
 ```{r add_package}
 tlmgr_install( pkgs = c("ulem"))
 ```
 
+
+Missing .sty ? (more complete way)
+
+```{r missing, include=FALSE, eval=FALSE		}
+library(tinytex)
+ 
+
+# Missing .sty?
+# 1. find package where .sty located
+tlmgr_search("/lmodern.sty")
+
+# 2. install that package
+tlmgr_install("lm")
+
+# ... 3.  update
+tlmgr_update()
+``` 
 
 latexmk ... only for .tex files
 bauks if sees any .md file 
@@ -108,10 +120,9 @@ knitr::knit_exit()
 /newpage
 
 ```{r render, eval=FALSE	} 
-file <- ""
-file  <- basename(file)
-dir <- "rmd"
-
-jimTools::ren_pdf(file,dir)
-jimTools::ren_github(file, dir)
+file  <- ""0220_tiny_tex.Rmd
+rmarkdown::render(file,
+                  output_format = "pdf_document",
+#                 output_format = "html_document",
+                  output_file = "~/Downloads/print_and_delete/out")
 ```

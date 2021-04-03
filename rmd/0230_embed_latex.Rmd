@@ -22,9 +22,10 @@ knitr::opts_chunk$set(echo = TRUE,
                       comment = "      ##",
                       error = TRUE,
                       collapse = FALSE   ) # easier to read
+library(here)
 ```
 
-
+Claim:  This will not work,  mixing .tex and Rmd
 
 \documentclass{article}
 
@@ -82,7 +83,9 @@ dev.off()
 # file must be of form:
 # dir/name_of_this_file    where dir is relative to project root
 
-file   <- "0230_embed_latex.Rmd"
+here()
+file   <- here("rmd", "0230_embed_latex.Rmd")
+file  <- base(file)
 # NOTE:   .tex only works with PDF
 # NOTE:    tex will NOT work with html
 # in general, pdf will look nicer
