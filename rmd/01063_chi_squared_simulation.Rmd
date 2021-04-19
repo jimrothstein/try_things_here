@@ -25,6 +25,10 @@ output:
 Supose
 $X \sim N(0,1)$
 
+\begin{equation}
+a = b
+\end{equation}
+
 * Simulate k iid random variables, from N(0,1)
 * Square and then sum
 * Does this look like chi-squared?

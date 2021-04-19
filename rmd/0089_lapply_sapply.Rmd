@@ -26,38 +26,54 @@ knitr::opts_chunk$set(echo = TRUE,
                       collapse = FALSE   ) # easier to read
 ```
 
-### lapply: a function works on list, returns a list.
+### lapply: function works on list, returns a list.
 ```{r simple_list}
 
 l  <- list(a = rnorm(5), b = rnorm(5))
 l
 
-lapply(l, mean)
+ans  <- lapply(l, mean)
+is.list(ans)
+ans
 ```
 
+### simplification
+  *  several functions try to simplify structure
+  * c()
+  * unlist()
+```{r simplify}
 
-Construct list of vectors for lapply
-  *  replicate is version of sapply
-  *  simply=FALSE ; returns list of vectors
-  *  DEFAULT would return array or matrix
+# c() returns 
+x  <- c(1, 2, c(3,4))
+is.list(x)   # F
+is.integer(x) # F
+is.double(x)   # TRUE
 
-```{r }
-n  <- 3
-l  <- replicate(3, rnorm(5), simplify = FALSE )
+
+# unlist() is another simplifier , here returns atomic vector rather than list
+l  <- list(a=c(1,2), b=c(3,4))
 l
-
-lapply(l, mean)
+ans  <- unlist(l)
+is.double(ans)  # T
+names(ans)
+length(ans)  # 4
+ans
 ```
 
-```{r}
 
-# sapply is 'smarter', see scalers and returns vector[] instead.
+### sapply:  
+  *  Rather than list, try to return vector, matrix, or array (if simplify=TRUE)
+```{r sapply}
+
+# sapply is 'smarter', if see scalers and returns vector[] instead.
 sapply(v, mean) # return vector!
 
 # ?
 l <- list(a=1:5, b=6:10)
 
+sapply(l, mean)
 sapply(l, `[`)
+sapply(l, `[`, simplify=TRUE)
 
 #-----------------
 # runif | runif(n) returns double[] n values from uniform distr
@@ -70,6 +86,27 @@ runif(3)
 
 lapply(1:4,runif) # treats 1:4 as list, retuns list
 ```
+
+Replicate():
+  *  replicate is version of sapply
+  *  simply=FALSE ; returns list of vectors
+  *  DEFAULT: would return array or matrix
+
+```{r }
+n  <- 3
+
+# returns matrix
+l  <- replicate(3, rnorm(5))
+is.matrix(l)
+
+# returns list
+l  <- replicate(3, rnorm(5), simplify = FALSE )
+is.list(l)
+l
+
+lapply(l, mean)
+```
+
 
 ### vapply(x, fun(x), typeof(x))
 ```{r vapply}

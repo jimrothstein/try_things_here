@@ -27,6 +27,10 @@ vim: to format all urls for md
 s/https.*/[&]()/g
 -->
 
+```{r end}
+knitr::knit_exit()
+```
+
 ```{r setup, include=FALSE		}
 knitr::opts_chunk$set(echo = TRUE,
                       comment = "      ##",
@@ -99,12 +103,13 @@ knitr::knit_patterns$get()
 # dir/name_of_this_file    where dir is relative to project root
 
 
-file  <- here("rmd", "00065_knitr_pkg_functions.Rmd")
+file  <- here("rmd", "00065B_knitr_pkg_functions.Rmd")
 
 file
 # in general, pdf will look nicer
 rmarkdown::render(file,
                   #output_format = "pdf_document",
                   output_format = "html_document",
-                  output_file = "~/Downloads/print_and_delete/out")
+                  output_file="out")
+#                  output_file = "~/Downloads/print_and_delete/out")
 ```

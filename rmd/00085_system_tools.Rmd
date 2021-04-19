@@ -41,7 +41,9 @@ system.time( r  <- rnorm(1000))
   }
 ```
 
-ENV variables
+## ENV variables
+*  See: https://stat.ethz.ch/R-manual/R-devel/library/base/html/EnvVar.html
+
 ```{r}
 # /usr/lib/R
 (r_home <-R.home(component="home"))

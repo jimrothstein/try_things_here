@@ -13,6 +13,7 @@ geometry: margin=0.5in,top=0.25in
 
 ## base:: files and dir commands
 ## Collect HERE
+### (Except package commands:  see 0088)
 ### Includes, base commands to rename files in directory.
 
 
@@ -21,7 +22,6 @@ knitr::opts_chunk$set(echo = TRUE,
 											comment="      ##",  
 											error=TRUE, 
 											collapse=TRUE) 
-library(jimTools) 
 ```
 
 base:: commands (why use fs:: ?)

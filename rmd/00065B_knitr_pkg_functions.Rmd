@@ -1,10 +1,11 @@
 ---
-title: "`r knitr::current_input()`"  
+title:  "`r knitr::current_input()`"  
 date: "`r paste('last updated', 
     format(lubridate::now(), ' %d %B %Y'))`"   
 output:   
   html_document:  
-    code_folding: hide
+    code_folding: show
+    #code_folding: hide
     toc: true 
     toc_depth: 2
     toc_float: true
@@ -16,16 +17,10 @@ output:
     geometry: margin=0.5in,top=0.25in   
 ---
 
-## knitr::   functions
-REF: https://cran.r-project.org/web//packages/knitr/knitr.pdf
+knitr functions (pdf): https://cran.r-project.org/web//packages/knitr/knitr.pdf
 
-<!-- 
-set cul   "cursorline
-cc=+1			"colorcolumn is 1 more than tw
-
-vim: to format all urls for md
-s/https.*/[&]()/g
--->
+knitr home:  https://yihui.org/knitr/ and various sections
+source code:  https://github.com/yihui/knitr/tree/master/R
 
 ```{r setup, include=FALSE		}
 knitr::opts_chunk$set(echo = TRUE,
@@ -34,77 +29,74 @@ knitr::opts_chunk$set(echo = TRUE,
                       collapse = TRUE   ) # FALSE  easier to read
 library(knitr)
 ```
-
-
-
 ```{r TAGS, eval=TRUE, echo=FALSE}
 this_file  <- knitr::current_input()
 TAGS <- c("collapse", "chunks", "examples", this_file)
-print(paste0("This file: ", this_file) )
 
-print("TAGS: ")
-
+cat(paste0("This file: ", this_file) )
+cat("TAGS: \n\n")
 TAGS
 
 ```
 
-## knitr::current_input()
-```{r current_input }
-this_file  <- knitr::current_input() 
-print(this_file)
-
-this_file  <- knitr::current_input(dir = TRUE)
-print(this_file)
-``` 
-
-
-## all_labels()
-```{r begin}
+```{r all_labels}
 print(knitr::all_labels())
 ```
 
-## inline_expr("1+1")
-```{r incline_expr}
-
-inline_expr("1+1", "html")
-inline_expr("1+1", "md")
-inline_expr("1+1")  # knitr guesses from context
-```
-
-```{r pattern }
-
-```
-
-***
-
-```{r knit_exit(), include = FALSE  , eval=FALSE } 
-# knitr::knit_exit()
-```
-
-\newpage
-
-<!--
+### regex patterns to parse chunks
 ```{r knitr_functions}
 knitr::knit_patterns$get()
 knitr::knit_patterns$set(my.name="jim")
 knitr::knit_patterns$get()
 ```
--->
+
+### retrieve TAGS
+```{r}
+knitr::knit_patterns$get(label == "TAGS")
+```
 
 
-```{r render, eval=FALSE	} 
+### find labels which match criteria
+```{r get_TAGS }
+t  <- knitr::all_labels(label == "TAGS")
+t
+```
+
+### Return all possible patterns
+```{r patterns, include=FALSE}
+all_patterns
+```
+
+### Return R code for specified `label`
+```{r get_code}
+label  <- "TAGS"
+knitr::knit_code$get(label)
+```
+
+
+
+```{r end}
+knitr::knit_exit()
+```
+
+
+
+```{r render, eval=FALSE, include=FALSE}
+
 # TODO:  file is found when knitr runs (see above)
 
 # file must be of form:
 # dir/name_of_this_file    where dir is relative to project root
 
 
-file  <- here("rmd", "00065_knitr_pkg_functions.Rmd")
+file  <- here("rmd", "00065B_knitr_pkg_functions.Rmd")
 
 file
 # in general, pdf will look nicer
 rmarkdown::render(file,
                   #output_format = "pdf_document",
                   output_format = "html_document",
+#                  output_file="out")
                   output_file = "~/Downloads/print_and_delete/out")
+
 ```

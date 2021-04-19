@@ -1,0 +1,149 @@
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+fontsize: 11pt   
+geometry: margin=0.5in,top=0.25in   
+tags:  A, B, C, D
+---
+
+
+
+
+PURPOSE   Tools to probe a single R packages.
+TODO  Study code   
+
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = FALSE   ) # easier to read
+file  <- knitr::current_input() 
+library(tibble)
+library(here)
+library(knitr)
+library(yaml)
+
+read_yaml(file = "0088C_base_probe_one_package.Rmd")
+
+# reading from a file connection
+filename <- tempfile()
+filename
+tag1  <- paste0(basename(filename), "_", "my_tag")
+tag1
+
+cat("test: data\n", file = filename)
+cat("tags: A,B,C,", tag1, ",\n", file=filename, append=TRUE)
+con <- file(filename, "r")
+read_yaml(con)
+close(con)
+
+
+the_pkg  <- "knitr"
+```
+
+
+## sessioninfo::package_info()
+```{r package_info}
+# For Installed Packages, yields dependencies
+sessioninfo::package_info(pkg="tibble")
+```
+
+### library
+```{r library}
+# note syntax
+x  <- library(help = knitr)
+str(x)
+x   # opens help
+library(dplyr)
+glimpse(x)
+info  <- x$info
+glimpse(info)
+info[[1]]  # credits, thousands of blank lines ?
+
+# function and purpose (need to widen window)
+info[[2]]
+
+# 9 x 2 matrix?
+info[[3]]
+```
+
+### list objects in environment
+```{r ls}
+# ?ls
+# note syntax
+x  <- ls("package:knitr")
+typeof(x)
+length(x) #124
+x
+```
+
+### list object info,  ls.str, lsf.str()
+```{r ls}
+?lsf.str
+# note syntax
+x  <- lsf.str("package:knitr")
+typeof(x)  #111
+length(x)
+x
+```
+
+### getNameSpace
+```{r namespace}
+getNamespace("knitr")
+```
+### ls objects in Namespace
+```{r ls_objects}
+x  <- ls(getNamespace(the_pkg))
+typeof(x)  #418
+length(x)
+x
+
+```
+
+### 
+```{r exports}
+x  <- getNamespaceExports("knitr")
+typeof(x)
+length(x) #124
+x
+
+
+```
+
+***
+
+```{r knit_exit(), include = FALSE  , eval=FALSE } 
+knitr::all_labels()
+# knitr::knit_exit()
+```
+
+\newpage
+
+```{r render, eval=FALSE, include=FALSE 	} 
+# TODO:  file is found when knitr runs (see above)
+
+# file must be of form:
+# dir/name_of_this_file    where dir is relative to project root
+
+file  <- here("rmd", "0088_base_package_commands.Rmd")
+file 
+# NOTE:   .tex only works with PDF
+# NOTE:    tex will NOT work with html
+# in general, pdf will look nicer
+rmarkdown::render(file,
+                  #output_format = "pdf_document",
+                  output_format = "html_document",
+                  output_file = "~/Downloads/print_and_delete/out")
+```

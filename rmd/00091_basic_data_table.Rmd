@@ -13,14 +13,10 @@ fontsize: 12pt
 geometry: margin=0.5in,top=0.25in 
 ---
 
-<!-- 
-set cul   "cursorline
-cc=+1			"colorcolumn is 1 more than tw
+PURPOSE:  practice data.table (dt)
 
-vim: to format all urls for md
-s/https.*/[&]()/g
--->
-
+SEE example(data.table)
+SEE vignette(package=)
 
 ```{r setup, include=FALSE		}
 knitr::opts_chunk$set(echo = TRUE,  
@@ -29,7 +25,6 @@ knitr::opts_chunk$set(echo = TRUE,
 											collapse=TRUE) 
 ```
 
-<!--  RENDER:  see bottom -->
 
 ```{r library, include=FALSE		}
 library(jimTools) 
@@ -41,12 +36,9 @@ vignette("datatable-intro", package = "data.table")
 vignette("datatable-reference-semantics", package = "data.table")
 # this opens in new Chrome Tab!
 # http://127.0.0.1:22091/library/data.table/doc/datatable-intro.html  
-
 ``` 
 
 
-SEE example(data.table)
-SEE vignette(package=)
 ```{r begin}
 dt  <- data.table(x = rep(c("b", "a", "c"), each = 3),
                   y = c(1, 3, 6),
@@ -59,37 +51,51 @@ dt1  <- setDT(x = list(1:9))
 dt1
 ```
 
-```{r meaning}
-# DT[i, j, by]
+## DT[i, j, by]
 
 ##   R:                 i                 j        by
 ## SQL:  where | order by   select | update  group by
-
+```{r meaning}
+# i:  subset, or order
 dt[x == "a",]
 dt[x == "a" & y == 1,]
 dt[order(y, -x),]   # y is asc, x in desc
 
-dt[, list(y)]
-dt[, .(y)]
+
+# select columns
+dt[, list(y,v)]  
+
+# .(y) is alias for list(y)
+dt[, list(y)] # as data.table
+dt[, .(y)]  # SAME, short cut   
+dt[, .(y,v)]
+
 dt[, y]  # as vector!
 
 
 dt[, .(x, v)]  # return BOTH as list, ie new data.table
 
 
-dt[, sum(v)]  # summarizes
-dt[, sum(v), by = x]  # summarizes
+dt[, sum(v)]  # summarizes, vector
+dt[, sum(v), by = x]  # summarizes, as table
 
 dt[, .(sum = sum(v)), by = x]  # summarizes, with new variable
+```
 
-# DEEP COPY
+
+## DEEP COPY
+
+```{r copy}
 old  <- data.table::copy(dt)
 old
 
 ## Because modification (by reference) changes objects and 
 ##   anything points to it
 
-new  <- dt[, new := 3*v]
+# :=  forces by reference
+new  <- dt[, new := 3*v]  
+
+# both changed
 new
 dt
 
@@ -100,19 +106,22 @@ dt  <- copy(old)
 dt
 
 ```
-unique
+## unique
 ```{r unique}
 dt
-uniqueN(dt, by = "x")
+
+# count
+data.table::uniqueN(dt, by = "x")
 uniqueN(dt, by = c("x", "y"))
 
 
-# count unique rows
+# table, count for each unique rows
 dt[, .N, by = .(x,y)]
 dt[, .N, by = .(x)]
 
 ```
-subset
+## subset, .SD
+
 ```{r subset}
 dt[, .SD[1]]  # 1st row
 dt[, .SD[1:4]]  # 1st 4 rows
@@ -120,17 +129,31 @@ dt[, .SD[1:4]]  # 1st 4 rows
 ```
 
 
-.N, count
+.N, count returns vector
 ```{r N}
 dt[, .N]
 dt[ x == "a", .N]
 
 ```
 
+
+TODO:  all fail, select rows IF y+v > 6
+```{r sum}
+
+dt[, .(x,y,v)]
+dt[(sum(y,v) > 6), .(x,y,v)]
+dt[sum(y,v) > 6, ]
+dt[, .SD[sum(y,v) > 6]  ]
+```
+
+
+
 TODO:  charcter to numeric?
 FIx
 ```{r convert}
 
+
+# x is char
 dt[(sum(x,y) > 6)]
 dt[with(dt, x + y) > 6, ]
 
@@ -144,7 +167,7 @@ dt[with(dt, x + y) > 6, ]
 knitr::knit_exit() 
 ```
 
-/newpage
+\newpage
 
 ```{r render, eval=FALSE	} 
 file <- "" 

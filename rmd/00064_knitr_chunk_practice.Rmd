@@ -35,11 +35,21 @@ library(knitr)
 library(jimTools)
 ```
 
+
+```{r TAGS, eval=FALSE, echo=FALSE}
+TAGS <- c("collapse", "chunks", "examples")
+```
+
 ## 1-evaluate, but include no output
 ```{r test, eval=TRUE, include=FALSE}
 print("hi")
 x=4
-show_text=TRUE
+show_text=FALSE
+c_ECHO = FALSE
+c_EVAL = FALSE
+c_INCLUDE = FALSE
+
+
 ```
 
 ## 2-output, but do not evaluate
@@ -59,7 +69,7 @@ print("3A-results=hide")
 ```
 
 3B-NOT results='hide'
-```{r collapse=TRUE}
+```{r, collapse, collapse=TRUE}
 print(x+2)
 print("3B-results=NOT hide")
 ```
@@ -85,7 +95,8 @@ print("two")
 ```
 
 ## 7B-collapse=FALSE
-```{r collapse=FALSE}
+```{r, label="7B", collapse=FALSE, eval=c_eval, include=c_include, echo =
+  c_echo}
 print("one")
 print("two")
 ```
@@ -101,12 +112,15 @@ str(knitr::opts_chunk$get())
 ## 21-knitr::read_chunk from external .R file WORKS!
 [REF:] (https://bookdown.org/yihui/rmarkdown-cookbook/read-chunk.html)
 ```{r read, cache=FALSE }
-  knitr::read_chunk('~/code/r_try_things_here/rmd/file_for_read_chunk.R')
+
+#  knitr::read_chunk('~/code/r_try_things_here/rmd/file_for_read_chunk.R')
+x  <- knitr::read_chunk("file_for_read_chunk.R")
+
 
 ```
 
-22-test_a
-```{r, test_a}
+## 22-knit_code(), include code from label="7B"
+```{r, echo = !c_ECHO, eval = !c_EVAL, include=!c_INCLUDE, code=knitr::knit_code$get("7B")}
 
 ```
 
@@ -161,11 +175,14 @@ knitr::knit_exit()
 
 render from code, to html
 ```{r eval=FALSE}
-file  <- "rmd/00064_knitr_chunk_practice.Rmd"
+
+file  <- "00064_knitr_chunk_practice.Rmd"
+file  <- here("rmd", file)
+file
 rmarkdown::render(
 	file, 
 	rmarkdown::html_document(), 
-	#rmarkdown::pdf_document()) ,
+#	rmarkdown::pdf_document() ,
   output_file="~/Downloads/print_and_delete/out") 
 ```
 
