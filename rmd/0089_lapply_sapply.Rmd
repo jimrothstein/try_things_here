@@ -14,66 +14,111 @@ output:
     toc_depth:  2   
     fontsize: 11pt   
     geometry: margin=0.5in,top=0.25in   
+TAGS: lapply,sapply,named,unamed,simplification
 ---
 
-PURPOSE:   Examples of lapply, sapply, vapply
+## PURPOSE:   Examples of lapply, sapply, vapply
+  *  Must understand lists vs atomic, named
 
 
 ```{r setup, include=FALSE		}
 knitr::opts_chunk$set(echo = TRUE,
                       comment = "      ##",
                       error = TRUE,
-                      collapse = FALSE   ) # easier to read
+                      collapse = T   ) # easier to read
 ```
 
 ### lapply: function works on list, returns a list.
 ```{r simple_list}
 
+# named list
 l  <- list(a = rnorm(5), b = rnorm(5))
 l
 
+# named list  
 ans  <- lapply(l, mean)
 is.list(ans)
 ans
+
+
+args(lapply)
 ```
 
 ### simplification
   *  several functions try to simplify structure
   * c()
   * unlist()
+
 ```{r simplify}
 
-# c() returns 
+# named
+x  <- c(a="ONE", b="TWO")
+x
+
+# c() returns simplified
+x  <- c(1,2, c(3,4))
+x
+
+# c() simplies tries to keep names
+x  <- c(1, 2, d = c(3,4))
+x
+
 x  <- c(1, 2, c(3,4))
 is.list(x)   # F
 is.integer(x) # F
 is.double(x)   # TRUE
+```
 
+
+### unlist as simplifier
+
+```{r unlist}
 
 # unlist() is another simplifier , here returns atomic vector rather than list
 l  <- list(a=c(1,2), b=c(3,4))
 l
+
+# pattern ?!
 ans  <- unlist(l)
+ans
+
 is.double(ans)  # T
 names(ans)
 length(ans)  # 4
-ans
 ```
 
 
 ### sapply:  
   *  Rather than list, try to return vector, matrix, or array (if simplify=TRUE)
 ```{r sapply}
+args(sapply)
 
 # sapply is 'smarter', if see scalers and returns vector[] instead.
 sapply(v, mean) # return vector!
 
-# ?
+# named list 
 l <- list(a=1:5, b=6:10)
 
-sapply(l, mean)
-sapply(l, `[`)
-sapply(l, `[`, simplify=TRUE)
+sapply(l, mean) # named atomic
+
+
+# first, do not simplify
+ans  <- sapply(l, `[`, simplify=F)
+class(ans)
+attributes(ans)
+ans
+
+
+# second, do simplify (default) Surprise !
+ans  <- sapply(l, `[`)
+class(ans)
+attributes(ans)
+ans
+```
+
+
+```{r runif}
+
 
 #-----------------
 # runif | runif(n) returns double[] n values from uniform distr
@@ -148,11 +193,10 @@ vapply(v, function(x) {if (x > 2020) x  <- NA; x}, double(1))
 # file must be of form:
 # dir/name_of_this_file    where dir is relative to project root
 
-file  <- here("", "")
 file  <-"rmd/0089_lapply_sapply.Rmd" 
 
 # in general, pdf will look nicer
-rmarkdown::render(file,
+rmarkdown::render(basename(file),
                   #output_format = "pdf_document",
                   output_format = "html_document",
                   output_file = "~/Downloads/print_and_delete/out")

@@ -1,1 +1,0 @@
-/home/pi/code/zsh_scripts_project/070_run_R_example.sh

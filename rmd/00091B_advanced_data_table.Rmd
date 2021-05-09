@@ -1,0 +1,136 @@
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+--- 
+title:   "adv_data_table" 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
+TAGS:  rbindlist,data.table,normalize
+---
+
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  
+											comment="      ##",  
+											error=TRUE, 
+											collapse=TRUE) 
+# 
+library(jimTools) 
+library(data.table)
+
+# list all
+if (F){
+vignette(package="data.table")
+}
+
+if (F) {
+vignette("datatable-intro", package = "data.table")
+
+vignette("datatable-reference-semantics", package = "data.table")
+# this opens in new Chrome Tab!
+# http://127.0.0.1:22091/library/data.table/doc/datatable-intro.html  
+}
+``` 
+
+```{r wrangle}
+dt[, .(new)]
+
+dt
+# drops for good
+dt[, line := NULL]
+dt
+
+
+# ==========================
+#   simple_dt
+# ==========================
+line  <- NULL
+simple_dt  <- function() {
+    line  <- "TAG:    a,b,c,d,e"
+    line  <- rep(line, 10)
+    dt  <- data.table(line = line)
+}
+dt  <- simple_dt()
+dt
+
+
+# Add Date
+dt[, date := format(Sys.Date())]
+dt
+
+# remove TAGS:
+pat  <- "^TAG:\\s*"
+dt[, sub := sub(pat, replacement = "", line)]
+dt
+
+
+
+
+# ======================
+#  EXPERIMENTS with DT
+# ======================
+
+#
+# Given named list, where values are chr[]; return data.table
+#
+# 
+# ===================
+#  bind multiple dt, each 1 record
+# dt1, dt2, dt3 ...
+dt1  <- lines[1,]
+dt2  <- lines[2,]
+dt3  <- lines[3,]
+
+rbindlist(list(dt1,dt2, dt3))
+
+
+get_filenames  <- function(e) rep(names(e), 2)
+
+
+
+
+# =====================
+#   rbindlist()
+# =====================
+
+#  TWO dt
+dt1  <- data.table(name=c("file1", "file1"),
+                   tags=c("tag1", "tag2"))
+dt1
+dt2  <- data.table(name=c("file2", "file2", "file2"),
+                   tags=c("tag3", "tag4", "tag5"))
+dt2
+
+
+rbindlist(list(dt1, dt2))
+# =========================
+# TWO lists 
+l1  <-  list(name=c("file1", "file1"), tags=c("tag1", "tag2"))
+l1
+l2  <- list(name=c("file2", "file2", "file2"), tags=c("tag3", "tag4", "tag5"))
+l2
+
+rbindlist(list(l1,l2))
+# ======================
+
+
+
+```
+
+
+
+\newpage
+
+```{r render, eval=FALSE	} 
+args(rmarkdown::render)
+file  <- "/home/jim/code/try_things_here/rmd/00091_basic_data_table.Rmd"
+rmarkdown::render(input= file,
+                  output_format="html_document")
+
+
+```

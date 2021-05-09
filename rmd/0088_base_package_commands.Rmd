@@ -15,11 +15,17 @@ output:
     toc_depth:  2   
 fontsize: 11pt   
 geometry: margin=0.5in,top=0.25in   
+TAGS:  packageDescription(),dependencies,remove.packages(),old.packages()
 ---
+
+
+
 
 PURPOSE:   Tools to manage R packages.
 TODO:  Study code:   
 https://stackoverflow.com/questions/4090169/elegant-way-to-check-for-missing-packages-and-install-them
+
+SEE ALSO:  ~/code/zsh_scripts_project/071_run_R_to_update_packages.sh
 
 
 ```{r setup, include=FALSE		}
@@ -62,6 +68,14 @@ options("repos")
 ```
 
 
+### remove a package
+```{r remove_package}
+  if (F) {
+    pkg = 
+  remove.packages(pkg)
+  }
+
+```
 
 
 ## Examine installed.packages
@@ -116,26 +130,37 @@ summary(x)
 
 ```
 
+### =========================
+###   UPDATE  - 2 step process?
+###   jimTools - has newer version of this
+### =========================
+
+## To update `old` packages
+*   Appears that need to do this first, before update others
+*   To increase `old` to include those comipiled earlier minor version of R
+*   Use checkBuilt= T to force
+
+```{r update_old}
+update.packages(ask = F,
+                oldPkgs = old.packages(),
+                checkBuilt=F)
+```
 
 ## To upgrade
+
 vs update.packages() ?
 ```{r upgrade}
 
 {
 begin  <- Sys.time()
-
-    if (FALSE ) upgrade (x, ask = FALSE , checkBuild=TRUE)
-    upgrade (x, ask = FALSE , checkBuild=TRUE)
-
+    update.packages(ask = FALSE , checkBuild=TRUE)
     end  <- Sys.time()
     diff  <- end - begin
     diff
 }
 
-# print updated summary table
-update(x, checkBuild=TRUE)
-
 ```
+
 
 
 ## NOTES:  re:  install on Rpi
@@ -262,6 +287,15 @@ diff
 
 ```
 
+### Pkg Dependencies
+```{r dependencies}
+pkg = "purrr"
+packageDescription(pkg)
+# subset vector
+packageDescription(pkg)[c("Imports", "Suggests")]
+```
+
+
 ## sessioninfo::package_info()
 ```{r package_info}
 # For Installed Packages, yields dependencies
@@ -283,13 +317,15 @@ knitr::all_labels()
 # file must be of form:
 # dir/name_of_this_file    where dir is relative to project root
 
-file  <- here("rmd", "0088_base_package_commands.Rmd")
-file 
 # NOTE:   .tex only works with PDF
 # NOTE:    tex will NOT work with html
 # in general, pdf will look nicer
+
+file  <-  "/home/jim/code/try_things_here/rmd/0088_base_package_commands.Rmd"
+
 rmarkdown::render(file,
                   #output_format = "pdf_document",
                   output_format = "html_document",
-                  output_file = "~/Downloads/print_and_delete/out")
+                  output_file = "./out")
+  #                output_file = "~/Downloads/print_and_delete/out")
 ```

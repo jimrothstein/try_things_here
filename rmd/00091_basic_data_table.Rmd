@@ -1,6 +1,5 @@
 	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
 --- 
-# Spaces, no Tabs
 title: Template for .Rmd 
 date: "`r paste('last updated', 
     format(lubridate::now(), '%H:%M, %d %B %Y'))`"
@@ -23,41 +22,66 @@ knitr::opts_chunk$set(echo = TRUE,
 											comment="      ##",  
 											error=TRUE, 
 											collapse=TRUE) 
-```
-
-
-```{r library, include=FALSE		}
 library(jimTools) 
 library(data.table)
 
+# list all vignettes
+if (F){
 vignette(package="data.table")
-vignette("datatable-intro", package = "data.table")
+}
 
+if (F) {
+vignette("datatable-intro", package = "data.table")
 vignette("datatable-reference-semantics", package = "data.table")
 # this opens in new Chrome Tab!
 # http://127.0.0.1:22091/library/data.table/doc/datatable-intro.html  
+}
 ``` 
 
+```{r dt_options}
+# ALL options
+options()
+length(options()) #93
+dt  <- as.data.table(options())
 
-```{r begin}
-dt  <- data.table(x = rep(c("b", "a", "c"), each = 3),
-                  y = c(1, 3, 6),
-                  v = 1:9)
-dt
+
+getOption("datatable.print.nrows") #100
 ```
 
+### create
+```{r begin}
+# practice dt,  use function so easy to re-create
+create_dt  <- function() {
+  data.table(x = rep(c("b", "a", "c"), each = 3),
+                  y = c(1, 3, 6),
+                  v = 1:9)
+}
+dt  <- create_dt()
+dt
+
+```
+
+
+### setDT
 ```{r list_exists}
 dt1  <- setDT(x = list(1:9))
 dt1
 ```
 
-## DT[i, j, by]
+### DT[i, j, by]
 
-##   R:                 i                 j        by
-## SQL:  where | order by   select | update  group by
+###   R:                 i                 j        by
+### SQL:  where | order by   select | update  group by
+  * subset
+  * order
+  * list .()
+  * return vector vs dt
 ```{r meaning}
 # i:  subset, or order
 dt[x == "a",]
+
+dt[dt$x == "a",]  #also works
+
 dt[x == "a" & y == 1,]
 dt[order(y, -x),]   # y is asc, x in desc
 
@@ -72,6 +96,15 @@ dt[, .(y,v)]
 
 dt[, y]  # as vector!
 
+#  select by column range  (and including)
+dt[, x:y]
+
+# by column number!
+dt[, 1:2]
+
+# drop first column
+dt[, -(1)]
+
 
 dt[, .(x, v)]  # return BOTH as list, ie new data.table
 
@@ -80,14 +113,78 @@ dt[, sum(v)]  # summarizes, vector
 dt[, sum(v), by = x]  # summarizes, as table
 
 dt[, .(sum = sum(v)), by = x]  # summarizes, with new variable
+
+
+## RENAME
+dt
+dt[,.(z = v)]   # not permanent, only prints ONE col
+
+
+## return ALL columns, rename just one
+dt1 <-  dt[,.(x,y,z = v)]
+dt1
+```
+### LOGIC
+```{r logic}
+
+dt[y <5,]
+
+dt[, y < 5]  # vector
+dt[, .(y < 5)]
+
+dt[, .((y + v) > 10)]
+
+```
+
+### calc
+```{r calc}
+dt
+dt[, .(x,y,v, new = y + v)]  # temp
+dt
+
+# no permanent change, display only new
+dt[, .(new = y + v)]  # temp
+dt
+# 
+# not SAME, grand total ?
+dt[, .(new = sum(y,v))]
+dt
+
+# permanently create NEW col
+dt[, newer := y +v]
+dt
 ```
 
 
-## DEEP COPY
 
+### aggregrate
+```{r aggregate}
+
+# 
+dt
+# for each in Col x, total, return dt
+dt[, .(.N), by = .(x)]
+dt
+
+# SAME, shortcut
+dt[, .N, by = x]
+dt
+
+# group by 2 columns, return dt
+dt[, .N, by = .(x,y)]
+
+```
+
+
+### DEEP COPY
 ```{r copy}
+# all dt
+tables()
+
+new  <- dt
 old  <- data.table::copy(dt)
 old
+tables()
 
 ## Because modification (by reference) changes objects and 
 ##   anything points to it
@@ -99,6 +196,7 @@ new  <- dt[, new := 3*v]
 new
 dt
 
+# no change
 old
 
 # now change back
@@ -106,7 +204,7 @@ dt  <- copy(old)
 dt
 
 ```
-## unique
+### unique
 ```{r unique}
 dt
 
@@ -120,7 +218,7 @@ dt[, .N, by = .(x,y)]
 dt[, .N, by = .(x)]
 
 ```
-## subset, .SD
+### subset, .SD
 
 ```{r subset}
 dt[, .SD[1]]  # 1st row
@@ -131,6 +229,7 @@ dt[, .SD[1:4]]  # 1st 4 rows
 
 .N, count returns vector
 ```{r N}
+dt
 dt[, .N]
 dt[ x == "a", .N]
 
@@ -170,10 +269,10 @@ knitr::knit_exit()
 \newpage
 
 ```{r render, eval=FALSE	} 
-file <- "" 
-file  <- basename(file) 
-dir <-"rmd"
+args(rmarkdown::render)
+file  <- "/home/jim/code/try_things_here/rmd/00091_basic_data_table.Rmd"
+rmarkdown::render(input= file,
+                  output_format="html_document")
 
-jimTools::ren_pdf(file,dir)
-jimTools::ren_github(file, dir)
+
 ```

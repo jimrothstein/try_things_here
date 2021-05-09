@@ -15,18 +15,13 @@ fontsize: 12pt
 geometry: margin=0.5in,top=0.25in 
 ---
 
-## S3 vignette from vctrs:: pkg
+## REF:  S3 vignette from vctrs:: pkg
 
 ```{r setup, include=FALSE		}
 knitr::opts_chunk$set(echo = TRUE,  
 											comment="      ##",  
 											error=TRUE, 
 											collapse=TRUE) 
-```
-
-<!--  RENDER:  see bottom -->
-
-```{r library, include=FALSE		}
 library(jimTools) 
 library(vctrs)
 ``` 

@@ -5,8 +5,9 @@ output:
 geometry: "left=2cm,right=2cm,top=2cm,bottom=2cm"
 fontsize: 12pt
 ---
-
+### Vignette for data.table
 ```
+
 REF: [http://rdatatable.github.io](rdatatable)
 ##		Vignette:  Intro
 ##		example(data.table)
@@ -14,6 +15,9 @@ REF: [http://rdatatable.github.io](rdatatable)
 # =======
 # SETUP
 # =======
+```
+
+
 ```{r setup}
 
 library(magrittr)

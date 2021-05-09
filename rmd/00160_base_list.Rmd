@@ -252,10 +252,32 @@ unlist
 ```{r unlist}
 x  <- list(1, 2, 3)
 x
+
 y  <- unlist(x)  # returns dbl atomic vector
+y
 typeof(y)
 
 x  <- list(c(1, 2), c(3, 4), c(5, 6))
+x
+
+###  For each element of list x, return just first entry
+# returns list, each element of x
+lapply(x, typeof)
+
+# hmmm?
+lapply(x, `[`)
+
+# returns a list, for each element grab 1st 
+lapply(x, function(e) {e[[1]]})
+
+# same, but simplify (to vector)
+sapply(x, function(e) {e[[1]]})
+
+
+
+
+
+
 y  <- unlist(x)  # flattens to single dbl vector 1 2 3 4 5 6
 y
 typeof(y)
@@ -266,6 +288,9 @@ x
 y  <- unlist(x)				# flatten to character vector
 typeof(y)
 y
+```
+
+```{r legacy}
 
 LEGACY, from advancedR  006_functions.R
 

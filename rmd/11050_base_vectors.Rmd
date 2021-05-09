@@ -16,16 +16,6 @@ output:
     geometry: margin=0.5in,top=0.25in   
 ---
 
-<!-- 
-code_folding: hide   to turn off
-
-set cul   "cursorline
-cc=+1			"colorcolumn is 1 more than tw
-
-vim: to format all urls for md
-s/https.*/[&]()/g
--->
-
 ```{r setup, include=FALSE		}
 knitr::opts_chunk$set(echo = TRUE,
                       comment = "      ##",
@@ -35,7 +25,7 @@ file  <- knitr::current_input()
 library(jimTools)
 ```
 
-Create atomic vector, slice and dice:
+### Create atomic vector, slice and dice:
 ```{r create}
 v  <- 1:1000
 head(v)
@@ -48,7 +38,6 @@ first
 rest  <- v[-(1:100)]
 rest
 head(rest)
-
 ```
 
 ### Use cut, split - FAIL!
@@ -56,6 +45,32 @@ head(rest)
 *  split is used to chop vector based on a FACTOR
 ```{r cut}
 ```
+### using vector()
+  *   asq
+  *  `mode`  think base class or list
+https://rdrr.io/r/base/vector.html
+```{r vector}
+vector(mode="logical", length=0)
+
+# logical of length 
+v  <- vector(mode="logical", length=0) 
+v
+
+# logical of length 1
+v1   <- vector(mode="logical", length=1) 
+v1
+
+# logical of length 2
+v2   <- vector(mode="logical", length=2) 
+v2
+
+
+# list of length 5, values are NUL
+l1  <- vector(mode="list", length=5)
+l1
+
+```
+
 
 
 

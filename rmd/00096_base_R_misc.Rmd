@@ -65,5 +65,32 @@ x  <- c(1,5,10)
 ifelse(x > 5, "yes", "no")  # 'no' 'no' 'yes'
 
 ```
+### switch
+```{r}
+
+x<-2
+x  <- "B"
+x  <- 3
+base::switch(x, "first", 
+             B = "second",
+             C = "third"
+)
+
+
+choose  <- function(x) {
+
+    base::switch(x, "first", 
+             B = "second",
+             C = "third",
+             x
+)
+
+}
+
+x  <- 3
+x <- 100
+choose(x)
+```
+
 
 
