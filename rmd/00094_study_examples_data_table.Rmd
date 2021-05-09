@@ -1,0 +1,87 @@
+
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+fontsize: 11pt   
+geometry: margin=0.5in,top=0.25in   
+---
+
+**PURPOSE:   example(data.table) - to STUDY**
+
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = FALSE   ) # easier to read
+```
+
+
+```{r library, include=FALSE		}
+file  <- knitr::current_input() 
+library(jimTools)
+library(data.table)
+``` 
+
+### Study examples
+```{r begin}
+create_dt  <- function()
+  DT = data.table(x=rep(c("b","a","c"),each=3), y=c(1,3,6), v=1:9)
+
+dt  <- create_dt()
+dt
+
+example(data.table)
+
+```
+
+### order(x)
+```{r order}
+dt[order(x),]
+dt[order(y),]
+dt[order(y,v),]
+dt[order(y,-v),]
+dt[y == 6,][order(v),]
+
+# wrong
+dt[y == 6 & order(-v), ]
+```
+
+
+***
+
+```{r knit_exit(), include = FALSE  , eval=FALSE } 
+# knitr::knit_exit()
+```
+
+\newpage
+
+
+```{r render, eval=FALSE, include=FALSE 	} 
+# TODO:  file is found when knitr runs (see above)
+
+# file must be of form:
+# dir/name_of_this_file    where dir is relative to project root
+
+# NOTE:   .tex only works with PDF
+# NOTE:    tex will NOT work with html
+# in general, pdf will look nicer
+
+file  <-  "/home/jim/code/try_things_here/rmd/0088_base_package_commands.Rmd"
+
+rmarkdown::render(file,
+                  #output_format = "pdf_document",
+                  output_format = "html_document",
+                  output_file = "~/Downloads/print_and_delete/out")
+```
