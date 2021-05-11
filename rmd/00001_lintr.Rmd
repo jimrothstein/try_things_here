@@ -79,4 +79,6 @@ dir <- "rmd"
 
 jimTools::ren_pdf(file,dir)
 jimTools::ren_github(file, dir)
-```
+rmarkdown::render("~/docs/misc_files/00020_contents_storage_locker.md",
+                )
+# ```

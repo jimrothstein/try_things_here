@@ -26,7 +26,7 @@ geometry: margin=0.5in,top=0.25in
 rlang::trace_back()
 options(error= browser, trace_back etc)
 
-#### From Gillespie, Appendix E# {{{
+#### From Gillespie, Appendix E 
 ```{r setup}
 ```
 
@@ -96,12 +96,12 @@ trace(third, recover())
 
 rlang::last_error()
 rlang::last_trace()
-```# }}}
+```
 
 #### E2, browser(), pauses R, view in function's env
 
 
-#### E4, debug(FUN), acts as browser() when entering FUN# {{{
+#### E4, debug(FUN), acts as browser() when entering FUN# 
 ```
 debug(FUN)  - debug a FUN
 undebug(FUN) - turn off
@@ -115,9 +115,9 @@ isdebugged(third)
 
 first()
 undebug(second)
-```# }}}
+```# 
 
-#### E5, trace(FUN,browse, at=)# {{{
+#### E5, trace(FUN,browse, at=)# 
 ```
 trace inserts a command in FUN, at line #
 untrace(FUN) to end
@@ -134,7 +134,7 @@ untrace(print)
 print("hi")
 
 trace(three, print("entering 3"))
-```# }}}
+```# 
 
 
 
@@ -142,7 +142,7 @@ trace(three, print("entering 3"))
 ```
 ```
 
-#### examine class=rlang_error; code to generate error()# {{{
+#### examine class=rlang_error; code to generate error()# 
 ```{r eval=FALSE	 }
 generate an error;
 STUDY!
@@ -178,6 +178,6 @@ l$trace
 
 class(l)
 
-```# }}}
+```# 
 
 
