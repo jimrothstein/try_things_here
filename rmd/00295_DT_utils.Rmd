@@ -1,0 +1,120 @@
+---
+title:  "0399A_yaml_utils.R"
+date:   "`r format(Sys.Date(), '%d_%b_%Y)`" 
+TAGS:  yaml,tags,lapply examples,utils,vignette
+---
+
+  ### Utilies for data.table
+  *  which route?    dplyr, tidyr (pivots, wider, longer df) ?
+  *  TODO This grab bag needs Cleanup
+
+#'  NOTATION:   Following Hadley (purrr:::) refer to `list` as list and refer
+  #'  to `atomic vectors` as character vectors, numeric vectors etc ....
+  #'  FOR BREVITY:    chr[] refers to character vector,  chr[n] refers to
+  #'  character vector where length of each element is n.
+  #'
+  #'
+  #'
+
+
+### Given list of this form list(file_name1 = c("a", "b", "c"))  create dt with 2 columns (file_name and tag) , normalized
+
+### normalize
+```{r normalize}
+
+# ==================
+# clever, no cigar
+# ==================
+
+library(data.table)
+l  <- list(file1 = c("a", "b", "c"))
+
+# check that l is singleton
+file_name  <- names(l)
+file_name
+
+tags = l[[1]] 
+l[[file_name]]
+tags
+identical(tags, l[[file_name]])
+
+
+
+normalize  <- function(file_name = character(), tags = character()) {
+  n  <- length(tags)  # check > 0
+  dt  <- data.table(file_name = rep(file_name,n),
+                    tags = tags)
+}
+
+dt  <- normalize(file_name = file_name, tags = tags)
+dt
+
+dt1  <- normalize(file_name = names(l), 
+                  tags = l[[file_name]])
+dt1
+identical(dt, dt1)
+```
+
+
+### TODO  -- this is all wrong 
+### Suppose list of many
+```{r normalize_many}
+
+l  <- lines
+l  <- list(file1 = c("x", "y"),
+           file2 = c("A", "B"),
+           file3 = c("jim", "joe", "sally"))
+l
+
+
+
+l$file3[[1]]
+l[[c(3,2)]]
+
+lapply(l, normalize, tags = function(e) e[[file_name]])
+dtB  <- lapply(l, normalize, tags = function(e) unlist(e))
+dtB
+lapply(l, normalize, tags = function(e) e$file_name)
+
+
+       file_name = function(e) names(e),
+       tags = function(e) e[[file_name]]) 
+
+lapply(l, function(e) e) 
+```
+
+
+<!--
+# ========
+#   KEEP  - useful related to vignettes
+# ========
+-->
+
+### list all vignettes
+```{r all_vignettes}
+
+if (F){
+vignette(package="data.table")
+}
+```
+### Activate vignette (opens http://127 ....server)
+```{r show_vignette}
+
+if (F) {
+vignette("datatable-intro", package = "data.table")
+vignette("datatable-reference-semantics", package = "data.table")
+# this opens in new Chrome Tab!
+# http://127.0.0.1:22091/library/data.table/doc/datatable-intro.html  
+}
+``` 
+### DT and options
+```{r dt_options}
+# ALL options
+options()
+length(options()) #93
+
+# FAILS
+dt  <- as.data.table(options())
+
+getOption("datatable.print.nrows") #100
+```

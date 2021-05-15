@@ -1,0 +1,118 @@
+---
+title: "090_data_table.R"
+output:  
+  pdf_document:
+geometry: "left=2cm,right=2cm,top=2cm,bottom=2cm"
+fontsize: 12pt
+TAGS:  data.table,vignette,flights14,dplyr,magrittr,purrr
+---
+### Vignette for data.table
+```
+
+REF: [http://rdatatable.github.io](rdatatable)
+##		Vignette:  Intro
+##		example(data.table)
+```
+
+
+```{r setup}
+library(magrittr)
+library(data.table)
+citation("data.table")
+
+input <- if (file.exists("./data/flights14.csv")) {
+   "flights14.csv"
+} else {
+  "https://raw.githubusercontent.com/Rdatatable/data.table/master/vignettes/flights14.csv"
+}
+# 2.2 MM
+flights <- fread(input)
+flights
+```
+
+```{r lazy }
+# I'm lazy!  use DT[]
+DT <- flights
+colnames(flights)
+typeof(flights) #list
+class(flights) # df AND "data.table"
+
+dplyr::glimpse(flights)
+
+# convert df
+# DT <- as.data.table(df)
+
+# =========================================
+# BASIC:    WHERE, SELECT, GROUP BY (sql)
+# =========================================
+# WHERE clause( subset)  -------------------## 
+flights [origin == "JFK" & carrier == "AA" & year == "2014" & month == 6L ] %>% nrow()
+head( flights[order(origin)])
+
+
+# TODO (doesn't get to head()) -------------------## 
+ flights[order(origin)] %>% nrow() %>% head()
+# group, total
+DT[,.N,by=orgin]
+
+# reverse order!
+DT[order(-origin), .N, by=origin]
+
+head( flights[order(-origin)] )
+
+# return a vector -------------------## 
+head (flights[, arr_delay])
+
+# return a list -----------------##
+head (flights[, list(arr_delay)])
+head (flights[, .(arr_delay)])   # .( )  alias for list
+
+# ========
+# SELECT
+# ========
+flights[,mean(arr_delay)]
+flights[,mean(arr_delay), by = dest]
+flights[origin == "JFK" && 1:5,mean(arr_delay), by = dest]
+
+# wrong:  why giving me first & last 5?
+flights[origin == "JFK" && 1:5,mean(arr_delay), by = dest]
+
+# why is orgin EWR appear?
+flights[origin == "JFK" && 1:5 ,.(origin,mean(arr_delay)), by = dest]
+
+
+
+# SELECT 3 coluns, 1 is calc -----------------##
+# CHAIN, in desc order
+flights[,.(arr_delay,dep_delay,totl = arr_delay + dep_delay)] [order(-totl)]
+
+# CHAIN
+flights[,.(arr_delay,dep_delay,totl = arr_delay + dep_delay)] [totl <0,]
+
+
+# SELECT when sum is less 0
+flights[sum(arr_delay+dep_delay) <0,] 
+
+# WHERE (ie subset) and SELECT length of subset -----------------##
+flights[origin == "JFK" & month==6L, length(dest)]
+
+# shortcut .N   -----------------##
+flights[origin == "JFK" & month==6L, .N] 
+
+
+# GROUP
+flights[,.N, by=dest]  # # rows by dest
+
+# ==========
+# FOR LOOP
+# ==========
+
+df <- data.frame(x=rnorm(100))
+dt  <- as.data.table(df)
+
+# each row i, set new col v = i
+for(i in 1:100)dt[i, v := i]
+head(dt)
+
+```
+

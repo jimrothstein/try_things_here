@@ -1,0 +1,403 @@
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+--- 
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
+TAGS:  data.table,example,vignette,
+---
+
+PURPOSE:  simple, reference examples 
+SEE example(data.table) (ie in code)
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  
+											comment="      ##",  
+											error=TRUE, 
+											collapse=TRUE) 
+library(jimTools) 
+library(data.table)
+
+# list all vignettes
+if (F){
+vignette(package="data.table")
+}
+
+if (F) {
+vignette("datatable-intro", package = "data.table")
+vignette("datatable-reference-semantics", package = "data.table")
+# this opens in new Chrome Tab!
+# http://127.0.0.1:22091/library/data.table/doc/datatable-intro.html  
+}
+``` 
+
+```{r dt_options}
+# ALL options
+if (F) options()
+length(options()) #93
+
+# not so simple,  options is unruly list
+if (F) dt  <- as.data.table(options())
+getOption("datatable.print.nrows") #100
+```
+
+### create dt
+```{r begin}
+# practice dt,  use function so easy to re-create
+create_dt  <- function() {
+  data.table(x = rep(c("b", "a", "c"), each = 3),
+                  y = c(1, 3, 6),
+                  v = 1:9)
+}
+dt  <- create_dt()
+dt
+```
+
+
+### setDT
+```{r list_exists}
+dt1  <- setDT(x = list(1:9))
+dt1
+
+# last element
+dt1[, .N] # as dt
+dt1[.N] # as vector
+dt1[1]
+dt1[2]
+
+dt1[-2] # omit 2nd elemnt
+dt1[!2] # SAME
+```
+
+### DT[i, j, by]
+
+###   R:                 i                 j        by
+### SQL:  where | order by   select | update  group by
+  * subset
+  * order
+  * list .()
+  * return vector vs dt
+```{r meaning}
+# i:  subset, or order
+dt[x == "a",]
+
+dt[dt$x == "a",]  #also works
+
+dt[x == "a" & y == 1,]
+dt[order(y, -x),]   # y is asc, x in desc
+
+
+# select columns
+dt[, list(y,v)]  
+
+# .(y) is alias for list(y)
+dt[, list(y)] # as data.table
+dt[, .(y)]  # SAME, short cut   
+dt[, .(y,v)]
+
+dt[, y]  # as vector!
+
+#  select by column range  (and including)
+dt[, x:y]
+
+# by column number!
+dt[, 1:2]
+
+# drop first column
+dt[, -(1)]
+
+
+dt[, .(x, v)]  # return BOTH as list, ie new data.table
+
+
+dt[, sum(v)]  # summarizes, vector
+dt[, sum(v), by = x]  # summarizes, as table
+
+dt[, .(sum = sum(v)), by = x]  # summarizes, with new variable
+
+
+### RENAME
+dt
+dt[,.(z = v)]   # not permanent, only prints ONE col
+
+
+## return ALL columns, rename just one
+dt1 <-  dt[,.(x,y,z = v)]
+dt1
+```
+### LOGIC
+```{r logic}
+
+dt[y <5,]
+
+dt[, y < 5]  # vector
+dt[, .(y < 5)]
+
+dt[, .((y + v) > 10)]
+
+```
+
+### calc
+```{r calc}
+dt
+dt[, .(x,y,v, new = y + v)]  # temp
+dt
+
+# no permanent change, display only new
+dt[, .(new = y + v)]  # temp
+dt
+# 
+# not SAME, grand total ?
+dt[, .(new = sum(y,v))]
+dt
+
+# permanently create NEW col
+dt[, newer := y +v]
+dt
+```
+
+
+
+### aggregrate
+```{r aggregate}
+
+# 
+dt
+# for each in Col x, total, return dt
+dt[, .(.N), by = .(x)]
+dt
+
+# SAME, shortcut
+dt[, .N, by = x]
+dt
+
+# group by 2 columns, return dt
+dt[, .N, by = .(x,y)]
+
+```
+
+
+### DEEP COPY
+```{r copy}
+# all dt
+tables()
+
+new  <- dt
+old  <- data.table::copy(dt)
+old
+tables()
+
+## Because modification (by reference) changes objects and 
+##   anything points to it
+
+# :=  forces by reference
+new  <- dt[, new := 3*v]  
+
+# both changed
+new
+dt
+
+# no change
+old
+
+# now change back
+dt  <- copy(old)
+dt
+
+```
+### unique
+```{r unique}
+dt
+
+# count
+data.table::uniqueN(dt, by = "x")
+uniqueN(dt, by = c("x", "y"))
+
+
+# table, count for each unique rows
+dt[, .N, by = .(x,y)]
+dt[, .N, by = .(x)]
+
+```
+### subset, .SD
+
+```{r subset}
+dt[, .SD[1]]  # 1st row
+dt[, .SD[1:4]]  # 1st 4 rows
+
+```
+
+
+.N, count returns vector
+```{r N}
+dt
+dt[, .N]
+dt[ x == "a", .N]
+
+```
+
+
+TODO:  all fail, select rows IF y+v > 6
+```{r sum}
+
+dt[, .(x,y,v)]
+dt[(sum(y,v) > 6), .(x,y,v)]
+dt[sum(y,v) > 6, ]
+dt[, .SD[sum(y,v) > 6]  ]
+```
+
+
+
+TODO:  charcter to numeric?
+FIx
+```{r convert}
+
+
+# x is char
+dt[(sum(x,y) > 6)]
+dt[with(dt, x + y) > 6, ]
+
+```
+
+### Study examples
+```{r begin2}
+create_dt  <- function()
+  DT = data.table(x=rep(c("b","a","c"),each=3), y=c(1,3,6), v=1:9)
+
+dt  <- create_dt()
+dt
+
+example(data.table)
+
+```
+
+### order(x)
+```{r order}
+dt[order(x),]
+dt[order(y),]
+dt[order(y,v),]
+dt[order(y,-v),]
+dt[y == 6,][order(v),]
+
+# wrong
+dt[y == 6 & order(-v), ]
+```
+
+```{r challenge}
+
+# Challenge Problem
+# for each ID, count rows with non-zero values, 
+  build list of types (with non-zero values)
+
+my_tibble <- tidyr::tibble(
+  ID = c(1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5),
+  value = c(0,0,0,0,
+            1,1,0,1,
+            1,1,1,1,
+            0,1,0,1,
+            1,0,0,0),
+  type = rep(c("a", "b", "c", "d"), 5)
+)
+my_tibble
+dt  <- as.data.table(my_tibble) 
+
+##  Each ID, show non-zero count
+dt[value != 0, .N, by = ID]
+
+
+##  Each ID, list the types with non-zero values
+dt[value != 0, .(unique(type)), by = ID]
+
+## TODO:
+## SAME, but use list-column for the types
+dt[value != 0, c(ID, types `:=`  .(type)), by = ID]
+dt[]
+
+
+```
+
+### simple: reshape, list-column 
+
+```{r simple1}
+# practice dt,  use function so easy to re-create
+create_dt  <- function() {
+  data.table(x = rep(c("b", "a", "c"), each = 3),
+                  y = c(1, 3, 6),
+                  v = 1:9)
+}
+dt  <- create_dt()
+dt
+```
+
+### group and head()
+```{r}
+# 3lines for each grouping
+dt[,.SD, by=x]
+
+# here limit to 2 lines, for each grouping
+dt[,head(.SD, 2), by =x]
+
+# first x=b, then x=a ...
+dt[,print(.SD), by =x]
+
+# for each grouping, show val
+dt[, .(val = y), by =x]
+
+```{r list_column}
+# THINK
+dt[, .(val = c(y,v)), by=x]
+
+# THINK
+dt[, .(val = list(y,v)), by=x]
+dt[, .(val = list(c(y,v))), by=x]
+
+
+```
+
+```{r select}
+dt[,c("x","y","v")]
+
+# SAME, easier!
+dt[, .(x,y,v)]
+
+# shortcut?
+col  <- c("x","y","v")
+dt[, ..col]
+
+# FAIL
+if (F) {
+  dt[, col]
+  dt[, .col]
+}
+
+dt[, .(col)]
+```
+
+***
+
+```{r knit_exit()} 
+knitr::knit_exit() 
+```
+
+\newpage
+
+```{r render, eval=FALSE	} 
+args(rmarkdown::render)
+file  <- "/home/jim/code/try_things_here/rmd/00291_DT_STUDY_examples.Rmd"
+file  <- basename(file)
+file
+rmarkdown::render(input= file,
+                  output_format="html_document",
+                  output_file=here("rmd","out")
+                  )
+
+
+
+
+```

@@ -1,0 +1,178 @@
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+--- 
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
+TAGS:  data.table,example,vignette,
+---
+
+PURPOSE:  simple, reference examples :
+    * nest, unnest, normalize, list-column etc.
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  
+											comment="      ##",  
+											error=TRUE, 
+											collapse=TRUE) 
+library(jimTools) 
+library(data.table)
+
+### create dt
+```{r begin}
+# practice dt,  use function so easy to re-create
+create_dt  <- function() {
+  data.table(ID = rep(c("b", "a", "c"), each = 3),
+                  x = c(1, 3, 6),
+                  y = 1:9)
+}
+dt  <- create_dt()
+dt
+```
+
+### Normalized!
+```{r normalize}
+dt[,.SD, by=ID]
+
+# `concatinate two chr[] for each ID`
+dt[, .(c(x,y)), by = ID]
+dt
+```
+```{r}
+dt  <- create_dt()
+dt[,.(list(x,y))      , by=ID]
+
+
+# max packed
+dt[,.(list(c(x,y))), by = id]
+
+# $v1 is list of 3 num[]
+str(dt[,.(list(c(x,y))), by = id]$v1)
+
+```
+
+
+
+
+
+```
+
+
+```
+
+### simple: reshape, list-column 
+
+```{r simple1}
+# practice dt,  use function so easy to re-create
+create_dt  <- function() {
+  data.table(ID = rep(c("b", "a", "c"), each = 3),
+                  x = c(1, 3, 6),
+                  y = 1:9)
+}
+dt  <- create_dt()
+dt
+```
+
+### group and head()
+```{r}
+# 3lines for each grouping
+dt[,.SD, by=ID]
+
+
+# for each ID, choose max y
+dt[, .SD[which.max(y)], by = ID]
+
+# here limit to 2 lines (not 3), for each grouping
+dt[,head(.SD, 2), by =ID]
+
+# break out by ID
+dt[,print(.SD), by =ID]
+
+# for each grouping, show val
+dt[, .(val = y), by =ID]
+
+```{r list_column}
+# THINK
+dt[, .(val = c(x,y)), by=ID]
+
+# THINK
+dt[, .(val = list(x,y)), by=ID]
+dt[, .(val = list(c(x,y))), by=ID]
+
+```
+
+
+### Group on ID, display list-column of data.tables!
+  *   make list of each SD,  then list all the results
+```{r data.table}
+
+# 3 the SAME
+dt[, list(dt.xy=list(.SD)), by=ID]
+dt[, .(dt.xy=list(.SD)), by=ID]
+dt[, .(dt.xy=.(.SD)), by=ID]
+
+
+# FAILS b/c do not have every subset
+if (F) dt[, .(dt.xy=.SD), by=ID]
+```
+
+### undo/unwind list-column
+```{r un}
+
+dt2  <- dt[, .(dt.xy=.(.SD)), by=ID]
+
+# each ID, pop off 1st entry (there is only 1)
+dt3  <- dt2[, dt.xy[[1]], by = ID]
+identical(dt,dt3)
+```
+
+
+
+
+```{r select}
+dt[,c("ID","x","y")]
+
+# SAME, easier!
+dt[, .(ID,x,y)]
+
+# shortcut?
+col  <- c("ID","x","y")
+dt[, ..col]
+
+# FAIL
+if (F) {
+  dt[, col]
+  dt[, .col]
+}
+
+dt[, .(col)]
+```
+
+***
+
+```{r knit_exit()} 
+knitr::knit_exit() 
+```
+
+\newpage
+
+```{r render, eval=FALSE	} 
+args(rmarkdown::render)
+file  <- "/home/jim/code/try_things_here/rmd/00291_DT_STUDY_examples.Rmd"
+file  <- basename(file)
+file
+rmarkdown::render(input= file,
+                  output_format="html_document",
+                  output_file=here("rmd","out")
+                  )
+
+
+
+
+```
