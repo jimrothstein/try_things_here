@@ -1,0 +1,24 @@
+mv 00093_DT_lapply.Rmd 00293_DT_lapply.Rmd
+mv 00093_DT_misc.Rmd 00293_DT_misc.Rmd
+mv 00094_DT_vignette_sd.Rmd 00294_DT_vignette_sd.Rmd
+
+mv 00094_study_examples_data_table.Rmd 00294_study_examples_data_table.Rmd
+
+mv 00095A_vignette_sd.Rmd 00295A_vignette_sd.Rmd
+
+mv 00095_DT_Lahman_vignette.Rmd 00295_DT_Lahman_vignette.Rmd
+
+mv 00095_DT_utils.Rmd 00295_DT_utils.Rmd
+
+mv 00095_vignette_keys.Rmd 00295_vignette_keys.Rmd
+
+mv 00096_base_R_misc.Rmd 00296_base_R_misc.Rmd
+
+mv 00096_DT_vignette_keys.Rmd 00296_DT_vignette_keys.Rmd
+
+mv 00097_DT_vignette_ref_semantics.Rmd 00297_DT_vignette_ref_semantics.Rmd
+
+mv 00099_DT_reshape.Rmd 00299_DT_reshape.Rmd
+
+
+
