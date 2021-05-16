@@ -9,6 +9,7 @@ fontsize: 10pt
 ###  Sat  15 May 2021, This file 085 is MESS.
   *  sort out :  useful vs not
   *   sort out:  base vs add-on package
+  *  Much good info here, but needs update!
 
 ```{r setup}
 knitr::opts_chunk$set(echo = TRUE, comment = "        ..##")
@@ -121,7 +122,7 @@ file.exists("~/.Renviron")                     # TRUE
 ```
 TODO
 options()
-```{r options}
+```{r options, include=F, eval=F}
 # options() (returns <list>)
 # Tibble 87 x 2.  values is list-column.
 # Goal:  longer tibble, with 1 row for each value
@@ -220,10 +221,10 @@ if (FALSE) remove.packages("cellranger")
 
 
 ###### 012_update knitr
-install.packages('knitr', repos = c('https://xran.yihui.name', 'https://cran.r-project.org'))
+# install.packages('knitr', repos = c('https://xran.yihui.name', 'https://cran.r-project.org'))
 ```
 
-```{r install_packages}
+```{r install_packages, eval=F, include=F}
 
 ##### 013_jennyBC
 ####  from https://github.com/smithjd/explore-libraries/blob/master/01_explore-libraries_jenny.R
@@ -280,7 +281,7 @@ base::dir(path = "../r_mp3_files/", all.files = TRUE, recursive = TRUE)	 #### in
 
 
 R help
-```{r}
+```{r csgillespie, eval=F, include=F}
 # REF https://csgillespie.github.io/efficientR/set-up.html
 
 ?mpg   # mpg is dataset (if loaded)
@@ -329,47 +330,9 @@ r2 <- parallel::mclapply(X, median)
 
 ```
 
-```{r startup}
-
-# ---- 004 R startup ----
-
-# In this order, R seeks .Rprofile $R_HOME, $HOME, project directory
-?Startup
-R.home() # /usr/lib/R
-site_path = R.home(component = "home") 
-site_path
-
-# file.path constructs path to a file
-fname = file.path(site_path, "etc", "Rprofile.site") 
-fname
-
-file.exists(fname) 
-
-```
-
-### if pkg is installed, it will have `DESCRIPTION` file
-```{r}
-# returns char[] , logical for each path
-does_pkg_exist  <- function(path = .libPaths(), pkg = NULL,
-                            file_name = "DESCRIPTION")
-
-  file.exists(file.path(.libPaths(), pkg=pkg, "DESCRIPTION"))
-
-pkg = "jimTools"
-pkg = "foolish"
-x  <- does_pkg_exist(pkg = pkg)
-x
-
-```
-
-### sessioninfo::package_info
-```{r package_info}
-sessioninfo::package_info(pkg = "tibble")
-sessioninfo::package_info()
-```
 
 
-```{r Rprofile}
+```{r Rprofile, eval=F, include=F}
 
 file.exists("~/.Rprofile") # True, also
 
@@ -379,14 +342,14 @@ options(prompt = "R> ", digits = 2, show.signif.stars = FALSE, continue = "  ")
 
 getOption("repos")  # cran.rstudio.com
 
-fortunes::fortune(50)  # error
+# fortunes::fortune(50)  # error
 .Last = function() {
         
         message("Goodbye at ", date(), "\n")
 }
 .Last()
 ```
-```{r from_tan}
+```{r from_tan, eval=F, include=F}
 library(tidyverse)
 l <- options() %>% 
   list() %>% 
@@ -442,4 +405,18 @@ map(t$value, ~process)
 t$value[[1]]
 ```
 
+```{r skeleton}
+
+file="/home/jim/.config/nvim/templates/skeleton.Rmd"
+
+```
+```{r eval=F, include=F}
+
+file = "00085_system_tools.Rmd"
+
+rmarkdown::render(file,
+                  #output_format = "pdf_document",
+                  output_format = "html_document",
+                  output_file = "out")
+```
 
