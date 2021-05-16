@@ -130,6 +130,7 @@ summary(x)
 
 ```
 
+*  May 16, 2021 - best code is in jimTools:: Rscripts
 ### =========================
 ###   UPDATE  - 2 step process?
 ###   jimTools - has newer version of this

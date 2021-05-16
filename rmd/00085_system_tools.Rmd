@@ -3,10 +3,12 @@ title: "085_system_tools.Rmd"
 output:  
   pdf_document:
 geometry: "left=2cm,right=2cm,top=2cm,bottom=2cm"
-fontsize: 12pt
+fontsize: 10pt
 ---
 
- includes:  021_efficient_coding	
+###  Sat  15 May 2021, This file 085 is MESS.
+  *  sort out :  useful vs not
+  *   sort out:  base vs add-on package
 
 ```{r setup}
 knitr::opts_chunk$set(echo = TRUE, comment = "        ..##")
@@ -58,10 +60,13 @@ if  (FALSE) Sys.getenv()
 # search(), vector: gives all env + attached pkgs
 (t_search <- search())
 ```
-find package locations
+### find package locations
+  *  uses find.package
+  *  does not load package, only  tests if exists
 ```{r pkg_location}
 base::system.file(package="base")
 base::system.file(package="tibble")
+base::system.file(package="jimTools")
 ```
 
 ```{r .libPaths)
@@ -331,11 +336,38 @@ r2 <- parallel::mclapply(X, median)
 # In this order, R seeks .Rprofile $R_HOME, $HOME, project directory
 ?Startup
 R.home() # /usr/lib/R
-site_path = R.home(component = "home") # /usr/lib/R
-fname = file.path(site_path, "etc", "Rprofile.site") # /usr/lib/R/etc/Rprofile.site
+site_path = R.home(component = "home") 
+site_path
 
-file.exists(fname) # True
+# file.path constructs path to a file
+fname = file.path(site_path, "etc", "Rprofile.site") 
+fname
+
+file.exists(fname) 
+
 ```
+
+### if pkg is installed, it will have `DESCRIPTION` file
+```{r}
+# returns char[] , logical for each path
+does_pkg_exist  <- function(path = .libPaths(), pkg = NULL,
+                            file_name = "DESCRIPTION")
+
+  file.exists(file.path(.libPaths(), pkg=pkg, "DESCRIPTION"))
+
+pkg = "jimTools"
+pkg = "foolish"
+x  <- does_pkg_exist(pkg = pkg)
+x
+
+```
+
+### sessioninfo::package_info
+```{r package_info}
+sessioninfo::package_info(pkg = "tibble")
+sessioninfo::package_info()
+```
+
 
 ```{r Rprofile}
 
