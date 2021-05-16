@@ -40,7 +40,7 @@ library(here)
 
 ```{r knit_exit2} 
 knitr::all_labels()
-knitr::knit_exit()
+# knitr::knit_exit()
 ```
 
 ## .libPaths() to find user and `common` library locations
@@ -130,6 +130,7 @@ summary(x)
 
 ```
 
+*  May 16, 2021 - best code is in jimTools:: Rscripts
 ### =========================
 ###   UPDATE  - 2 step process?
 ###   jimTools - has newer version of this
@@ -245,16 +246,17 @@ getOption("defaultPackages")
 
 ## Basic installation
   *  sudo R CMD INSTALL *.tar.gz
-```{r install}
+```{r install, eval=F, include=F}
   install.packages("igraph", verbose=TRUE, dependencies=TRUE)
 ```
 
 
 ## workhorse
-```{r update}
+```{r update, eval=F, include=F}
 {
 begin  <- Sys.time()
 .libPaths()
+
 update.packages(ask=FALSE )
 end  <- Sys.time()
 diff  <- end - begin
@@ -263,7 +265,7 @@ diff
 ```
 
 ## Troubleshoot:  install packages one at a time
-```{r trouble}
+```{r trouble, eval=F, include=F}
 {
 begin  <- Sys.time()
 
@@ -275,8 +277,9 @@ begin  <- Sys.time()
 ## p  <- c("lattice")
 #p  <- c("utf8")
 # p  <- c("rlang")
-
+if (F) {
 install.packages(p, verbose=TRUE, dependencies = TRUE)
+}
 # upgrade (p, ask = FALSE , checkBuild=TRUE)
 
 end  <- Sys.time()
@@ -300,9 +303,43 @@ packageDescription(pkg)[c("Imports", "Suggests")]
 ```{r package_info}
 # For Installed Packages, yields dependencies
 sessioninfo::package_info(pkg="tibble")
+
+sessioninfo::package_info()
 ```
 
-***
+```{r startup}
+
+# ---- 004 R startup ----
+
+# In this order, R seeks .Rprofile $R_HOME, $HOME, project directory
+?Startup
+R.home() # /usr/lib/R
+site_path = R.home(component = "home") 
+site_path
+
+# file.path constructs path to a file
+fname = file.path(site_path, "etc", "Rprofile.site") 
+fname
+
+file.exists(fname) 
+
+```
+
+### if pkg is installed, it will have `DESCRIPTION` file
+```{r description}
+# returns char[] , logical for each path
+does_pkg_exist  <- function(path = .libPaths(), pkg = NULL,
+                            file_name = "DESCRIPTION")
+
+  file.exists(file.path(.libPaths(), pkg=pkg, "DESCRIPTION"))
+
+pkg = "jimTools"
+pkg = "foolish"
+x  <- does_pkg_exist(pkg = pkg)
+x
+
+```
+
 
 ```{r knit_exit(), include = FALSE  , eval=FALSE } 
 knitr::all_labels()
