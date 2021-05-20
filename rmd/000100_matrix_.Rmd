@@ -64,7 +64,8 @@ file
 rmarkdown::render(
 									file,
 									# output_format="github_document",
-                  output_format="html_document",
+                  output_format=c("html_document", 
+                                  "md_document"),
                   output_dir="out",
 									output_file="out") 
 }
