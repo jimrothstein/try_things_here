@@ -15,7 +15,7 @@ output:
     toc_depth:  2   
 fontsize: 11pt   
 geometry: margin=0.5in,top=0.25in   
-TAGS:  data.table,Lahman,
+TAGS:  data.table,Lahman,normalize,nest,unest
 ---
 
 Normalize and de-Normalize Data
@@ -33,6 +33,80 @@ library(data.table)
 ```
 
 
+### warm-up, create list-column
+REF:  
+```{r create_list_col}
+# l is list of 3, each also list
+
+create_dt   <- function(){
+  dt  <- data.table(
+                  x = letters[1:3],
+                  l = list(list(c1=6L,
+                                c2=4L),
+                           list(x=2L,
+                                y=4L,
+                                z=3L),
+                           list()
+                           )
+                  )
+}
+dt  <- create_dt()
+dt
+```
+
+### before unwind (unnest) - understand what we have
+```{r understand}
+y  <- dt$l
+
+# y has 3 elments, unnamed, no suprise
+# each elment holds another list, but these are named
+y
+
+length(y)
+
+# examine 1st of y's 3 elments, a named list of 2 ... any suprise?
+y[[1]]
+
+
+## unlist(dt)
+unlist(dt)
+
+
+## unlist(y)
+unlist(y)
+
+# crude attempt to see .SD for each value of column x
+dt[,print(.SD), by=x]
+```
+
+### unwind (unnest) the list-column
+*  result:  normalized
+*  effectively, keyed on x, and new column `name`
+*   2nd new column will be `value`
+*   no need to modify-in-place
+*   magic is done by unlist()
+
+```{r unwind}
+dt
+
+# helps to remove list[0]
+dt  <- create_dt()
+dt[]
+
+# not working, change 1 elment in column
+dt  <- dt[length(l) == 0, l := NA]
+dt[]
+
+
+# now unwind - 2 steps
+# by default, unlist  keeps names use.names=T
+dt[,.(name = names(unlist(l))),    by=x]
+dt[,.(value = unlist(l)), by =x]
+
+# unwind - both in 1 step
+dt[,.(name = names(unlist(l)), value = unlist(l)),    by=x]
+
+```
 
 
 

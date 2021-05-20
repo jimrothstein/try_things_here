@@ -15,23 +15,24 @@ fontsize: 12pt
 geometry: margin=0.5in,top=0.25in 
 ---
 
+
+
+### PURPOSE:   base to advanced use of lists
+  *  begin with base tools, then progress to purrr:: etc
 ```{r setup, include=FALSE		}
 knitr::opts_chunk$set(echo = TRUE,  
 											comment="      ##",  
 											error=TRUE, 
 											collapse=TRUE) 
+library(jimTools) 
 ```
 
-<!--  RENDER:  see bottom -->
-
-```{r library, include=FALSE		}
-library(jimTools) 
-``` 
 ### Basics & trivial
 
 logical(0) means?
 * vector, logical, but length=0
 * not TRUE or false
+
 ```{r logical}
 x <- logical(length = 0)
 is.logical(x)  # TRUE
@@ -46,6 +47,46 @@ is.null(x)     # FALSE
 is.na("")
 is.null("")
 ```
+
+
+### names
+```{r names}
+l  <- list(a="ONE", b=list("x", "y"), c=1:9)
+l
+
+# get the names
+names(l)
+
+
+# remove the names
+names(l)  <- NULL
+l
+names(l)
+
+
+# reset the names
+names(l)  <- c("First", "Second", "Third")
+l
+names(l)
+```
+
+### add an entry to a list
+```{r add_entry}
+l
+
+# name = value pairs
+
+l$new_parm  <- "new feature"
+l
+names(l)
+
+
+# STUDY
+# for each element of list, return contents first element
+value  <- function(e) e[[1]] 
+lapply(l, value)
+```
+
 
 NULL
 * special type
@@ -290,13 +331,11 @@ typeof(y)
 y
 ```
 
+### LEGACY, from advancedR  006_functions.R
 ```{r legacy}
-
-LEGACY, from advancedR  006_functions.R
-
-
 # 1st unlist
 l  <- list(a=c(10,20,30), b=c(TRUE,FALSE), c=c("hello", "bye"))
+
 # return named chr[] vector
 y  <- unlist(l)
 names(y)

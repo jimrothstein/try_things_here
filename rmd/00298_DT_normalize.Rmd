@@ -13,6 +13,8 @@ geometry: margin=0.5in,top=0.25in
 TAGS:  data.table,example,vignette,
 ---
 
+
+TODO:   merge this into DT_reshape.Rmd
 PURPOSE:  simple, reference examples :
     * nest, unnest, normalize, list-column etc.
 
@@ -23,8 +25,12 @@ knitr::opts_chunk$set(echo = TRUE,
 											collapse=TRUE) 
 library(jimTools) 
 library(data.table)
+library(knitr)
+
+```
 
 ### create dt
+
 ```{r begin}
 # practice dt,  use function so easy to re-create
 create_dt  <- function() {
@@ -58,13 +64,6 @@ str(dt[,.(list(c(x,y))), by = id]$v1)
 ```
 
 
-
-
-
-```
-
-
-```
 
 ### simple: reshape, list-column 
 
