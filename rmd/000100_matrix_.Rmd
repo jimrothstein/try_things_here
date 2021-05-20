@@ -41,12 +41,13 @@ test <- structure(list(a = c("a", "b", "c", "d"), b = c(1, 2, 3, 4)), row.names 
 # user wants to see it as: a 1 b 2 c 3
 test
 z  <- t(test)
+z
 
 # multiple sapply: FUN applied to each
 # c(a[1], b[1]) ...
 mapply(c, test$a, test$b)
 c(mapply(c, test$a, test$b))
-
+knitr::knit_exit()
 ```
 
 ```{r render, eval=FALSE, echo=FALSE	}
@@ -54,29 +55,20 @@ p  <- fs::path()
 w  <- fs::path_wd()
 w
 here()
-file="0100_matrix_.Rmd"
-dir=""
+file="000100_matrix_.Rmd"
 
-ren_pdf(file,dir)
-ren_github(file, dir)
+file  <- here("rmd",file)
+file
 
-#knitr::knit_exit()
 
-# To Render
-ren_pdf  <- function(file, dir) {
 rmarkdown::render(
-									here( dir, file), 
-									output_dir="~/Downloads/print_and_delete") 
+									file,
+									# output_format="github_document",
+                  output_format="html_document",
+                  output_dir="out",
+									output_file="out") 
 }
-ren_pdf(file, dir)
 
-ren_github  <- function(file, dir) {
-rmarkdown::render(
-									here(dir, file) 
-									output_format="github_document",
-									output_dir="~/Downloads/print_and_delete") 
-}
-ren_github(file, dir)
 ```
 
 

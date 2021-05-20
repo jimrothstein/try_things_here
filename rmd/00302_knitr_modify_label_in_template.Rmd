@@ -1,0 +1,42 @@
+<!--
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+   -->
+--- 
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
+---
+
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = TRUE)
+library(jimTools)
+library(knitr)
+```
+
+### PURPOSE:   From this (main) file, call a second(child) file.
+  *  Goal:   modify the label of child file dyamically.
+
+
+`r prefix = "JIM-"; knitr::knit(text = knitr::knit_expand(file= here("rmd/00302_child.Rmd")))`
+
+
+\newpage
+
+```{r render, eval=FALSE, echo=F, incude=F	} 
+file  <- "rmd/00302_knitr_modify_label_in_template.Rmd"
+rmarkdown::render(file,
+                  #output_format = "pdf_document",
+                  output_format = "html_document",
+                  output_file = "out")
+```

@@ -1,0 +1,15 @@
+<!--
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+   -->
+
+This is child file.
+
+
+```{r label={{prefix}}child_file, echo=T, eval=T, include=T}
+1
+knitr::all_labels()
+```
+
+
+
+

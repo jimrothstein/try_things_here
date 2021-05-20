@@ -72,7 +72,7 @@ Then we do the actual conversion:
 knitr::knit_exit()
 ```
 
-/newpage
+\newpage
 
 ```{r render, eval=FALSE	} 
 file <- "00301_nested_chunks_literate_programming.Rmd"

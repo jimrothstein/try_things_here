@@ -1,2 +1,8 @@
 .Rproj.user
 .httr-oauth
+
+
+# Reverse global .gitignore
+#    as to INCLUDE  files in rmd/out/
+!out/**
+
