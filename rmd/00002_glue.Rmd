@@ -1,24 +1,22 @@
-	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
---- 
-title: Template for .Rmd 
+---
+title: "`r knitr::current_input()`"
 date: "`r paste('last updated', 
-    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
-output: 
-  pdf_document: 
-    latex_engine: xelatex
-toc: TRUE 
-toc_depth:  1 
-fontsize: 12pt 
-geometry: margin=0.5in,top=0.25in 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+fontsize: 11pt   
+geometry: margin=0.5in,top=0.25in   
+TAGS:  glue
 ---
 
-<!-- 
-set cul   "cursorline
-cc=+1			"colorcolumn is 1 more than tw
-
-vim: to format all urls for md
-s/https.*/[&]()/g
--->
 
 ```{r setup, include=FALSE		}
 knitr::opts_chunk$set(echo = TRUE,
@@ -28,23 +26,44 @@ knitr::opts_chunk$set(echo = TRUE,
 library(glue)
 ```
 
-<!--  RENDER:  see bottom -->
+
+
+### Why glue:: ?
+  *   less need to use paste0
+  *    saves couple of keystrokes, but easier to read
 ```{r glue}
 x  <- 3
 y   <- 4
+
+paste0("x= ", x)
+paste0("y= ", y)
 
 glue("x= {x}\n")
 
 ```
 
+
+```{r file_name}
+glue("name of this file is {knitr::current_input()}\n")
+output_file  <- knitr::current_input()
+```
+
+
 ```{r invisible}
+
+g  <- function(x) {
+   list(x=x, a=2*x)
+}
 f  <- function(x) {
   invisible(list(x = x, a = 2*x))
 }
 
+g(2)  # prints the list
+
 f(2)   # nothing prints!
+
 ans  <- f(2)
-ans 
+ans   # prints the list
 
 ```
 
@@ -54,13 +73,27 @@ ans
 knitr::knit_exit()
 ```
 
-/newpage
+\newpage
 
 ```{r render, eval=FALSE	} 
-file <- ""
-file  <- basename(file)
-dir <- "rmd"
+file  <- "00002_glue.Rmd" 
 
-jimTools::ren_pdf(file,dir)
-jimTools::ren_github(file, dir)
+file  <- here("rmd", file)
+file
+
+output_file  <- ""
+
+
+## Want github to display nicely rendered output?
+##  *  include md_format
+#   *  include output_dir = "out"
+#   *  if .gitignore balks,  then add !out/**   to close .github
+rmarkdown::render(file,
+                  #output_format = "pdf_document",
+                  #output_format = "html_document",
+                  output_format=c("html_document",    # if want both
+                                  "md_document"),
+                  output_dir = "out",
+                  output_file = output_file)
+                  #output_file = "out")
 ```
