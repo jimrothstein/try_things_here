@@ -397,6 +397,17 @@ rmarkdown::render(input= file,
                   output_file=here("rmd","out")
                   )
 
+## Want github to display nicely rendered output?
+##  *  include md_format
+#   *  include output_dir = "out"
+#   *  if .gitignore balks,  then add !out/**   to close .github
+rmarkdown::render(file,
+                  #output_format = "pdf_document",
+                  output_format = "html_document",
+                  #output_format=c("html_document",    # if want both
+                                  "md_document"),
+                  #output_dir = "out",
+                  output_file = "out")
 
 
 
