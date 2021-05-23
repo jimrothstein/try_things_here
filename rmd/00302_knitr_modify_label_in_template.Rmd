@@ -12,6 +12,7 @@ toc: TRUE
 toc_depth:  1 
 fontsize: 12pt 
 geometry: margin=0.5in,top=0.25in 
+TAGS:  create_Rmd, knit_expand 
 ---
 
 
@@ -30,6 +31,20 @@ library(knitr)
 
 `r prefix = "JIM-"; knitr::knit(text = knitr::knit_expand(file= here("rmd/00302_child.Rmd")))`
 
+
+```{r create_Rmd}
+y  <- 1 
+library(knitr)
+writeLines(c("```{r}", "y + 1", "```"), "test.Rmd")
+knit("test.Rmd", quiet = TRUE, envir = new.env())   # will find y in parent
+knit("test.Rmd", quiet = TRUE, envir = baseenv())   # no y
+# [1] "test.md"
+cat(readLines("test.md"), sep = "\n")
+
+# clean up
+file.remove("test.Rmd")
+file.remove("test.md")
+```
 
 \newpage
 

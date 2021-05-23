@@ -75,7 +75,7 @@ knitr::knit_exit()
 
 \newpage
 
-```{r render, eval=FALSE	} 
+```{r render, eval=FALSE, include=F	} 
 file  <- "00002_glue.Rmd" 
 
 file  <- here("rmd", file)
