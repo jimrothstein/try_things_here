@@ -1,7 +1,24 @@
 # 027_reprex_reproduce.R
+# TAGS:   reprex
 
 # 
-# TO PASTE in vim
+# Takes some practice, but makes for very nice questions in forums.
+#
+# IDEA:    reprex (opt1 =,
+#                  opt2 =,
+#                  venue = "slack", 
+#                     x = {
+#                     # code
+#                     # code ....
+#                     }
+#                  )
+#
+#  Run in nvim (browser may open with rendered code)
+#  Go Slack, SO etc    and paste in the raw code.
+#  Comments can be include using roxygen.
+#
+#
+# TO PASTE in nvim
 #		Run code
 #		Paste:  "+p
 # ==============
