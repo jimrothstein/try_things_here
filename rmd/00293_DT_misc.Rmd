@@ -139,8 +139,9 @@ file
 rmarkdown::render(file,
     #output_format = "pdf_document",
     #output_format = "html_document",
-    output_format=c("html_document",    # if want both
-                                      "md_document"),
+    output_format = "md_document",
+    # Both:
+    #output_format=c("html_document","md_document"),
     output_dir = "md",
    # output_file = "out"
 )

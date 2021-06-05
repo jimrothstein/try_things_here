@@ -18,7 +18,7 @@ geometry: margin=0.5in,top=0.25in
 TAGS:  data.table,Lahman,
 ---
 
-Normalize and de-Normalize Data
+Vignette::Normalize and de-Normalize Data
 REF:  https://rdatatable.gitlab.io/data.table/library/data.table/doc/datatable-reshape.html
   * Follow the tutorial
   * Conent here is LIMITED annotation, follow the tuturial
@@ -35,15 +35,39 @@ library(data.table)
 ### Section 1
 ### non-normalized data
 ```{r}
+
+# sloppy way to input data!
 s1 <- "family_id age_mother dob_child1 dob_child2 dob_child3
 1         30 1998-11-26 2000-01-29         NA
 2         27 1996-06-22         NA         NA
 3         26 2002-07-11 2004-04-05 2007-09-02
 4         32 2004-10-10 2009-08-27 2012-07-21
 5         29 2000-12-05 2005-02-28         NA"
+
+s1
 DT <- fread(s1)
 DT
 str(DT)
+dt  <- DT
+
+```
+
+### list_column
+```{r list_column}
+# makes list-column
+dt[, .(age_mother, 
+       .(dob = .(dob_child1, dob_child2, dob_child3))),
+       by = family_id]
+
+
+
+```
+### normalize
+```{r normalize}
+# normalizes
+dt[, .(age_mother, 
+       dob = .(dob_child1, dob_child2, dob_child3)),
+       by = family_id]
 ```
 
 
@@ -69,9 +93,16 @@ str(DT)
 # in general, pdf will look nicer
 
 file  <-  "/home/jim/code/try_things_here/rmd/0088_base_package_commands.Rmd"
+file  <- "rmd/00299_DT_reshape.Rmd"
+file  <- basename(file)
+file  <- here("rmd", file)
+file
 
 rmarkdown::render(file,
                   #output_format = "pdf_document",
-                  output_format = "html_document",
-                  output_file = "out")
+                  output_format = "md_document",
+                  #output_format = "html_document",
+                  output_dir = "md",
+#                  output_file = "out"
+)
 ```
