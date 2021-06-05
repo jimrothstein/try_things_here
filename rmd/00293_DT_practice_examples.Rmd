@@ -43,14 +43,23 @@ DT = data.table(
 DT
 ```
 
+### normal output
 ```{r}
-Compare the following:
 
 #Sum all columns
 DT[ , lapply(.SD, sum)]
 #     A  B   C   D
 # 1: 30 45 120 120
+```
 
+### Raw Markdown?
+```{r testing, results="asis"}
+###  Sum all columns
+DT[ , lapply(.SD, sum)]
+```
+
+### Resume
+```{r  resume}
 # Count rows
 DT[ , lapply(.SD, length)]
 
@@ -116,13 +125,15 @@ dt_B
 # TODO:  file is found when knitr runs (see above)
 
 # file must be of form:
-# dir/name_of_this_file    where dir is relative to project root
+# dir/name_of_this_file:
+#   where dir is relative to project root
 
-
+{
 file  <-"rmd/00293_DT_practice_examples.Rmd" 
 file  <- basename(file)
 file  <- here("rmd", file)
 file
+}
 
 # NOTE:   .tex only works with PDF
 # NOTE:    tex will NOT work with html

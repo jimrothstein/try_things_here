@@ -31,18 +31,42 @@ REF:
           ## 14: 3 4  8  5
           ## 15: 3 5  7 12
 
-    Compare the following:
+### normal output
 
     #Sum all columns
     DT[ , lapply(.SD, sum)]
+
+          ##     A  B   C   D
+          ## 1: 30 45 120 120
+
     #     A  B   C   D
     # 1: 30 45 120 120
+
+### Raw Markdown?
+
+    ###  Sum all columns
+    DT[ , lapply(.SD, sum)]
+
+    A  B   C   D
+
+1: 30 45 120 120
+
+### Resume
 
     # Count rows
     DT[ , lapply(.SD, length)]
 
+          ##     A  B  C  D
+          ## 1: 15 15 15 15
+
     #Sum all columns EXCEPT A, grouping BY A
     DT[ , lapply(.SD, sum), by = A]
+
+          ##    A  B  C  D
+          ## 1: 1 15 36 43
+          ## 2: 2 15 42 32
+          ## 3: 3 15 42 45
+
     #    A  B  C  D
     # 1: 1 15 38 43
     # 2: 2 15 30 49
@@ -51,13 +75,30 @@ REF:
     #Count ....
     DT[ , lapply(.SD, length), by = A]
 
+          ##    A B C D
+          ## 1: 1 5 5 5
+          ## 2: 2 5 5 5
+          ## 3: 3 5 5 5
+
     #Sum all columns EXCEPT A
     DT[ , lapply(.SD, sum), .SDcols = !"A"]
+
+          ##     B   C   D
+          ## 1: 45 120 120
+
     #     B   C   D
     # 1: 45 120 120
 
     #Sum all columns EXCEPT A, grouping BY B
     DT[ , lapply(.SD, sum), by = B, .SDcols = !"A"]
+
+          ##    B  C  D
+          ## 1: 1 38 37
+          ## 2: 2  9 24
+          ## 3: 3 32 21
+          ## 4: 4 18  8
+          ## 5: 5 23 30
+
     #    B  C  D
     # 1: 1 27 29
     # 2: 2 17 30
@@ -66,12 +107,32 @@ REF:
 
     DT[ , lapply(.SD, length), by = B, .SDcols = !"A"]
 
+          ##    B C D
+          ## 1: 1 3 3
+          ## 2: 2 3 3
+          ## 3: 3 3 3
+          ## 4: 4 3 3
+          ## 5: 5 3 3
+
     # Count, each combination of c("A", "B")
     DT[ , lapply(.SD, length), by = c("A","B")]
 
-          ## Error: <text>:1:9: unexpected symbol
-          ## 1: Compare the
-          ##             ^
+          ##     A B C D
+          ##  1: 1 1 1 1
+          ##  2: 1 2 1 1
+          ##  3: 1 3 1 1
+          ##  4: 1 4 1 1
+          ##  5: 1 5 1 1
+          ##  6: 2 1 1 1
+          ##  7: 2 2 1 1
+          ##  8: 2 3 1 1
+          ##  9: 2 4 1 1
+          ## 10: 2 5 1 1
+          ## 11: 3 1 1 1
+          ## 12: 3 2 1 1
+          ## 13: 3 3 1 1
+          ## 14: 3 4 1 1
+          ## 15: 3 5 1 1
 
 ### normalize - votes
 
