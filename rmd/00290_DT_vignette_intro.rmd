@@ -53,7 +53,7 @@ head( flights[order(origin)])
 # TODO (doesn't get to head()) -------------------## 
  flights[order(origin)] %>% nrow() %>% head()
 # group, total
-DT[,.N,by=orgin]
+DT[,.N,by=origin]
 
 # reverse order!
 DT[order(-origin), .N, by=origin]
@@ -115,4 +115,17 @@ for(i in 1:100)dt[i, v := i]
 head(dt)
 
 ```
+```{r render, eval=F, include=F}
+file  <- "00290_DT_vignette_intro.rmd"
+file  <- here("rmd", file)
+file
 
+
+rmarkdown::render(input = file,
+        #output_format = "pdf_document",
+        #output_format = "html_document",
+        output_format=c("html_document",    # if want both
+                                  "md_document"),
+                  output_dir = "md",
+                  output_file = "out")
+```
