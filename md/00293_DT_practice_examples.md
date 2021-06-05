@@ -3,16 +3,24 @@
 REF:
 <https://stackoverflow.com/questions/32276887/use-of-lapply-sd-in-data-table-r>
 
+### create dt
+
     set.seed(10238)
     # A and B are the "id" variables within which the
     #   "data" variables C and D vary meaningfully
+
+    create_dt  <- function () {
     DT = data.table(
       A = rep(1:3, each = 5L), 
       B = rep(1:5, 3L),
       C = sample(15L),
       D = sample(15L)
     )
-    DT
+    return(DT)
+    }
+
+    dt  <- create_dt()
+    dt
 
           ##     A B  C  D
           ##  1: 1 1 12 15
@@ -31,10 +39,10 @@ REF:
           ## 14: 3 4  8  5
           ## 15: 3 5  7 12
 
-### normal output
+### Count, sum columns, groupings
 
     #Sum all columns
-    DT[ , lapply(.SD, sum)]
+    dt[ , lapply(.SD, sum)]
 
           ##     A  B   C   D
           ## 1: 30 45 120 120
@@ -45,28 +53,22 @@ REF:
 ### Raw Markdown?
 
     ###  Sum all columns
-    DT[ , lapply(.SD, sum)]
+    dt[ , lapply(.SD, sum)]
 
     A  B   C   D
 
 1: 30 45 120 120
 
-### HTML?
+### Count Rows
 
-    paste0('<b>', 'Sum all columns', '</b>')
-
-          ## [1] "<b>Sum all columns</b>"
-
-### Resume
-
-    # Count rows
-    DT[ , lapply(.SD, length)]
+    dt[ , lapply(.SD, length)]
 
           ##     A  B  C  D
           ## 1: 15 15 15 15
 
-    #Sum all columns EXCEPT A, grouping BY A
-    DT[ , lapply(.SD, sum), by = A]
+### By grouping, sum all, except A
+
+    dt[ , lapply(.SD, sum), by = A]
 
           ##    A  B  C  D
           ## 1: 1 15 36 43
@@ -78,25 +80,24 @@ REF:
     # 2: 2 15 30 49
     # 3: 3 15 52 28
 
-    #Count ....
-    DT[ , lapply(.SD, length), by = A]
+\#\#\#Sum all columns EXCEPT A
+
+    dt[ , lapply(.SD, sum), .SDcols = !"A"]
+
+          ##     B   C   D
+          ## 1: 45 120 120
+
+### Group on A, count
+
+    dt[ , lapply(.SD, length), by = A]
 
           ##    A B C D
           ## 1: 1 5 5 5
           ## 2: 2 5 5 5
           ## 3: 3 5 5 5
 
-    #Sum all columns EXCEPT A
-    DT[ , lapply(.SD, sum), .SDcols = !"A"]
-
-          ##     B   C   D
-          ## 1: 45 120 120
-
-    #     B   C   D
-    # 1: 45 120 120
-
     #Sum all columns EXCEPT A, grouping BY B
-    DT[ , lapply(.SD, sum), by = B, .SDcols = !"A"]
+    dt[ , lapply(.SD, sum), by = B, .SDcols = !"A"]
 
           ##    B  C  D
           ## 1: 1 38 37
@@ -111,7 +112,7 @@ REF:
     # 3: 3 33 11
     # 4: 4 23 36
 
-    DT[ , lapply(.SD, length), by = B, .SDcols = !"A"]
+    dt[ , lapply(.SD, length), by = B, .SDcols = !"A"]
 
           ##    B C D
           ## 1: 1 3 3
@@ -121,7 +122,7 @@ REF:
           ## 5: 5 3 3
 
     # Count, each combination of c("A", "B")
-    DT[ , lapply(.SD, length), by = c("A","B")]
+    dt[ , lapply(.SD, length), by = c("A","B")]
 
           ##     A B C D
           ##  1: 1 1 1 1
