@@ -99,6 +99,20 @@ sw  <- sw[, .(films = films[[1]]),
 sw
 ```
 
+### Using for loop, to create new column (modify-in-place)
+```{r loop}
+
+df <- data.frame(x=rnorm(100))
+dt  <- as.data.table(df)
+head(dt)
+
+# each row i, set new col v = i (in place)
+for(i in 1:100)dt[i, v := i]
+head(dt)
+
+
+
+```
 
 ***
 
@@ -114,16 +128,20 @@ sw
 # dir/name_of_this_file    where dir is relative to project root
 
 
-file  <- "00093_advanced_data_table.Rmd"
+file  <- "00293_DT_misc.Rmd"
 file  <- here("rmd", file)
 file
 
 # NOTE:   .tex only works with PDF
 # NOTE:    tex will NOT work with html
 # in general, pdf will look nicer
+
 rmarkdown::render(file,
-                  #output_format = "pdf_document",
-                  output_format = "html_document",
-                  output_file = here("out","out")
-                  )
+    #output_format = "pdf_document",
+    #output_format = "html_document",
+    output_format=c("html_document",    # if want both
+                                      "md_document"),
+    output_dir = "md",
+   # output_file = "out"
+)
 ```

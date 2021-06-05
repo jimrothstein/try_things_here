@@ -111,16 +111,6 @@ flights[origin == "JFK" & month==6L, .N]
 # GROUP
 flights[,.N, by=dest]  # # rows by dest
 
-# ==========
-# FOR LOOP
-# ==========
-
-df <- data.frame(x=rnorm(100))
-dt  <- as.data.table(df)
-
-# each row i, set new col v = i
-for(i in 1:100)dt[i, v := i]
-head(dt)
 
 ```
 ```{r render, eval=F, include=F}
