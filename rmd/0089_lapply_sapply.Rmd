@@ -186,6 +186,59 @@ typeof(v)
 vapply(v, function(x) {if (x > 2020) x  <- NA; x}, double(1))
 ```
 
+### Misc related code (TODO)
+```{r misc_code}
+
+# =======================================
+#  MISC CODE with vapply, lists, char, NULL, NA
+## TO DO 
+l  <- list(a="jim", b="joe", c="cindi")
+# =======================================
+
+names  <- names(l)
+names
+
+tags  <- vapply(l, `[`, character(1), USE.NAMES=FALSE)
+tags
+##   change NULL to NA:
+##   NULL is dropped
+x  <- c(NULL, 3, "a")
+x
+##   but NA is OK
+z   <- c(NA, 3, "a")
+z
+
+
+y  <- NULL
+is.null(y)
+
+if (is.null(y)) y  <- NA
+is.null(y)
+
+## as.character()  strips names!
+##
+x  <- list(a= "ONE", b="TWO")
+x
+is.character(x)
+
+
+y  <- as.character(x)
+y
+names(y)
+
+
+
+x
+
+y  <- sapply(x, `[` )  # keeps names
+y
+names(y)
+is.character(y)
+length(y)
+y[1]
+
+```
+
 
 ```{r render, eval=FALSE, include=FALSE 	} 
 # TODO:  file is found when knitr runs (see above)

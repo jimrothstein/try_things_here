@@ -32,15 +32,6 @@ library(jimTools)
 library(data.table)
 ```
 
-
-
-
-
-
-
-
-
-
 ### Section 1
 ### non-normalized data
 ```{r}

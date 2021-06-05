@@ -378,7 +378,62 @@ if (F) {
 
 dt[, .(col)]
 ```
+### Explain !
+  *  in dt, work with NULL, NA
+```{r explain}
 
+
+dt3  <- function() {
+  data.table( ID = c(1,2,3,4,5,6),
+      tags= list(
+                 "a,b,c",
+                 NULL,    # blank
+                 NA,      # NA
+                 x,       # NA
+                 "x",
+                 "y,z,NULL,NA")
+      )
+}
+dt  <- dt3()
+dt
+
+
+# Step 1 (remove blank)
+
+f  <- function(e) ifelse(is.null(e), return(NA), return(e))
+dt[,.(ID, tags = lapply(tags, f)) ]
+
+dt[is.na(dt$tags)]
+dt[is.na(tags)]
+
+
+
+# Explainh errors ....
+if (F) {
+dt[is.null(tags)]
+dt[tags == NULL]
+dt[tags == NA]
+dt[tags == c(NA)]
+}
+
+
+# Explain behavior!
+g  <- function(e) return(e)
+
+dt[, .(ID, tags = lapply(tags, g))] 
+
+# 2 ID columns
+dt[, .(ID, tags = lapply(tags, g)), by=ID] 
+
+dt[, .(ID, tags = lapply(.SD, g)), by=ID] 
+
+if(F) dt[, tags = lapply(.SD, g), by=ID] 
+
+
+
+
+
+```
 ***
 
 ```{r knit_exit()} 

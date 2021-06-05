@@ -1,6 +1,6 @@
 	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
 --- 
-title: Template for .Rmd 
+title: "title"
 date: "`r paste('last updated', 
     format(lubridate::now(), '%H:%M, %d %B %Y'))`"
 output: 
@@ -40,7 +40,7 @@ dt
 ```{r normalize}
 dt[,.SD, by=ID]
 
-# `concatinate two chr[] for each ID`
+# `concatinate two chr[] for each ID` (into new variable)
 dt[, .(c(x,y)), by = ID]
 dt
 ```
@@ -154,6 +154,119 @@ if (F) {
 dt[, .(col)]
 ```
 
+
+### normalize example3
+  * Study NA, NULL
+  * Here we will several situations to solve
+```{r normalize2}
+
+#
+dt3  <- function() {
+  data.table( ID = c(1,2,3,4,5,6),
+      tags= list(
+                 "a,b,c",
+                 NULL,    # blank
+                 NA,      # NA
+                 x,       # NA
+                 "x",
+                 "y,z,NULL,NA")
+      )
+}
+
+dt  <- dt3()
+dt
+
+
+# Step 1 (remove blank)
+f  <- function(e) ifelse(is.null(e), return(NA), return(e))
+dt  <- dt[,.(ID, tags = lapply(tags, f)) ]
+dt
+dt[is.na(dt$tags)]
+dt[is.na(tags)]
+
+
+# Step 2  use NA_character_ version of NA
+#base::strsplit() works with NA_character_, but not NA
+f  <- function(e) ifelse(is.character(e),return(e), return(c(NA_character_)))
+dt  <- dt[, .(ID, tags = lapply(tags, f)) ]
+dt
+
+
+# Step 3, split and normalized
+split_up  <- function(e) base::strsplit(e, split="[,]")
+
+{
+  # test 
+# list, with chr[]
+split_up(c("a,b,c"))
+# same
+split_up("a,b,c")
+
+split_up(c(NA, "b"))
+split_up(c(NA, NA, NA, "b"))
+split_up(NA_character_)
+split_up(c(NA_character_))
+
+
+# error
+if (F){
+split_up(NA)
+split_up(c(NA))
+split_up(c(NA, NA))
+}
+
+# remove unneeded lis
+unlist(split_up("a,b,c"))
+}
+
+
+# Line by Line, check
+# normalized! unlist
+dt[ID == "1",.(ID, tags = unlist(lapply(tags, split_up) ))]
+
+#  compare
+dt[ID == "1",.(ID, tags = lapply(tags, split_up) )]
+
+
+
+
+dt[ID == "2",.(ID, tags = unlist(lapply(tags, split_up) ))]
+dt[ID == "3",.(ID, tags = unlist(lapply(tags, split_up) ))]
+dt[ID == "4",.(ID, tags = unlist(lapply(tags, split_up) ))]
+dt[ID == "5",.(ID, tags = unlist(lapply(tags, split_up) ))]
+dt[ID == "6",.(ID, tags = unlist(lapply(tags, split_up) ))]
+
+dt[, .(tags = unlist(lapply(tags, split_up) )), by=ID]
+
+dt
+
+```
+
+### normalize - votes
+```{r votes}
+# each=2, each element repeated twice, before moving on.
+votes <- function() {
+  data.table(issue = rep(c("issue1", "issue2"),times=1, each=2),
+             A = rep(c("Y",NA), 2),
+             B = rep(c(NA,"N"),2)
+             )
+}
+dt = votes()
+dt
+```
+
+```{r}
+dt  <- votes()
+dt_A  <- dt[!is.na(A), .(country = "A", vote=A), by = issue]
+dt_A
+dt_B  <- dt[!is.na(B), .(country = "B", vote=B), by = issue]
+dt_B
+
+```
+
+
+
+
 ***
 
 ```{r knit_exit()} 
@@ -164,15 +277,18 @@ knitr::knit_exit()
 
 ```{r render, eval=FALSE	} 
 args(rmarkdown::render)
-file  <- "/home/jim/code/try_things_here/rmd/00291_DT_STUDY_examples.Rmd"
+file  <- "/home/jim/code/try_things_here/rmd/00298_DT_normalize.Rmd"
 file  <- basename(file)
-file
-rmarkdown::render(input= file,
-                  output_format="html_document",
-                  output_file=here("rmd","out")
-                  )
+file  <- here("rmd", file)
 
 
 
+rmarkdown::render(input = file,
+                  #output_format = "pdf_document",
+                  #output_format = "html_document",
+                  output_format=c("html_document",    # if want both
+                                  "md_document"),
+                  output_dir = "md",
+                  output_file = "out")
 
 ```
