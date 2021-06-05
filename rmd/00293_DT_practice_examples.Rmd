@@ -58,6 +58,11 @@ DT[ , lapply(.SD, sum)]
 DT[ , lapply(.SD, sum)]
 ```
 
+### HTML?
+```{r thrid}
+paste0('<b>', 'Sum all columns', '</b>')
+```
+
 ### Resume
 ```{r  resume}
 # Count rows

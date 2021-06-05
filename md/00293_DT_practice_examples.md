@@ -51,6 +51,12 @@ REF:
 
 1: 30 45 120 120
 
+### HTML?
+
+    paste0('<b>', 'Sum all columns', '</b>')
+
+          ## [1] "<b>Sum all columns</b>"
+
 ### Resume
 
     # Count rows
