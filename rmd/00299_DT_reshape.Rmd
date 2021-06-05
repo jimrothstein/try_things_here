@@ -44,11 +44,12 @@ s1 <- "family_id age_mother dob_child1 dob_child2 dob_child3
 4         32 2004-10-10 2009-08-27 2012-07-21
 5         29 2000-12-05 2005-02-28         NA"
 
-s1
+if (F) s1
+
 DT <- fread(s1)
 DT
 str(DT)
-dt  <- DT
+ds   <- DT
 
 ```
 

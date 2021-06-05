@@ -15,10 +15,12 @@ output:
     toc_depth:  2   
 fontsize: 11pt   
 geometry: margin=0.5in,top=0.25in   
-TAGS:  data.table,lapply
+TAGS:  data.table,lapply,sum
 ---
 
+## 00293_ Basic_Examples of DT
 
+REF: https://stackoverflow.com/questions/32276887/use-of-lapply-sd-in-data-table-r
 ```{r setup, include=FALSE		}
 knitr::opts_chunk$set(echo = TRUE,
                       comment = "      ##",
@@ -27,7 +29,6 @@ knitr::opts_chunk$set(echo = TRUE,
 library(data.table)
 ```
 
-REF: https://stackoverflow.com/questions/32276887/use-of-lapply-sd-in-data-table-r
 
 ```{r begin}
 set.seed(10238)
@@ -82,6 +83,27 @@ DT[ , lapply(.SD, length), by = B, .SDcols = !"A"]
 DT[ , lapply(.SD, length), by = c("A","B")]
 ```
 
+### normalize - votes
+```{r votes}
+# each=2, each element repeated twice, before moving on.
+votes <- function() {
+  data.table(issue = rep(c("issue1", "issue2"),times=1, each=2),
+             A = rep(c("Y",NA), 2),
+             B = rep(c(NA,"N"),2)
+             )
+}
+dt = votes()
+dt
+```
+
+```{r}
+dt  <- votes()
+dt_A  <- dt[!is.na(A), .(country = "A", vote=A), by = issue]
+dt_A
+dt_B  <- dt[!is.na(B), .(country = "B", vote=B), by = issue]
+dt_B
+
+```
 
 ***
 
@@ -97,7 +119,8 @@ DT[ , lapply(.SD, length), by = c("A","B")]
 # dir/name_of_this_file    where dir is relative to project root
 
 
-file  <- 
+file  <-"rmd/00293_DT_practice_examples.Rmd" 
+file  <- basename(file)
 file  <- here("rmd", file)
 file
 
@@ -106,7 +129,9 @@ file
 # in general, pdf will look nicer
 rmarkdown::render(file,
                   #output_format = "pdf_document",
-                  output_format = "html_document",
-                  output_file = here("out","out")
+                  #output_format = "html_document",
+                  output_format = "md_document",
+                  output_dir = "md",
+                  #output_file = here("out","out")
                   )
 ```

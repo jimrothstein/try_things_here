@@ -242,27 +242,6 @@ dt
 
 ```
 
-### normalize - votes
-```{r votes}
-# each=2, each element repeated twice, before moving on.
-votes <- function() {
-  data.table(issue = rep(c("issue1", "issue2"),times=1, each=2),
-             A = rep(c("Y",NA), 2),
-             B = rep(c(NA,"N"),2)
-             )
-}
-dt = votes()
-dt
-```
-
-```{r}
-dt  <- votes()
-dt_A  <- dt[!is.na(A), .(country = "A", vote=A), by = issue]
-dt_A
-dt_B  <- dt[!is.na(B), .(country = "B", vote=B), by = issue]
-dt_B
-
-```
 
 
 
