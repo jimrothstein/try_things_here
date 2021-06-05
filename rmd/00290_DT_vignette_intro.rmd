@@ -21,15 +21,17 @@ library(data.table)
 citation("data.table")
 
 input <- if (file.exists("./data/flights14.csv")) {
-   "flights14.csv"
+   "data/flights14.csv"
 } else {
   "https://raw.githubusercontent.com/Rdatatable/data.table/master/vignettes/flights14.csv"
+
+  #saveRDS("flights14.csv", "data/flights14.csv")
 }
 # 2.2 MM
 flights <- fread(input)
-flights
+head(flights)
 ```
-
+### examine dt
 ```{r lazy }
 # I'm lazy!  use DT[]
 DT <- flights
@@ -42,6 +44,11 @@ dplyr::glimpse(flights)
 # convert df
 # DT <- as.data.table(df)
 
+
+```
+### Basic
+```{r basic}
+
 # =========================================
 # BASIC:    WHERE, SELECT, GROUP BY (sql)
 # =========================================
@@ -50,7 +57,6 @@ flights [origin == "JFK" & carrier == "AA" & year == "2014" & month == 6L ] %>% 
 head( flights[order(origin)])
 
 
-# TODO (doesn't get to head()) -------------------## 
  flights[order(origin)] %>% nrow() %>% head()
 # group, total
 DT[,.N,by=origin]
@@ -98,7 +104,9 @@ flights[origin == "JFK" & month==6L, length(dest)]
 
 # shortcut .N   -----------------##
 flights[origin == "JFK" & month==6L, .N] 
-
+```
+### Group
+```{r group}
 
 # GROUP
 flights[,.N, by=dest]  # # rows by dest

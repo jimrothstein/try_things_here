@@ -28,38 +28,32 @@
     ##   }
 
     input <- if (file.exists("./data/flights14.csv")) {
-       "flights14.csv"
+       "data/flights14.csv"
     } else {
       "https://raw.githubusercontent.com/Rdatatable/data.table/master/vignettes/flights14.csv"
+
+      #saveRDS("flights14.csv", "data/flights14.csv")
     }
     # 2.2 MM
     flights <- fread(input)
-    flights
+    head(flights)
 
-    ##         year month day dep_delay arr_delay carrier origin
-    ##      1: 2014     1   1        14        13      AA    JFK
-    ##      2: 2014     1   1        -3        13      AA    JFK
-    ##      3: 2014     1   1         2         9      AA    JFK
-    ##      4: 2014     1   1        -8       -26      AA    LGA
-    ##      5: 2014     1   1         2         1      AA    JFK
-    ##     ---                                                  
-    ## 253312: 2014    10  31         1       -30      UA    LGA
-    ## 253313: 2014    10  31        -5       -14      UA    EWR
-    ## 253314: 2014    10  31        -8        16      MQ    LGA
-    ## 253315: 2014    10  31        -4        15      MQ    LGA
-    ## 253316: 2014    10  31        -5         1      MQ    LGA
-    ##         dest air_time distance hour
-    ##      1:  LAX      359     2475    9
-    ##      2:  LAX      363     2475   11
-    ##      3:  LAX      351     2475   19
-    ##      4:  PBI      157     1035    7
-    ##      5:  LAX      350     2475   13
-    ##     ---                            
-    ## 253312:  IAH      201     1416   14
-    ## 253313:  IAH      189     1400    8
-    ## 253314:  RDU       83      431   11
-    ## 253315:  DTW       75      502   11
-    ## 253316:  SDF      110      659    8
+    ##    year month day dep_delay arr_delay carrier origin dest
+    ## 1: 2014     1   1        14        13      AA    JFK  LAX
+    ## 2: 2014     1   1        -3        13      AA    JFK  LAX
+    ## 3: 2014     1   1         2         9      AA    JFK  LAX
+    ## 4: 2014     1   1        -8       -26      AA    LGA  PBI
+    ## 5: 2014     1   1         2         1      AA    JFK  LAX
+    ## 6: 2014     1   1         4         0      AA    EWR  LAX
+    ##    air_time distance hour
+    ## 1:      359     2475    9
+    ## 2:      363     2475   11
+    ## 3:      351     2475   19
+    ## 4:      157     1035    7
+    ## 5:      350     2475   13
+    ## 6:      339     2454   18
+
+### examine dt
 
     # I'm lazy!  use DT[]
     DT <- flights
@@ -96,6 +90,8 @@
     # convert df
     # DT <- as.data.table(df)
 
+### Basic
+
     # =========================================
     # BASIC:    WHERE, SELECT, GROUP BY (sql)
     # =========================================
@@ -121,7 +117,6 @@
     ## 5:      154     1085    6
     ## 6:      215     1372    9
 
-    # TODO (doesn't get to head()) -------------------## 
      flights[order(origin)] %>% nrow() %>% head()
 
     ## [1] 253316
@@ -302,6 +297,8 @@
 
     ## [1] 8422
 
+### Group
+
     # GROUP
     flights[,.N, by=dest]  # # rows by dest
 
@@ -330,9 +327,9 @@
     head(dt)
 
     ##         x v
-    ## 1:  0.215 1
-    ## 2: -0.293 2
-    ## 3:  0.208 3
-    ## 4: -1.675 4
-    ## 5:  0.285 5
-    ## 6:  0.902 6
+    ## 1:  0.853 1
+    ## 2:  1.453 2
+    ## 3: -2.394 3
+    ## 4: -0.510 4
+    ## 5: -1.445 5
+    ## 6:  0.804 6
