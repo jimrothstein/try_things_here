@@ -23,60 +23,57 @@ knitr::opts_chunk$set(echo = TRUE,
                       error = TRUE,
                       collapse = FALSE   ) # easier to read
 library(here)
+library(jimTools)
 ```
 
-Claim:  This will not work,  mixing .tex and Rmd
+```{r function}
+# helpful info
+args(rmarkdown::render)
 
-\documentclass{article}
+render_files  <- function(input=NULL, output_format=NULL, output_dir=NULL){
 
-\usepackage[utf8]{inputenc}
+  # TODO:  run checks
+  rmarkdown::render(input= input,
+                    output_format=output_format,
+                    output_dir = output_dir)
+}
 
-\title{My beautiful PDF document}
-\author{Ed Rubin}
-\date{February 2017}
+file  <- "rmd/0230_render_all_files.Rmd"
+file  <- basename(file)
+file  <- here("rmd", file)
+file
 
-\begin{document}
+render_files(input= file, output_format="md_document", output_dir="md")
 
-\maketitle
-
-What a beautiful PDF.
-
-\end{document}
-
-
-### knitr unhappy about preamble; latex can't compile
-```{r library, include=FALSE		}
-file  <- knitr::current_input() 
-
-``` 
-
-
-```{r begin}
-# no code today
 ```
 
-***
+```{r collect_files}
+dir = here("rmd", ".")
+dir
+{
+begin  <- Sys.time()
 
-```{r knit_exit(), include = FALSE  , eval=FALSE } 
-# knitr::knit_exit()
+md_pattern  <- '[.][Rr]?(md|markdown)$'
+rmd_pattern  <- '[.][Rr](md|markdown)$'
+
+files  <- jimTools:::get_RMD_files(path = dir, pattern = rmd_pattern)
+head(files)
+
+
+
+end  <- Sys.time()
+print(end - begin)
+}
+files
 ```
 
-/newpage
+```{r render_all_files}
+lapply(files, render_files, output_format="md_document", output_dir="md")
 
-```{r plot_density, eval=FALSE  }
-density_object <- density(mpg$hwy)
-pdf("~/Downloads/print_and_delete/out.pdf")
-plot(density_object)
-dev.off()
 ```
 
-```{r plot_png_example, eval=FALSE  }
-filename  <- "~/Downloads/print_and_delete/out.png"
-png(filename = filename,
-         width = 480, height = 480, units = "px", pointsize = 12)
-plot(density_object)
-dev.off()
-```
+
+
 ```{r render, eval=FALSE, include=FALSE 	} 
 # TODO:  file is found when knitr runs (see above)
 

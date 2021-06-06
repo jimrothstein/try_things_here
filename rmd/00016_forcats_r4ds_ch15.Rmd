@@ -46,12 +46,11 @@ t  <- tribble(~"month", ~"count",
 
 t
 
-forcats::fct_
 
 sort(x1)
 
 x1 %>% fct_reorder(x2)
-,
+
 # in school year order?
 school_levels <- c(
 									 "Sep","Oct","Nov","Dec","Jan",
