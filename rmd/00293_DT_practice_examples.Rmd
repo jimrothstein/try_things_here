@@ -103,6 +103,31 @@ dt[ , lapply(.SD, length), by = B, .SDcols = !"A"]
 dt[ , lapply(.SD, length), by = c("A","B")]
 ```
 
+### Study examples
+```{r begin}
+create_dt  <- function()
+  DT = data.table(x=rep(c("b","a","c"),each=3), y=c(1,3,6), v=1:9)
+
+dt  <- create_dt()
+dt
+
+example(data.table)
+
+```
+
+### order(x)
+```{r order}
+dt[order(x),]
+dt[order(y),]
+dt[order(y,v),]
+dt[order(y,-v),]
+dt[y == 6,][order(v),]
+
+# wrong
+dt[y == 6 & order(-v), ]
+```
+
+
 ### normalize - votes
 ```{r votes}
 # each=2, each element repeated twice, before moving on.

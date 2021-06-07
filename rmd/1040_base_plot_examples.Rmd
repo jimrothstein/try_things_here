@@ -98,7 +98,7 @@ abline(h = 35, col=2)
 dev.off()
 ```
 
-/newpage
+\newpage
 
 ```{r render, eval=FALSE	} 
 # TODO:  file is found when knitr runs (see above)

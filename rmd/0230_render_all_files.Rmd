@@ -33,15 +33,23 @@ args(rmarkdown::render)
 render_files  <- function(input=NULL, output_format=NULL, output_dir=NULL){
 
   # TODO:  run checks
+  # next line allows shortcuts (output_format="h") matches "html...." or ERROR
+  output_format  <- match.arg(output_format, 
+                    c("html_document", "pdf_document", "md_document"))
+
+
   rmarkdown::render(input= input,
                     output_format=output_format,
                     output_dir = output_dir)
 }
 
+here()
 file  <- "rmd/0230_render_all_files.Rmd"
 file  <- basename(file)
 file  <- here("rmd", file)
 file
+
+render_files(input= file, output_format="m", output_dir="md")
 
 render_files(input= file, output_format="md_document", output_dir="md")
 
