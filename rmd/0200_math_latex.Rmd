@@ -10,32 +10,24 @@ output:
 #     toc_depth:  4 
 fontsize: 10pt 
 geometry: margin=0.5in,top=0.25in 
+TAGS:   LaTeX,math
 ---
 
 ## Simple latex
-## Works in both .pdf and .html
-### rmarkdown knows to use math_jax for html
+  *  PDF, will work
+  *  HTML, no guarantees and still confused.
+  *  rmarkdown knows to use math_jax for html ??
 REF: https://gist.github.com/derekmcloughlin/896da22518ef2f3d81b0
-<!-- 
-set cul   "cursorline
-cc=+1			"colorcolumn is 1 more than tw
-
-vim: to format all urls for md
-s/https.*/[&]()/g
--->
 
 ```{r setup, include=FALSE		}
 knitr::opts_chunk$set(echo = TRUE,
                       comment = "      ##",
                       error = TRUE,
                       collapse = TRUE)
+library(jimTools)
 ```
 
-<!--  RENDER:  see bottom -->
 
-```{r library, include=FALSE		}
-library(jimTools)
-``` 
 
 $\sum x_{i}$
 ```{r begin}
@@ -45,28 +37,55 @@ $\sum x_{i}$
 $$\mu_{\bar{x_{1}} - \bar{x_{2}}} = \mu_{1} - \mu_{2}$$
 
 
-#### Standard Errors
+### Standard Errors
 
 $$s_{e} = \sqrt \frac {SSResid}{n - 2}$$
+
 ***
 
-```{r knit_exit()} 
+$$e^2$$
+
+
+$$\frac{a}{b}$$
+
+$$\frac{xe^-x}{x+1}$$
+$$\frac{xe^x}{x+1}$$
+
+
+\begin{equation}
+y=x
+\end{equation}
+
+***
+
+left align:
+$y=x$
+
+\(y=x\)
+
+***
+
+center?
+
+\[y=x\]
+```{r knit_exit(), eval=F, include=F} 
 knitr::knit_exit()
 ```
 
-/newpage
 
-```{r render, eval=FALSE	} 
-# here() is useless
-# how to easily change R direcctory,  WHEN I can vim's ?
+```{r render, eval=FALSE, include=F	} 
+args(rmarkdown::render)
 
-setwd("~/code/r_try_things_here")
-getwd()
-
+{
 file <- "0200_math_latex.Rmd"
 file  <- basename(file)
-dir <- "rmd"
+file  <- here("rmd", file)
+file
+}
 
-rmarkdown::render(here(dir, file), 
-                  output_dir="~/Downloads/print_and_delete/")
+
+rmarkdown::render(input = file, 
+    output_format = c("pdf_document", "md_document"),
+    #output_format = "pdf_document",
+    output_dir="pdf")
 ```
