@@ -15,7 +15,7 @@ output:
     toc_depth:  2   
 fontsize: 11pt   
 geometry: margin=0.5in,top=0.25in   
-TAGS:  data.table,lapply,sum, list-column, 
+TAGS:  data.table,lapply,sum, list-column, reprex
 ---
 
 ## 00293_ Basic_Examples of DT
@@ -141,6 +141,48 @@ dt = votes()
 dt
 ```
 
+
+## Use melt (wide --> long)
+```{r melt}
+reprex(wd =  ".", venue = "slack",{
+
+
+#' For those of us tidyverse-averse (or just stubborn) here is one way twith data.table :
+
+library(data.table)
+#' Create fake data  in wide format ('unnormalized')
+#' Column A refers to votes of Country A, etc
+
+votes <- function() {
+  data.table(issue = rep(c("issue1", "issue2"),times=1, each=2),
+             A = rep(c("Y",NA), 2),
+             B = rep(c(NA,"N"),2)
+             )
+}
+dt = votes()
+dt
+
+
+#' melt (wide to long, aka 'normalize' the data)  
+#'  *  id.vars are the variables want to keep.  
+#'  *  measure.vars are the columns to collapse.  
+dt.1  <- data.table::melt(dt,
+                 id.vars = c("issue"),
+                 measure.vars = c("A", "B"),
+                 variable.name = "country",
+                 value.name = "vote",
+                 na.rm = TRUE
+
+)
+dt.1
+###' order by issue
+dt.2  <- dt.1[order(issue)]
+dt.2
+             })
+
+```
+
+
 ```{r}
 dt  <- votes()
 dt_A  <- dt[!is.na(A), .(country = "A", vote=A), by = issue]
@@ -150,41 +192,6 @@ dt_B
 
 ```
 
-### non-normalized data
-```{r}
-
-# sloppy way to input data!
-s1 <- "family_id age_mother dob_child1 dob_child2 dob_child3
-1         30 1998-11-26 2000-01-29         NA
-2         27 1996-06-22         NA         NA
-3         26 2002-07-11 2004-04-05 2007-09-02
-4         32 2004-10-10 2009-08-27 2012-07-21
-5         29 2000-12-05 2005-02-28         NA"
-
-if (F) s1
-
-dt <- fread(s1)
-dt
-str(dt)
-```
-
-### convert to list-column
-  *  Note that dob is converted column
-```{r list_column}
-dt[, .(age_mother, 
-       .(dob = .(dob_child1, dob_child2, dob_child3))),
-       by = family_id]
-
-
-
-```
-### convert to normalized
-```{r normalize}
-dt[, .(age_mother, 
-       dob = .(dob_child1, dob_child2, dob_child3)),
-       by = family_id]
-```
-***
 
 ```{r knit_exit(), include = FALSE  , eval=FALSE } 
 # knitr::knit_exit()
