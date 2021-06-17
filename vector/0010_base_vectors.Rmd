@@ -16,12 +16,13 @@ output:
     geometry: margin=0.5in,top=0.25in   
 ---
 
+##  Collection simple vector examples.
+
 ```{r setup, include=FALSE		}
 knitr::opts_chunk$set(echo = TRUE,
                       comment = "      ##",
                       error = TRUE,
                       collapse = FALSE   ) # easier to read
-file  <- knitr::current_input() 
 library(jimTools)
 ```
 
@@ -74,39 +75,23 @@ l1
 
 
 
-```{r begin}
-print(file)
-```
 
-***
 
 ```{r knit_exit(), include = FALSE  , eval=FALSE } 
 # knitr::knit_exit()
 ```
 
-/newpage
 
-```{r plot_density, eval=FALSE  }
-density_object <- density(mpg$hwy)
-pdf("~/Downloads/print_and_delete/out.pdf")
-plot(density_object)
-dev.off()
-```
 
-```{r plot_png_example, eval=FALSE  }
-filename  <- "~/Downloads/print_and_delete/out.png"
-png(filename = filename,
-         width = 480, height = 480, units = "px", pointsize = 12)
-plot(density_object)
-dev.off()
-```
 ```{r render, eval=FALSE, include=FALSE 	} 
+
 # TODO:  file is found when knitr runs (see above)
 
 # file must be of form:
 # dir/name_of_this_file    where dir is relative to project root
 
-file  <- here("", "")
+file  <- "0010_base_vectors.Rmd"
+file  <- here("vector", file)
 file
 
 # in general, pdf will look nicer

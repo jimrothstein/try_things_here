@@ -1,22 +1,24 @@
 --- 
-title: Template for .Rmd 
+title: "`r knitr::current_input()`"
 date: "`r paste('last updated', 
     format(lubridate::now(), '%H:%M, %d %B %Y'))`"
 output: 
-  html_document
-#   pdf_document: 
-#     latex_engine: xelatex
-#     toc: TRUE 
-#     toc_depth:  4 
+  html_document:
+    math_jax:  default
+  pdf_document: 
+    latex_engine: xelatex
+    toc: TRUE 
+    toc_depth:  4 
 fontsize: 10pt 
 geometry: margin=0.5in,top=0.25in 
-TAGS:   LaTeX,math
+TAGS:   LaTeX,math_jax,pdf,html
 ---
 
 ## Simple latex
   *  PDF, will work
   *  HTML, no guarantees and still confused.
-  *  rmarkdown knows to use math_jax for html ??
+  *  rmarkdown knows to use math_jax for html !
+
 REF: https://gist.github.com/derekmcloughlin/896da22518ef2f3d81b0
 
 ```{r setup, include=FALSE		}
@@ -27,11 +29,33 @@ knitr::opts_chunk$set(echo = TRUE,
 library(jimTools)
 ```
 
+## Best, so far:   https://www.overleaf.com/learn
 
+### Symbols
+$\emptyset$  
+$\forall$  
+$\infty$  
+$\exists$  
+$\nexists$
+$\Box$  
+$\alpha  $\beta  $\gamma  $\epsilon  
+$\sigma$   $\mu$ 
+
+$\bar{x_{i}}$  
+$\mu_X$  
+$\mu_x$  
+$\hat{\theta}$  
+
+
+
+
+
+### Simple Functions
+
+$\sin{x}$  
 
 $\sum x_{i}$
-```{r begin}
-```
+
 ### Independent Samples
 
 $$\mu_{\bar{x_{1}} - \bar{x_{2}}} = \mu_{1} - \mu_{2}$$
@@ -41,8 +65,18 @@ $$\mu_{\bar{x_{1}} - \bar{x_{2}}} = \mu_{1} - \mu_{2}$$
 
 $$s_{e} = \sqrt \frac {SSResid}{n - 2}$$
 
-***
 
+### Expressions  
+\[ \sum_{i=1}^{\infty} \frac{1}{n^i} \]   
+
+\[ \frac{\sigma}{N^\frac{1}{2}} \]  
+
+\[ \frac{\sigma}{\sqrt N} \]  
+
+### Integrals
+\[ \int\limits_0^1 x^2 + y^2 \ dx \]
+
+***
 $$e^2$$
 
 
@@ -75,7 +109,6 @@ knitr::knit_exit()
 
 ```{r render, eval=FALSE, include=F	} 
 args(rmarkdown::render)
-
 {
 file <- "0200_math_latex.Rmd"
 file  <- basename(file)
@@ -83,9 +116,8 @@ file  <- here("rmd", file)
 file
 }
 
-
-rmarkdown::render(input = file, 
-    output_format = c("pdf_document", "md_document"),
+rmarkdown::render(input = file) 
+    #output_format = c("pdf_document", "md_document"))
     #output_format = "pdf_document",
-    output_dir="pdf")
+    #output_dir="pdf")
 ```

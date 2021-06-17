@@ -89,6 +89,103 @@ l
 lapply(l, mean)
 ```
 
+### median
+```{r median}
+# From normal distribution, take N values at random.  Compute median. To
+# generate the sampling distribution of the median,  repeat this B times.
+#
+# Compute point estimate and 95% CI for TRUE  median.  
+
+N  <- 100    # 1 sample
+B  <- 10^4 
+
+#  Generate a list of length B, each element containing double of length N
+l  <- replicate(B, rnorm(N), simplify = FALSE)
+if (F) str(l)
+
+# For each of the B elements of l, compute the median.
+m  <- lapply(l, median)
+
+if (F) length(m); str(m)
+
+# the Sampling Distribution appears Normal
+hist(unlist(m))
+
+# What can we say about the properities of Sampling Distribution.
+# Is it normal?   If so, can we compare its mean and standard error and compare
+# to theory?
+#
+
+```
+
+### range
+```{r range}
+# From normal distribution, take N values at random.  Compute range. To
+# generate the sampling distribution of the range,  repeat this B times.
+#
+# Compute point estimate and 95% CI for TRUE  range.  
+
+N  <- 100    # 1 sample
+B  <- 10^4 
+
+#  Generate a list of length B, each element containing double of length N
+l  <- replicate(B, rnorm(N), simplify = FALSE)
+if (F) str(l)
+
+# For each of the B elements of l, compute the median.
+m  <- lapply(l, range)
+m.1 <- lapply(l, function(e) {r  <- range(e); r[2] - r[1]})
+
+
+if (F) {length(m); str(m)}
+
+# the Sampling Distribution appears Normal
+hist(unlist(m))
+hist(breaks=20, unlist(m.1))
+
+# What can we say about the properities of Sampling Distribution.
+# Is it normal?   If so, can we compare its mean and standard error and compare
+# to theory?
+#
+
+```
+### sine 
+```{r sine}
+# From sine wave distribution (x=0 to x=pi), take N values at random.  Repeat this B times.
+# Compute point estimate and 95% CI for TRUE  median.  
+N  <-  100
+B  <- 10^4
+y  <- replicate (B, runif(N, min=0, max=1), simplify=FALSE)
+length(y)
+inv  <- function(y) (acos(1-2*y))
+x  <- lapply(y, inv)
+
+m  <- lapply(x, mean)
+
+pi/2
+
+hist(unlist(x))
+
+# PDF = sin
+# CDF = integral sin bet 0 and x 
+
+CDF  <- function(x) {1/2*(1 - cos(x))}
+curve(CDF, from = 0, to = pi)
+
+# given y, solve for x
+x  <- acos(1 - 2*y)
+x
+hist(x)
+
+curve(sin)
+
+N  <- 100  
+B  <- 10^4 
+l  <- replicate(B, rnorm(N), simplify = FALSE)
+
+m  <- lapply(l, median)
+hist(unlist(m))
+```
 LEGACY (below)  move to 1060_sample binom?
 ======
 game
