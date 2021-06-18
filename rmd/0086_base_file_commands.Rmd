@@ -96,18 +96,6 @@ new
 file.rename(here("rmd", old), here("rmd", new))
 ```
 
-## sprintf has some nice features!
-```{r sprint}
-sprintf("hello %s", "jim")
-
-sprintf("hello %s", 23)
-
-sprintf("hello %04s", 23)         # min of 4
-sprintf("hello %04f", 23)         # 23.000000
-
-sprintf("hello %04i", 23)         # int, min of 4 digits
-
-```
 
 regex, sub(), gsub will work
 stringr is easier?
@@ -137,8 +125,6 @@ the_files
 
 # propose new prefix, min of 5 digits
 
-# sprintf("hello %04i", 23)         # int, min of 4 digits
-sprintf("%05i", 1:N)
 
 the_prefixs  <- sprintf("%05i", 1:N)
 the_prefixs

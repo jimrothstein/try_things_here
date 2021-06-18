@@ -150,7 +150,7 @@ f  <- readLines(t)
 f
 ```
 
-### 24- run code from .R file created in 23, in a chunk!
+### 24- run code from file created in 23
 ```{r, read_and_run, code=readLines(t)}
 ```
 
