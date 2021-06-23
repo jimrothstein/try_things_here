@@ -47,7 +47,7 @@ file.remove("test.md")
 ```
 
 \newpage
-
+# 
 ```{r render, eval=FALSE, echo=F, incude=F	} 
 file  <- "rmd/00302_knitr_modify_label_in_template.Rmd"
 rmarkdown::render(file,

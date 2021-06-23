@@ -26,6 +26,25 @@ library(jimTools)
 library(vctrs)
 ``` 
 
+### generic, methods for S3
+```{r , S3_methods}
+
+# methods of generic function
+head(methods(print),  n = 9L)
+print
+
+head(seq)
+
+# print code
+getS3method(f = "print", class="aov")
+getS3method(f = "print", class="warnings")
+getS3method(f = "print", "default")
+# sameas
+print.warnings
+class(print.warnings)
+```
+
+
 constructor for vctrs_percent class
 ```{r begin}
 new_percent  <- function(x = double()){

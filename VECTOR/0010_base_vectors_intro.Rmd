@@ -1,0 +1,220 @@
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 3
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  3    
+fontsize: 10pt   
+geometry: margin=0.3in,top=0.25in   
+---
+
+###  This set of pages to include: 
+  -  Vectors (atomic & lists)
+  -  Simple vector examples
+  -  Use of purrr .... and analogus base functions
+  -  Use of lapply* family, unlist
+  -  Notation for subset, contents etc
+  -  Common patterns
+  -  Vectorize a function, with mapper functions
+
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = T   ) # easier to read
+library(jimTools)
+library(DiagrammeR)
+
+
+```
+
+
+### Vector hierachy
+  *  REF:  r4ds 20.2, adv-r ch3
+
+```{r graph}
+DiagrammeR::grViz("
+  digraph rmarkdown {
+    vector -> atomic -> character
+    atomic -> numeric
+    atomic -> logical
+    numeric -> double
+    numeric -> integer
+    integer -> factor
+    double  -> date
+    double -> POSIXct
+    vector -> list
+  }
+  ", height=600)
+```
+
+Common functions of vectors
+```{r commond_functions}
+typeof(c("a")) # actually all objs
+length(c("a"))
+
+```
+### Groupings (Define)
+  *  Vector, Atomic, Numeric are groupings ("abstract", never created)
+  *  Meanings of these functions, differ from intution:
+     *  is.vector(), is.atomic(), is.numeric()
+
+### Atomic
+  * is.*
+  * as.*
+```{r atomic}
+```
+### NULL is its own ??
+```{r null}
+```
+
+### Like other R objects, vectors can have Attributes
+  *  dimensions
+  *  class (S3, which allows generic functions to process by class attr)
+  *  factor (int[], attr = levels)
+  *  date (double[])
+  *  df, tibble (list)
+```{r}
+f  <- as.factor(c("A", "B"))
+attributes(f)
+attributes(unclass(f))
+
+x  <- Sys.Date()
+x
+attributes(x)
+unclass(x)
+attributes(unclass(x))
+
+t  <- Sys.time()
+attributes(t)
+attributes(unclass(t))
+```
+
+### Create object with arbitrary attributes
+```{r}
+
+a  <- structure(.Data = 1:3, 
+                x = "jim", 
+                y = "blue")
+
+attributes(a)
+
+a  <- structure(.Data = 1:3, 
+                class = factor)
+
+attributes(a)
+
+
+# internally, stored as int[]
+b  <- factor(letters[1:3])
+
+dput(b)
+# structure(1:3, .Label = c("a", "b", "c"), class = "factor")
+
+attributes(b)
+unclass(b)
+
+
+```
+
+### using vector()
+  *  `mode`  think base class or list
+  *  https://rdrr.io/r/base/vector.html
+```{r vector}
+vector(mode="logical", length=0)
+
+# logical of length 
+v  <- vector(mode="logical", length=0) 
+v
+
+# logical of length 1
+v1   <- vector(mode="logical", length=1) 
+v1
+
+# logical of length 2
+v2   <- vector(mode="logical", length=2) 
+v2
+
+
+# list of length 5, values are NUL
+l1  <- vector(mode="list", length=5)
+l1
+
+```
+
+### Subset, Extract
+  *  [, [[, $
+
+```{r subset}
+a  <- c(1,2,3)
+a[2]
+a[a>2]
+a[a%%2 == 0]
+
+f  <- function(x) x ==1
+a[f(a)]
+
+
+# list
+lapply (a, f)
+lapply (a, `[`)
+
+tryCatch({ 
+         lapply(a, `[[` )},
+          error = function(e) {"No good - error" }
+)
+
+```
+
+#### list, can subset, append, walk  ... this is hard one.
+```{r list}
+l.1 <- list(letters, zz=4)
+length(l.1)
+
+l[length(l)]
+l[1:3]
+
+
+l.2  <- append(l.1, letters)
+length(l.2)
+
+
+l.2[2]
+l.2[2:5]
+
+# my favorite!
+l.2[c(2,3,10, 26)]
+
+l.2$zz
+names(l.2)
+```
+
+
+```{r knit_exit(), include = FALSE  , eval=FALSE } 
+# knitr::knit_exit()
+```
+
+
+
+```{r render, eval=FALSE, include=FALSE 	} 
+{
+file  <- "0010_base_vectors_intro.Rmd"
+file  <- here("vector", file)
+file
+}
+
+# in general, pdf will look nicer
+rmarkdown::render(file,
+                  #output_format = "pdf_document")
+                  output_format = "html_document")
+
+```

@@ -15,12 +15,6 @@ TAGS:  lintr
 lintr:: Ref manual:
 https://cran.r-project.org/web//packages/lintr/lintr.pdf
 
-<!-- 
-set cul   "cursorline
-cc=+1			"colorcolumn is 1 more than tw
-vim: to format all urls for md
-s/https.*/[&]()/g
--->
 
 ```{r setup, include=FALSE		}
 knitr::opts_chunk$set(echo = TRUE,
@@ -28,20 +22,14 @@ knitr::opts_chunk$set(echo = TRUE,
                       error = TRUE,
                       collapse = TRUE)
 
-```
-
-<!--  RENDER:  see bottom -->
-
-```{r library, include=FALSE		}
 library(jimTools)
 library(lintr)
+```
 
-``` 
+
 
 
 ```{r begin}
-library(lintr)
-library(here)
 x  <- 1 + 1
 x
 

@@ -1,6 +1,6 @@
-<!--
+
 	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
--->	 
+	 
 --- 
 # Spaces, no Tabs
 title: Template for .Rmd 
@@ -15,23 +15,27 @@ fontsize: 12pt
 geometry: margin=0.5in,top=0.25in 
 ---
 
-```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,  
-											comment="      ##",  
-											error=TRUE, 
-											collapse=TRUE) 
-```
+###  For text (non-binary) storage:  use dput/dget or dump/source (muliple
+obj)
+  *  REF:  see Peng Chapter 7
 
 ```{r library, include=FALSE		}
 library(jimTools) 
 ``` 
 
+dput
+```{r}
+
+y  <- list(a=1, b=2)
+dput(y)
+
+# keeps meta data
+dput(mtcars[1,])
+```
 
 dput:  
 ```{r dput}
 test <- data.frame(x = 1, y = 1)
-test
-typeof(test)  # list
 
 # structure
 output <- dput(test) # output is to console
@@ -62,13 +66,33 @@ s
 
 ```
 
+#### save structure as expression, expr()
+  *  called a defused expression, like blueprint
+  *  so prevents execution of code
+  *  see help for `expr`
 ```{r dput_expr}
-z  <- expr(dput(test))
+z  <- rlang::expr(dput(test))
 z
+typeof(z)
+
 c  <- eval(z)
 ```
 
 ***
+
+```{r knit_exit()} 
+knitr::knit_exit() 
+```
+
+/newpage
+
+```{r render, eval=FALSE	} 
+file <- "" 
+file  <- basename(file) 
+dir <-"rmd"
+
+```
+
 
 ```{r knit_exit()} 
 knitr::knit_exit() 

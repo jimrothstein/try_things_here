@@ -34,12 +34,15 @@ f.default  <- function(x) print("f:  default")
 f.numeric  <- function(x) print("f:  numeric")
 f.character  <- function(x) print("f: character")
 f.list  <- function(x) print("f:  list")
+f.function  <- function(x) print("f:  function")
+
 
 f(3)  
 f("a")
 f(x)   # Error
 f(list("a", 2))
 f(TRUE)
+f(sin)
 
 # S3, s3_dispatch, methods
 methods(f)
