@@ -1,0 +1,30 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+library(modelr)
+
+## mtcars: 32 rows x 11 columns
+
+## returns tibble with UNIQUE values
+data_grid(mtcars, vs, am, gear)
+
+# For continuous variables, seq_range is useful
+## returns range of equidistant values?
+seq_range(mtcars$mpg, n=10  )
+
+# returns:  tibble n x 1 of equally spaced mpg values
+data_grid(mtcars, mpg = seq_range(mpg, n=10))
+
+# If you optionally supply a model, missing predictors will
+# be filled in with typical values
+mod <- lm(mpg ~ wt + cyl + vs, data = mtcars)
+
+data_grid(mtcars, .model = mod)
+data_grid(mtcars, cyl = seq_range(cyl, 9), .model = mod)
+

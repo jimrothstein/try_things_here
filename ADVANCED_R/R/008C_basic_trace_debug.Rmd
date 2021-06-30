@@ -1,0 +1,139 @@
+#### basic traceback, debug
+
+
+
+#### From Gillespie, Appendix E# {{{
+
+```{r 1 }
+## IMPORTANT TOOLS
+# there is no bug()
+{
+	print("jim")
+first <- function() second()
+second <- function() third()
+third <- function() fourth()
+fourth <- function() fifth()
+fifth <- function() {
+	bug()}
+
+}
+#
+
+tracingState() # this a Global value, either on or off
+
+# browser
+# Must insert browser() into code.
+
+# on error, use traceback()
+first()
+traceback()
+lobstr::cst()
+
+# use debug
+debug(fifth)
+first()
+undebug(fifth)
+
+#use trace
+trace(fourth, browser)
+first()
+untrace(fourth)
+
+#trace, another way
+trace("third", print("inside 3th"))
+first()
+untrace(c("third", "fourth"))
+first() # runs to bug()
+
+
+#trace, using recover()
+trace(third, recover())
+
+
+rlang::last_error()
+rlang::last_trace()
+```# }}}
+
+#### E2, browser(), pauses R, view in function's env
+
+
+#### E4, debug(FUN), acts as browser() when entering FUN# {{{
+```
+debug(FUN)  - debug a FUN
+undebug(FUN) - turn off
+debugonce(FUN) - debug a FUN and turn if off
+```
+
+```{r E4 }
+debug(second)
+isdebugged(second)
+isdebugged(third)
+
+first()
+undebug(second)
+```# }}}
+
+#### E5, trace(FUN,browse, at=)# {{{
+```
+trace inserts a command in FUN, at line #
+untrace(FUN) to end
+```
+
+```{r E5}
+trace(print)
+print("hello")
+
+trace(print, browser)
+print("hello now")
+
+untrace(print)
+print("hi")
+
+trace(three, print("entering 3"))
+```# }}}
+
+
+
+#### E6 recover()
+```
+```
+
+#### examine class=rlang_error; code to generate error()# {{{
+```{r eval=FALSE	 }
+generate an error;
+STUDY!
+```
+
+```{r}
+## dummy function
+fun <- function(x, error = FALSE) {
+  x <- x + 1
+  if(error)
+    abort("Error!", x = x)
+  return(x)
+}
+
+## no error
+fun(1, error = FALSE)
+
+## error 
+fun(2, error = TRUE)
+
+## display last error (list)
+last_error()
+
+## Examine this error
+l  <- last_error()
+str(l)
+
+# message, trace, parent, x, rlang & inheritance
+str(l, max.level=1)
+
+attributes(l)
+l$trace
+
+class(l)
+
+```# }}}
+
+

@@ -1,0 +1,86 @@
+---
+title: "100_using_match.fun().Rmd"
+date:  
+output: 
+  pdf_document:
+    latex_engine: xelatex
+    toc: true 
+fontsize: 10pt
+geometry: margin=0.5in,top=0.25in
+#  md_document:
+#  html_document:
+#    toc: true
+#  	toc_float: true
+#    css: styles.css
+---
+
+###  USE of match.fun
+  *  Why?  What is purpose?   Aids in selecting from a LIST of functions
+
+Below is example of one use for match.fun().   My question is:
+Are there OTHER situations where `match.fun()` is used and why?
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,  
+                      comment="      ##",  
+                      error=TRUE, 
+                      collapse=TRUE)
+library(magrittr)
+library(lobstr)
+library(jimTools)
+``` 
+
+See also:
+From here(  https://stackoverflow.com/questions/6403852/how-to-call-a-function-using-the-character-string-of-the-function-name-in-r)
+
+
+
+
+Here is ONE example where match.fun helps us code with `mean` and `"mean"` as functions:
+  
+```{r match}
+
+# First, create list 
+f_list  <- list("mean", mean)
+
+# do a few checks
+sapply(f_list, typeof)
+sapply(f_list, is.function)
+
+
+# Suppose we want to use first entry of f_list as a function 
+
+#   This will fail:
+f  <- f_list[[1]]
+f
+f(c(3,4))  # FAIL
+
+# But this succeeds:
+g  <- match.fun(f_list[[1]])
+g
+g(c(3,5))
+
+
+f_list  <- list("*", `*` , `[`,  "sin", sin, "mean", mean)
+
+
+
+
+
+```{r render, eval=FALSE, include=F	} 
+setwd("~/code/book_advanced_R/")
+getwd()
+here()
+file <- "book_advanced_R/R/100_functions_match.Rmd" 
+file  <- basename(file)
+file
+dir <- "R"
+
+
+rmarkdown::render(input = file,
+                  output_format = "html_document",
+                  output_file = "out"
+                  )
+
+```
+

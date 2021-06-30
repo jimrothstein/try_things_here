@@ -1,0 +1,40 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r}
+require(tidyverse)
+####
+#   lang::expr returns exactly what typed
+####
+expr(mean(x, na.rm = TRUE))
+expr(10 + 100 + 1000)
+```
+
+# but not inside functions
+```{r} 
+
+f<- function (x) expr(x)
+f(c(0,10,a+b+c))
+f(a+b+c)
+```
+
+```{r}
+#   enexpr uses lazy loading? delays?
+g <- function(x) enexpr(x)
+g(a+b+c)
+```
+
+## capture, manipulate expression
+```{r message=TRUE, warning=TRUE}
+f <- expr(f(x=1,y=2))
+f
+# add arg
+f$z=3
+f
+#   Check elements as a list
+f[[1]]; f[[2]]; f[[3]]; f[[4]]
+```
+

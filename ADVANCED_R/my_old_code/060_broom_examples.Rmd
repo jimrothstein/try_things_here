@@ -1,0 +1,66 @@
+---
+title: "060_broom_examples.RMD"
+mainfont: DejaVu Sans
+output:
+  html_document: default
+  pdf_document:
+    latex_engine: xelatex
+  word_document: default
+font-family: Times New Roman
+---
+
+```{r}
+library(broom)
+library(tidyverse)
+x <- rnorm(5000, -2, 1)
+
+hist(x)
+
+fit <- MASS::fitdistr(
+  x,
+  dnorm,
+  start = list (mean=0,
+                sd=1)
+)
+
+```
+
+# fit is list, but messy
+```{r}
+typeof(fit)
+# not run
+str(fit)
+```
+
+# 3 verbs
+```{r}
+  tidy(fit)
+```
+
+# goodness of fit measures
+```{r}
+glance(fit)
+```
+
+
+# next, linear models
+
+```{r}
+fit <- NULL
+fit <- lm(hp ~ mpg + cyl, mtcars)
+tidy(fit)
+glance(fit)
+```
+#
+
+```{r}
+mtcars %>%
+  ggplot(aes(x=mpg, y=hp)) +
+  geom_point()
+
+```
+# augument(), for linear models
+
+```{r}
+augment(fit)
+```
