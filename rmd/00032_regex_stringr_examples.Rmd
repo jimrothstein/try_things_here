@@ -483,6 +483,38 @@ party(str,pat)
 
 ```
 
+#### 010_older_regex_examples (using ryanstutorials for regex)
+
+```{r, eval=FALSE, echo=FALSE}
+
+# Ref:
+# https://ryanstutorials.net/regular-expressions-tutorial/regular-expressions-basics.php
+
+
+# ---- skip ----
+text1 <- "The current year is 2016"
+my_pattern = "[0-9]" # find any 1 digit
+
+grepl(pattern = my_pattern, x = text1) # T
+(string_position <- gregexpr(pattern=my_pattern,text = text1)) # 21,22,23,24
+
+#3 1 digit AND 1 upper case alphanumeric
+my_pattern="[[:digit:][:upper:]]" # 
+grepl(pattern = my_pattern, x = text1) # T
+
+# ---- 001-begin ----
+
+# ---- -----
+t <- c("The", "there")
+s <- grep(pattern = "th", x =t, value = TRUE) # T, return string
+
+txt <- c("arm","foot","lefroo", "bafoobar","Foot","fool")
+i <- grep("foo", txt)
+i # returns positions that match
+```
+```
+
+
 ###  BELOW:   Development work for pkg_mp3_files
 # =================================================
 ```{r}

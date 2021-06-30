@@ -34,7 +34,6 @@ knitr::opts_chunk$set(echo = TRUE,
 											collapse=TRUE) 
 ```
 
-<!--  RENDER:  see bottom -->
 
 ```{r library, include=FALSE		}
 library(jimTools) 
@@ -223,13 +222,6 @@ get_typeof(c)
 
 
 
-***
-
-```{r knit_exit()} 
-knitr::knit_exit() 
-```
-
-/newpage
 
 ```{r render, eval=FALSE	} 
 file <- "" 

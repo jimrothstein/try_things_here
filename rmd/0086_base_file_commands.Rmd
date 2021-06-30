@@ -146,26 +146,32 @@ base::file.rename( OLD_NAMES, NEW_NAMES)
 ```{r special, eval=F,  include=F}
 
 the_dir  <- "~/mp3_files"
-# the_dir  <- "~/Downloads/mp3/from_youtube/"
 the_dir
 list.files(path = the_dir)
 
-list.files(path = the_dir, pattern = pat)
-old <- list.files(path = the_dir, pattern = pat)
-old
-new  <- gsub(pattern = pat, replace="_", x = v)
-new
+pattern = "^The"
+list.files(path = the_dir, pattern = pattern )
 
-old  <- paste0(the_dir,old)
+old <- list.files(path = the_dir, pattern = pattern)
 old
 
+## create new
+  new  <- sub(pattern = pattern, replace="***", x = old)
+  new
 
-new  <- paste0(the_dir,new)
+## prepend dir (just playing)
+  new2 <- paste0(the_dir,"/", new)
+  new2
+
+
 new
 
-file.rename(
-            from = old, 
-            to = new)
+## do not run
+  if (FALSE) {
+  #file.rename(
+              from = old,
+              to = new)
+  }
 
 ```
 

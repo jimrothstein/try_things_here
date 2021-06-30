@@ -2,7 +2,6 @@
 	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
 	 
 --- 
-# Spaces, no Tabs
 title: Template for .Rmd 
 date: "`r paste('last updated', 
     format(lubridate::now(), '%H:%M, %d %B %Y'))`"
@@ -13,6 +12,7 @@ toc: TRUE
 toc_depth:  1 
 fontsize: 12pt 
 geometry: margin=0.5in,top=0.25in 
+TAGS:   S3, vctrs::
 ---
 
 ## REF:  S3 vignette from vctrs:: pkg
@@ -26,54 +26,78 @@ library(jimTools)
 library(vctrs)
 ``` 
 
-### generic, methods for S3
-```{r , S3_methods}
+### constructor for vctrs_percent class
 
-# methods of generic function
-head(methods(print),  n = 9L)
-print
-
-head(seq)
-
-# print code
-getS3method(f = "print", class="aov")
-getS3method(f = "print", class="warnings")
-getS3method(f = "print", "default")
-# sameas
-print.warnings
-class(print.warnings)
-```
-
-
-constructor for vctrs_percent class
 ```{r begin}
 new_percent  <- function(x = double()){
   vec_assert(x, double())
   new_vctr(x, class="vctrs_percent")
 }
 new_percent()
+new_percent("a")
+
+
+  ## examine constructor
+  class(new_percent)
+  attributes(new_percent)
+  inherits(new_percent, "new_vctr")
+  sloop::ftype(new_percent)
+  # [1] "function"
+  methods(new_vctr)
+  methods(new_percent)
+```
+### create instance 
+```{r instance}
 
 values  <- c(seq(0,1, length.out=4), NA)
-typeof(values) #double
 
 x  <- new_percent(values) # done!
-str(x)
-attributes(x)
 
+
+  ## probe the instance
+    is.object(x)
+    str(x)
+    attributes(x)
+    sloop::otype(x)
+    sloop::ftype(x)
+
+
+sloop::s3_dispatch(new_percent(values))
 
 ```
-helper, easier for user
+
+
+### helper, easier for user
 ```{r helper}
 percent  <- function(x = double()){
   x  <- vec_cast(x, double())
   new_percent(x)
 }
 
-percent()
-percent(1:5)  # converts int[]
+## probe the helper
+  sloop::s3_dispatch(percent)
+  methods(percent)
+  ftype(percent)
 
-x  <- percent( c(seq(0,1,length.out=4),NA) )
-x
+## instance
+    percent()
+    percent(1:5)  # converts int[]
+
+    x  <- percent( c(seq(0,1,length.out=4),NA) )
+    x
+
+
+
+## probe the instance
+    attributes(x)
+    class(x)
+    inherits(x, "vctrs_vctr")
+    [1] TRUE
+    inherits(x, "vctrs_percent")
+    sloop::otype(x)
+
+    head(methods(vec_cast))
+    sloop::s3_dispatch(percent(1:5))
 ```
 
 is_percent, to check
@@ -116,18 +140,9 @@ format.vctrs_percent(rnorm(10))
 # x (from above)
 format.vctrs_percent(x)
 
-
 ```
 
-***
-
-```{r knit_exit()} 
-knitr::knit_exit() 
-```
-
-/newpage
-
-```{r render, eval=FALSE	} 
+```{r render, eval=FALSE, include=F	} 
 file <- "" 
 file  <- basename(file) 
 dir <-"rmd"

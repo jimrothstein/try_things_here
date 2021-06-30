@@ -9,16 +9,13 @@ output:
 editor_options:
   chunk_output_type: console
 ---
+Ref: https://fs.r-lib.org/index.html
 
- =====================
-kable examples, including some latex
-=====================
-*  For regex, see 0032
-Using regex, stringr to gather knitr chuncks
-Neatly rename the chunks!
 
+#### Code to print files in r_try_things_here/
+#### special one time only - print directory
 ```{r include=FALSE }
-knitr::opts_chunk$set(echo = TRUE, comment = "")
+knitr::opts_chunk$set(echo = TRUE, comment="")
 library(here)
 library(fs)
 library(lubridate)
@@ -26,6 +23,7 @@ library(magrittr)
 library(tibble)
 library(dplyr)
 ```
+
 
 print current dir, clean up time
 ```{r}
@@ -36,7 +34,7 @@ knitr::opts_chunk$set(echo= TRUE, include= TRUE)
 
 t <- as_tibble(dir_info()) %>% 
   mutate(modification_time = lubridate::as_date(modification_time)) %>% 
-  select(path, size, modification_time )
+	select(path, size, modification_time )
 print(t, n=500)
 ```
 
@@ -51,31 +49,39 @@ t <- as_tibble( fs::dir_info(here("rmd"))) %>%
 t
 ```
 
+propose new file name, concatinate a prefix
+```{r new_file_name}
 
-kable
-```{r example}
-library(kableExtra)
+prefix = "0"
+t  <- t %>% mutate(
+  new_path = stringr::str_c(prefix, path)) %>% 
+  select(path, new_path)
+t
+```
 
-dt <- mtcars[1:5, 1:6]
-kable(dt, "latex")
-
-# with booktabs ?)
-kable(dt, "latex", booktabs = T)
-
-kable(dt, "latex", booktabs = T) %>% 
-kable_styling(latex_options = "striped")
-
-# double space - nope
-kable(mtcars[1:8, 1:4], "latex", booktabs = T, linesep = "\n") %>%
-kable_styling(latex_options = "striped", stripe_index = c(1,2, 5:6))
+Create and move a file
+```{r simple_write}
+fs::file_create(here("rmd","junk.txt"))
+fs::file_move(here("rmd","junk.txt"), here("rmd", "this_is_junk.ascii"))
 
 ```
 
-```{r include=FALSE}
+```{r}
+old_file  <- t$path
+new_file   <- t$new_path
+new_file
+the_dir  <- "tmp"
+fs::file_move(here(the_dir,old_file), here(the_dir,new_file))
 
-kable(cbind(dt), "latex", booktabs = T) %>%
-kable_styling(latex_options = c("striped", "scale_down"))
+# undo!
+fs::file_move(here(the_dir,new_file), here(the_dir,old_file))
+
+
+
 ```
+
+
+
 
 #### file listing
 ```{r include=FALSE}
@@ -94,7 +100,7 @@ kable_styling(latex_options = c("striped", "scale_down"))
 
 ```
 
-add latex to kable?
+
 ```{r include=FALSE}
 # print(t, n=500)
 
@@ -108,6 +114,7 @@ add latex to kable?
 # customH <-  c("", "", "\\")
 
 # customH <- if (booktabs) c('', '', '', '', '\\addlinespace') else '\\hline'
+
 
 # ------- Working ------
 customH <-  c("", "", c("\\hline","\\addlinespace"))

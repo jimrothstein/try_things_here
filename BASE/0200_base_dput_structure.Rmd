@@ -18,6 +18,8 @@ geometry: margin=0.5in,top=0.25in
 ###  For text (non-binary) storage:  use dput/dget or dump/source (muliple
 obj)
   *  REF:  see Peng Chapter 7
+  *  dput:  text, preseres metadata (like class=)
+  *  dump: for multipe objects/source()
 
 ```{r library, include=FALSE		}
 library(jimTools) 

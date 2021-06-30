@@ -1,0 +1,162 @@
+
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+	 
+--- 
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  4 
+fontsize: 11pt 
+geometry: margin=0.4in,top=0.25in 
+TAGS:   S3
+---
+
+## S3 class: basic
+  *  REF:  [Adv-R Ch 13](https://adv-r.hadley.nz/s3.html)  
+  *  [my code](~/code/try_things_here/ADVANCED_R)
+  *   [but version 1, more concise intro](http://adv-r.had.co.nz/OO-essentials.html)
+  *
+
+## Outline:
+  *   By adding class attribute to base types can create objects behave
+    differently under generic functions (such as when printed).
+  *  S3 is relatively simple OO, but ALSO allows easy errors; hence structure
+    Hadley seeks to impose.
+  * constructor (not called directly for this reason), validator (to check) and
+    friendly helper to actually create object (safely).
+  * need generic function (as as print) to create variants or methods.  
+  * which variant is determined by dispatch | UseMethod()
+  * helpers - numerous to determine dim, class, names, attributes.
+  * sloop::  to help see under the hood
+
+
+## Definitions:
+  *  generic function
+  *  constructor
+  *  objects must be one of classes:  S3, S4, Reference Classes (another OO)
+  *  if is.object is F, then  base 
+
+##  Packages
+  *  sloop::
+  *  base::
+  *  ?ReferenceClasses 
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  
+											comment="      ##",  
+											error=TRUE, 
+											collapse=TRUE) 
+library(jimTools) 
+library(sloop)
+``` 
+###  Simple example, to start:
+```{r adv_r_version1}
+## Use of `UseMethod` makes `f` generic: 
+  f  <- function(x) UseMethod("f")
+
+
+## give f methods, ie class of x determines f behavior.
+  f.a  <- function(x) "Class a"
+  f.z  <- function(x) "Class b"
+
+
+## create some S3 objects (use list() as base type)
+## Use of `class` makes S3 objects
+  a  <- structure(list(), class="a")
+  z  <- structure(list(), class="z")
+
+
+## call f with different objects, behavior depends on class.
+  f(x = a)  # f.a() runs b/c "a" is class a
+  f(x = z)
+```
+
+
+## Tools to probe S3 clases
+
+### generic, methods for S3
+  *  methods() | utils::getS3method | class
+```{r , S3_methods}
+
+## from example: 
+  methods(f)
+
+
+## Other examples of methods for generic function
+  print  # UseMethod chooses
+  head(methods(print),  n = 9L)
+
+## another generic
+  head(seq)
+  methods(seq)
+  methods(mean)
+```
+### utils::getS3method to see source
+```{r, getS3method}
+args(getS3method)
+?getS3method
+
+
+## example function
+  utils::getS3method(f = "f", class = "a")
+
+## other functions
+  utils::getS3method(f = "print", class="aov")
+  getS3method(f = "print", class="warnings")
+  getS3method(f = "print", "default")
+  getS3method("print")
+
+## sameas
+  f.a
+  print.warnings
+```
+
+## probe the object
+typeof
+    is.object(x)
+    str(x)
+    class(x)
+    attributes(x)
+    sloop::otype(x)
+    
+
+```{r probe_object}
+probe_object  <- function(x) {
+cat(is.object(a))
+sprint("is.object %s", s=is.object(a))
+glue
+
+
+typeof(a)
+str(a)
+attributes(a)
+sloop::otype(a)
+}
+## 
+
+is.object(a)
+
+typeof(a)
+str(a)
+attributes(a)
+sloop::otype(a)
+```
+
+## probe the constructor or methods
+    sloop::ftype(x)
+
+
+```{r render, eval=FALSE	} 
+{
+file <- "" 
+file  <- basename(file) 
+dir <-"rmd"
+}
+
+jimTools::ren_pdf(file,dir)
+jimTools::ren_github(file, dir)
+```

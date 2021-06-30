@@ -28,8 +28,7 @@ library(lintr)
 
 
 
-
-```{r begin}
+```{r begin, attr.source='.numberLines'}
 x  <- 1 + 1
 x
 

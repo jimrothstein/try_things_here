@@ -94,6 +94,9 @@ Ax
 
 A  <- matrix(c(1,0,0,1), nrow=2)
 A
+class(A)
+dput(A)
+attributes(A)
 
 # point
 x  <- c(1,0)
