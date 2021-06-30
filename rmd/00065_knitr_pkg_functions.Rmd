@@ -17,15 +17,11 @@ output:
 ---
 
 ## knitr::   functions
-REF: https://cran.r-project.org/web//packages/knitr/knitr.pdf
 
-<!-- 
-set cul   "cursorline
-cc=+1			"colorcolumn is 1 more than tw
 
-vim: to format all urls for md
-s/https.*/[&]()/g
--->
+knitr functions (pdf): https://cran.r-project.org/web//packages/knitr/knitr.pdf
+knitr home:  https://yihui.org/knitr/ and various sections
+source code:  https://github.com/yihui/knitr/tree/master/R
 
 ```{r setup, include=FALSE		}
 knitr::opts_chunk$set(echo = TRUE,
@@ -36,6 +32,14 @@ library(knitr)
 ```
 
 
+### knitr::current_input()
+```{r current_input }
+this_file  <- knitr::current_input() 
+print(this_file)
+
+this_file  <- knitr::current_input(dir = TRUE)
+print(this_file)
+``` 
 
 ```{r TAGS, eval=TRUE, echo=FALSE}
 this_file  <- knitr::current_input()
@@ -45,23 +49,50 @@ print(paste0("This file: ", this_file) )
 print("TAGS: ")
 
 TAGS
-
 ```
 
-## knitr::current_input()
-```{r current_input }
-this_file  <- knitr::current_input() 
-print(this_file)
+### save TAGS
+```{r save_TAGS}
+knitr::knit_patterns$set(tags_label = TAGS)
+```
 
-this_file  <- knitr::current_input(dir = TRUE)
-print(this_file)
-``` 
 
+### retrieve TAGS
+```{r}
+knitr::knit_patterns$get(label == "tags_label")
+```
 
 ## all_labels()
 ```{r begin}
 print(knitr::all_labels())
 ```
+
+### regex patterns to parse chunks
+```{r knitr_functions}
+knitr::knit_patterns$get()
+knitr::knit_patterns$set(my.name="jim")
+knitr::knit_patterns$get()
+```
+
+
+
+### find labels which match criteria
+```{r get_TAGS }
+t  <- knitr::all_labels(label == "TAGS")
+t
+```
+
+### Return all possible patterns
+```{r patterns, include=FALSE}
+all_patterns
+```
+
+### Return R code for specified chunk `label`
+```{r get_code}
+label  <- "TAGS"
+knitr::knit_code$get(label)
+```
+
 
 ## inline_expr("1+1")
 ```{r incline_expr}
@@ -71,11 +102,19 @@ inline_expr("1+1", "md")
 inline_expr("1+1")  # knitr guesses from context
 ```
 
-```{r pattern }
 
+### knit_engines
+```{r knit_engines}
+names(knitr::knit_engines$get())
 ```
 
-***
+### knit_expand/embed R code
+```{r knit_expand}
+r  <- 2
+knitr::knit_expand(text = 'Area of circle radius {{r}} is {{pi*r^2}}')
+```
+
+
 
 ```{r knit_exit(), include = FALSE  , eval=FALSE } 
 # knitr::knit_exit()
@@ -83,13 +122,6 @@ inline_expr("1+1")  # knitr guesses from context
 
 \newpage
 
-<!--
-```{r knitr_functions}
-knitr::knit_patterns$get()
-knitr::knit_patterns$set(my.name="jim")
-knitr::knit_patterns$get()
-```
--->
 
 
 ```{r render, eval=FALSE	} 
@@ -100,11 +132,14 @@ knitr::knit_patterns$get()
 
 
 file  <- here("rmd", "00065_knitr_pkg_functions.Rmd")
-
 file
-# in general, pdf will look nicer
 rmarkdown::render(file,
                   #output_format = "pdf_document",
                   output_format = "html_document",
-                  output_file = "~/Downloads/print_and_delete/out")
+                  output_file = "out")
 ```
+
+
+
+
+
