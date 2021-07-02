@@ -1,0 +1,181 @@
+
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+        mathjax: default
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+fontsize: 11pt   
+geometry: margin=0.4in,top=0.25in   
+---
+
+Do anything you want here
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = T   ) # T easier to read
+```
+
+### Symbol
+ *  Lisp calls it symbol
+ *  S calls it name
+```{r symbol}
+x  <- 5
+s  <- as.symbol(x)
+# `5`
+typeof(s)
+# [1] "symbol"
+eval(s) #error
+
+y  <- 5
+name  <- as.name(y)
+# `5`
+typeof(name)
+# [1] "symbol"
+eval(name)  #error
+
+
+identical(s, name)
+# [1] TRUE
+
+
+z  <- 5
+name  <- quote(z)
+# z
+typeof(name)
+# [1] "symbol"
+
+eval(name)
+# [1] 5
+
+
+```
+
+
+### print line numbers (pdf only?)
+```{r, attr.source='.numberLines'}
+if (TRUE) {
+  x <- 1:10
+  x + 1
+}
+```
+
+```{r library 		}
+# print all labels
+file  <- knitr::current_input() 
+print(knitr::all_labels())
+library(jimTools)
+``` 
+
+```{r style, eval=F, include=F}
+# REF  style.tidyverse.org
+
+# args MUST line up
+sample_function(
+                a = xxxx,
+                b = xxxx,
+                c = xxxx
+                )
+
+# OR
+verylongfunctions_indent_like_this(
+  a = xxxx,
+  b = xxx,
+  )
+
+```
+
+```{r knitr::knit_exit(), include = FALSE  , eval=FALSE } 
+# knitr::knit_exit()
+```
+
+\newpage
+
+
+```{r skeleton, include=F, eval=F}
+file="/home/jim/.config/nvim/templates/skeleton.Rmd"
+```
+
+```{r render, eval=FALSE, include=FALSE 	} 
+#  [For technical notes]: (~/docs/technical_notes/001_render_output.md)
+
+# from ~/.Renviron
+output_dir  <- Sys.getenv("OUTPUT_DIR")
+output_dir
+# TODO:  file is found when knitr runs (see above)
+
+# file must be of form:
+# dir/name_of_this_file    where dir is relative to project root
+
+## In doubt?   USE  knitr and do not waste time!
+
+## Want to embed Latex, stick to pdf output (html?   never sure!)
+
+# NOTE:   .tex only works with PDF
+# NOTE:    tex will NOT work with html
+# NOTE:    md_document is considered HTML, and latex commands may fail.
+# in general, pdf will look nicer
+
+
+## GOOD PRACTICE:
+#  Refer to files relative to project root, which should remain as working dir.
+#  So why using `here` ?
+
+{
+file  <- "" 
+file  <- basename(file)
+file  <- here("rmd", file)
+file
+}
+output_dir  <- Sys.getenv("OUTPUT_DIR")
+output_dir
+
+
+## Want github to display nicely rendered output?
+##  *  include md_format
+#   *  include output_dir = "out"
+#   *  if .gitignore balks,  then add !out/**   to close .github
+
+rmarkdown::render(file,
+    output_format = "pdf_document",
+    #output_format = "html_document",
+    #output_format=c("html_document", "md_document"),
+    output_dir = output_dir)
+    #output_file = "out")
+
+# ==========================================
+#  Example 1:  pdf| same name as source file | in wd |
+# ==========================================
+
+rmarkdown::render(file,
+    output_format = "pdf_document")
+
+# ============================================================
+#  Example 2:  pdf | same name as source file | in pdf/|
+# ============================================================
+# pdf/  will be created
+
+if (knitr::is_latex_output())  (
+rmarkdown::render(file
+    output_format = c("pdf_document") ,
+    output_dir = "pdf")
+)
+
+if (knitr::is_html_output()) (
+
+rmarkdown::render(file,
+    output_format = c("html_document", "md_document"), 
+    output_dir = "html")
+
+)
+```
