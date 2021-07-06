@@ -13,3 +13,23 @@ root$find_file()
 root$find_file("DESCRIPTION")
 root$find_file("09009_namespace_example.Rmd")
 ```
+xfun::  to write YAML:: (almost)
+```{r}
+library(xfun)
+f = tempfile()
+f
+as.character(f)
+
+xfun::write_utf8(paste0("title:  ",as.character(f)), f) 
+xfun::read_utf8(f)
+
+xfun::write_utf8("Hello World", f)
+
+
+# x is content of file
+xfun::process_file(f, function(x) 
+                   gsub("World", "woRld", x))
+
+xfun::read_utf8(f)  # see if it has been updatedfile.remove(f)
+
+```

@@ -127,7 +127,7 @@ unclass(b)
 ```
 
 ### using vector()
-  *  `mode`  think base class or list
+  *  `mode` (older, pre-OO) better to think mode is **base class** or list
   *  https://rdrr.io/r/base/vector.html
 ```{r vector}
 vector(mode="logical", length=0)

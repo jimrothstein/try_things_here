@@ -15,7 +15,7 @@ output:
     toc_depth:  2   
 fontsize: 11pt   
 geometry: margin=0.4in,top=0.25in   
-TAGS:  sprintf, glue, paste0, vectorize
+TAGS:  sprintf, glue, paste0, vectorize, sQuote, eval
 ---
 
 
@@ -115,6 +115,26 @@ glue("x = {x}\n")
 ## Format prefix with zeros   (00001_file_name)
   prefix  <- sprintf("%04i", 1:length(l))
   glue("{prefix}_{l}")
+```
+
+#### glue and sQuote
+```{r sQuote}
+x  <- 55
+
+## Compare
+  glue("value of {sQuote(quote(x))} is {x}")
+  # value of ‘x’ is 55
+
+  glue("value of {quote(x)} is {x}")
+  # value of x is 55
+
+# NOTE:
+sQuote(x)
+# [1] "‘55’"
+
+quote(x) # supress eval
+# x
+
 ```
 
 

@@ -28,8 +28,8 @@ TAGS:   S3
     Hadley seeks to impose.
   * constructor (not called directly for this reason), validator (to check) and
     friendly helper to actually create object (safely).
-  * need generic function (as as print) to create variants or methods.  
-  * which variant is determined by dispatch | UseMethod()
+  * need generic function (as print) to create variants or methods.  
+  * which variant applies is determined by dispatch | UseMethod()
   * helpers - numerous to determine dim, class, names, attributes.
   * sloop::  to help see under the hood
 
@@ -76,8 +76,9 @@ library(sloop)
 ```
 
 
-## Tools to probe S3 clases
+## Tools to probe S3 clases and related functions
 
+## Given a S3 generic, get info
 ### generic, methods for S3
   *  methods() | utils::getS3method | class
 ```{r , S3_methods}
@@ -98,6 +99,7 @@ library(sloop)
 ### utils::getS3method to see source
 ```{r, getS3method}
 args(getS3method)
+body(getS3method)
 ?getS3method
 
 
