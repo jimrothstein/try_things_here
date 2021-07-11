@@ -1,0 +1,109 @@
+
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+        mathjax: default
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+fontsize: 11pt   
+geometry: margin=0.4in,top=0.25in   
+---
+
+### Join 2 data.frames
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = T   ) # T easier to read
+```
+
+
+### print line numbers (pdf only?)
+```{r, attr.source='.numberLines'}
+if (TRUE) {
+  x <- 1:10
+  x + 1
+}
+```
+
+```{r library 		}
+# print all labels
+file  <- knitr::current_input() 
+print(knitr::all_labels())
+library(jimTools)
+``` 
+```{r join}
+
+a <- data.frame(
+  one = 1:5,
+  two_a = 10:14
+)
+
+b <- data.frame(
+  one = 3:5,
+  two_b = c("a", "b", NA)
+)
+
+left_join(a, b) %>%
+  # but ONLY calculate this for one %in% b
+  mutate(three = two_a + 2)
+
+Desired output:
+
+c  <- data.frame(
+  one = 1:5,
+  two_a = 10:14,
+  two_b = c(NA, NA, "a", "b", NA),
+  # this column "knows" the last three rows have data frame b info
+  three = c(NA, NA, 14, 15, 16)
+)
+a; b; c
+
+```
+
+
+### [REF](https://stackoverflow.com/questions/21435339/data-table-vs-dplyr-can-one-do-something-well-the-other-cant-or-does-poorly/27718317#27718317)
+```{r DT}
+
+library(data.table)
+
+dt.a  <- data.table(a)
+dt.b  <- data.table(b)
+
+
+# best to key 1st
+# setkey(DT1, x, y)
+
+ # 1. normal join
+dt.a[dt.b, ,on="one"]  ## data.table syntax
+#left_join(dt.b, dt.a) ## dplyr syntax
+
+
+ # 2. select columns while join    
+ DT1[DT2, .(z, i.mul)]
+# left_join(select(DT2, x, y, mul), select(DT1, x, y, z))
+
+ # 3. aggregate while join
+ DT1[DT2, .(sum(z) * i.mul), by = .EACHI]
+ DF1 %>% group_by(x, y) %>% summarise(z = sum(z)) %>% 
+     inner_join(DF2) %>% mutate(z = z*mul) %>% select(-mul)
+
+ # 4. update while join
+ DT1[DT2, z := cumsum(z) * i.mul, by = .EACHI]
+ ??
+
+ # 5. rolling join
+ DT1[DT2, roll = -Inf]
+ ??
+
+```
+

@@ -12,13 +12,17 @@ params:
 #    toc: true
 #  	toc_float: true
 #    css: styles.css
+TAGS:  rlang, env,
 ---
+
+
+### Chapter 6.5
 
 <!-- 6.5 Lazy -->
 <!-- promises -->
 
 
-<!-- To Render {{{ -->
+<!-- To Render   -->
 ```{r render, eval=FALSE, echo=FALSE	, include=FALSE		}
 library(here)
 ren  <- function() {
@@ -39,12 +43,11 @@ ren2()
 ```{r one, include=FALSE} 
 knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE, collapse=TRUE)
 library(magrittr)
-library(here) # }}}
 
 ```
 
 
-####useful rlang functions {{{
+####useful rlang functions  
 ```{r useful, eval=TRUE	 }
 e  <- current_env()
 
@@ -59,21 +62,21 @@ env_length(e)
 env_inherits(e, env_parent()) # T
 env_inherits(e, base_env()) # T
 caller_env()
-# }}}
+# 
 ```
 
-### 6.5 Lazy Evaluation# {{{
+### 6.5 Lazy Evaluation#  
 ```{r 6.5_text, eval=FALSE	}
 In R, objects bind to a `symbol`.
 Humans like names.   So we assign a name like `f`.
 
 Promises, **are not R code**,  so can not be maniuplated with R code.  
 Chapter 20:  convert promises to `quosures` (ie objects)
-# }}}
+# 
 ```
 
 6.5.1 Promises 
-{{{
+ 
 ```{r h_fct, eval=TRUE }
 h <- function(x) {
 	# 	printing ...
@@ -88,9 +91,9 @@ h <- function(x) {
 	print(e$evaled)
 }
 h(2 + 1)
-# }}}
+# 
 ```
-####simplest promise? {{{
+####simplest promise?  
 ```{r simplest}
 y  <- 10
 h000  <- function(x){
@@ -98,11 +101,10 @@ h000  <- function(x){
 	print(rlang::env_get(rlang::current_env(),"y"))
 	print(rlang::env_get(rlang::caller_env(),"y"))
 }
-h000() # note:  `x is <missing>`, user did not provide}}}
+h000() # note:  `x is <missing>`, user did not provide
 ```
 
-***
-{{{
+### order printed 
 ```{r two} 
 # Why does rlang::env_print() appear first?
 y <- 10
@@ -116,11 +118,10 @@ h02 <- function(x) {
 h02(y)
 h02(y+1)
 
-# }}}
+# 
 
 ```
 
-#### {{{
 ````	
 3rd criteria for promise is a value that:
 is computed, just once, cached, and in its own env.
@@ -160,7 +161,7 @@ h03B  <- function(x) {
 # why twice?
 h03B(20)
 
-# }}}
+# 
 
 ```
 <!-- BEGIN -->
@@ -197,7 +198,7 @@ missing(x)
 ```
 
 ````
-# {{{ #### 6.5.3 missing
+#   #### 6.5.3 missing
 Who supplied x value?  inside function or outside?
 ````
 
@@ -233,7 +234,7 @@ args(sample)
 
 5 %||% NULL
 NULL %||% 5
-# }}}
+#  
 
 ```
 <!-- BEGIN HERE -->
@@ -349,4 +350,3 @@ f1(x <- 5)
 ```
 
 
-\pagebreak
