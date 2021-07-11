@@ -1,4 +1,3 @@
-
 ---
 title: "`r knitr::current_input()`"
 date: "`r paste('last updated', 
@@ -92,7 +91,6 @@ paste0("x = ", x)
 paste0("y = ", y)
 
 glue("x = {x}\n")
-
 ```
 
 ### Glue can also hold r expressions/functions

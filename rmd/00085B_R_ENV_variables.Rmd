@@ -12,18 +12,17 @@ output:
     toc_depth:  2   
 geometry: "left=2cm,right=2cm,top=2cm,bottom=2cm"
 fontsize: 12pt
+TAGS:  Sys.getenv(),options() ,R environment variable, 
 ---
 
  includes:  021_efficient_coding	
 
+### PURPOSE:  understand how R uses options() and Sys.getenv()
+###  Uses of Sys.getenv() and options()
 ```{r setup}
 knitr::opts_chunk$set(echo = TRUE, 
                       comment = "        ..##")
 
-       #               eval = FALSE,
-       #               include = FALSE)
-
-knitr::current_input()  # NUL
 
 library(tibble)
 library(tidyr)
@@ -33,29 +32,28 @@ library(magrittr)
 library(xfun)
 ```
 
-
-
-## ENV variables
+## R environment variables
 *  See: https://stat.ethz.ch/R-manual/R-devel/library/base/html/EnvVar.html
 *  get/set , listing, searching for 
 
+
+### examine Sys.getenv()
 ```{r main, eval=TRUE, inlcude=TRUE}
-# /usr/lib/R
-(r_home <-R.home(component="home"))
-Sys.getenv("R_HOME") 			# /usr/lib/R ; where R installed
-Sys.getenv("R_LIBS_USER") # ~R/x86 .../4.0
-Sys.getenv("R_HIST_SIZE")
-Sys.getenv("R_BROWSER")   # croutonurlhandler
+
+l  <- c("R_HOME", "R_LIBS_USER", "R_HIST_SIZE", "R_BROWSER")
+sapply(l, Sys.getenv)
 
 .libPaths()
 
-# yihui's improved
-xfun::session_info()
 
-# too lengthy
-if  (FALSE) Sys.getenv()		
 
-length(Sys.getenv())  # >100
+# examine character vector
+x  <- Sys.getenv()
+
+library(data.table)
+dt  <- data.table(x)
+dt[1:5,]
+
 
 ```
 
@@ -122,6 +120,24 @@ if (FALSE)
 knitr::knit_exit()
 ```
 
+### Session_info
+```{r session_info}
+
+# yihui's improved
+xfun::session_info()
+
+# note:  results is S3 object
+(z  <- utils::sessionInfo())
+sloop::otype(z)
+# methods that handle this object?
+sloop::s3_methods_class(z)
+
+# stack is generic function for object z
+
+
+
+session_info()
+```
 
 TODO
 ##  options()

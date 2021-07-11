@@ -52,7 +52,7 @@ str(l)
 
 ### match.call , in real life
   *  use case:
-  *  do.call(what, args), where what is function, args is list
+  *  do.call(what, args), where `what` is function, args is list
   *  here:  match.call()[-1] puts args in a list
 
 ```{r begin}
@@ -67,8 +67,9 @@ f(1, 2, 3)
   *   limit possible input values
 
 ```{r match.arg}
-f  <- function(type=c("a", "b"))
-  type  <- match.arg(type)
+
+f  <- function(type=c("a", "b")){
+  type  <- match.arg(type)}
 
 (f("b"))  # chr[]   "b"
 (f("c")) #Error, not "a" or "b"
