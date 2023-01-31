@@ -1,0 +1,77 @@
+---
+title: "Identify GENERICS and METHODS -- Issue 246"
+date:  \today 
+format:
+  pdf: 
+    include-in-header: 
+      text: |
+        \usepackage[top=.5in, bottom=.5in, left=.5in, right=.5in]{geometry}
+        \usepackage{amsmath,amssymb,amstext,amsfonts}
+        \usepackage{lipsum}
+---
+
+
+To run:	quarto render %	; zathura  
+
+```{r get_started}
+install.packages("easystats")
+
+easystats::install_latest()
+```
+
+
+```{r}
+library(performance)
+library(parameters)
+library(broom)
+library(glue)
+
+
+# 346	
+broom_glance <- ls(getNamespace("broom"))
+
+#	139 glance.<classes>  methods
+broom_glance <- broom_glance[grepl("^glance", broom_glance)]
+
+#	classes only, 139
+broom_supported <- gsub("^glance.", "", broom_glance)
+
+
+# 923
+easystats_glance <- ls(getNamespace("performance"))
+
+# 159 model_parameters.<classes>
+easystats_glance <- easystats_glance[grepl("^model_performance",
+easystats_glance)]
+
+# 159 classes
+easystats_supported <- gsub("^model_performance.", "", easystats_glance)
+
+# 97 classes, exaample.  broom has `zoo` class, but easystats does not
+broom_supported[!broom_supported %in% easystats_supported]
+
+#	SAME
+     "%w/o%" <- function(x, y) x[!x %in% y] #--  x without y
+
+		 broom_supported %w/o% easystats_supported
+
+```
+
+
+Get all classes in `broom` but not yet in `performance`
+```{r}
+
+x  <- 	 broom_supported %w/o% easystats_supported
+
+```
+
+Generate code to cut/paste into roxygen2 for documentation.
+```{r assemble}
+
+cat(vapply(x, 
+	function(x) { paste0("#' @export\n", "model_performance.",x, "  <- model_performance.default\n\n")},
+	  character(length = 1), 
+		USE.NAMES=F)
+
+)
+```

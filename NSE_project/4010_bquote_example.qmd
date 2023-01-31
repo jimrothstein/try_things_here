@@ -1,0 +1,111 @@
+---
+title: "using easystats notes"
+date:  \today 
+pdf-engine: lualatex
+format:
+  pdf: 
+    toc: false
+    toc_depth:  4   
+    number-sections: false
+    colorlinks: true
+    keep_tex:  false
+    include-in-header: 
+      text: |
+        \usepackage[top=.5in, bottom=.5in, left=.5in, right=.5in]{geometry}
+        \usepackage{amsmath,amssymb,amstext,amsfonts}
+        \usepackage{lipsum}
+        \usepackage{setspace}
+#   YAML comment
+#   2nd way, use file
+#format:
+#  pdf: 
+#    include-in-header: 
+#        -   geometry.tex
+---
+
+\section{To run:}
+
+- quarto preview <file> --to pdf    # (opens in a viewer)
+- quarto render %	; zathura         # not quite right cli
+
+- math mode latex,  seems to work if *outside* R chunk
+$$
+x^2
+$$
+
+
+#-----------------------------
+##  R allows string or symbol
+x = 1
+"y" = 1
+y       # 1
+
+
+identical(x,y) # TRUE
+identical(x, "y") # FALSE
+
+#-----------------------------
+##  quote, bquote do NOT return strings or expressions.
+##  these are unevaluated expressions, is.call TRUE
+xyz <- bquote((x + y + z))
+xyz
+is.expression(xyz)
+is.character(xyz)
+typeof(xyz)
+is.call(xyz)
+bquote(-.(xyz) / 2)    ## TRUE
+
+(abc = quote((x+y+z)))
+is.expression(abc)
+is.character(abc)
+typeof(abc)
+is.call(abc)            ##  TURE
+
+#-----------------------------
+##  FAILS
+x = "jim"
+bquote(my names is .(x))
+#-----------------------------
+# bquote:   takes an R expression, evaluates .(), returns expression
+(unevaluated)
+rm(x)
+x = 1
+
+bquote(1 + .(x))  # 1 + 1
+quote(1 + .(x))   # 1 + .(x) 
+bquote(sin(.(x))) # sin(1)
+
+
+
+#-----------------------------
+
+(angle  = 1:10)
+(variable = as.name("angle"))
+
+is.character(variable)  # FALSE
+
+is.name(variable)   # TRUE
+is.symbol(variable) # TRUE
+typeof(variable)    # TRUE
+##
+expr = quote(x+y)
+is.expression(expr) # FALSE
+is.call(expr)      # TRUE
+str(expr)
+
+#-----------------------------
+##  quasiquotation:  insert .... into an expr template; return expression
+pdf()
+
+
+plot(x = 1:10, y=91:100)
+
+bquote(x= .(variable))
+bquote(
+  
+  plot(x = .(variable), 
+       y = sin(.(variable)))
+  
+  )
+
+dev.off()

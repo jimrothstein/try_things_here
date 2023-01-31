@@ -1,0 +1,112 @@
+
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+fontsize: 11pt   
+geometry: margin=0.5in,top=0.25in   
+---
+https://rdatatable.gitlab.io/data.table/articles/datatable-sd-usage.html
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = FALSE   ) # easier to read
+```
+
+
+```{r library, include=FALSE		}
+file  <- knitr::current_input() 
+library(jimTools)
+library(data.table)
+library(Lahman)
+``` 
+
+
+```{r begin}
+
+
+data('Teams')
+dt  <- setDT(Teams)
+dt
+
+data('Pitching')
+setDT(Pitching)
+Pitching
+
+# All the same
+identical(Pitching, Pitching[ , .SD])
+identical(Pitching[, .SD], Pitching[])
+
+```
+
+```{r column_subset}
+# explicit restrict columns for use in .SD
+Pitching[ , .SD, .SDcols = c('W', 'L', 'G')]
+
+# same
+Pitching[ ,  c('W', 'L', 'G')]
+```
+
+### Column conversions:  sapply 
+*  Character to factor
+```{r}
+# teamIDBR: Team ID used by Baseball Reference website
+# teamIDlahman45: Team ID used in Lahman database version 4.5
+# teamIDretro: Team ID used by Retrosheet
+f  <- c('teamIDBR', 'teamIDlahman45', 'teamIDretro')
+Teams[, .SD, .SDcols= f]
+
+f[1]
+# all character?
+Teams[, sapply('teamIDBR', is.character)]
+Teams[, sapply(f, is.character)]
+Teams
+
+
+# easier!
+# Is sappy working on ALL 3 columns in f? YES How?
+# ANS:   see note in vingette on this.
+Teams[ , sapply(.SD, is.character), .SDcols = f]
+
+
+```
+
+
+***
+
+```{r knit_exit(), include = FALSE  , eval=FALSE } 
+# knitr::knit_exit()
+```
+
+/newpage
+
+
+```{r render, eval=FALSE, include=FALSE 	} 
+# TODO:  file is found when knitr runs (see above)
+
+# file must be of form:
+# dir/name_of_this_file    where dir is relative to project root
+
+# NOTE:   .tex only works with PDF
+# NOTE:    tex will NOT work with html
+# in general, pdf will look nicer
+
+file  <-  "/home/jim/code/try_things_here/rmd/0088_base_package_commands.Rmd"
+
+rmarkdown::render(file,
+                  #output_format = "pdf_document",
+                  output_format = "html_document",
+                  output_file = "~/Downloads/print_and_delete/out")
+```

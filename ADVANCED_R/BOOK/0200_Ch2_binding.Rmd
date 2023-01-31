@@ -1,0 +1,283 @@
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+        mathjax: default
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+fontsize: 11pt   
+geometry: margin=0.4in,top=0.25in   
+TAGS:  modify-in-place,
+---
+
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = FALSE   ) # easier to read
+```
+
+
+```{r library 		}
+# print all labels
+file  <- knitr::current_input() 
+print(knitr::all_labels())
+library(jimTools)
+library(lobstr)
+``` 
+### 002_binding.R
+
+```{r Ch2}
+
+verify  <- function(obj){
+# ==========================
+list(obj_size(obj),
+obj_addr(obj),
+mem_used(),
+ref(obj)
+) }
+
+# examples of typeof and class
+# ==============================
+quote(x)
+
+g  <- function(x) { paste(quote(x)," = ", typeof(x)) }
+)
+# typeof - examples
+# ===================
+ex  <- list( subset = `[`,`[[`, 
+						cat = `c`,`+`,sum,c(1,2),
+						c(TRUE,FALSE	 ),  function(x) {x+1},  
+						"abcd", e=environment())
+
+
+
+sapply(ex,g ) # returns char[]  # simplified version of lapply
+lapply(ex, typeof)
+lapply(ex,class)
+
+t  <- tibble::tibble(ex = ex, typeof=lapply(ex,typeof)[[]])
+t
+# ===================================
+
+
+# STUDY
+# =======
+# $ alias for [[ - extract elment of list
+# [ is to sub-list
+
+l  <- list(first = "a", "b")
+names(l)
+
+# all return contents ( char[])
+l$first
+l[[1]]
+l[["first"]]
+
+l[[2]]
+
+
+# return sub-list ( char[])
+l[1]
+l["first"]
+l[2]
+
+
+# TEXT
+# ======
+x <- c(1,2,3)
+y  <- x
+
+# not ggod verify(x)
+verify(x)
+verify(y)
+
+# 2.3.2 Functions
+# =================
+f <- function(a) { a }
+verify(f)
+
+x  <- c(1,2,3)
+verify(x)
+N  <- "\n"
+cat(tracemem(x) , N)
+
+z <- f(x)
+verify(z)  # same as x
+identical(x,z)  # TRUE
+identical(verify(x)[1:2],verify(z)[1:2]) # TRUE
+
+reprex( {
+#### 2.3.3 Lists
+# ================
+l1 <- list(1,2,3)
+l2 <- l1
+
+# SAME 
+identical(lobstr::ref(l1),lobstr::ref(l2))
+ref(l1,l2)
+ref(l2)
+
+# ...and indeed refernces are SAME, for example first elment in each
+lobstr::obj_addr(l1[[1]])
+
+# BUT... not so for subsets of list
+# ========================
+s1  <- l1[1]
+s2  <- l2[1]
+identical(s1,s2) # TRUE
+
+identical(lobstr::obj_addr(l1[1]), lobstr::obj_addr(l2[1]))  # FALSE	 
+
+# ...not each subset
+lobstr::obj_addr(l1[1])
+lobstr::obj_addr(l2[1])
+# (OR)
+lobstr::obj_addr(s1)
+lobstr::obj_addr(s2)
+
+# ... confused by this 
+lobstr::ref(l1[1], (l2[1])) } )
+
+# Revised
+# =========
+library(lobstr)
+l1 <- list(1,2,3)
+l2 <- l1
+ref(l1,l2)
+
+s1 <- l1[1]
+s2 <- l2[1]
+ref(s1,s2)
+# =========
+```
+```{r tracemem}
+
+library(pryr)
+x  <- c(1,2)
+pryr::address(x)
+
+# make change
+x[2]  <- 4
+x
+pryr::address(x)  # modify-in-place
+```
+```{r mem2}
+y  <- x
+ref(x)
+z  <- x
+ref(x)
+ref(z)
+
+
+ref(z)
+pryr::address(x)
+pryr::address(y)
+
+y[2]  <- 4
+pryr::address(x)
+pryr::address(y)  # changed and copied
+
+```
+
+
+```{r resume1}
+```
+
+
+# BACK to TEXT
+# ==============
+# Shallow copy:
+l1 <- list(1,2,3)
+l2 <- l1
+verify(l1)
+verify(l2) # SAME
+
+# note CHANGES, afterwards have 6 objects
+l2[[3]] <- 4
+lobstr::ref(l1, l2)
+
+# ====================
+# Example from 2.5.1
+# ====================
+set.seed(2020)
+x  <- data.frame(matrix(runif(5*1e4), ncol=5))
+base::tracemem(x)
+head(x)
+
+lobstr::sxp(x)
+is.list(x) # T
+length(x)  # 5
+str(x)
+x["X1"] # col 1
+is.list(x["X1"]) # T, list of 1
+x["X1"][[1]]  # examine ,  the vector 
+x[1][[1]]  # SAME: contents of list of 1,  the vector 
+
+
+medians  <- vapply(x, median, numeric(1))
+medians
+str(medians)   # named num[]
+is.numeric(medians) # T
+
+# no run
+x[[1]]  # elements of col 1
+x[,1]   # same
+
+x[1]    # no such, error
+
+for (i in seq_along(medians)){
+			 x[[i]]  <- x[[i]] - medians[[i]]
+}
+lobstr::ref(x)
+
+# ==================
+# base::tracemem()
+# ==================
+     a <- 1:10
+     tracemem(a)
+		 ref(a)
+     ## b and a share memory
+     b <- a
+		 ref(a,b)
+     b[1] <- 1
+		 ref(a,b)
+     untracemem(a)
+
+
+# =============================
+# KEEP:  from Hadley video on Lobstr
+# https://bit.ly/2Wstv0A
+# =============================
+x <- 1:10^6
+obj_size(x)
+ref(x)
+
+y  <- list(x,x,x)
+obj_size(y)
+ref(y)
+
+# modify y, 1st item in list
+# forces copy
+y[[1]]  <- NA
+obj_size(y)
+ref(y)
+
+# rm removes reference, not the object!
+rm(x,y)
+
+# BUT, if only 1 ref to object, and you change
+# R is smart enough NOT to copy, just modify in place
+
+# garbage collector rmoves object
+
+```

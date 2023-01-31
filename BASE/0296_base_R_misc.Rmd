@@ -1,0 +1,158 @@
+--- 
+# Spaces, no Tabs
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+        mathjax: default
+  pdf_document: 
+    latex_engine: xelatex
+fontsize: 11pt 
+geometry: margin=0.5in,top=0.25in 
+TAGS:  ifelse,switch,unname, normalizePath, path.expand
+---
+
+## base R only,  collect here
+*   unlist
+*   dput  
+*   save
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  
+											comment="      ##",  
+											error=TRUE, 
+											collapse=F) 
+```
+
+
+### Not so keen on \code{else if} construct.
+```{r if}
+
+# ======================
+## if - else if - else
+# ======================
+
+f  <- function(x) {
+  if (x <0) {cat("less than 0")}
+	else if(x<1) {cat("less than 1")}
+	else if(x<2) {cat("less than 2")}
+	else if(x<3) {cat("less than 3")}
+	else if(x<4) {cat("less than 4")}
+	else {cat("4 or greater")}
+}
+
+x <- -1
+f(x)
+f(x <- x+1)
+f(x  <- x+1)
+f(x  <- x+1)
+x
+```
+
+### But ifelse(boolean, true , false) is very handy. 
+```{r ifelse}
+
+#  
+# ======================
+##		ifelse
+# ======================
+ifelse(5>3, "yes", "no")
+
+x  <- c(1,5,10)
+
+# return vector of length(x) and each element 'yes' or 'no'
+ifelse(x > 5, "yes", "no")  # 'no' 'no' 'yes'
+```
+
+### switch
+```{r}
+
+## as function, x must evaluate to integer or character
+choose  <- function(x) {
+  stopifnot(is.character(x))
+
+    base::switch(x, 
+             A = "first", 
+             B = "second",
+             C = "third"
+)
+
+}
+
+## choose one
+    x  <- 3
+    x <- 100
+    x  <- "B"
+
+##
+    choose(x)
+```
+
+#### I find this useful, based on parameter \code{type} do something with x 
+```{r switch2}
+
+choose2  <- function(x=NULL, type=character(1)){
+
+  base::switch(type,
+               video = paste0("print videos",length(x)),
+               playlist = "print playlists",
+               channel = "print channel")
+
+}
+x  <- NULL
+choose2(x,"channel")
+choose2(x,"playlist")
+choose2(x, "video")
+
+
+### in named vector, names are attributes 
+```{r unname}
+# ----------------------
+## create named vector
+# ----------------------
+    x  <- 1:5
+    # [1] 1 2 3 4 5
+
+    names(x)  <- letters[1:5]
+    x
+    # a b c d e 
+    # 1 2 3 4 5 
+
+    attributes(x)
+
+
+# ----------------------------------------
+## now, remove the names: couple of ways
+# ----------------------------------------
+
+  x.1  <- unname(x)
+# [1] 1 2 3 4 5
+
+
+## another way to remove names
+  x.2  <- x
+  names(x.2)  <- NULL
+  x.2
+# [1] 1 2 3 4 5
+
+## also
+  x.3  <- as.numeric(x)
+# [1] 1 2 3 4 5
+```
+
+### expand relative file name
+```{r normalizePath}
+
+file <- "BASE/0296_base_R_misc.Rmd"
+normalizePath(file)
+path.expand(file)
+path.expand("~")
+```
+
+```
+

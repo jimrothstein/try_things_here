@@ -1,0 +1,429 @@
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: hide
+        toc: true 
+        toc_depth: 4
+        toc_float: false
+        number_sections:  true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  4    
+    number_sections:  true
+fontsize: 10pt   
+geometry: margin=0.4in,top=0.15in, bottom=.15in
+TAGS:  vector, switch, DiagrammeR, 
+editor_options: 
+  chunk_output_type: console
+---
+\tiny
+
+###  Vectors and Lists: 
+  -  Vectors (atomic & lists)
+  -  Simple vector examples
+  -  Use of lapply* family, unlist
+  -  Notation for subset, contents etc
+  -  Common patterns
+  -  Use of purrr .... and analogus base functions
+  -  Vectorize a function, with mapper functions
+
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(
+                      echo = TRUE,
+                      eval=F,
+                      include=F,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = T   ) # easier to read
+
+library(DiagrammeR)
+
+```
+#### Vector hierachy
+  *  REF:  r4ds 20.2, adv-r ch3,4
+  *  adv-r (https://adv-r.hadley.nz/index.html) Chapter 3, Chapter4
+
+```{r graph}
+DiagrammeR::grViz("
+  digraph rmarkdown {
+    vector -> atomic -> character
+    atomic -> numeric
+    atomic -> logical
+    numeric -> double
+    numeric -> integer
+    integer -> factor
+    double  -> date
+    double -> POSIXct
+    vector -> list
+  }
+  ", height=600)
+```
+
+#### Common functions:  typeof, length, str, summary 
+```{r commond_functions}
+v  <- c("a")
+typeof(v) # actually all objs
+length(v)
+str(v)
+summary(v)
+
+
+#### Groupings (Define)
+  *  Vector, Atomic, Numeric are groupings ("abstract", never created)
+  *  Meanings of these functions, differ from intution:
+     *  is.vector(), is.atomic(), is.numeric()
+
+#### Atomic
+  * is.*
+  * as.*
+```{r atomic}
+
+```
+#### NULL must be careful 
+```{r null}
+c("a", NULL)
+c(NULL)
+```
+
+#### Create a numeric vector
+```{r common}
+# compare
+x.1  <- numeric()
+x.2  <- numeric(0)
+x.3   <- numeric(10)
+
+vapply(list(x.1, x.2, x.3), is.numeric, logical(1))
+# [1] TRUE TRUE TRUE
+```
+#### unname
+```{r unname}
+v  <- c(a = "1", b = "2")
+is.character(v)
+names(v)
+unname(v)
+```
+
+#### using vector(); mode
+  *  `mode` (older, pre-OO) better to think mode is **base class** or list
+  *  https://rdrr.io/r/base/vector.html
+```{r vector}
+vector(mode="logical", length=0)
+
+# logical of length 
+v  <- vector(mode="logical", length=0) 
+v
+
+# logical of length 1
+v1   <- vector(mode="logical", length=1) 
+v1
+
+# logical of length 2
+v2   <- vector(mode="logical", length=2) 
+v2
+
+
+# list of length 5, values are NUL
+l1  <- vector(mode="list", length=5)
+l1
+```
+
+#### Subset: Note return values
+```{r subset}
+
+## LOOK
+    z  <- c(1,2,3,4,5)
+    (z > 4)  ## intermediate step, logical
+    z[z>4]
+    z[z>6]
+# numeric(0)
+
+    z[10]
+# [1] NA
+
+    z["a"]
+# [1] NA
+
+    z[FALSE]
+# numeric(0)
+
+    ifelse(T, "YES", "NO")
+    ifelse(z[10], "YES", "NO")
+
+```
+
+#### Subset:  Remove elemnt of list, but keep structure.  Pitfall REF:  Adv_R  Chapter 4.4
+```{r pitfall}
+
+##  We want value for b to NULL
+l  <- list(a=1, b=2)
+str(l)
+
+##  Method 1, lose structure remove b, Here we lose structure of l
+l["b"]  <- NULL
+str(l)
+
+##  Method 2
+l  <- list(a=1, b=2)
+l["b"]  <- list(NULL)
+str(l)
+
+# List of 2
+#  $ a: num 1
+#  $ b: num 2
+# NULL
+
+
+
+
+
+
+```
+
+
+```{r}
+
+a  <- c(1,2,3)
+a[2]
+a[a>2]
+a[a%%2 == 0]
+
+f  <- function(x) x ==1
+a[f(a)]
+```
+
+#### Create atomic vector
+```{r create}
+v  <- 1:1000
+head(v)
+
+# first 100
+first  <- v[1:100]
+first
+
+# rest 
+rest  <- v[-(1:100)]
+rest
+head(rest)
+```
+
+#### vapply
+  *  REF: <https://rfordatascience.slack.com/archives/C6VCZPGPR/p1629254567205600
+
+```{r warmup}
+## is.list?
+  .x  <- list(1,2,3)
+  vapply(.x, is.list, TRUE)
+  
+  L.1  <- list(list(1,2,3), list(4,5,6), c(7,8))
+  vapply(L.1, is.list, TRUE)
+
+## alternative notation, return 3 element of 1st item.
+  L.1[[c(1,3)]]
+
+## Drop non-lists (example of 'vectorizing' )
+  L.2  <- L.1[ans <- vapply(L.1, is.list, TRUE)]
+  length(L.2)
+
+# atomic
+  unlist(list(1,2,3))
+```
+#### switch
+```{r switch}
+#   Change char[] to int[]
+x  <- c("yes", "no", "yes", "no", "no", "yes")
+#   Want: (1,0,1,0,0,1)
+
+    # since e is character, switch(e, ...) works by choosing match in ...
+f  <- function(e) {
+    switch(e,
+           yes = 1,
+           no  = 0)
+} 
+
+# named int vector
+sapply(x, f)
+
+
+## Now with missing value
+y  <- c("yes", "no", "yes", "no", "no", "yes", "")
+sapply(y, switch, yes=1, no=0,  NA ) 
+sapply(y, switch, yes=1, no=0, 99   ) 
+
+```
+
+
+
+```{r switch_with_int}
+    ### switch must either CHAR or integer
+    x  <- c(T,F)
+sapply(x, switch, T=1, F=0)
+
+### Here x evaluates to int vector
+    x  <- 2
+    switch(x, "you won" = 2, "you lose", "sorry")
+    switch(x, "you won", "you lose", "sorry")
+
+    switch(x, y=1, y=2, y=3)
+
+### Evaluates to chr 
+    x  <- "50"
+    switch(x, "50" =   "you won", "1"="you lose")
+# [1] "you won"
+
+### Fails b/c do not have 50th term in switch
+    x  <- 50
+    switch(x, "50" =   "you won", "1"="you lose", 50)
+
+    x  <- 3
+    switch(x, "50" =   "you won", "1"="you lose", "bingo")
+# [1] "bingo"
+
+    x    
+    switch(x<6, "you won", "you loooose")
+
+    x  <-  "1"
+    switch(x, "0" = "loser", "1" = "you won")
+```
+
+#### `[[`<- 
+```{r setter}
+
+    ##  sets value of b to 1
+    x <- list( a=1, b=2, c=3 )
+    ## setter, look:  not saved
+    `[[<-`(x, "b", 1)
+    x
+    
+    # grabs value of b
+    `[[`(x, "b")
+```
+#### mess, but some useful
+```{r mess}
+    lapply(the_yaml, function(e) grepl(e, pattern="^TAGS"))
+
+
+
+    # 
+    x  <- c(a=1, b=2, c=3)
+    lapply(x, function(e) e)
+    c(lapply(x, function(e) e))
+    # Reduce ??
+
+    ## T/F
+    l.1  <- lapply(the_yaml, function(e) any(grepl(e, pattern="^TAGS")))
+
+
+    ### works!  return either result or NA
+    l.2  <- lapply(the_yaml, function(e) e[grepl(e, pattern="^TAGS")])
+    head(l.2)
+    length(l.2) == length(the_yaml)
+# [1] TRUE
+
+
+### if has YAML, but no TAGS: write as "YAML, no TAGS:"
+    l.3  <- lapply(l.2, function(e) (e == character(0)))
+    l.3
+    {
+        purrr::map_int(the_yaml, length)
+
+        l.4  <- purrr::map_lgl(the_yaml, function(e) {
+          if (any(grepl(e, pattern="^TAGS:")))
+          {
+                return(T)
+                } else { 
+                return(F) 
+                }
+})
+        head(l.4)
+        length(l.4)
+
+    }
+
+# GOAL:  return character vector
+L  <- list(e1 = letters[1:3], 
+           e2 = letters[24:26])
+
+unlist(L)
+as.character(L)
+x  <- letters[1:3]
+unlist(x)
+vapply(L, function(e) e, character(3))
+vapply(L, function(e) as.character(e), character(1))
+vapply(L, function(e) as.character(e), character(3))
+vapply(L, function(e) unlist(e), character(3))
+
+#### unlist  # Note: Returns named character vector, but creates names!
+unlist(list(A = letters[1:3], 
+            B = letters[24:26]))
+
+unlist(list(A = letters[1:3], 
+            B = letters[24:26]),
+       use.names=F)
+
+
+```
+
+### Attributes
+```{r attributes}
+a  <- structure(.Data = 1:3, 
+                x = "jim", 
+                y = "blue")
+
+attributes(a)
+
+a  <- structure(.Data = 1:3, 
+                class = factor)
+
+attributes(a)
+
+
+# internally, stored as int[]
+b  <- factor(letters[1:3])
+
+dput(b)
+# structure(1:3, .Label = c("a", "b", "c"), class = "factor")
+
+attributes(b)
+unclass(b)
+```
+#### Like other R objects, vectors can have Attributes - I think FALSE.
+  *  dimensions
+  *  class (S3, which allows generic functions to process by class attr)
+  *  factor (int[], attr = levels)
+  *  date (double[])
+  *  df, tibble (list)
+```{r attr}
+f  <- as.factor(c("A", "B"))
+attributes(f)
+attributes(unclass(f))
+
+x  <- Sys.Date()
+x
+attributes(x)
+unclass(x)
+attributes(unclass(x))
+
+t  <- Sys.time()
+attributes(t)
+attributes(unclass(t))
+```
+```{r render, eval=FALSE, include=FALSE 	} 
+output_dir  <- "~/Downloads/print_and_delete"
+
+file <- "~/code/try_things_here/VECTOR/0010_base_vector_intro.Rmd"
+file  <- normalizePath(file)
+file
+
+output_dir = "~/Downloads/print_and_delete"
+# in general, pdf will look nicer
+rmarkdown::render(file,
+                  output_dir = output_dir,
+                  output_format = "pdf_document")
+                  #output_format = "html_document")
+
+```

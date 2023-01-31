@@ -1,0 +1,1030 @@
+--- 
+title: "/home/jim/code/try_things_here/VECTOR/0014_base_list_examples.Rmd"
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 4
+        toc_float: true
+  pdf_document: 
+    latex_engine: lualatex
+    toc:  true
+    toc_depth: 4
+fontsize: 10pt 
+geometry: margin=0.4in,top=0.25in 
+TAGS:  vector,list,vapply,  
+---
+
+Covers a lot related:   esp. the answer I marked.
+https://stackoverflow.com/questions/2050790/how-to-correctly-use-lists-in-r/39164220#39164220
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = F,  
+                      eval=F,
+                      include=F,
+
+											comment="      ##",  
+											error=TRUE, 
+											collapse=TRUE) 
+```
+
+```{r exit}
+# knitr::knit_exit()
+```
+
+#### NULL
+```{r primtive}
+list(NULL)
+# [[1]]
+# NULL
+# 
+
+## compare to, note structure differences,  
+list(NULL, 1)  
+# [[1]]
+# NULL
+# 
+# [[2]]
+# [1] 1
+# 
+
+list(NA, NA_integer_, NULL)
+# [[1]]
+# [1] NA
+# 
+# [[2]]
+# [1] NA
+# 
+# [[3]]
+# NULL
+# 
+# 
+
+# compare to:
+c(NA, NA_integer_, NULL)
+# [1] NA NA
+
+list(1)
+# [[1]]
+# [1] 1
+
+# NOTE: new list
+c(list(1), list(1))
+# [[1]]
+# [1] 1
+# 
+# [[2]]
+# [1] 1
+# 
+
+
+# Compare:
+list(c(list(1), list(1)))
+# [[1]]
+# [[1]][[1]]
+# [1] 1
+# 
+# [[1]][[2]]
+# [1] 1
+# 
+# 
+
+# Compare:
+list(list(1), list(1))
+# [[1]]
+# [[1]][[1]]
+# [1] 1
+# 
+# 
+# [[2]]
+# [[2]][[1]]
+# [1] 1
+# 
+# 
+
+
+## primitive subset
+    create_L  <- function() list(a=1, b=2)
+L  <- create_L() ; L
+
+
+L[[2]]  <- 10
+L
+# $a
+# [1] 1
+# 
+# $b
+# [1] 10
+# 
+
+
+# STUDY carefully, esp [["b"]] diff str
+
+LA  <- list(a=1, b=NULL)
+LB  <- list(a=1, b=12)
+
+# modify L to this? 
+L0  <- list(a=1, b=NULL)
+Lz  <- list(a=1, NULL)
+
+# $a
+# [1] 1
+# 
+# $b
+# NULL
+# 
+
+## loose str
+    L1  <- create_L()
+    L1[["b"]]  <- NULL
+    L1
+    
+
+## loose str
+    L2  <- create_L()
+    L2["b"]  <- NULL 
+    L2
+
+    identical(L1,L2)
+# [1] TRUE
+
+
+    ## NOTE:  new list:
+    c(L1,L2)
+
+
+    ## set value of element b to NULL
+    L3  <- create_L()
+    L3["b"]  <- list(NULL) ; L3
+
+    L4  <- create_L()
+    L4[["b"]]  <- list(NULL)
+    L4
+
+    identical(L3, L4)
+
+# [1] FALSE
+```
+
+
+
+#### Basics & trivial
+
+logical(0): object is logical vector,z length=0 (with no value;  not TRUE or false)
+
+```{r logical}
+x <- logical(length = 0)
+is.logical(x)  # TRUE, but its value is not T or F?
+is.object(x)   # FALSE   !
+is.null(x)     # FALSE  
+identical(logical(), logical(length=0))
+# [1] TRUE
+
+
+x.1  <- logical(0)
+# logical(0)
+x.2  <- logical(1)
+# [1] FALSE
+x.3  <- logical(4)
+# [1] FALSE FALSE FALSE FALSE
+```
+
+#### NA, NULL, "" rules:
+```{r empty}
+"" == TRUE
+"" == FALSE
+is.na("")
+is.null("")
+```
+
+
+#### named list
+```{r names}
+l  <- list(a="ONE", b=list("x", "y"), c=1:9)
+l
+
+# get the names
+names(l)
+# [1] "a" "b" "c"
+
+l.2  <- list(a="ONE", b=list("x", special="y"), 1:9)
+names(l.2)
+# [1] "a" "b" "" 
+
+
+# remove the names
+names(l)  <- NULL
+l
+names(l)
+# NULL
+
+
+# reset the names
+names(l)  <- c("First", "Second", "Third")
+l
+names(l)
+```
+
+#### lists with NULL
+  *  special type
+```{r null}
+length(NULL)  #0
+is.list(NULL) # FALSE
+
+# If list has no names,  then names returns NULL.
+# To catch, this fact is important
+is.null(NULL)   # TRUE
+```
+
+#### NA
+```{r na}    *      if lapply used HERE, only to illustrate something else.
+  *  SEE  VECTOR/0040    *      if lapply used HERE, only to illustrate
+     something else.    *  SEE  VECTOR/0040    *        if lapply used HERE,
+only to illustrate something else.    *  SEE  VECTOR/0040
+na<- x
+is.na(x)
+
+## useful
+has_name  <- function(x) { 
+    if (!is.list(x)) stop("Please provide list")
+    nms  <- names(x)
+    if ( is.null(nms) ) {
+        base::rep_len(FALSE  , length(x))
+    }
+    else !(is.na(x) | nms=="")
+}
+
+has_name(NULL)
+has_name("")
+has_name(list())
+has_name(logical(0))
+has_name(NA)
+
+# problems
+has_name(list(a=1, 2))
+
+v  <- ""
+is.null(v)
+is.na(v)
+
+v  <- NULL
+is.null(v)
+is.na(v)
+```
+#### pushing char[] to list
+```{r char2list}
+
+#   list containing one element
+    L.1  <- list(c("ONE", "TWO"))
+    L.1
+
+#   list containing two elements
+    L.2  <- list(c("ONE"), c("TWO"))
+    L.2
+
+    names(L.1)
+    names(L.2)
+
+#### char[]
+```{r char}
+C.1  <- c("ONE", "TWO")
+C.1
+
+C.2  <- c(c("ONE"), c("TWO"))
+C.2
+
+identical(C.1, C.2)
+# [1] TRUE
+```
+#### length, subset of list
+```{r length}
+l
+length(l)
+# [1] 4
+
+# subset
+length(l[1:3])
+# [1] 3
+
+# ERRORS
+    if (F) {
+    length(l[c(1,4)])
+    length(l[1,4])
+}
+
+```
+
+#### add an entry to a list
+  * believe this forces a copy.
+```{r add_entry}
+l
+
+# name = value pairs
+
+l$new_parm  <- "new feature"
+l
+names(l)
+# [1] "First"    "Second"   "Third"    "new_parm"
+```
+
+### UNLIST
+  *  https://stackoverflow.com/questions/2991514/prevent-unlist-to-drop-null-values
+
+```{r simple_unlist}
+x  <- letters[1:3]
+unlist(x)
+
+## unlist drops NULL elements
+x  <- c(NULL, x)
+unlist(x)
+
+
+## keeps names
+x  <- c(a="1", b="2")
+unlist(x)
+
+
+## give named list, returns named atomic:  note suffix to names!
+l  <- list(a=letters[1:3], b=letters[4:6])
+
+unlist(l)
+#  a1  a2  a3  b1  b2  b3 
+# "a" "b" "c" "d" "e" "f" 
+
+## NULL is dropped
+l  <- c(NULL, l)
+l  <- c(a=NULL, l)
+
+library(data.table)
+dt  <- data.table(A= letters[1:5], B=sample(x=1:5, size=5))
+dt 
+
+## returns atomic; note the names!
+unlist(dt)
+```
+
+#### UNLIST NESTED
+  *  https://stackoverflow.com/questions/54840918/how-to-unlist-nested-lists-while-keeping-vectors
+  *  flatten, with enquote vs rapply: # https://stackoverflow.com/questions/19734412/flatten-nested-list-into-1-deep-list
+
+```{r nested}
+
+## nested list
+list0 <- list(c(1,2),
+              list(3,
+                   c(4,5)
+                   )
+              )
+# author wants
+list(list0[[c(1)]], list0[[c(2,1)]], list0[[c(2,2)]])
+
+lapply(list0, function(e) e)
+# [[1]]
+# [1] 1 2
+# 
+# [[2]]
+# [[2]][[1]]
+# [1] 3
+# 
+# [[2]][[2]]
+# [1] 4 5
+# 
+# 
+ 
+str(list0)
+
+unlist(list0, recursive=T)
+# [1] 1 2 3 4 5
+```
+
+#### Practice Nested Lists
+```{r list_of_lists}
+l1  <- 0:9
+l2   <-  letters[10:19]
+
+L  <- list(l1, l2)
+L
+str(L)
+is.null(l1)
+names(l1)
+is.na(names(l1))
+
+## number of elements
+list(letters[1:2])
+list(c(letters[1:2]))
+```
+
+#### Which elements are selected? x[y]
+```{r order_based_on_vector}
+x <- c(2, 2, 3, 4, 1, 4, 4, 3, 3)
+y <- c(4, 2, 1, 3)
+
+# walk through y values, what is x at position 4?,  next postion 2 ...
+x[y]
+# [1] 4 2 2 3
+```
+
+Covers a lot this:
+REF:https://michaelbarrowman.co.uk/post/the-lapply-family/
+navigate
+
+#### Subsets of lists.  Note: appears elements are ordered.
+```{r ordered}
+L.1  <- list(a=1, c("a", "b"), list())
+str(L.1)
+str(L.1[2])
+str(L.1[[2]])
+
+# $a
+# [1] 1
+# 
+# [[2]]
+# [1] "a" "b"
+# 
+# [[3]]
+# list()
+# 
+
+## Select "b"
+## ALL work
+
+## BEST, see Petr
+L.1[[c(2,2)]]
+
+L.1[c(2)][[1]]
+L.1[c(2,1)]
+
+L.1[2][[1]][[2]]
+L.1[c(2)][[1]][[2]]
+
+L.1[[2]][2]
+L.1[[2]][[2]]
+
+L.1[2][1]
+L.1[2][1][[1]]
+L.1[2][1][[1]][2]   # SAME
+
+# not expecteed
+L.1[c(2,1)]
+# [[1]]
+# [1] "a" "b"
+# 
+# $a
+# [1] 1
+# 
+
+L.1[2]
+L.1["a"]
+# $a
+# [1] 1
+# 
+L.1[c(2,3)]
+L.1[c(1,3)]
+
+```
+```{r petr}
+
+l <- list("aaa",5,list(1:3),LETTERS[1:4],matrix(1:9,3,3))
+l[[c(5,4)]] # selects 4 from matrix using [[index_vector]] in list
+l[[5]][4] # selects 4 from matrix using sequential index in matrix
+l[[5]][1,2] # selects 4 from matrix using row and column in matrix
+```
+
+#### Extract leaf from list.
+  * nodes hold things, even if NULL object
+  * leaves are terminal
+```{r leaf}
+# extract "b"
+
+## list
+L.1[2]
+# [[1]]
+# [1] "a" "b"
+
+## get contents(leaves) of node: char[2]
+L.1[[2]]
+# [1] "a" "b"
+
+## get specific element (leaf) from contents, "b"
+L.1[[2]][2]
+# [1] "b"
+```
+
+
+#### str()
+```{r str}
+L.1
+# $a
+# [1] 1
+# 
+# [[2]]
+# [1] "a" "b"
+# 
+# [[3]]
+# list()
+# 
+
+
+str(L.1)
+# List of 3
+#  $ a: num 1
+#  $  : chr [1:2] "a" "b"
+#  $  : list()
+
+str(L.1, max.level=0)
+# List of 3
+
+str(L.1, max.level=1)
+# List of 3
+#  $ a: num 1
+#  $  : chr [1:2] "a" "b"
+#  $  : list()
+```
+
+
+#### compare lapply, sapply, vapply to mtcars
+```{r compare}
+## list of course
+l  <- lapply(mtcars, mean)
+
+## nice double
+s  <- sapply(mtcars, mean)
+
+## also nice!  double, 
+v  <- vapply(mtcars, mean, double(1))
+v
+
+identical(s,v)
+# [1] TRUE
+```
+
+
+#### Build list, inside out
+    *  Don't look:  ugly!
+    *  Draw as tree
+```{r}
+
+L.3  <- letters[1:5]
+L.3  <- as.list(L.3)
+L.3
+
+
+L.2  <- list(L.3)
+
+L.1  <- list(L.2)
+```
+
+#### Observations of L.1
+```{r observe}
+unlist(L.1)
+# [1] "a" "b" "c" "d" "e"
+
+length(L.1)
+# [1] 1
+length(L.2)
+# [1] 1
+length(L.3)
+# [1] 5
+
+```
+
+#### Extract character vector from list?
+```{r extract_from list}
+
+# GOAL:  return character vector
+L  <- list(e1 = letters[1:3], 
+           e2 = letters[24:26])
+
+### simplest is closest?
+lapply(L, function(e) e)
+unlist( lapply(L, function(e) e))
+unname( unlist( lapply(L, function(e) e)))
+
+#nope
+lapply(L, function(e) unlist(e))
+
+unlist(L)
+as.character(L)
+
+x  <- letters[1:3]
+unlist(x)
+
+vapply(L, function(e) e, character(3))
+vapply(L, function(e) as.character(e), character(1))
+vapply(L, function(e) as.character(e), character(3))
+vapply(L, function(e) unlist(e), character(3))
+
+
+lapply(L, function(e) e[1])
+```
+
+
+#### Medium Complex List of Lists
+  *  REF: https://app.slack.com/client/T6UC1DKJQ/C6VCZPGPR/thread/C8JP9ECBD-1630566224.051000
+
+```{r medium}
+
+# # # list( 
+#             list(a,b,c),
+#             list(d,e,f), 
+#             list(g,h,i)
+# )
+
+l.1   <- list(
+              #1
+              list(letters[1:3]),
+              #2
+              list(letters[4:6]),
+              #3
+              list(letters[7:9])
+              )
+
+l.1
+str(l.1)
+
+####
+n  <- 1:2
+jump  <- function(e) e[[1]][n]
+lapply(l.1, jump)
+####
+
+unlist(lapply(l.1, jump))
+
+# WANT: transpose
+# list(
+#      list(a,d,g),
+#      list(b,e,h),
+#      list(c,f,i)
+#      )
+
+```
+
+#### Structure of Lists (replace:  str,  notation list[[c(1,2)]]
+  *  Purpose:  understand tree-like structure in each
+  *  lapply works on content of each elment
+  *  lapply(x, .f)  list( f(x[[1]]), f(x[[2]], ...
+
+```{r tree_like}
+
+{### lists
+
+    x.1  <- list()
+    x.2  <- list(0)
+    x.3  <- list(letters[1:3])
+    x.4  <- list(e1 = letters[1:3])
+    x.5  <- list(e1 = list(letters[1:3]))
+    
+    str(x.1)
+    length(x.1)
+    is.list(x.1)
+    is.character(x.1)
+
+
+## x.4
+    str(x.4)
+    length(x.4)
+    is.list(x.4)
+    is.character(x.4)
+
+## x.4[[1]]
+    str(x.4[[1]])
+    length(x.4[[1]])
+    is.list(x.4[[1]])
+    is.character(x.4[[1]])
+
+purrr::map_chr(x.4, length)
+lapply(x.4, length)
+
+purrr::map_chr(x.5, length)
+
+
+purrr::map_chr(X, length)
+lapply(X, length)
+
+## fails
+    lapply(X, length)
+
+    lapply(X, function(e) length(e))
+    lapply(X, function(e) length(e[[1]]))
+    lapply(X, function(e) length(e[[1]][[1]]))
+
+    ## keeps 1st level, but loses anything beyond.
+    unlist(X)
+    z  <- unlist(X)[[1]]
+    z
+
+
+
+    is.list(x.3[[1]])
+# [1] FALSE
+    is.character(x.3[[1]])
+# [1] TRUE
+
+
+    is.list(x.4[[1]])
+# [1] FALSE
+
+    is.list(x.4[["e1"]])
+# [1] FALSE
+    #
+    #
+    is.character(x.4[[1]])
+# [1] TRUE
+    is.character(x.4[["e1"]])
+# [1] TRUE
+
+
+    is.list(x.5[[1]])
+# [1] TRUE
+
+
+
+
+    is.list(x.1)
+    is.list(x.3)
+    is.list(x.4)
+    is.list(x.5)
+
+    
+    is.list(x.1[1])
+    is.list(x.2[1])
+    is.list(x.3[1])
+    is.list(x.4[1])
+    is.list(x.5[1])
+
+    is.list(x.1[[1]])
+    is.list(x.2[[1]])
+    is.list(x.3[[1]])
+    is.list(x.4[[1]])
+    is.list(x.5[[1]])
+
+    is.list(x.4["e1"])
+    is.list(x.5["e1"])
+
+}
+
+#  do not pack into yet ANOTHER list
+#  just makes it worse.
+{
+    # Note: collapse will turn in 1 string
+    X  <- paste0(rep("x",5), ".",  1:5  )
+
+    Z    <- list(x.1, x.2, x.3, x.4, x.5)
+    str(Z)
+    lapply(Z,  is.list)
+
+    lapply(Z, function(e) is.list(e))
+    lapply(Z, function(e) is.list(e[1]))
+    lapply(Z, function(e) is.list(e[1][[1]]))
+   is.list(Z[[1]])
+    is.list(Z[[2]])
+    is.list(Z[[3]])
+    is.list(Z[[4]])
+    is.list(Z[[5]])
+
+    Z$`x.4`
+    Z["x.4"][["e1"]]
+    Z
+    is.list(Z["e1"])
+}
+```
+
+####    list2env
+* pull out each named element into desired Env
+```{r}
+a  <- NULL
+l  <- list(a=letters, b=0:9)
+list2env(l, .GlobalEnv)
+a
+```
+
+#### unlist
+  *    unlist(x, recursive=TRUE, use.names=TRUE )
+```{r study_unlist}
+l  <- list(a=letters[1:5], b=0:4)
+unlist(l)
+unlist(l, use.names=FALSE )
+
+
+A  <- list(letters[25:26])
+A
+B <- list(0:6)
+B
+
+l  <- list(A,B)
+l                    # mess
+
+unlist(l)            # back to simple
+# here breaks in 1 level of lists, but no deeper
+unlist(l, recursive=FALSE , use.names=FALSE )
+
+
+## more unlsit
+x  <- list(1, 2, 3)
+x
+
+y  <- unlist(x)  # returns dbl atomic vector
+y
+typeof(y)
+
+x  <- list(c(1, 2), c(3, 4), c(5, 6))
+x
+
+#  For each element of list x, return just first entry
+# returns list, each element of x
+lapply(x, typeof)
+
+# hmmm?
+lapply(x, `[`)
+
+# returns a list, for each element grab 1st 
+lapply(x, function(e) {e[[1]]})
+
+# same, but simplify (to vector)
+sapply(x, function(e) {e[[1]]})
+
+y  <- unlist(x)  # flattens to single dbl vector 1 2 3 4 5 6
+y
+typeof(y)
+
+
+x  <- list(list("a","b"), c(3,4), c(5,6))
+x
+y  <- unlist(x)				# flatten to character vector
+typeof(y)
+y
+```
+
+
+#### unlist_tibble
+```{r unlist_tibble}
+t  <- tibble::tibble(colA = 0:9, colB=10:19, colC=letters[1:10])
+t
+unlist(t, use.names=FALSE )
+unlist(t, recursive= FALSE   )
+unlist(t, recursive= FALSE, use.names=FALSE    )
+str(t)
+```
+
+
+
+###  Cheating? purrr is best way to see how various pieces work
+```{r purrr }
+L  <- list(NULL, "", NA, logical(0))
+purrr::map(L, is.na)
+
+purrr::map(L,is.na)
+g  <- function(x) x == ""
+
+purrr::map(L, g)
+
+```
+
+#### STUDY: https://github.com/r-lib/gh/blob/master/R/utils.R
+ORIGINAL version
+```{r has_name1 }
+## original version
+## as seen in purrr, with the name `has_names()`
+has_name_orig <- function(x) {
+ 
+  nms <- names(x)
+  if (is.null(nms)) {
+    rep_len(FALSE, length(x))
+  } else {
+    !(is.na(nms) | nms == "")
+  }
+}
+
+
+# IMPROVED version
+has_name <- function(x) {
+  if (!is.list(x)) stop("Please enter a list")
+  nms <- names(x)
+  if (is.null(nms)) {
+    rep_len(FALSE, length(x))
+  } else {
+    !(is.na(nms) | nms == "")
+  }
+}
+
+```
+
+
+
+#### CLEANUP !
+```{r  mess_cleanup}
+x  <- NULL
+x   <- ""
+x   <- NA
+x  <- "hello"
+x   <- list()
+x    <- list(1,2)
+x  <- list(a=1, 2)
+x  <- list(a=1, b=2)
+
+L1  <- list( "", NA, "hello", list(), list(1,2), list(a=1,2),
+           list(a=1, b=2))
+L  <- list(NULL, "", NA, "hello", list(), list(1,2), list(a=1,2),
+           list(a=1, b=2))
+names("")
+names(NA)
+
+#
+
+# Must modify get_name()
+# logical(0) has lenth(0), but neither TRUE or FALSE   
+# NULL is not a list
+# so this a problem.
+```
+
+Covers a lot related:   esp. the answer I marked.
+https://stackoverflow.com/questions/2050790/how-to-correctly-use-lists-in-r/39164220#39164220
+
+Petr's example most useful
+https://stackoverflow.com/a/40705476/5057251
+#### `[[c(1,2,3)]]` notation to extract
+```{r petr}
+l <- list("aaa",5,list(1:3),LETTERS[1:4],matrix(1:9,3,3))
+
+l[[c(5,4)]] # selects 4 from matrix using [[index_vector]] in list
+l[[5]][4] # selects 4 from matrix using sequential index in matrix
+l[[5]][1,2] # selects 4 from matrix using row and column in matrix
+```
+
+#### another:  navigate L[[c(5,1,...)]]
+```{r another}
+## create L
+  create_L <- function(){
+      x.1  <- list()
+      x.2  <- list(0)
+      x.3  <- list(letters[1:3])
+      x.4  <- list(e1 = letters[1:3])
+      x.5  <- list(e1 = list(letters[1:3]))
+      
+      list(x.1, x.2, x.3, x.4, x.5)
+  }
+
+  ## study carefully:
+  L = create_L()
+  str(L, max.depth = 0, vec.len = 1)
+
+## 2nd letter of x3?
+  
+  L[[c(3,1,2)]]
+
+## 2nd letter of x4?
+  L[[c(4,1,2)]]
+
+## 3rd letter of x5
+  L[[c(5, 1, 1, 3)]]
+```
+#### another 
+```{r one_more}
+L  <- list(
+           list(
+                list("a", "b", "c")
+                )
+           )
+
+
+## 2nd element of last list, easy!
+    L[[c(1, 1, 2)]]
+
+
+## bottom list, return sublist of 1st 2 elements
+## S T U D Y
+  L[[c(1,1)]][c(1,3)]
+
+  s = letters[1:5]
+  s[s=c(1,3) ]  
+
+```
+
+#### Purrr is best way to see how everything behaves
+```{r purrr_is_great}
+
+purrr::map(L, names)
+purrr::map(L, length)
+purrr::map(L, is.list)
+purrr::map(L, is.na)
+```
+
+
+
+```{r render, eval=FALSE, include=FALSE 	} 
+{
+file <- "VECTOR/0014_base_list_examples.Rmd"
+# file  <- here("VECTOR", file)
+file  <- basename(file)
+file
+}
+
+output_dir = "~/Downloads/print_and_delete"
+# in general, pdf will look nicer
+rmarkdown::render(file,
+                  output_dir = output_dir,
+                  output_format = "pdf_document")
+#                  output_format = "html_document")
+
+```

@@ -1,0 +1,98 @@
+---
+title: "074_anova_simple.Rmd"
+editor_options:
+  chunk_output_type: console
+---
+###  074_anova_simple.R
+
+####00-Given Area(1 tail), find z
+```{r}
+qnorm(p=.5, mean=0, sd=1)	# z=0
+qnorm(p=.05)	# z=-1.64
+qnorm(p=0.025)	# z=-1.96
+```
+
+####01-Give T value (ie quantile), find Area to left
+```{r}
+# area=?
+(area <- pt(q=-2.10, df=18 ))	# 0.025
+```
+
+7-3
+```{r}
+# area=?
+(area <- pt(q=-1.65, df=20))   # 0.057
+
+# but if normal
+(area <- pnorm(q=-1.65, mean=0, sd=1))   # 0.0495 (tighter)
+
+```
+7-4
+```{r}
+# 2 tails#
+# area=?
+(area=2*pt(q=-3, df=2))  # 0.095
+
+```
+
+#### 01-setup ----------------------------------------------------------------
+```{r}
+
+
+library(broom)
+library(dplyr)
+library(ggplot2)
+data(cars)
+```
+
+```{r}
+# 02-quick look -----------------------------------------------------------
+
+mtcars %>% glimpse()
+str(mtcars)
+plot(mtcars$mpg, y = as.factor(mtcars$cyl), legend = levels(as.factor(mtcars$cyl)))
+
+
+x <- jitter(mpg$hwy)
+y <- jitter(mpg$cty)
+z <- factor(mpg$drv)
+plot(x, y, col = z)
+legend("topleft", legend = levels(z), col = 1:nlevels(z), pch = 1, title = "Drive")
+```
+
+
+```{r}
+# 03-anova ----------------------------------------------------------------
+
+# use cyl as groups	
+	
+a <- aov(mpg ~ cyl+am, mtcars)
+broom::tidy(a)
+
+# #> # A tibble: 2 x 6
+# #>   term         df sumsq meansq statistic   p.value
+# #>   <chr>     <dbl> <dbl>  <dbl>     <dbl>     <dbl>
+# #> 1 cyl           1  818.  818.       79.6  6.11e-10
+# #> 2 Residuals    30  308.   10.3      NA   NA
+# <sup>Created on 2019-08-13 by the [reprex package](https://reprex.tidyverse.org) (v0.3.0)</sup>
+
+```
+# 03A-explain -------------------------------------------------------------
+
+# F=79.
+# p-value 6e-10 (tiny)
+# -> reject H0 (means not same)
+
+
+# 04-boxplot --------------------------------------------------------------
+
+# check plots
+# TODO: group= does what?
+mtcars %>% group_by(cyl) %>% ggplot(aes(group=cyl, y=mpg)) + geom_boxplot()
+plot
+
+# 05-save plot ------------------------------------------------------------
+
+ggplot2::ggsave("074_boxplot.png", plot=last_plot(), path="./plots")
+
+---

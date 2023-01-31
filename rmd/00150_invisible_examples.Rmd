@@ -1,0 +1,73 @@
+<!--
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+-->	 
+--- 
+# Spaces, no Tabs
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
+---
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  
+											comment="      ##",  
+											error=TRUE, 
+											collapse=TRUE) 
+```
+
+```{r library, include=FALSE		}
+library(jimTools) 
+``` 
+
+### When a function returns ....
+  *  can return an object.
+  *  may *also* have side effect, such as print to console.
+  *  many base R functions do both.
+  *  invisible() supresses print to console.
+     This function can be useful when it is desired to have functions
+     return values which **can be assigned,** but which **do not print** when they
+     are not assigned.
+  *  invisible() has another differnce from return().  return() halts
+     execution, returns *control*.   invisible() does not return *control*.
+  *  Good practice when using return is return(invisible(x)) so only the
+     object is returned.
+```{r invisible}
+
+
+
+print(x=3)
+
+{
+# print returns 3, also prints 3 ...this can lead to duplication
+y  <- print(x=3)
+y
+}
+
+f  <- function(x) {
+  return(x)}
+
+# not assigned, but prints
+f(2)
+
+# assigned normally, does not print
+y  <- f(2)
+y
+
+
+# SAME, but do NOT send to console
+g  <- function(x) {
+  invisible(x)}
+
+# not assigned, no print
+g(3)
+
+y  <- g(3)
+y
+```

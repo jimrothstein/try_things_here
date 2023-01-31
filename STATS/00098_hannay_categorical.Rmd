@@ -1,0 +1,102 @@
+---
+title: Template for .Rmd
+output: 
+  pdf_document:
+    latex_engine: xelatex
+    toc:  TRUE
+    toc_depth:  1
+fontsize: 12pt
+geometry: margin=0.5in,top=0.25in
+#  md_document:
+#  html_document:
+#    toc: true
+#  	toc_float: true
+#    css: styles.css
+---
+Hannay - Chapter 12 : Regression with Categorical
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE, collapse=TRUE)
+```
+
+```{r library, include=FALSE} 
+library(HannayIntroStats)
+library(ggplot2)
+#data(food_college)
+```
+
+```{r render, eval=FALSE, echo=FALSE	}
+p  <- fs::path()
+w  <- fs::path_wd()
+w
+here()
+file="098_hannay_categorical.Rmd"
+dir="rmd"
+
+ren_pdf(file,dir)
+ren_github(file, dir)
+
+#knitr::knit_exit()
+
+# To Render
+ren_pdf  <- function(file, dir) {
+rmarkdown::render(
+									here( dir, file), 
+									output_dir="~/Downloads/print_and_delete") 
+}
+ren_pdf(file, dir)
+
+ren_github  <- function(file, dir) {
+rmarkdown::render(
+									here(dir, file) 
+									output_format="github_document",
+									output_dir="~/Downloads/print_and_delete") 
+}
+ren_github(file, dir)
+```
+
+```{r hannay_data, eval=FALSE	 }
+devtools::install_bitbucket(repo="khannay/hannayintrostats.git") #install the class R package
+# list all the data
+data(package="HannayIntroStats")
+```
+
+```{r 12.}
+
+#tibble::glimpse(food_college)
+boxplot(food_college$weight~food_college$Gender, 
+				col="skyblue", 
+				main='Weight of College Students', 
+				xlab="Gender", 
+				ylab="Weight (lbs)")
+
+
+```
+```{r box_ggplot}
+
+g  <- ggplot2::ggplot(food_college , aes(x=Gender, y=weight)) +
+	geom_boxplot()
+g
+
+```
+```{r lm }
+class(food_college$Gender)
+lm(weight~Gender, data=food_college)
+
+# ==========================
+# f  <- tibble::as_tibble(food_college)
+# f  %>% lm(weight~Gender)
+
+```
+```{r lm_summary}
+
+lm.weight  <- lm(weight~Gender, data=food_college)
+summary(lm.weight)
+
+confint(lm.weight, level=0.99)
+
+```
+
+
+
+
+

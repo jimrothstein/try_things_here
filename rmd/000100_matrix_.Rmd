@@ -1,0 +1,255 @@
+
+---
+title: Template for .Rmd
+output: 
+  pdf_document:
+    latex_engine: xelatex
+    toc:  TRUE
+    toc_depth:  1
+fontsize: 12pt
+geometry: margin=0.5in,top=0.25in
+#  md_document:
+#  html_document:
+#    toc: true
+#  	toc_float: true
+#    css: styles.css
+---
+
+
+##  Matrix Examples
+
+
+<!--  commments -->
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE, collapse=TRUE)
+```
+
+```{r library, include=FALSE} 
+library(ggplot2)
+library(tibble)
+here()
+```
+
+
+#### From Matloff, Chapter 3.2.4 (Art of R...)
+```{r filter}
+x  <- c(1,2,3,2,3,4)
+x  <- matrix(x, nrow=3)
+x
+
+## pick out just ONE element !
+y  <- matrix(c(F,F,F,F,F,T), nrow=3)
+y
+x[y]
+# [1] 4
+
+
+
+    z  <- c(5,12,13)
+##  rows 1, 3 will return T
+
+    x[z %% 2 == 1 , ]
+#      [,1] [,2]
+# [1,]    1    2
+# [2,]    3    4
+
+
+```
+
+```{r transpose}
+# structure for data.frame
+test <- structure(list(a = c("a", "b", "c", "d"), b = c(1, 2, 3, 4)), row.names = c(NA,-4L), class = c("tbl_df", "tbl", "data.frame"))
+
+# user wants to see it as: a 1 b 2 c 3
+test
+z  <- t(test)
+z
+
+# multiple sapply: FUN applied to each
+
+# c(a[1], b[1]) ...
+mapply(c, test$a, test$b)
+c(mapply(c, test$a, test$b))
+knitr::knit_exit()
+```
+
+```{r mapply}
+dt  <- data.table(x=letters[1:5],y=letters[1:5])
+dt
+
+f  <- function(x,y) {
+    c(x, "-", y)
+}
+
+```
+
+
+```{r render, eval=FALSE, echo=FALSE	}
+p  <- fs::path()
+w  <- fs::path_wd()
+w
+here()
+file="000100_matrix_.Rmd"
+
+file  <- here("rmd",file)
+file
+
+
+rmarkdown::render(
+									file,
+									# output_format="github_document",
+                  output_format=c("html_document", 
+                                  "md_document"),
+                  output_dir="out",
+									output_file="out") 
+}
+
+```
+
+
+```{r plot_unit_square}
+# 4 vectors, each point of unit sq
+t  <- tribble(
+							~x, ~y,
+							0,0,
+							1,0,
+							1,1,
+							0,1
+							)
+
+g  <- ggplot(t, aes(xmin=0, xmax=1, ymin=0, ymax=1)) +
+	geom_rect(aes(fill="red"))
+g
+```
+
+Ax
+
+```{r}
+
+A  <- matrix(c(1,0,0,1), nrow=2)
+A
+class(A)
+dput(A)
+attributes(A)
+
+# point
+x  <- c(1,0)
+A %*% x
+
+```
+
+edX .. Harvard's PH525.2x course (Rafael)
+
+```{r }
+X  <- matrix(1:1000,100,10)  # 100 x 10
+nrow(X) # 100
+X[25,3]
+
+x  <- 1:10
+m  <- cbind(x, x2 = 2*x, x3= 3*x, x4= 4*x, x5= 5*x)
+m
+str(m)
+class(m)
+
+sum(m[7,])  #105
+```
+
+```{r not_quite}
+
+library(purrr)
+x  <- 1:10
+f  <- function(n) n*x
+x  <- cbind(x, map_dbl(1:5, ~f(.x)) )
+x
+map(1:5, ~f(.x))
+x[2,]
+
+x  <- 1:10
+z  <- cbind(x, 2*x)
+z  <- cbind(z, 3*x)
+z
+
+l1  <- c(1,2,3)
+l2  <- list(10,2,3)
+cbind(l1,l2)
+
+```
+
+```{r}
+library(HistData)
+data(Galton)
+
+```
+
+
+
+
+
+---
+title: "091_matrix_examples.R"
+output:  
+  pdf_document:
+geometry: "left=2cm,right=2cm,top=2cm,bottom=2cm"
+fontsize: 12pt
+---
+
+```
+## CREATE
+# =========
+m <- matrix(c(1,0,0,1), nrow=2, ncol=2, byrow=TRUE)
+m
+
+m[1]  # 1st element (vector)
+m[c(1,4)] # 1st and last (vector)
+
+m[,1] # 1st column (vector)
+m[,1, drop =F] # matrix, 2x1
+
+## TEST
+# =======
+is.matrix(m)
+
+## Convert
+# ==========
+df  <- data.frame(x=c(1,0), y=c( 0,1))
+df
+
+m1  <- as.matrix(df)
+m1
+
+## Misc
+# =======
+dim(m)
+nrow(m)
+ncol(m)
+mode(m)			# numeric
+
+## DIAGONAL
+# ===========
+diag(nrow=7,ncol=7)
+
+diag(c(2,1), nrow=2)
+
+## matrix arithmetic
+# ====================
+m <- matrix(c(1,2,3,4), nrow=2, byrow=TRUE)
+m
+m + m
+
+m * m 	# cell by cell
+
+m %*% m # matrix muli
+
+t(m)  # transpose
+
+solve(m) # inerse
+
+solve(m) %*% m    # hmmm, not so accurtate	
+
+solve(m) %*% m == diag(nrow=nrow(m))   # cell-by-cell comparison
+
+# Eigenvalues
+# =============
+eigen(m)
+```

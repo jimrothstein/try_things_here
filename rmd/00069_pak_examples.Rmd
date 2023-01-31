@@ -1,0 +1,39 @@
+
+---
+title: "069_pak_examples.Rmd"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+TAGS:  pak,
+---
+0 - improved vs devtools::install ....
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, comment="    ...## ")
+#library(devtools)
+library(tibble)
+library(pak)
+library(dplyr)
+library(purrr)
+```
+
+
+1 - setup
+```{r}
+t <- pkg_status("pak")
+t %>% str()
+col_names <- t %>% select(names(.))
+```
+
+2 - 
+```{r}
+pkg_install("usethis")
+lib_status("usethis")
+```
+
+3 -
+```{r}
+## NOT RUN,  empties cache
+#pak_cleanup()
+```
+
+

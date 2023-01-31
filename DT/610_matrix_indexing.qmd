@@ -1,0 +1,62 @@
+
+---
+title: "file <- /home/jim/code/try_things_here/DT/610_matrix_indexing.R"
+author: "Norah Jones"
+format: html
+---
+
+
+```
+PURPOSE:		Explain how A[B] can be used to pick out values of A, according to coordinates in each row of B.  A, B matrix
+
+AKA:		extract
+
+help("[")
+help("Extract")
+?Extract
+
+https://stackoverflow.com/questions/10865337/r-how-to-get-a-value-of-a-multi-dimensional-array-by-a-vector-of-indices
+
+Rmk:
+
+To grep, escape the special char  
+grep -EHRn 'A\[B\]'
+
+```
+
+###	Use matrix B to pick off specific elements (row, col) of A
+```{r}
+#| label: matrix A
+#| warning: false
+A  <- matrix(1:12, 4)
+A
+#'      [,1] [,2] [,3]
+#' [1,]    1    5    9
+#' [2,]    2    6   10
+#' [3,]    3    7   11
+#' [4,]    4    8   12
+
+```
+
+```{r}
+#| label: matrix B 
+#| warning: false
+B  <- matrix(c(1,3,2,3), 2)
+B
+#      [,1] [,2]
+# [1,]    1    2
+# [2,]    3    3
+
+A[B]
+# [1]  5 11
+#
+#	first row of B is (1,2),  find elment of A which these coord (5)
+#	second row of B is (3,3) find element of A which corres (11)
+#
+#
+####	Sublety   
+###Consider A[i  as a mapping.  i is row of B, and the mapping returns
+###value of A with those coordinates.
+```
+
+

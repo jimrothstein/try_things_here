@@ -1,0 +1,177 @@
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 4
+        toc_float: true
+        mathjax: default
+  pdf_document:   
+    latex_engine: lualatex  
+    toc: true
+    toc_depth:  4   
+fontsize: 11pt   
+geometry: margin=0.4in,top=0.25in   
+TAGS:  frame
+---
+~/code/MASTER_INDEX.md
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = T   ) # T easier to read
+```
+
+```{r library, include=F 		}
+#library(jimTools)
+``` 
+
+####    USE CASE:  Inside function f, label current environment and parent
+environment
+
+  * Return list with the objects in each frame.
+```{r 001}
+Z  <- 0
+    f  <- function() {
+        cat("In f execution frame \n")
+        pframe  <- parent.frame()
+        cframe  <- environment()
+        Z  <- 10
+        
+        # default, ls uses calling envir 
+        list(ls(),
+             ls(name=cframe),
+             ls(name=pframe))
+        list(Z,
+             get("Z", envir=cframe),
+             get("Z", envir=pframe))
+    }
+f()
+
+```
+
+
+####    USE CASE:  Same as above, but show other ways to show pframe, cframe
+identical. 
+  * cframe = current or active frame
+  * pframe = calling frame (in stack 1 frame up, parent)
+  * eframe = enclosing frame, where function was first DEFINED.
+
+```{r 002}
+Z  <- 0
+    f  <- function() {
+        cat("In f execution frame \n")
+        pframe  <- parent.frame()
+        cframe  <- environment()
+        cframe2  <- sys.frame(which= sys.parent(n=0))
+        cframe3  <- sys.frame(sys.nframe())
+        cat(identical(cframe,cframe2), "\n")
+        cat(identical(cframe2,cframe3), "\n")
+        Z  <- 10
+        
+        # default, ls uses calling envir 
+        list(ls(),
+             ls(name=cframe),
+             ls(name=pframe))
+        list(Z,
+             get("Z", envir=cframe),
+             get("Z", envir=pframe))
+        
+    }
+f()
+```
+
+### 003 now interesting....
+  * cframe = current or active frame
+  * pframe = calling frame (in stack 1 frame up, parent)
+  * eframe = enclosing frame, where function was first DEFINED.
+```{r 003}
+
+Z  <- 0
+    f  <- function() {
+        cat("In f execution frame \n")
+        pframe  <- parent.frame()
+        cframe  <- environment()
+        eframe  <- environment(f)
+        Z  <- 10
+        
+        # default, ls uses calling envir 
+        list(ls(),
+             ls(name=cframe),
+             ls(name=pframe))
+        list(Z,
+             get("Z", envir=cframe),
+             get("Z", envir=pframe),
+             get("Z", envir=eframe))
+    }
+
+g  <- function() {
+    Z  <- 100
+    f()
+}
+g()
+
+```
+
+
+#### USE CASE:
+
+```{r 004}
+Z  <- "Z in global"
+f = function() {
+    Z = "inside f" 
+    g = function() {
+        Z = "inside g"
+        pframe  <- parent.frame()
+        cframe  <- environment()
+        eframe  <- environment(f)
+        grandframe  <- parent.frame(n=2)
+        list(Z,
+             get("Z", envir=cframe),
+             get("Z", envir=pframe),
+             get("Z", envir=eframe),
+             get("Z", envir=globalenv()),
+             get("Z", envir=grandframe))
+
+             
+    }
+}
+
+h  <- function() {
+     Z  <- "Z inside h" 
+     cat("In h execution frame \n")
+     r  <- f()
+     r()
+}
+h()
+```
+
+```{r render, eval=FALSE, include=FALSE 	} 
+output_dir  <- Sys.getenv("OUTPUT_DIR")
+output_dir
+
+{
+file <- "USE_CASES.Rmd"
+## dislike `here`?
+## get dir/file name separately, then combine
+ the_dir  <- dirname(file)
+ the_dir
+ file  <- basename(file)
+ file
+ file  <- file.path(the_dir, file)
+ file
+
+#   file  <- here("rmd", file)
+file
+}
+
+rmarkdown::render(file,
+                  #output_format="html_document",
+                  output_format="pdf_document",
+                  output_dir=output_dir
+                  )
+```

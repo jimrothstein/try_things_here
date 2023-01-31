@@ -1,0 +1,113 @@
+## Misc useful stuff
+
+## Tags: stop(), str\_c(), function(…), row\_number(),
+
+#### stop(), throws error
+
+    x <- 0
+    if (x == 0) stop("this is msg")   
+
+          ## Error in eval(expr, envir, enclos): this is msg
+
+    print("never gets here")
+
+          ## [1] "never gets here"
+
+#### use of “…”
+
+    stringr::str_c("a", "b")   # ab
+
+          ## [1] "ab"
+
+    commas <- function(...) {
+            # pass ... to functions inside
+            # collapse into single string
+            stringr::str_c(..., collapse=", ")
+    }
+
+    commas(letters[1:10])           # a, b, c, d, e 
+
+          ## [1] "a, b, c, d, e, f, g, h, i, j"
+
+    stringr::str_c("a","b", "c", sep=", ")
+
+          ## [1] "a, b, c"
+
+
+
+    ```r
+    #  using  7 %% 2 as 7 mod(2) is equal 1
+    #  8 %% 2 = 0
+
+    even <- 
+
+          ## Error: <text>:5:0: unexpected end of input
+          ## 3: 
+          ## 4: even <- 
+          ##   ^
+
+    # ---- rank, row_number() -------------
+
+    t <- tibble(x = 10:1,
+                letters = letters[1:10])
+    t %>% factor(letters)
+
+          ##       x letters 
+          ##    <NA>    <NA> 
+          ## Levels: a b c d e f g h i j k l m n o p q r s t u v w x y z
+
+    t 
+
+          ## # A tibble: 10 x 2
+          ##        x letters
+          ##    <int> <chr>  
+          ##  1    10 a      
+          ##  2     9 b      
+          ##  3     8 c      
+          ##  4     7 d      
+          ##  5     6 e      
+          ##  6     5 f      
+          ##  7     4 g      
+          ##  8     3 h      
+          ##  9     2 i      
+          ## 10     1 j
+
+    # each group, find lowest 2 scores, print original line#
+    df %>% as.tibble() %>%
+            group_by(factor) %>%
+            mutate(n = row_number()) %>%  #note:  WITHIN group
+                           select(n,factor,score) %>%
+           
+            arrange(desc(factor), desc(score)) %>%
+            top_n(-2)
+
+          ## Warning: `as.tibble()` was deprecated in tibble 2.0.0.
+          ## Please use `as_tibble()` instead.
+          ## The signature and semantics have changed, see `?as_tibble`.
+
+          ## Error in as.data.frame.default(value, stringsAsFactors = FALSE): cannot coerce class '"function"' to a data.frame
+
+    # ---- show SQL -----------------
+    q <- df %>% as.tibble() %>%
+            group_by(factor) %>%
+            mutate(n = row_number()) %>%  #note:  WITHIN group
+            select(n,factor,score) 
+
+          ## Error in as.data.frame.default(value, stringsAsFactors = FALSE): cannot coerce class '"function"' to a data.frame
+
+    q %>% dplyr::show_query()
+
+          ## Error in UseMethod("show_query"): no applicable method for 'show_query' applied to an object of class "function"
+
+    q %>% explain()
+
+          ## Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "function"
+
+    file  <- here("", "")
+    file  <- "rmd/00010_dplyr_misc_factor_examples.Rmd"
+
+    # in general, pdf will look nicer
+    rmarkdown::render(file,
+                      #output_format = "pdf_document",
+                      output_format = "html_document",
+                      output_file = "~/Downloads/print_and_delete/out")

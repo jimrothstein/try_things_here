@@ -1,0 +1,120 @@
+---
+title: "078_anova_simple_split_example.Rmd"
+output:
+  html_document:
+    df_print: paged
+editor_options:
+  chunk_output_type: console
+---
+
+#### split tibble, in lm (for training/testing)
+#### see r4ds Ch 15.2.1
+
+
+#### dot in split(.$cyl)
+
+
+```{r include=FALSE}
+library(tidyverse)
+library(reprex)
+library(tibble)
+
+library(knitr)
+# In r4ds, Chapter 21.5.1, this syntax is used.   My question is why the dot in split(.$cyl)?
+
+# works
+# not run
+# mtcars %>% split(f=.$cyl) 
+
+# error
+mtcars %>% split(cyl)
+knitr::knit_exit()
+```
+```{r use_get, eval=TRUE , include=TRUE}
+# get all options
+opts_chunk$get()
+str(opts_chunk$get())
+
+```
+
+#### 01A-base::split()
+```{r include=FALSE}
+library(reprex)
+
+# works
+split(mtcars, f=mtcars$cyl)
+
+# also works
+
+g  <- as.factor(mtcars$cyl)
+split(mtcars, g)
+
+split(mtcars, as.factor(mtcars$cyl))
+
+library(tidyverse)
+# works
+mtcars %>% split(f=mtcars$cyl)
+mtcars %>% split(f=.$cyl)
+
+# fails
+#mtcars %>% split(f = $cyl)
+mtcars %>% split(.x$cyl)
+mtcars %>% split(cyl)
+mtcars %>% split("cyl")
+
+
+split(mtcars, f="cyl")	# no error, but no split
+split(mtcars, 
+	  f=mtcars$as.factor(as.character("cyl") )
+	  )
+```
+
+
+```{r}
+x <- as_tibble(mtcars)
+typeof(x)    # list
+typeof(x)   # list
+glimpse(x)  # actually, list of 3 tibbles, for cyl=4,6,8
+
+
+```
+
+#### model mpg vs wt
+```{r}
+
+# split creates list of 3 tibbles (4,6,8)
+# LIST <- map(LIST of TIBBLES, f(TIBBLE))
+models <- mtcars %>% 
+  base::split(.$cyl) %>% 
+  map(function(df) lm(mpg ~ wt, data = df))
+
+typeof(models) # list (of 3 )
+
+# complicated:
+models %>% glimpse()
+summary(models)
+models %>% map(summary()) 
+%>% map_dbl(~.$r.squared)
+
+```
+
+
+#### 02-plot
+  *  plant.df  - from where?
+```{r plot}
+# plot, y is continuous, x is discrete (group)
+ggplot(plant.df, aes(x = group, y = weight)) +
+  geom_boxplot(fill = "grey80", colour = "blue") +
+  scale_x_discrete() + xlab("Treatment Group") +
+  ylab("Dried weight of plants")
+```
+#### 03-model
+```{r}
+mod = lm(weight ~ group, data = plant.df)
+#library(tidyverse)
+summary(mod)
+anova(mod)
+```
+
+
+

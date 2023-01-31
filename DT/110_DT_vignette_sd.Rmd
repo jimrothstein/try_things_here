@@ -1,0 +1,224 @@
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+fontsize: 11pt   
+geometry: margin=0.5in,top=0.25in   
+TAGS:  DT, Lahman, vignette
+---
+
+https://rdatatable.gitlab.io/data.table/articles/datatable-sd-usage.html
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = FALSE   ) # easier to read
+```
+
+
+```{r library, include=FALSE		}
+file  <- knitr::current_input() 
+library(jimTools)
+library(data.table)
+library(Lahman)
+``` 
+
+
+#### Create dt
+```{r begin}
+data('Teams')
+dt  <- setDT(Teams)
+dt
+
+data('Pitching')
+setDT(Pitching)
+Pitching %>% head(2)
+
+# .SD is stand in for set 
+identical(Pitching, Pitching[ , .SD])
+identical(Pitching[, .SD], Pitching[])
+```
+
+#### subset of columns
+```{r column_subset}
+# explicit restrict columns for use in .SD
+
+## 3 ways: (be sure using DT, not DF)
+    Pitching[ , .SD, .SDcols = c('W', 'L', 'G')]
+
+    x  <- c("W", "L", "G")
+    Pitching[, .SD, .SDcols = x]
+
+    # This also works, all rows, these 3 cols
+    Pitching[ ,  c('W', 'L', 'G')]
+```
+
+#### Convert cols from character() to factor: sapply 
+*  Character to factor
+```{r}
+# teamIDBR: Team ID used by Baseball Reference website
+# teamIDlahman45: Team ID used in Lahman database version 4.5
+# teamIDretro: Team ID used by Retrosheet
+
+# select these 3 columns
+f  <- c('teamIDBR', 'teamIDlahman45', 'teamIDretro')
+Teams[, .SD, .SDcols= f]
+
+# sapply on a column (ie list):   all character? Is this char[]
+Teams[, sapply('teamIDBR', is.character)]
+
+# now check all 3 are character
+Teams[, sapply(f, is.character)]  # atomic
+Teams[, lapply(f, is.character)]  # returns dt
+
+
+# easier!
+# Is sapply working on ALL 3 columns in f? YES How?
+# ANS:   see note in vingette on this.
+Teams[ , sapply(.SD, is.character), .SDcols = f]
+
+
+## in-place: convert 3 columns from character to factor
+##      using same column names
+##      Example of LHS := RHS form
+
+# Teams now changes in-place. (in memory)
+  Teams[, (f) := lapply(.SD, factor), .SDcols = f]
+  Teams[]
+  str(Teams)
+```
+
+#### select 
+```{r grouping}
+length(Teams) # 48 columns
+names(Teams) # Col names
+Teams[]
+
+t  <- c("Toronto Blue Jays")
+# shortcut
+Teams[,.(name,yearID)] 
+
+# but clearer:
+Teams[, .SD, .SDcols = c('name', 'yearID')]
+
+# 
+Teams[,.(name,yearID)][name == t,  ]
+
+# count (seasons, by teamID)
+Teams[, .N, by = teamID]
+# last entry!
+Teams[.N,]
+
+# most seasons?
+Teams[, .N, by = teamID][order(-N)]
+
+# NOTATION:    use by =.(x) , others are shorcuts
+# most recent year, .SD[.N] means select last, in the subset
+a
+Teams[ , .SD[.N], by = .(teamID)][,c("name","yearID", "attendance")]
+# shortcut
+Teams[ , .SD[.N], by = teamID][,c("name","yearID", "attendance")]
+
+Teams[ , .SD[1], by = teamID][,c("name","yearID", "attendance")]
+Teams[ , .SD, by = teamID][,c("name","yearID", "attendance")]
+
+
+#  Select columns by rules or grep (example:)  or patterns (see vignette)
+
+##  cols which are factors, which returns named integer vector
+##  Why not T/F ?  see next step
+        fkt_idx = which(sapply(Teams, is.factor))
+        fkt_idx
+
+##  convert Teams back to character (in-place)
+##  NOTE:  LHS := RHS form;  LHS does not accept a logical vector, expects
+        ##  integer vector
+        Teams[ , (fkt_idx) := lapply(.SD, as.character), .SDcols = fkt_idx]
+
+##  find uique teams, lgID (league ID?)
+        head(unique(Teams[[fkt_idx[1L]]]))
+
+        head(unique(Teams[[fkt_idx[2L]]]))
+        head(unique(Teams[["lgID"]]))
+
+        head(unique(Teams[["teamIDBR"]]), n=20L)
+Teams[, .SD, .SDcols = c("lgID", "teamID", "franchID", "teamIDBR",
+                         "teamIDlahman45")]
+```
+
+#### mtcars -- all works
+```{r mtcars}
+mt  <- mtcars
+setDT(mt)
+
+# EACH cyl, find max .mpg and show amount
+mt[, .SD ,   by=.(mpg)]
+mt[, max(.SD),        by=.(cyl), .SDcols=c('mpg')]
+mt[, max(mpg),        by=.(cyl), .SDcols=c('mpg')]
+
+mt[, head(.SD, 2), by=.(cyl)]
+mt[, .SD[1:2], by=.(cyl)]
+
+
+mt[order(cyl), .SD[1:2], by=.(cyl)]
+mt[order(-mpg), .SD[1:2], by=.(cyl)]
+
+
+mt[order(-mpg), .SD[1:2], by=.(cyl), .SDcols=c('mpg', 'disp')]
+mt[order(-mpg), .SD[1:2], by=.(cyl, vs), .SDcols=c('mpg', 'disp')]
+```
+
+#### max/min
+```{r stuck}
+
+## Good practicd !
+Teams[, .(yearID, max(attendance)), by = teamID]
+Teams[, .(yearID, max(attendance)), by = .( teamID )]
+
+# by year, which team had max/min attenance?
+Teams[yearID > 2000, .SD[which.max(attendance)], by = .(yearID ), 
+      .SDcols=c( 'teamID', 'attendance')]
+Teams[yearID > 2000, .SD[which.min(attendance)], by = .(yearID ), 
+      .SDcols=c( 'teamID', 'attendance')]
+
+
+```
+
+
+***
+
+```{r knit_exit(), include = FALSE  , eval=FALSE } 
+# knitr::knit_exit()
+```
+
+/newpage
+
+
+```{r render, eval=FALSE, include=FALSE 	} 
+# TODO:  file is found when knitr runs (see above)
+
+# file must be of form:
+# dir/name_of_this_file    where dir is relative to project root
+
+# NOTE:   .tex only works with PDF
+# NOTE:    tex will NOT work with html
+# in general, pdf will look nicer
+
+file  <-  "/home/jim/code/try_things_here/rmd/0088_base_package_commands.Rmd"
+
+rmarkdown::render(file,
+                  #output_format = "pdf_document",
+                  output_format = "html_document",
+                  output_file = "~/Downloads/print_and_delete/out")
+```

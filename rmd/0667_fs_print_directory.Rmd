@@ -1,0 +1,144 @@
+---
+title: "066_fs_examples.Rmd"
+output:
+  pdf_document:
+    extra_dependencies: ["booktabs"]
+    toc: yes
+  html_document:
+    toc: yes
+editor_options:
+  chunk_output_type: console
+---
+Ref: https://fs.r-lib.org/index.html
+
+
+#### Code to print files in r_try_things_here/
+#### special one time only - print directory
+```{r include=FALSE }
+knitr::opts_chunk$set(echo = TRUE, comment="")
+library(here)
+library(fs)
+library(lubridate)
+library(magrittr)
+library(tibble)
+library(dplyr)
+```
+
+
+print current dir, clean up time
+```{r}
+knitr::opts_chunk$set(echo= TRUE, include= TRUE)
+
+# dir_info, capture as_tibble
+# convert Positct date-time to simple date
+
+t <- as_tibble(dir_info()) %>% 
+  mutate(modification_time = lubridate::as_date(modification_time)) %>% 
+	select(path, size, modification_time )
+print(t, n=500)
+```
+
+get names of files in rmd
+```{r get_files}
+# Remove path info with path_file() 
+t <- as_tibble( fs::dir_info(here("rmd"))) %>% 
+  mutate(path = fs::path_file(path),
+    modification_time = lubridate::as_date(modification_time)) %>% 
+	select(path, size, modification_time )
+
+t
+```
+
+propose new file name, concatinate a prefix
+```{r new_file_name}
+
+prefix = "0"
+t  <- t %>% mutate(
+  new_path = stringr::str_c(prefix, path)) %>% 
+  select(path, new_path)
+t
+```
+
+Create and move a file
+```{r simple_write}
+fs::file_create(here("rmd","junk.txt"))
+fs::file_move(here("rmd","junk.txt"), here("rmd", "this_is_junk.ascii"))
+
+```
+
+```{r}
+old_file  <- t$path
+new_file   <- t$new_path
+new_file
+the_dir  <- "tmp"
+fs::file_move(here(the_dir,old_file), here(the_dir,new_file))
+
+# undo!
+fs::file_move(here(the_dir,new_file), here(the_dir,old_file))
+
+
+
+```
+
+
+
+
+#### file listing
+```{r include=FALSE}
+
+# dir_info, capture as_tibble
+
+# convert Positct date-time to simple date
+t <- as_tibble(dir_info()) %>% 
+  mutate(modification_time = lubridate::as_date(modification_time)) %>% 
+	select(path, size, modification_time )
+
+
+# ---- Working ----
+kable(cbind(t), "latex", booktabs = T, longtable=T) %>%
+kable_styling(latex_options = c("striped", "scale_down"))
+
+```
+
+
+```{r include=FALSE}
+# print(t, n=500)
+
+# DEFAULT:  
+# custom <-c('', '', '', '', '\\addlinespace') 
+
+# FAILDD  
+#custom <-c('','\\addlinepace')
+
+# customH <-  c("", "", "\\hline", "\\addlinespace")
+# customH <-  c("", "", "\\")
+
+# customH <- if (booktabs) c('', '', '', '', '\\addlinespace') else '\\hline'
+
+
+# ------- Working ------
+customH <-  c("", "", c("\\hline","\\addlinespace"))
+
+# longtable insures table completely prints
+kable(cbind(t), "latex", 
+      booktabs = T, 
+      #longtable = TRUE, 
+      linesep = customH  ) %>%
+kable_styling(latex_options = c("striped", "scale_down"))
+
+```
+
+#### 3rd way
+```{r }
+kable(cbind(t), "latex", 
+      booktabs = T, 
+      #longtable = TRUE, 
+      linesep = "\\addlinespace"  ) %>%
+kable_styling(latex_options = c("striped"))
+```
+
+```{r}
+knitr::knit_exit()
+
+```
+

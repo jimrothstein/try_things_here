@@ -1,0 +1,143 @@
+
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+--- 
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
+---
+
+<!-- 
+set cul   "cursorline
+cc=+1			"colorcolumn is 1 more than tw
+
+vim: to format all urls for md
+s/https.*/[&]()/g
+-->
+
+Simple Linear Regression
+- REF:  Rafael: https://www.youtube.com/watch?v=3KFwJd5-JD8
+- use basic plot(), abline() etc.
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = TRUE)
+```
+
+<!--  RENDER:  see bottom -->
+
+```{r library, include=FALSE		}
+library(jimTools)
+``` 
+
+Data
+```{r begin}
+set.seed(2021)
+x  <- 1:10
+e  <- rnorm(10, mean = 0, sd = 1)
+e
+y  <- 10 * x + 2 * e
+
+y
+# if not X11 use:
+
+pdf("~/Downloads/print_and_delete/01_data.pdf")
+plot(x, y, col=1)
+dev.off()
+
+```
+
+Guess slopes, plot
+```{r}
+
+y_hat  <- 9.8 * x
+y_hat
+
+pdf("~/Downloads/print_and_delete/02_guess.pdf")
+plot(x, y, col = 2 )
+abline(a = 0, b=9.8)
+abline(a = 0, b = 8.0, col=3)
+dev.off()
+```
+
+residuals, with guess
+```{r residuals}
+r  <-  y - 9.8 * x
+r
+
+pdf("~/Downloads/print_and_delete/03_residuals.pdf")
+plot(x, r, col = 2, ylim = c(-5, 5))
+abline(h = 0)
+dev.off()
+
+```
+fit:  Use lm, no y-intercetp, residuals better
+```{r}
+fit  <-  lm (y ~x - 1)
+
+y_hat  <- fit$coef * x
+y_hat
+
+r  <- y - y_hat 
+r
+
+
+pdf("~/Downloads/print_and_delete/04_lm_residuals.pdf")
+plot(x, r, col = 2, ylim = c(-5, 5))
+abline(h = 0)
+dev.off()
+
+```
+
+TSS  = ESS + ModelSS
+```{r sum_of_squares}
+ess  <- sum(r^2)
+ess
+
+
+modelss  <-  sum(y_hat ^ 2)
+modelss
+
+
+ess + modelss
+
+totalss  <- sum(y ^ 2)
+totalss
+
+
+# R^2
+modelss / totalss   # 0.999
+
+# compare to fit
+summary(fit)        # 0.999
+
+```
+
+
+
+
+
+***
+
+```{r knit_exit()} 
+knitr::knit_exit()
+```
+
+/newpage
+
+```{r render, eval=FALSE	} 
+file <- ""
+file  <- basename(file)
+dir <- "rmd"
+
+jimTools::ren_pdf(file,dir)
+jimTools::ren_github(file, dir)
+```

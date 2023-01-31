@@ -1,0 +1,82 @@
+
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+	 
+--- 
+# Spaces, no Tabs
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
+---
+
+
+<!-- 
+set cul   "cursorline
+cc=+1			"colorcolumn is 1 more than tw
+
+vim: to format all urls for md
+s/https.*/[&]()/g
+-->
+
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  
+											comment="      ##",  
+											error=TRUE, 
+											collapse=TRUE) 
+```
+
+<!--  RENDER:  see bottom -->
+
+```{r library, include=FALSE		}
+library(jimTools) 
+``` 
+
+
+```{r begin}
+# for each ID, count rows with non-zero values, build list of types (with
+non-zero values)
+my_tibble <- tidyr::tibble(
+  ID = c(1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5),
+  value = c(0,0,0,0,
+            1,1,0,1,
+            1,1,1,1,
+            0,1,0,1,
+            1,0,0,0),
+  type = rep(c("a", "b", "c", "d"), 5)
+)
+my_tibble
+t  <- my_tibble
+
+t[, t$value != 0, ]
+t$value == 0
+t$ID[t$value != 0]
+
+
+library(dplyr)
+t %>% group_by(ID) %>% mutate(z = dplyr::count(ID))
+
+
+```
+***
+
+```{r knit_exit()} 
+knitr::knit_exit() 
+```
+
+/newpage
+
+```{r render, eval=FALSE	} 
+file <- "" 
+file  <- basename(file) 
+dir <-"rmd"
+
+jimTools::ren_pdf(file,dir)
+jimTools::ren_github(file, dir)
+```

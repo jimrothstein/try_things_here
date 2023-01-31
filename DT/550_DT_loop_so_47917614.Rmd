@@ -1,0 +1,148 @@
+
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+fontsize: 11pt   
+geometry: margin=0.5in,top=0.25in   
+TAGS:  data.table,purrr,structure,dput,normalize,starwars
+---
+
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = FALSE   ) # easier to read
+library(data.table)
+```
+
+REF: https://stackoverflow.com/questions/47917614/use-equivalent-of-purrrmap-to-iterate-through-data-table?noredirect=1&lq=1
+
+*  This code is without purrr::
+*  But original code was using data.table, magrittr, and purrr::
+*  Don't even look at purrr:: version,  this is so much simpler!
+
+```{r begin}
+# dput(Input_File)
+
+Input_File  <- structure(list(  
+               Zone = c("East", "East", "East", "East", "East", 
+"East", "East", "West", "West", "West", "West", "West", "West", 
+"West"), 
+               Fiscal.Year = c(2016, 2016, 2016, 2016, 2016, 2016, 
+2017, 2016, 2016, 2016, 2017, 2017, 2018, 2018), 
+               Transaction.ID = c(132, 
+133, 134, 135, 136, 137, 171, 171, 172, 173, 175, 176, 177, 178
+), 
+               L.Rev = c(3, 0, 0, 1, 0, 0, 2, 1, 1, 2, 2, 1, 2, 1), L.Qty = c(3, 
+0, 0, 1, 0, 0, 1, 1, 1, 2, 2, 1, 2, 1), A.Rev = c(0, 0, 0, 1, 
+1, 1, 0, 0, 0, 0, 0, 1, 0, 0), A.Qty = c(0, 0, 0, 2, 2, 3, 0, 
+0, 0, 0, 0, 3, 0, 0), 
+               I.Rev = c(4, 4, 4, 0, 1, 0, 3, 0, 0, 0, 1, 0, 1, 1), 
+               I.Qty = c(2, 2, 2, 0, 1, 0, 3, 0, 0, 0, 1, 0, 1, 1)
+               ), 
+               .Names = c("Zone", "Fiscal.Year", "Transaction.ID", "L.Rev", 
+"L.Qty", "A.Rev", "A.Qty", "I.Rev", "I.Qty"), 
+               row.names = c(NA, 14L), 
+               class = "data.frame")
+```
+```{r data.table}
+Input_File
+library(data.table)
+
+# group on 2 columns, sum 1 column; return NEW DT
+setDT(Input_File)[, .(sum = sum(L.Rev)), by = .(Zone, Fiscal.Year)]
+
+
+```
+
+
+### List_columns, Starwars 
+```{r}
+library(dplyr)
+library(data.table)
+
+# list of lists
+sw  <- as.data.table(dplyr::starwars)
+
+# 14 names
+names(sw)
+
+
+# use films only
+films  <- sw$films
+
+# 87, each holds chr[]
+length(films)
+head(films)
+
+films[[1]]
+```
+
+```{r}
+sw  <- sw[, .(films = films[[1]]),
+          by = c(...)]
+# normalized!
+sw  <- sw[, .(films = films[[1]]),
+          by = c("name")]
+sw
+```
+
+### Using for loop, to create new column (modify-in-place)
+```{r loop}
+
+df <- data.frame(x=rnorm(100))
+dt  <- as.data.table(df)
+head(dt)
+
+# each row i, set new col v = i (in place)
+for(i in 1:100)dt[i, v := i]
+head(dt)
+
+
+
+```
+
+***
+
+```{r knit_exit(), include = FALSE  , eval=FALSE } 
+# knitr::knit_exit()
+```
+
+
+```{r render, eval=FALSE, include=FALSE 	} 
+# TODO:  file is found when knitr runs (see above)
+
+# file must be of form:
+# dir/name_of_this_file    where dir is relative to project root
+
+
+file  <- "00293_DT_misc.Rmd"
+file  <- here("rmd", file)
+file
+
+# NOTE:   .tex only works with PDF
+# NOTE:    tex will NOT work with html
+# in general, pdf will look nicer
+
+rmarkdown::render(file,
+    #output_format = "pdf_document",
+    #output_format = "html_document",
+    output_format = "md_document",
+    # Both:
+    #output_format=c("html_document","md_document"),
+    output_dir = "md",
+   # output_file = "out"
+)
+```

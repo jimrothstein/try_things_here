@@ -1,0 +1,41 @@
+#	file <- "100_bayes_binomial_model.R"
+#
+
+#
+#	NOTES:	alt-f4  to remove window displaying curve.
+#					xname tells function which variable to plot over.
+#					Likelihood function:  given the data, which p fits best?
+#
+#	Given thros (n), successes(k), find mass density for give prob
+f  <- function (n, k, prob) {
+	dbinom(x=k,
+				 size=n,
+				 prob=prob)
+}
+
+
+f(n=2,k=0,prob=1/2)
+f(n=2,k=1,prob=1/2)
+f(n=2,k=2,prob=1/2)
+
+curve(f(n=200,k=100,p), 0,  1, xname="p")
+
+
+##	A very unfair coin has p=0.1, show what n=100  (size=1 experiment) throws might look like 
+##	expect 99 heads/out of 100
+##
+sum(rbinom(n=		100	, size=1, p=0.1	))
+
+#	prior, expect out of n=100 throws, 99 heads
+posterior <- function(n,k, prob) {
+		dbinom(x=k, size=n, prob)*dbinom(x=99, size=100, prob)
+}
+
+##	Aftr 100 throws
+curve(posterior(n=100, k=50, prob), 0, 1, xname="prob")
+
+##	After 1000 throws, almost exactly right!
+curve(posterior(n=1000, k=500, prob), 0, 1, xname="prob", add=T)
+
+
+##

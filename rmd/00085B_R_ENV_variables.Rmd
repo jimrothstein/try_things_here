@@ -1,0 +1,208 @@
+---
+title: "085B_R_ENV_variables.Rmd"
+output:  
+  html_document:
+        code_folding: show
+        toc: true 
+        toc_depth: 3
+        toc_float: true
+  pdf_document:
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+geometry: "left=2cm,right=2cm,top=2cm,bottom=2cm"
+fontsize: 12pt
+TAGS:  Sys.getenv(),options() ,R environment variable, 
+---
+
+ includes:  021_efficient_coding	
+
+### PURPOSE:  understand how R uses options() and Sys.getenv()
+###  Uses of Sys.getenv() and options()
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE, 
+                      comment = "        ..##")
+
+
+library(tibble)
+library(tidyr)
+library(dplyr)
+library(magrittr)
+library(xfun)
+```
+
+## R environment variables
+*  See: https://stat.ethz.ch/R-manual/R-devel/library/base/html/EnvVar.html
+*  get/set , listing, searching for 
+
+
+### examine Sys.getenv()
+```{r main, eval=TRUE, inlcude=TRUE}
+
+l  <- c("R_HOME", "R_LIBS_USER", "R_HIST_SIZE", "R_BROWSER")
+sapply(l, Sys.getenv)
+
+.libPaths()
+
+
+
+# examine character vector
+x  <- Sys.getenv()
+
+library(data.table)
+dt  <- data.table(x)
+dt[1:5,]
+
+
+```
+
+## grep on names of R environment variables. 
+```{r grep}
+grep(x=names(Sys.getenv()),
+     pattern = "dirs",
+     value=TRUE,
+     ignore.case=TRUE)
+
+
+# get elment #
+n  <- grep(x=names(Sys.getenv()),
+     pattern = "dirs",
+     value=FALSE,
+     ignore.case=TRUE)
+# display
+Sys.getenv()[n]
+
+
+# for "libs"
+n  <- grep(x=names(Sys.getenv()),
+     pattern = "libs",
+     value=TRUE,
+     ignore.case=TRUE)
+Sys.getenv()[n]
+```
+
+
+
+
+```{r .libPaths, eval=FALSE, echo=FALSE}
+
+#### 4-.libPaths(), list all paths, purpose, name
+
+.libPaths()
+# fix:
+
+# t_libPaths <- tibble(.libPaths()) %>% 
+#   mutate(
+#   purpose =  c("added packages", 
+#                ".Library.site", 
+#                ".Library.site", 
+#                "base R pkgs"),  
+# 
+#   quantity  = c("many", "Empty", "Empty", "many")  ,
+#   env_var = c("R_LIBS_USER","","","R_LIBS?"),
+#   aka = c("",".Library.site", ".Library.site", ".Library.site, .Library"))
+# 
+# t_libPaths
+```
+
+## Each path in .libPaths(), list installed packages
+
+```{r list.dirs}
+.Library
+if (FALSE)
+  .Library
+  lapply(.libPaths(), list.dirs, recursive=FALSE)
+```
+
+
+```{r exit, include=FALSE}
+knitr::knit_exit()
+```
+
+### Session_info
+```{r session_info}
+
+# yihui's improved
+xfun::session_info()
+
+# note:  results is S3 object
+(z  <- utils::sessionInfo())
+sloop::otype(z)
+# methods that handle this object?
+sloop::s3_methods_class(z)
+
+# stack is generic function for object z
+
+
+
+session_info()
+```
+
+
+
+
+
+## R help
+```{r}
+# REF https://csgillespie.github.io/efficientR/set-up.html
+
+?mpg   # mpg is dataset (if loaded)
+?stats  # package
+?reprex # function
+?ggplot   # function
+??reprex  # topic
+??ggplot   # topic 
+??pch      # topic 
+??regression
+
+help.search("pch")  # long form
+
+
+## R Startup
+```{r startup}
+
+# In this order, R seeks .Rprofile $R_HOME, $HOME, project directory
+?Startup
+R.home() 
+site_path = R.home(component = "home") # 
+fname = file.path(site_path, "etc", "Rprofile.site") # /usr/lib/R/etc/Rprofile.site
+
+file.exists(fname) # True
+```
+
+
+## .Rprofile
+```{r Rprofile}
+
+file.exists("~/.Rprofile") # True, also
+
+options()
+# 2 sign digits  (3.7)
+options(prompt = "R> ", digits = 2, show.signif.stars = FALSE, continue = "  ")
+
+getOption("repos")  # cran.rstudio.com
+
+fortunes::fortune(50)  # error
+.Last = function() {
+        
+        message("Goodbye at ", date(), "\n")
+}
+.Last()
+```
+
+```{r render, eval=FALSE, include=FALSE 	} 
+# TODO:  file is found when knitr runs (see above)
+
+# file must be of form:
+# dir/name_of_this_file    where dir is relative to project root
+
+file  <- here("rmd", "00085B_R_ENV_variables.Rmd")
+file 
+# NOTE:   .tex only works with PDF
+# NOTE:    tex will NOT work with html
+# in general, pdf will look nicer
+
+```
+
+
+

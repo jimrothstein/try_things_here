@@ -1,0 +1,84 @@
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: hide
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    template: trivial_template.tex 	
+    latex_engine:  lualatex  
+    toc: true
+    toc_depth:  4   
+    keep_tex:  true
+  header-includes:  
+    -  \usepackage{helvet}  
+    -  \usepackage{hyperref}
+    -  \renewcommand{\familydefault}{\sfdefault}  
+    -  \usepackage{ulem}
+fontsize: 10pt   
+geometry: margin=0.5in,top=0.25in   
+---
+
+<!-- 
+			NOTE:	 modified template (template:  )
+
+    template:	~/dotfiles/proposed_template.latex
+
+    template:	trivial_template.tex
+
+-->
+
+\footnotesize {is this footnotesize?}
+
+
+#### Base R plot() examples
+
+-  REF:  https://dcgerard.github.io/stat234/base_r_cheatsheet.html 
+-  https://rdrr.io/r/
+-  ALT-F4 to close popup windows
+-	`graphics device` refers to lower-level (dots, line, text)
+-	`graphics engine` refers to higher level (draw rectangles, polygons, center
+-	`cairo` - type of system?
+	...)
+
+-	cex	(point size)
+-	pch (point shape)
+- col (color)
+- lty (line type)
+
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = T   ) # easier to read
+library(ggplot2) # only for databas
+#	for DEBUG
+options(tinytex.verbose = TRUE)
+
+```
+
+```{r render, eval=FALSE, include=F	} 
+{
+##	Canonical format
+file <- "/home/jim/code/try_things_here/graphics/999_simple_example_with_trivial_template.Rmd"
+file  <- normalizePath(file)
+file
+
+# in general, pdf will look nicer
+rmarkdown::render(file,
+                  output_format = "pdf_document",
+                  #output_format = "html_document",
+									output_file = "trivial.pdf")
+
+#                  output_file = "~/Downloads/print_and_delete/out")
+}
+tinytex::pdflatex('trivial.tex')
+tinytex::lualatex('trivial.tex')
+tinytex::tlmgr_update()
+
+```

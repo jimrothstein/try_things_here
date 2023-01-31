@@ -1,0 +1,114 @@
+--- 
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  4 
+fontsize: 10pt 
+geometry: margin=0.4in,top=0.25in 
+TAGS:  dput
+---
+
+####  For text (non-binary) storage:  use dput/dget or dump/source (muliple
+obj)  
+
+	*		Use dput() outputs to console a structure or something easy cut & paste.
+  *  dput() returns a R object,  portable.  REF:  see Peng Chapter 7  
+  *  dump: for multipe objects/source()  
+
+```{r library, include=FALSE		}
+``` 
+
+#### EXAMPLE:   dput()  
+
+```{r dput1}
+y  <- list(a=1, b=2)
+dput(y)
+
+# keeps meta data
+dput(mtcars[1:2,])
+```
+
+#### EXAMPLE:  dput simple data.frame  
+
+```{r dput2}
+
+test <- data.frame(x = 1, y = 1)
+dput(test)
+
+
+## probe
+# structure
+output <- dput(test) # output is to console
+output
+typeof(output)  # list
+
+# write structure to file
+if (FALSE )
+  dput(test, "junk.txt")
+
+```
+
+#### EXAMPLE:  capture.output 
+```
+     Evaluates its arguments with the
+     output being returned as a character
+     string or sent to a file.  Related to
+```
+
+```{r capture_output}
+# capture.output()
+
+v  <- capture.output(dput(test))
+v  
+typeof(v) # char[]
+
+
+# collapse to single ch[]
+paste0(v, collapse="/n")
+
+
+# function?
+# as chr[] vector
+capture.output(dput(paste0))
+
+# single chr[]
+s  <- paste0(capture.output(dput(paste0)), collapse = "/n")
+s
+
+```
+
+#### save structure as expression, expr()
+  *  called a defused expression, like blueprint
+  *  so prevents execution of code
+  *  see help for `expr`
+```{r dput_expr}
+z  <- rlang::expr(dput(test))
+z
+typeof(z)
+
+c  <- eval(z)
+```
+
+```{r knit_exit()} 
+knitr::knit_exit() 
+```
+
+```{r render, eval=FALSE, include = F	} 
+file <- "BASE/0200_base_dput_structure.Rmd"
+file  <- basename(file) 
+
+dir <-"BASE/"
+file  <- paste0(dir, file)
+file
+
+rmarkdown::render(file, 
+       output_format="pdf_document",
+       output_dir = "~/Downloads/print_and_delete"
+       )
+
+
+```

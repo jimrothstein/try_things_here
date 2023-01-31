@@ -1,0 +1,794 @@
+# Additional work on Conditions, Error Handling
+# Chapter 8
+```{r deparse}
+
+# =========================
+#deparse, substitute KEEP
+# =========================
+f  <- function(x)	substitute(x)
+g   <-function(x) deparse(substitute(x)) 
+
+f(unknown) # returns unquoted
+# unknown
+g(unknown) # returns in quotes, as char[1]
+# [1] "unknown"
+
+```
+```{r why}
+
+# why need deparse() ?   then returns "\"state\""
+test<- function(data, x) {
+ substitute(x)
+}
+test(bear_states,"state") # "state"
+#XXXXXXXXX  E N D
+```
+
+# =========================
+# try(): `ignores errors`
+# =========================
+# book, should read fail, default has a value, NULL
+	default  <- NULL
+	# warning only
+	try(default  <- read.csv('junk'), silent=TRUE)
+	print(default) # NULL
+
+	# here x1 has no default, so error propagates
+	try(x1 <- read.csv('junk'), silent=TRUE)
+	print(x1 )
+# ===================================================
+	#### 8.1 QUIZ
+# 
+
+
+# ================================
+	#### 8.2.2 warning() are cached
+# ================================
+
+	f  <- function() {
+		cat("1", "\n")
+		warning("A")
+		# show stack ?
+		lobstr::cst()
+		cat("2", "\n")
+		warning("B")
+		cat("3", "\n")
+		warning("C")}
+		return (t)	
+
+# 
+
+
+		#### 8.2.4 Exercises
+# 
+
+# ========================================================
+#### 8.4 <cnd>,abort(), tryCatch() have default behavior
+# ========================================================
+    #
+		# handlers can modify default behavior
+# TEMPLATE for tryCatch
+# "context of where tryCatch is run"
+# tryCatch DOES handle error (absorbs it)
+		# but price is no more code in expr portion of tryCatch will run.
+		#Control resumes AFTER the block
+
+		# DEFUALT for abort() is end with an error.
+  f <- function() {
+		tryCatch(
+						 expr = {
+						 message("before abort") 
+						 lobstr::cst()
+						 abort("end")
+					  message("after abort")
+						 },
+
+						 error = function(e){
+							 lobstr::cst()
+							 e
+						 }
+	  )# end tryCatch
+
+		message("after tryCatch block")
+	}
+	f()
+# 
+
+
+# ===========================
+# 8.4.1 - Condition Objects# 
+# ===========================
+
+
+
+# ============================
+###  GET BACK to HADLEY ####
+# ============================
+
+# In R, cnd `fall from the sky`;   to catch a condition, use catch_cnd()
+# (well, no, does not fall from sky; and we can catch it)
+
+# r is never created, just more errors
+if (F) {
+  r  <- abort("this won't return a condition")
+  r 
+}
+
+
+a  <- rlang::catch_cnd(10) # NULL, no condition
+a
+c <- rlang::catch_cnd(10/0) # NULL
+c
+
+# ==============================
+# begin real stuff:  example 1
+# ==============================
+#
+# This gives a condition:
+b  <- rlang::catch_cnd(rlang::abort("jim_error", "class_bizzare"))
+b
+
+# examine it, list
+length(b) # 3
+str(b, max.depth=1)
+
+
+# aside  inherits()
+class(b) # inherits from "class_bizzare" "rlang_error" "error" "condition"
+inherits(b,"class_bizzare")  # TRUE
+inherits(b,"condition")  # TRUE
+
+last_error()
+last_trace()
+summary(last_error())
+
+attributes(b)
+base::conditionCall(b) #NULL
+base::conditionMessage(b) # 
+
+
+# ===========
+# Example 2
+# ===========
+#
+# produce Error
+g   <- function(x) h(x) 
+h  <- function(x) abort(message = "h_junk", class="class_h")
+g() #run
+
+# catch_cnd to probe a cnd (appears to handle & swallow the condition)
+d  <- catch_cnd(expr= {y <- g()}) 
+
+# best way to examine cnd?
+str(d, max.level=1)
+last_error()
+last_trace()
+summary(last_error())
+
+# purpose?
+options(rlang_backtrace_on_error = "branch")
+getOption(rlang_backtrace_on_error)
+
+
+attributes(b)
+
+base::conditionCall(b) #NULL
+base::conditionMessage(b) # "jim_error"
+#
+str(d, max.level=1)
+attributes(d)
+base::conditionCall(d) #NULL
+base::conditionMessage(d) # 
+
+# ==============================
+#### part ii, trycatch and cnd
+# ==============================
+#
+tryCatch(10)
+tryCatch(10, finally=print("succcess"))
+s  <-simpleCondition("simple condition")
+e <- simpleError("test error")
+m  <- simpleWarning("simple warning")
+warning(m)  # throw warning m
+stop(e) # throw error e
+stop(s) # throw condition s
+tryCatch(stop(e), finally = print("error e"))
+
+tryCatch(stop(e), error=function(e) e , finally=print("got it"))
+tryCatch(stop("fred"), error=function(e) e , finally=print("got it"))
+
+out  <- tryCatch( 
+				{ stop(s)},
+			 error = function(e){message("error"); return("error")},
+			 error = function(s){message("simple cond"); return("s_cond")},
+			 warning = function (w) {message("warning"); return("warn")}
+		 )
+out	# 
+
+# 
+
+
+#### Bubbles, 8.4.3
+# Bubbles all the way up to default handler, which generates the message
+# As soon as hits "Hello"   message handlers are triggered
+# without muffle
+withCallingHandlers(
+  message = function(cnd) cat("Level 2\n"),
+  withCallingHandlers(
+    message = function(cnd) cat("Level 1\n"),
+
+    message("Hello")
+  )
+) 
+# With muffle, but "Hello" does not get printed
+withCallingHandlers(
+  message = function(cnd) cat("Level 2\n"),
+  withCallingHandlers(
+    message = function(cnd) {cat("Level 1\n")
+		cnd_muffle(cnd)
+		},
+    message("Hello")
+  )
+) 
+
+
+
+
+#### Exercises 8.4.5
+
+# 3  EXPLAIN CODE
+# =================
+# cat() does not trigger signal?
+counter <- 0
+withCallingHandlers(
+  message = function(cnd) {
+		# if (counter == 1) {
+		#     counter <<- counter + 1
+		#     lobstr::cst()
+		# }
+		lobstr::cst()
+		cat("before b","\n") 
+		message("b")
+	},
+  withCallingHandlers(
+    message = function(cnd) {
+			cat("before a","\n") 
+			message("a")
+		},
+	  expr= { 
+			cat("before c","\n") 
+			message("c")
+		}
+  )
+)
+
+#> b
+#> a
+#> b
+#> c
+
+# 
+
+# from rlang:: docs msg, `class` data=# 
+y  <- NULL
+tryCatch(
+			expr = {
+					#abort("this is an error ", "ERROR_BAD_CLSS", data="jim")
+					warn("just a warn", "WARN_simple", data="jim")
+		 			y  <- 1},
+		 error = function(e){
+			 		 message("*** error ***")
+		 			 print(e)
+					 y <- 2 # never get here
+				 },
+		 warning = function(w) {
+			 			message(paste0("*** warning *** meta=", w$data))
+		 				print(w)
+						y  <- 3
+		 },
+	  	finally = { y  <- 4
+								 print(paste0("y = ",y ))}
+				 )
+
+summary(last_error())
+rlang::last_error()
+rlang::last_trace()# 
+
+# try with/without return x
+# safediv(), what does tryCatch return? 
+f  <- function(x) {x <- 2 
+return(x)}
+f(1)
+
+g  <- function(x) {x <- 2 
+}
+
+g(1)
+
+
+
+# STUDY ... note that if ERROR, tryCatch never returns to print("in f1")
+safediv  <-  function(a,b) {
+	f1  <- function(a,b) {
+		a/b 
+		print("in f1")
+		return (a/b)
+	}
+	f2  <- function(err) NaN
+	results  <- tryCatch(f1(a,b), error=f2)
+	return(results)
+} 
+
+# NO ERROR explicitly appears!
+safediv(4,2)
+safediv(5,2)
+safediv(6,2)
+
+z <- safediv(4,3)
+z
+
+z  <-  safediv(2,"a")
+z
+
+z  <-  safediv(2,0)
+z
+# 
+
+
+# Ref: "Once Upon a Data"
+# original expr
+
+
+m  <- function(message,class,x) abort(message=message,
+																		class="class_f1_error",
+																		detail = class,
+																		x=x)
+f1 <- function(x) {
+		x  <- runif(1,-10,10)
+	 	if(x<0) {
+			message = "x can not be negative"
+			class="class_f1_less_than_0"
+			m(message, class, x)
+		}
+		if (x <1) {
+			message = "x must be >1, not negative"
+			class = "class_f1_less_than_1"
+			m(message, class, x)
+		}
+		if (x >= 1) rlang::inform("x is good")
+	}
+
+f1()	 
+
+f2  <- function(m =2){
+						m*f1()
+					}
+
+
+# handler 
+error_handler_f2  <- function(cnd){
+	message  <- "f2 reports an error"
+
+	if (inherits(cnd,"class_f1_error" )){
+		message  <- paste0("Problem is from f1 \n",cnd$message, "\n",
+											 cnd$class, cnd$x)
+	}
+	# the response, show new error
+	abort(message = message,
+				class="class_f2_error",
+				x=cnd$x
+				)
+}
+
+r  <- 	tryCatch(
+								error = error_handler_f2,
+								#error = function(cnd) 0,
+								expr = f2()
+								)
+
+
+str(r, max.level=1)
+r$x
+rlang::last_error()
+rlang::last_trace()
+# 
+
+## from so, withRestarts
+theExpression  <- function() { 
+					if((a <- runif(1))>0.5) 
+						print(paste0("i= ", i, " ", a) )
+					else 
+#						stop(a)
+#						abort("oops","class=number", data = a)
+						warn("oops","class=number", data = a)
+}
+for (i in 1:20) {
+	withRestarts(
+				tryCatch( 
+					expr = 	  theExpression(),
+					finally = print(" ")
+										#print("loop body finished!")
+					), 
+				# restarts
+				abort = function(){}
+	)
+}# }}}
+
+# ========================
+# version 2 (per Lionel)
+# ========================
+
+f1 <- function() {
+		x  <- sample(1:100, size=1) 
+		x  <- x %% 7 
+		if (x == 0) rlang::abort("zero!", "sub_class_zero")
+		if (x == 1)	rlang::abort("one!", "sub_class_one")
+		return(x)
+}
+
+replicate(n=10,f1())
+
+error_handler  <- function(cnd) cnd
+
+z <- tryCatch(expr=f1(),
+				 error = error_handler)
+
+
+
+y  <- 0
+# ============================
+# switch() how it works, by index
+x  <- 1
+switch (x, {"one"}, {"two"})
+
+# ============================
+y <- 4
+switch(9, {"You did it"}, {"sorry"}, default={"nope"})
+
+
+
+ 		switch(2, 
+			 0 = {val  <- 0; msg  <- "you did it"; print(val)},
+
+			1	  = {val <- 1; msg  <- "sorry"},
+			2   = "222"
+		  default = {val  <- 9999; msg  <- "you lose"}	
+			)# 
+
+			message = "x must be >1, not negative"
+			class = "class_f1_less_than_1"
+		
+	 		if(x<0) {message = "x can not be negative"
+			class="class_f1_less_than_0"}
+			
+			abort(message = message,
+						class = "class_f1_error", # .subclass deprec
+						detail = class,
+						x=x)
+	} else {
+			rlang::inform("x is good")
+			x	
+	}
+}
+
+f1()	 
+
+f2  <- function(m =2){
+						m*f1()
+					}
+
+
+# handler 
+error_handler_f2  <- function(cnd){
+	message  <- "f2 reports an error"
+
+	if (inherits(cnd,"class_f1_error" )){
+		message  <- paste0("Problem is from f1 \n",cnd$message, "\n",
+											 cnd$class, cnd$x)
+	}
+	# the response, show new error
+	abort(message = message,
+				class="class_f2_error",
+				x=cnd$x
+				)
+}
+
+r  <- 	tryCatch(
+								error = error_handler_f2,
+								#error = function(cnd) 0,
+								expr = f2()
+								)
+
+
+str(r, max.level=1)
+r$x
+rlang::last_error()
+rlang::last_trace()# 
+
+# withCallingHandlers
+
+# f version 1
+# =============
+f  <-  function() {
+	warn("WARNING: ")
+	print("After warning...")
+
+}
+
+# With no error handling ...
+f()	# terminates after warning
+
+# With withCallingHandlers to get `recovery`
+withCallingHandlers(f(),
+										warning=function(w){
+											cat("handling the warning", "\n") 
+											invokeRestart("muffleWarning") # return to call stack; continue
+										}
+	)
+
+
+# f version 2
+# =============
+# add an error to f()
+f  <-  function() {
+	warn("WARNING: ")
+	print("After warning...")
+	log("no number")
+	print("After error...")
+
+}
+# 
+# add error handling, but .... how to handle this better? 
+withCallingHandlers(f(),
+										warning=function(w){
+											cat("handling the warning", "\n") 
+											#w  <- NULL
+											invokeRestart("muffleWarning")# return to call stack; continue
+										},
+										error=function(e) {
+											cat("handling the error", "\n")
+											print("continue")
+											#e  <<- NULL
+										}
+	)
+
+
+# Instead, best of both tryCatch and withCallingHanlders?
+
+tryCatch(
+  withCallingHandlers(f(),
+										warning=function(w){
+											cat("handling the warning", "\n") 
+											invokeRestart("muffleWarning")# return to call stack; continue
+										},
+										error=function(e) {
+											cat("handling the error", "\n")
+											print("continue")
+										}
+	)
+)
+
+print("After tryCatch")# 
+
+#
+f  <- function(x) log(x)
+f(10)
+f(-1) # warninga
+f(0)
+f()
+f("a")
+
+start  <- function(x){
+ withCallingHandlers(f(x),
+										warning=function(w){
+											cat("handling the warning", "\n") 
+											invokeRestart("muffleWarning")# return to call stack; continue
+										},
+										error=function(e) {
+										
+											cat("handling the error", "\n")
+											invokeRestart("muffleWarning")# return to call stack; continue
+											# cnd_muffle(e) # wants restart
+											print("continue")
+										}
+	)
+}
+
+start(10	)
+start(-1)
+start(0)
+start("a")
+
+#####
+withCallingHandlers(
+  message = function(cnd) cat("Level 2\n"),
+  withCallingHandlers(
+    message = function(cnd) cat("Level 1\n"),
+
+    message("Hello")
+  )
+) 
+
+##### withCallingHanlders(), signal(), trace_back() ***simple*** 
+
+
+#TEMPLATE
+# =========
+expr=log(10)
+message_handler  <- function(m) 0
+error_handler  <- function(e) 0
+withCallingHandlers(expr,
+										message= message_handler(m),
+										error=error_handler(e))
+
+
+expr2  <- expr
+# TEMPLATE NESTED
+withCallingHandlers(message= message_handler(m),
+										error=error_handler(e),
+										expr= {withCallingHandlers(
+															message=message_handler(m),
+															error=error_handler(e),
+															expr2) 
+										}
+									)# 
+# broken - TODO
+# TEMPLATE NESTED, trace_back
+expr2  <-  function(x) abort(message("in expr", class="class_trace"))
+
+f  <-  function(x) {
+withCallingHandlers(message= message_handler(m),
+										error=function(e) stop(e),
+										expr= {withCallingHandlers(
+															message=message_handler(m),
+															error=error_handler(e), 
+															expr  = x 
+																		
+															)
+													}
+									)
+
+
+
+}
+f(0)
+f("hello")
+f(stop())
+f(abort("a;dfj", "a dlkf;j"))
+last_error()$parent$trace
+trace_back()
+# 
+# Display a simplified backtrace on error for both base and rlang
+# errors:
+
+ options(
+  rlang_backtrace_on_error = "branch",
+   error = rlang::entrace
+ )
+ stop("foo")
+last_error()
+last_trace()
+
+
+#### traceback()
+# show functions, bottom = first
+# n= cut off 
+f <- function(n) {
+    x <- 1
+    g(n)
+}
+g <- function(n) {
+		cat("-----------------", "\n")
+    traceback(n)
+		cat("-----------------", "\n")
+		lobstr::cst()
+		cat("-----------------", "\n")
+}
+f(0)
+f(1)
+# 
+
+# Chapter 8.6 Applications
+# ==========================
+
+# graceful error catching: log and silent/not silent msgs
+fail_with <- function(expr, value = NULL) {# 
+  tryCatch(
+    error = function(cnd) value,
+		warning = function(cnd) value,
+    expr
+  )
+}
+# NA_real is real form of NA
+fail_with(log(10), NA_real_)
+fail_with(log("x"), NA_real_)
+fail_with(log(-2), NA_real_) # triggers warning
+
+
+try2 <- function(expr, silent = FALSE) {
+  tryCatch(
+    error = function(cnd) {
+      msg <- conditionMessage(cnd)
+      if (!silent) {
+        message("Error: ", msg)
+      }
+      structure(msg, class = "try-error")
+    },
+    expr
+  )
+}
+
+try2(1)
+
+try2(stop("Hi"))  # where is RED Error triggered?
+try2(stop("Hi"), silent = TRUE)# 
+
+R-4.0.0's NEW file announced a new 'classes' argument to suppressWarnings (and suppressMessages).  It does not seem to limit the suppression to the desired classes of warnings.# 
+
+f <- function (x)
+{
+    if (anyNA(x))
+        warning(warningCondition("NAs in x", class = "NA_warning"))
+    if (any(x < 0, na.rm = TRUE))
+        warning(warningCondition("negatives in x", class = "negative_warning"))
+    log2(x)
+}
+
+# useful
+suppressWarnings(f(c(NA, -4, 8)), classes="NA_warning") # expect 2 warnings
+
+#[1]  NA NaN   3
+
+#useful
+withCallingHandlers(f(c(NA,-4,8)), condition=function(e)print(class(e)))
+
+#[1] "NA_warning" "warning"    "condition"
+#[1] "negative_warning" "warning"          "condition"
+#[1] "simpleWarning" "warning"       "condition"
+#[1]  NA NaN   3
+#Warning messages:
+#1: NAs in x
+#2: negatives in x
+#3: In f(c(NA, -4, 8)) : NaNs produced
+#
+#
+mode
+
+```{r problem_8}
+
+# Problem 8.
+# ============
+
+# Step 1, wrapper
+verify_package_installed  <- function(pkg){
+#	if (!rlang::is_installed(pkg)) {
+
+	if (!requireNamespace(pkg)) {
+		message=glue::glue("Please install `{pkg}`")
+		meta=pkg
+		abort(message=message, 
+					class="pkg_not_installed_error",
+					meta=pkg)
+	
+	}
+}
+
+# TEST the wrapper
+	verify_package_installed("rlang")
+	verify_package_installed("pkg")
+
+# function
+# ==========
+	
+## REAL code to deal with an error											
+f  <- function(pkg) {
+	tryCatch(
+					 verify_package_installed(pkg),
+					 error = function(e) e,
+					 pkg_not_installed_error = function (p) cat(p$meta)
+					 )
+
+}
+f("pkg")
+f("rlang")
+```

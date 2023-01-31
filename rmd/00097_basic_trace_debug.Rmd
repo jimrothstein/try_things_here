@@ -1,0 +1,253 @@
+---
+title:  "00097_basic_trace_debug.Rmd"
+output: 
+  pdf_document:
+    toc: TRUE 
+    toc_depth: 1
+    latex_engine: xelatex
+fontsize: 10pt
+geometry: margin=0.5in,top=0.25in
+TAGS:  traceback, debug
+---
+#### REF:   Gillespie, Appendix E, PENG R programming, Ch18 
+#### basic traceback, debug
+```
+ Tools:
+	base::browser()
+	base::debug(FUN)
+	base::undebug(FUN)
+	base::trace(FUN, exit=<action>)
+	rlang::trace_back()
+	options(error= browser, trace_back etc)
+```
+
+
+####	traceback()  WHERE is error
+```{r traceback}
+#	example:  x,y are undefined || error and warnings:
+lm(y ~ x)
+
+#	run immediately, error occured 7 levels deep
+traceback()
+
+
+##	another example, no function bug()
+```{r 1 }
+# there is no bug()
+{
+	first <- function() second()
+		second <- function() third()
+			third <- function() fourth()
+				fourth <- function() fifth()
+					fifth <- function() {
+						bug()
+					}
+
+}
+
+#	error
+	first()
+
+#	at level 5, function fifth()
+	traceback()
+
+```
+
+####	interactive debugger aka browser in R 
+```{r debug }
+##	function to trigger debugger (ie browser opens) 
+debug(lm)
+
+lm(y ~ x)
+undebug(lm)
+```
+
+####	debugger, 2nd example
+```{r debug2}
+
+f  <- function(){
+	g  <- function() y  <- 10
+	x  <- 5
+	g()
+}
+debug(f)
+f()
+undebug(f)
+
+}
+debug(f)
+first()
+```
+
+####	USE variable .DEBUG to indicate debug mode is on/off
+
+			REF:  !so 6286092
+```{r}
+
+##	NEED: get/set function, plus function to check state
+#   
+# A slightly fancier version of Dirk's answer:
+
+
+is_debug_mode <- function()
+{
+  exists(".DEBUG", envir = globalenv()) && 
+    get(".DEBUG", envir = globalenv())
+}
+
+set_debug_mode <- function(on = FALSE)
+{
+  old_value <- is_debug_mode()
+  .DEBUG <<- on
+  invisible(old_value)
+}
+
+# Usage is, e.g.,
+
+if(is_debug_mode())
+{
+  #do some logging or whatever
+}
+
+# and
+
+set_debug_mode(TRUE)   #turn debug mode on
+set_debug_mode(FALSE)  #turn debug mode off
+
+is_debug_mode()
+
+```
+#### no bug
+```{r 1 }
+# there is no bug()
+{
+	print("jim")
+	first <- function() second()
+		second <- function() third()
+			third <- function() fourth()
+				fourth <- function() fifth()
+					fifth <- function() {
+						bug()
+					}
+
+}
+#
+
+tracingState() # this a Global value, either on or off
+
+# browser
+# Must insert browser() into code.
+
+# on error, use traceback()
+first()
+traceback()
+lobstr::cst()
+
+# use debug
+debug(fifth)
+first()
+undebug(fifth)
+
+#use trace
+trace(fourth, browser)
+first()
+untrace(fourth)
+
+#trace, another way
+trace("third", print("inside 3th"))
+first()
+untrace(c("third", "fourth"))
+first() # runs to bug()
+
+
+#trace, using recover()
+trace(third, recover())
+
+
+rlang::last_error()
+rlang::last_trace()
+```
+
+#### E2, browser(), pauses R, view in function's env
+
+
+#### E4, debug(FUN), acts as browser() when entering FUN# 
+```
+debug(FUN)  - debug a FUN
+undebug(FUN) - turn off
+debugonce(FUN) - debug a FUN and turn if off
+```
+
+```{r E4 }
+debug(second)
+isdebugged(second)
+isdebugged(third)
+
+first()
+undebug(second)
+```# 
+
+#### E5, trace(FUN,browse, at=)# 
+```
+trace inserts a command in FUN, at line #
+untrace(FUN) to end
+```
+
+```{r E5}
+trace(print)
+print("hello")
+
+trace(print, browser)
+print("hello now")
+
+untrace(print)
+print("hi")
+
+trace(three, print("entering 3"))
+```# 
+
+
+
+#### E6 recover()
+```
+```
+
+#### examine class=rlang_error; code to generate error()# 
+```{r eval=FALSE	 }
+generate an error;
+STUDY!
+```
+
+```{r}
+## dummy function
+fun <- function(x, error = FALSE) {
+  x <- x + 1
+  if(error)
+    abort("Error!", x = x)
+  return(x)
+}
+
+## no error
+fun(1, error = FALSE)
+
+## error 
+fun(2, error = TRUE)
+
+## display last error (list)
+last_error()
+
+## Examine this error
+l  <- last_error()
+str(l)
+
+# message, trace, parent, x, rlang & inheritance
+str(l, max.level=1)
+
+attributes(l)
+l$trace
+
+class(l)
+
+```# 
+
+

@@ -1,0 +1,132 @@
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+        mathjax: default
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+fontsize: 11pt   
+geometry: margin=0.4in,top=0.25in   
+---
+
+
+###	PURPOSE:   Basic Array Indexing with `[`
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = T   ) # T easier to read
+library(data.table)
+```
+
+```
+# from help("[")
+Matrices and arrays:
+
+     Matrices and arrays are vectors with a dimension attribute and so
+     all the vector forms of indexing can be used with a single index.
+     The result will be an unnamed vector unless ‘x’ is one-dimensional
+     when it will be a one-dimensional array.
+
+     The most common form of indexing a k-dimensional array is to
+     specify k indices to ‘[’.  As for vector indexing, the indices can
+     be numeric, logical, character, empty or even factor.  And again,
+
+```
+
+#### vector
+```{r }
+v  <- 10:1
+#  [1] 10  9  8  7  6  5  4  3  2  1
+
+## pick off 1st and second
+v[c(1,2)]
+# [1] 10  9
+
+
+
+# can repeat
+v[c(1,2, 1)]
+# [1] 10  9 10
+
+```
+
+#### matrix
+
+```{r matrix}
+m  <- matrix(1:10, nrow=5, ncol=2)
+m
+
+
+## check
+str(m)
+is.matrix(m)
+attributes(m)
+
+
+## just pick off:   each row is map to element to pick
+x  <- rbind(c(1,2), c(4,2))
+x
+m[x]
+```
+
+#### another matrix
+```{r}
+
+m  <- matrix(1:100, nrow=10)
+m
+
+
+## check
+str(m)
+is.matrix(m)
+attributes(m)
+
+
+## just pick off:   each row is map to element to pick
+x  <- rbind(c(1,2), c(4,2), c(9,10))
+x
+m[x]
+# [1] 11 14 99
+
+
+# NOTE:
+
+# plucks - 2 different
+m[5,5]
+# [1] 45
+
+# index 25 
+m[25]
+# [1] 25
+
+#  plucks c(5) then c(5) again
+y  <- c(5,5)
+y
+m[y]
+# [1] 5 5
+
+m[c(5,5)]
+# [1] 5 5
+
+m[c(5,1)]
+# [1] 5 1
+
+y  <- c(5,5,5)
+m[y]
+# [1] 5 5 5
+
+```
+
+
+
+

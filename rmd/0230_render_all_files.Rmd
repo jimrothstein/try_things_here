@@ -1,0 +1,101 @@
+
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+fontsize: 11pt   
+geometry: margin=0.5in,top=0.25in   
+---
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = FALSE   ) # easier to read
+library(here)
+library(jimTools)
+```
+
+```{r function}
+# helpful info
+args(rmarkdown::render)
+
+render_files  <- function(input=NULL, output_format=NULL, output_dir=NULL){
+
+  # TODO:  run checks
+  # next line allows shortcuts (output_format="h") matches "html...." or ERROR
+  output_format  <- match.arg(output_format, 
+                    c("html_document", "pdf_document", "md_document"))
+
+
+  rmarkdown::render(input= input,
+                    output_format=output_format,
+                    output_dir = output_dir)
+}
+
+here()
+file  <- "rmd/0230_render_all_files.Rmd"
+file  <- basename(file)
+file  <- here("rmd", file)
+file
+
+render_files(input= file, output_format="m", output_dir="md")
+
+render_files(input= file, output_format="md_document", output_dir="md")
+
+```
+
+```{r collect_files}
+dir = here("rmd", ".")
+dir
+{
+begin  <- Sys.time()
+
+md_pattern  <- '[.][Rr]?(md|markdown)$'
+rmd_pattern  <- '[.][Rr](md|markdown)$'
+
+files  <- jimTools:::get_RMD_files(path = dir, pattern = rmd_pattern)
+head(files)
+
+
+
+end  <- Sys.time()
+print(end - begin)
+}
+files
+```
+
+```{r render_all_files}
+lapply(files, render_files, output_format="md_document", output_dir="md")
+
+```
+
+
+
+```{r render, eval=FALSE, include=FALSE 	} 
+# TODO:  file is found when knitr runs (see above)
+
+# file must be of form:
+# dir/name_of_this_file    where dir is relative to project root
+
+here()
+file   <- here("rmd", "0230_embed_latex.Rmd")
+file  <- base(file)
+# NOTE:   .tex only works with PDF
+# NOTE:    tex will NOT work with html
+# in general, pdf will look nicer
+rmarkdown::render(file,
+                  output_format = "pdf_document",
+                  # output_format = "html_document",
+                  output_file = "~/Downloads/print_and_delete/out")
+```

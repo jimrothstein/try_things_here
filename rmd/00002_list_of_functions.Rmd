@@ -1,0 +1,94 @@
+  vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+--- 
+# Spaces, no Tabs
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
+TAGS:  advanced, functionals
+---
+
+<!-- 
+vim: to format all urls for md
+s/https.*/[&]()/g
+-->
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = TRUE)
+```
+
+
+```{r library, include=FALSE		}
+library(jimTools)
+  
+
+#### Didn't know FUN(...) can be interpreted as ..1 ..2 etc
+
+```{r dots}
+f  <- function( ...) {..1 + ..2 + ..3 + ..4}
+f(1,2,3,4)
+# [1] 10
+```
+
+```{r }
+##  IDEA is to pick correct fix_function based on param's name.
+## Then apply the function to param's value.
+## Repeat for all the parameters.
+
+# fake data
+raw_params  <- list(pm1 = "A", pm2 ="B" , pm3 ="C")
+
+#   GOAL:     input_params:   list (pm1 = "1A", pm2 = "2B", pm3 = "3C")
+
+# helps to separate into two vectors, param names & values
+names(raw_params )  # char
+values  <- unlist(raw_params)  
+values
+
+
+# match each param to fix function
+fix_funs  <-  list( pm1 = function(x) paste0("1",x),
+                    pm2 = function(x) paste0("2",x),
+                    pm3 = function(x) paste0("3",x)
+                    )
+fix_funs
+
+
+# given param, return its fix function
+pick_function  <- function(name = x) {
+  fix_funs[[name]]
+}
+
+
+# TWO-steps, get right fix function (based on param name), then apply to value 
+input_params  <- map2(values, names(raw_params),
+                     ~ pick_function(.y)(.x)) 
+# matches GOAL
+input_params
+
+```
+
+
+```{r knit_exit()} 
+knitr::knit_exit()
+```
+
+/newpage
+
+```{r render, eval=FALSE	} 
+file <- ""
+file  <- basename(file)
+dir <- "rmd"
+
+jimTools::ren_pdf(file,dir)
+jimTools::ren_github(file, dir)
+```

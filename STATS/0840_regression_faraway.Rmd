@@ -1,0 +1,84 @@
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 4
+        toc_float: true
+        mathjax: default
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  4   
+fontsize: 11pt   
+geometry: margin=0.4in,top=0.25in   
+TAGS:  
+---
+~/code/MASTER_INDEX.md
+
+### Regession, with independent variable also has error
+  *  REF: https://cran.r-project.org/doc/contrib/Faraway-PRA.pdf
+  *  https://en.wikipedia.org/wiki/Errors-in-variables_models
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = T   ) # T easier to read
+```
+
+```{r library 		}
+library(data.table)
+``` 
+
+#### X is random variable, TRUE  value y = 0 + 1*x
+```{r case1}
+N  <- 10000
+    x <- 10*runif(N)
+    y <- x+rnorm(N)
+    gx <- lm(y ~ x)
+    summary(gx)
+```
+
+#### Add noise to X (and call it Z) 
+```{r case2}
+    z  <- x + rnorm(N)
+    gz <- lm(y ~ z)
+    summary(gz)
+```
+
+#### Add more noise to X (and call it Z2) 
+```{r case3}
+    z2  <- x + 5*rnorm(N)
+    gz2 <- lm(y ~ z2)
+    summary(gz2)
+```
+
+
+```{r render, eval=FALSE, include=FALSE 	} 
+output_dir  <- Sys.getenv("OUTPUT_DIR")
+output_dir
+
+{
+file <- "STATS/0840_regression_faraway.Rmd"
+the_dir  <- dirname(file)
+
+file  <- basename(file)
+
+## dislike here?
+ file  <- file.path(the_dir, file)
+
+#   file  <- here("rmd", file)
+file
+}
+
+rmarkdown::render(file,
+                  output_format="html_document",
+                  output_dir="."
+                  )
+
+
+```

@@ -1,0 +1,153 @@
+---
+title: "090_data_table.R"
+output:  
+  pdf_document:
+geometry: "left=2cm,right=2cm,top=2cm,bottom=2cm"
+fontsize: 12pt
+TAGS:  data.table,vignette,flights14,dplyr,magrittr,purrr
+---
+~/code/MASTER_INDEX.md
+./README.md
+
+
+### Vignette for data.table (subset ONLY)
+  *  REF: [http://rdatatable.github.io](rdatatable)
+  *  Best to follow vignette AND its USEFUL comments.
+  *  Code here is SUBSET
+
+
+
+```{r setup}
+library(magrittr)
+library(data.table)
+
+input <- if (file.exists("./data/flights14.csv")) {
+   "data/flights14.csv"
+} else {
+  "https://raw.githubusercontent.com/Rdatatable/data.table/master/vignettes/flights14.csv"
+
+  #saveRDS("flights14.csv", "data/flights14.csv")
+}
+# 2.2 MM
+flights <- fread(input)
+head(flights)
+DT  <- flights
+```
+
+### Guess:  how many columns in result?
+```{r guess}
+## all columns returned; use order, not sort.
+  head(DT[order(origin, -dest),])
+
+## 2 columns, only ; use j
+  head(DT[, .(arr_delay, dep_delay)])
+
+## 1 column
+  head(DT[, .(arr_delay)])
+
+ ## atomic vector, not list
+  head(DT[, arr_delay])
+
+```
+
+### Rename, note dep_delay is not renamed; return 2 col
+```{r rename}
+  head(DT[, .(x = arr_delay, dep_delay)])
+```
+
+### Do a calc in j (mean), return 1 col; named V1
+```{r calc_j}
+  head(DT[, .(mean(arr_delay))])  
+
+## here we give it name.
+  head(DT[, .(mean = mean(arr_delay))])
+```
+
+
+#### group by; implict columns
+```{r by}
+## 2 columns
+  head( DT[, .N, by = .(origin)] )
+
+## 3 columns
+  head(DT[, .N, by = .(origin, dest)])
+
+
+## 4 columns, note that j results in V1
+  head(DT[, .(mean(arr_delay)), by = .(origin, dest, month)])
+  # rename V1 to y
+  head(DT[, .(y = mean(arr_delay)), by = .(origin, dest, month)])
+```
+
+#### keyby
+```{r keyby}
+##  To fix, replace by with keyby (compare to 4 above); 4 cols
+  head(DT[, .(y = mean(arr_delay)), keyby = .(origin, dest, month)])
+
+
+## gotcha, keyby doesn't like -dest??
+## instead:  chain:   3 cols
+  head(DT[, .N, by = .(origin, dest)])[order(origin, -dest)]
+
+
+```
+####  fancier j, expressions; selecting columns
+  *  DT[, .N, by=.(a,b, c> 1)]  # only c is condition, a,b, .N and c all
+    selected
+```{r}
+## group, by 3 columns
+  head(DT[, .N, .(dep_delay >0, arr_delay > 0)])
+  head(DT[, .N, by = .(dep_delay >0, arr_delay > 0)])
+
+## same, but new name
+  head(DT[, .N, by = .(x = dep_delay >0, arr_delay > 0)])
+```
+
+#### .SDcols to choose output columns
+```{r outpute}
+## omits by col. `by` [all columns]
+  DT[,print(.SD), by  = .(carrier)]
+
+## no, not what I want [select only carrier columns]
+  DT[,print(.SD), by  = .(carrier), .SDcols=c("carrier")] %>% head()
+
+  ## USE .SDcols to limit output cols, NOTE: use quotes   c( "...", "...")
+  ## gotcha!
+```
+
+#### need to take mean of 100 cols
+  *  dt[, lapply(.SD, mean), by = ID] # returns all columns + ID
+```{r lapply}
+##  group by=
+##  but only do calc for .SDcols, and output;  not all columns in .SD
+  DT[,lapply(.SD, mean), by  = .(origin, dest, month), .SDcols=c("dep_delay",
+                                                                 "arr_delay")]
+
+  ## 
+  ## START HERE
+  ## note I added carrier!
+  DT[,print(.SD), by  = .(carrier), .SDcols = c("dep_delay", "arr_delay",
+                                                "carrier")]
+  DT[,head(.SD), by  = .(carrier), .SDcols = c("dep_delay", "arr_delay",
+                                                "carrier")]
+
+  # Too much output, even with head, limit to 2 rows Per Group.
+  DT[,head(.SD, 2), by  = .(carrier), .SDcols = c("dep_delay", "arr_delay", "carrier")]
+
+```
+
+
+```{r render, eval=F, include=F}
+file  <- "00290_DT_vignette_intro.rmd"
+file  <- here("rmd", file)
+file
+
+
+rmarkdown::render(input = file,
+        #output_format = "pdf_document",
+        #output_format = "html_document",
+        output_format=c("html_document",    # if want both
+                                  "md_document"),
+                  output_dir = "md",
+                  output_file = "out")
+```

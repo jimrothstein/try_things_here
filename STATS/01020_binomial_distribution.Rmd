@@ -1,0 +1,430 @@
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+    fontsize: 11pt   
+    geometry: margin=0.5in,top=0.25in   
+---
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = FALSE   ) # easier to read
+
+file  <- knitr::current_input() 
+library(tibble)
+library(ggplot2)
+```
+
+## Binomial
+
+Notation:
+  -  p prob success, just 1 event
+  -  n obs in 1 sample (size)
+  -  k success in 1 sample (x=)
+  -  B number of repeat samples
+
+
+### prob density , dbinom, n throws, prob of x successes
+```{r first}
+p  <- 0.5
+n  <- 2  
+k  <- c(0,1,2)
+B   <- 1
+
+# throw coin twice, odds 1 heads
+dbinom(x =1, size =2, prob=0.5)
+dbinom(x =0, size =2, prob=0.5) # 0.25
+dbinom(x =k , size =n, prob=0.5) # 0.25
+
+# another way:   each flip is sample (n=1), repeat B throws
+B  <- 2 
+k  <- 0:2  # success in B thros 
+dbinom(x = k, size = 1*B, prob = p)
+
+
+p  <- 0.5
+n  <- 10 # (size)
+k  <- 1:n # (x)
+B  <- 1
+z  <- dbinom(x =k , size =n, prob=0.5) # 0.25
+z
+
+## INLINE  (knitr)
+plot(z, main ="Binomial Distribution: n=10 throws, probably heads 1:n", 
+     ylab = "dbinom",
+     xlab = "k successes, 1:n"
+)
+
+# knitr::knit_exit()
+```
+
+### pmf (density) - prob of exactly k (x) success, n throws
+*  pmf(density) - binomial, prob of x=# success, size=throws
+*  usu written as choose(n,x) (p^n) (1-p)^(k-n)
+*  x = k (successes) may be vector
+```{r }
+
+dbinom(x=0,size=2, prob=0.5) # n=2, x=0  prob = 0.25
+dbinom(x=1, size =2 , prob=0.5) # n=2, x=1 # 0.5
+dbinom(x=c(0,1), size=2, prob=0.5) # n=2, x=0  prob = 0.25
+
+# Odds exactly 200 heads, out of 400 throws
+n  <- 400
+k  <- 200
+
+dbinom(x=200,size=400, prob=0.5)
+
+#  size = 1000, prob=.5,   number of heads =?  (tiny)
+dbinom(x=1, size=1000, prob=0.5)
+
+# But .. sum to one
+sum(dbinom(x=0:2,size=2, prob=0.5)) # SUM = 1
+
+sum(dbinom(x=1:400, size=400, prob= .2))
+
+```
+
+pbinom
+*  cum prob
+*  prob of k (x) or less successes, n throws
+```{r pbinom}
+
+## n throws,  # of success below k
+
+######   Pr (# of successes X <= value x)
+n  <- 400
+k  <- 400
+p  <- 0.5
+
+pbinom(k, prob=p, size=n)				# 1, no suprise
+pbinom(80, prob=0.2, size=400)				# 53.0% will be less than 80
+pbinom(c(0, k/4, k/2, 3*k/4, k), prob=p , size = n)
+
+######	Pr (# of successes X = value x)
+dbinom (80, prob=0.2, size=400)				# 0.05
+dbinom (81, prob=0.2, size=400)				# 0.05
+dbinom (90, prob=0.2, size=400)				# 0.02
+
+# or
+sum(dbinom(60:100, prob=0.2, size=400))			# 0.99   (99% succcess bet 60, 100)
+qbinom( c(0.8), prob=0.2, size=400)	# 87 (80% of successes, 87 or less successes)
+
+## 002 Plot Binomial pmf, Pr(X = some x) 
+```
+
+TODO(jim, add density, ie superimpose normal)
+
+```{r fix}
+
+t <- tibble(x = c(0:n), y = dbinom(x, size=10, prob=0.9))
+
+g <- ggplot(t, aes(x,y))
+g + geom_histogram(stat="identity", 
+                   fill="lightblue") +
+        scale_x_continuous(breaks =  c(0,1,2,3,4,5,6,7,8,9,10)) 
+                
+#### 003 p=0.6, n=20 ####
+p <-  0.6
+n <- 20
+mu <- p * n # 12
+mu
+sigma <- sqrt(n*p*(1-p)) # 2.19
+sigma
+
+# plot (from 002)
+t <- tibble(x = c(0:n), y=dbinom(x, size=n, prob=p))
+
+g <- ggplot(t,aes(x,y))
+g + geom_histogram(stat="identity", 
+                   fill="lightblue") +
+        scale_x_continuous(breaks =  c(0:20)) 
+
+#  Find Pr(X <= 10) - exact and by normal approx
+sum(dbinom(x= c(0:10),   # 0.05652
+           size=20,
+           prob=0.6)
+    )
+# X = 10 exactly
+dbinom(x=10, size =20, 0.6)  # 0.117 (exact)
+# Normal approx
+
+z_high <- (10 + 0.5 - 12)/sigma
+z_low <- (10 -0.5 - 12)/sigma
+pnorm(c(z_low,z_high), mean=0, sd =1)
+
+pnorm(z_high, mean=0, sd=1) - pnorm(z_low, mean=0, sd=1)  # 0.120 (approx)
+# Normal
+```
+
+
+
+## rbinom
+
+## Density: sucesses if toss coin 100 times 
+```{r rbinom}
+
+set.seed(2020) # 52
+
+# 1 sample(set 100 obs)
+x <- rbinom(1, size=100, p=0.5)
+x #52
+
+# SAME, but repeat the experiment 40 times
+# returns int[] of successes
+
+x <- rbinom(40, size=100, p=0.5)
+x # int[40], number of heads each experiment
+
+# of the 40 experiments, how many returned > 55 heads?
+
+table(x) # of 40 samples, distribution of success totals 
+
+table(x  >  55)   # of 40 samples(each 100), how many more than 55 successes
+
+table(x  >  57) # 
+
+table(x > 60) # 0
+
+
+
+
+# ----Series of Bernoulli Trials			----
+
+# int[10]
+(rbinom(10,size=100,prob=0.5))		# throw dice 100 times, count heads (repeat 10)
+
+# instead:
+x  <- sample(x =  c("H","T"),
+		size = 1000,
+		replace = TRUE,
+		prob = c(0.5,0.5)
+		)
+x
+
+y  <- stringr::str_c(x, collapse="")		# collapse
+# [1] "TTTHTHTTTHTHHTTHTTTTHHHTTTTHHTTHTTTTHTHTTHHHHHTHTHTHHHTTHHTHTHHHHTHTHTHHHTHTHTHTHHTTTTTTTTTHHTHHHHHHTTHHHTTHHHHHTHTHHHTTHTTTHTTTTHTTTTHTHTHHHHHHHTHHTTHHTTTHTTHTHTTTHTTTTTTTTTTHHTTTHTHHHTTHTHTHTTTHHTHHHTHTTHTHTTHTTHTTTTTHHHHTTHHHTTTTHTHTTTTHHTTHTTTHTHHHTHTTHHTHTTTHTHHHTTHHTHHTTHHHHTTTHHTTHTTHTHHTHHHHHHHHTHTHHHHHTTHTHTHHTTTHTTTHTTHHHHTTTTHTTTHHHTHHTHTTHHTHTHTHHHHHHTHHHHHTTHTHHTTHHTTTHTTHHHHTHTTTHTTTTHHTHHTHTHTTTHHTTHTTTHTHTHTTHHHTHHTHTTTTHTTTHTTTHTHHTTTHTTTTHHHTTHHHHHTHHHHTHHHHHTTHTTTTHHTTTTTTHTHHTTHHHHTHTTHTTTHHHHTHTTHTTHTTTHTTTTTTTHHTTTTTHHHHHTTTHTHHHTTHTHTTTHTTTHHHTTHHHHHHTHHTHTTTTHHHTHHTHTTHHTHHTTTTTTTTHTTTHHTTTTTHHTTTHTHHTHHHHHTHTHTHTHTHHTTTHHHTHHHTTHTTTTHHTHHHTTTHTTTHTTHTHHTTHHHHTTTHTHHHTHTTTTHHHHTTHTTTHTHTHTHTHTTHHTHHHHTTHTHTTTHHTTHHTTHHHHTTHTTTTTHTTTHTTHTTTHTTTHHHTHHTTHTTHTHHTTTHHTHHTTHTTTHHTHHTTHHTHHTTTHTHTHTHHHHHHHHTTTHHHHHHTHTHHTHHTTTTTTTTTHHTTHTTHHTHTHTTTTHTTTTTHHHHHHTHTTTTTHHHHTHTHTTTHTHTHHTTTTHHHHTHTHTHTHHTHTHTHHHTTTHHHTTTTHTTHHTHTTHTTTHHHHHTHTTTHTHTTHHTTTHTTTHHTTHTHTHHHHTT"
+# FOR REAL
+set.seed(1492)
+nExp = 100
+nThrows = 1000 # IN EACH TRIAL
+X  <- sample(x = c(1,0),
+		size= nThrows* nExp,# NUMBER THROWS
+		replace= TRUE,
+		prob= c(0.5,0.5)
+		)
+#X # VECTOR_DBL, ATOMIC
+
+#M <- AS.MATRIX(X, NROW = NtHROWs, ncol=nExp, byrow=TRUE)
+## matrix fill first by column, then next row
+m <- matrix(rbinom(n=nExp*nThrows, 
+		   size=1,
+		   0.5), 
+	    ncol=nExp) # n total number of random
+m[1,1]
+## test
+m1 <- matrix (rbinom(n=nExp*nThrows,size=1,
+		     0.5),
+	      nrow=nThrows)
+
+mean(colSums(m))
+sd(colSums(m))
+
+sqrt(250)  # 15.8
+
+plot(colSums(m))
+hist(colSums(m))
+
+head(m)
+dim(m)
+
+## What does CI (Confidence Interval)  mean?
+#  ============================================
+## Suppose want to find percentage of students (many) with tatoos
+##
+## How ?   SAMPLE
+p = 0.4  # (usually do not know)
+n = 75   # students, sample size
+## FACT
+## se_bar = sqrt( p_bar * (1 - p_bar)/n)
+##
+
+## Take a Sample  (ie string of yes/no, 1,0)
+r  <- sample(x = 0:1,
+             size = 75,
+             replace = TRUE, 
+             prob = c(0.6, 0.4))
+r
+sum(r) #31
+p_bar = sum(r)/n
+p_bar   # 0.413
+
+## And the 95% CI?
+se_bar = sqrt( p_bar * (1 - p_bar)/n)
+se_bar   # 0.0569
+L  <- p_bar - 1.96*se_bar
+U  <- p_bar + 1.96*se_bar
+cat("p_bar = ", p_bar, "\n", "CI = ", "(", L, ", ", U, ")",  "\n")
+contains_TRUE =  p_bar >= L   && p_bar <= U
+contains_TRUE
+
+#####   OR 
+# ===========================================
+## What does 95% confident actually mean??
+## rbinom (n=1, size = 75, prob= 0.4)retrun string of yes/no, 1,0  (size # trials)
+## To me:  n=1 means 1 SAMPLE, 
+## size=throws in 1 SAMPLE, 
+## return is # successes in 1 SAMPLE
+##
+## n =2 means, return will be 2 values, one for each sample
+##
+###  FUNCTION
+###
+ N=75
+t  <- tibble::tibble()
+one_sample  <- function(DUMMY = null) {  # 1 sample
+
+    prob = 0.4
+    p_bar  <- rbinom(n=1, size=75, prob = prob)/N
+    ## And the range?
+    se_bar = sqrt( p_bar * (1 - p_bar)/N)
+    L  <- p_bar - 1.96*se_bar
+    U  <- p_bar + 1.96*se_bar
+    # cat("p_bar = ", p_bar, "\n", "CI = ", "(", L, ", ", U, ")",  "\n")
+    contains_TRUE =  (L < prob)   && ( prob < U )
+    new  <- tibble::tibble(p_bar = p_bar, L=L, U=U, contains_TRUE = contains_TRUE)
+    t <<- rbind(t, new)
+    invisible()
+}
+
+
+ans  <- lapply(0:99, one_sample)
+
+# view
+t
+print(t, n=100)
+
+# to see only FALSE   
+t[!t$contains_TRUE,]
+t[!t$contains_TRUE,]
+
+# order
+print(t[order(-t$L),], n=100)
+
+###
+f  <- function(x) invisible(print("hi"))
+f()
+r  <- lapply(0:1, f)
+
+
+#### ARGH!  need dummy variable
+f  <- function(dummy) {print("hi")}
+
+l  <-   lapply (1:2, f)
+```
+
+
+## 1/n converges slowly!
+```{r}
+size <- 100000
+t <- tibble(x=sample(x=c(1,0),size=size, replace = TRUE),
+			run_avg = dplyr::cummean(x)
+			) %>% 
+	mutate(line = 1:size)
+
+t$run_avg %>% tail()
+t %>% ggplot(aes(x=line, y=run_avg)) +
+	geom_point()
+	
+```
+
+## odds choosing 6 out 9 Catholic justices?
+```{r SCOTUS}
+# Catholics = 23% of US
+# prob = 0.23
+# n = 9
+# k = 6 successes
+
+# exactly 6 ,   0.00568
+dbinom(x=6, size=9, prob=0.23)
+
+# exactly 5 ,   0.0285
+dbinom(x=5, size=9, prob=0.23)
+pbinom
+```
+
+ 
+## odds gettin at least 6,   (ie 6 + 7 + 9)
+```{r at_least}
+dbinom(6:9, size=9, prob=0.23)
+
+# cum odds
+# 0.00646 (P[X >= 6)
+sum( dbinom(6:9, size=9, prob=0.23))
+```
+
+## odds throw N coins and all N are heads?
+```{r}
+# if N=7, prob = .00781
+dbinom(x=7, size=7, prob=0.5)
+```
+
+```{r knit_exit(), include = FALSE  , eval=FALSE } 
+# knitr::knit_exit()
+```
+
+```{r plot_density, eval=FALSE  }
+density_object <- density(mpg$hwy)
+pdf("~/Downloads/print_and_delete/out.pdf")
+plot(density_object)
+dev.off()
+```
+
+## SEPARATE file, *.png
+```{r separate_png, eval=FALSE  }
+
+filename  <- "~/Downloads/print_and_delete/out.png"
+png(filename = filename,
+         width = 480, height = 480, units = "px", pointsize = 12)
+plot(z, main ="Binomial Distribution: n=10 throws, probably heads 1:n", 
+     ylab = "dbinom",
+     xlab = "k successes, 1:n"
+)
+# hist(z)
+dev.off()
+```
+
+```{r plot_png_example, eval=FALSE  }
+filename  <- "~/Downloads/print_and_delete/out.png"
+png(filename = filename,
+         width = 480, height = 480, units = "px", pointsize = 12)
+plot(density_object)
+dev.off()
+```
+
+```{r render, eval=FALSE, include=FALSE 	} 
+# TODO:  file is found when knitr runs (see above)
+
+# file must be of form:
+# dir/name_of_this_file    where dir is relative to project root
+
+file  <- here("", "")
+file  <- "rmd/01020_binomial_distribution.Rmd"
+
+# in general, pdf will look nicer
+rmarkdown::render(file,
+                  #output_format = "pdf_document",
+                  output_format = "html_document",
+                  output_file = "~/Downloads/print_and_delete/out")
+```

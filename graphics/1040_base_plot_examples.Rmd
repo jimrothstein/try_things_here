@@ -1,0 +1,226 @@
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: hide
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+#		 comment
+#		 DEFAULT:  built-in template
+#		 uncomment next line for custom
+#    template: trivial_template.tex 	
+    latex_engine: lualatex  
+    toc:  true
+		toc_depth:  4
+		keep_tex:  true
+  header-includes:  
+    -  \usepackage{helvet}  
+#		-  \renewcommand{\familydefault}{\sfdefault}  
+    -  \usepackage{ulem}
+fontsize: 10pt   
+geometry: margin=0.5in,top=0.25in   
+---
+
+<!-- 
+			NOTE:	 modified template (template:  )
+
+    template:	~/dotfiles/proposed_template.latex
+
+    template:	trivial_template.tex
+
+-->
+
+\footnotesize {is this footnotesize?}
+
+
+#### Base R plot() examples
+
+-	Ref:https://dcgerard.github.io/stat234/base_r_cheatsheet.html 
+-	https://rdrr.io/r/
+-	ALT-F4 to close popup windows
+-	`graphics device` refers to lower-level (dots, line, text)
+-	`graphics engine` refers to higher level (draw rectangles, polygons, center
+-	`cairo` - type of system?
+	...)
+
+-	cex	(point size)
+-	pch (point shape)
+- col (color)
+- lty (line type)
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = T   ) # easier to read
+library(ggplot2) # only for databas
+```
+
+####	Capabilities vary with R build
+```{r build}
+	as.data.frame(capabilities())
+```
+
+####	control devices
+https://rdrr.io/r/grDevices/dev.html
+```{r dev}
+##	if 1, then null device
+	dev.cur()
+	dev.list()
+
+##	 error if only null device
+	if (dev.cur() != 1) dev.off()
+
+##	create several devices
+	
+	pdf()
+	png()
+	# only this pops up a window
+	if (F) x11()	
+
+	dev.list()
+	.Devices		# if device removed, its entry appears empty here
+
+## finally, close active device
+	dev.off()	
+	dev.list()
+
+##	shut down ALL devices
+	graphics.off()
+	dev.list()
+	unlist(.Devices)
+
+
+##	
+##	if null, this CREATES new device
+#	getOption("device")
+```
+
+
+#### in X11
+```{r x11}
+
+##	reset & get list of curent options
+	as.data.frame(unlist(X11.options(reset=T)))
+
+Sys.getenv("display")
+
+as.data.frame(unlist(pdf.options()))
+#	options("device")
+```
+
+####	Use par() to get/set values
+```{r par}
+
+##	par() returns info about active device
+##	BUT will create a device if null now. 
+
+	dev.cur()
+	if (dev.cur() != 1) {
+		par() 
+		par("pch")
+		par(no.readonly=F)
+		par("lty")
+	}
+
+```
+
+#### pdf() device
+```{r pdf}
+
+##	remove all
+	graphics.off()
+	dev.list()
+
+##	
+	as.data.frame(unlist(pdf.options()))
+```
+
+
+####	plot
+```{r plot}
+##	S3 classes 
+	methods(plot)
+```
+
+
+#### Base:: plots
+- set the params in pdf(...)
+- plot
+- dev.off() to complete
+
+```{r plots, eval=FALSE }
+pdf("~/Downloads/print_and_delete/04_lm_residuals.pdf")
+plot(x, r, col = 2, ylim = c(-5, 5))
+abline(h = 0)
+dev.off()
+```
+
+```{r density}
+density_object <- density(mpg$hwy)
+pdf("~/Downloads/print_and_delete/out.pdf")
+plot(density_object)
+dev.off()
+```
+
+```{r png_example}
+filename  <- "~/Downloads/print_and_delete/out.png"
+png(filename = filename,
+         width = 480, height = 480, units = "px", pointsize = 12)
+plot(density_object)
+dev.off()
+```
+
+```{r in_line_html}
+plot(density_object)
+```
+
+stripchart()
+```{r sripchart}
+
+png(filename = paste0("~/Downloads/print_and_delete/" , file,".png"),
+         width = 480, height = 480, units = "px", pointsize = 12,
+          bg = "white",  res = NA,
+         type = c("cairo", "cairo-png", "Xlib", "quartz")
+)
+
+stripchart(x = x, 
+           ylim=c(0, 225),
+           pch = 1, 
+           cex = 0.5,
+           frame = TRUE, 
+           vertical = TRUE,
+           main = "24-hour Ur Ox")
+
+abline(h = 35, col=2)
+
+# plot(x, fake, ylim = c(-5, 5), sub = "t-value = 21.5", type = "p")
+# abline(h = fake_mean, col=2)
+dev.off()
+```
+
+\newpage
+
+```{r render, eval=FALSE, include=F	} 
+{
+##	Canonical format
+file <- "/home/jim/code/try_things_here/graphics/1040_base_plot_examples.Rmd"
+file  <- normalizePath(file)
+file
+
+# in general, pdf will look nicer
+rmarkdown::render(file,
+                  output_format = "pdf_document",
+                  #output_format = "html_document",
+									output_file = "base_plots.pdf")
+                  #output_file = "~/Downloads/print_and_delete/out")
+}
+
+tinytex::lualatex('base_plots.tex')
+tinytex::pdflatex('base_plots.tex')
+tinytex::tlmgr_update()
+```

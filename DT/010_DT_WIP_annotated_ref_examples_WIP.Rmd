@@ -1,0 +1,1251 @@
+\footnotesize{footnotesize}   
+Remainder of document now ....  But NOT TOC.
+
+#--------------------------------------------------   
+		PURPOSE:  data.table:  simple, reference examples 
+		SEE example(data.table) (ie in code)
+#--------------------------------------------------
+
+<!--
+# http://127.0.0.1:22091/library/data.table/doc/datatable-intro.html  
+--> 
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = F,  
+                      eval = F,
+                      include = F,
+  					comment="      ##",  
+					error=TRUE, 
+					collapse=F) 
+library(data.table)
+library(kableExtra)
+``` 
+####    References
+```
+example(data.table)
+save(data.table::example(data.table), ascii=T, file="example.txt") Vignettes:  vignette(package="data.table") 
+REF: https://stackoverflow.com/questions/32276887/use-of-lapply-sd-in-data-table-r
+```
+
+####    Definitions, Terms
+
+```
+By Reference | in-place
+Deep copy
+```
+
+####    List datatable options: 
+```{r dt_options}
+  op = .Options[grep("datatable", names(.Options))]
+  # unlist to named character vector 
+  op = unlist(op)
+  (dt = data.table(name = names(op), value = op))
+
+```
+#### create example dt
+```{r begin1, eval=T}
+options(datatable.print.class = T)
+options(datatable.print.rownames = F)
+
+create_dt  <- function() {
+  data.table(x = rep(c("b", "a", "c"), each = 3),
+                  y = c(1, 3, 6),
+                  v = 1:9)
+}
+dt  <- create_dt()
+
+dt
+```
+#### Notation:  columns vs variables
+```
+"y" or 'y' refers to column in dt
+y  refers to a variable
+```
+
+#### Notation:  several ways to select columns
+```{r notation}
+## select cols y, v only.
+dt[, c("y", "v")]
+dt[, .(y,v)]  # same as dt[, list(y,v)]
+
+w  <- c("y", "v")
+dt[, ..w]
+
+dt[, .SD, .SDcols=c("y", "v")]
+
+## but NOT
+dt[, .SD, .SDcols= ..w] # ..w not found
+```
+
+#### select: one column
+```{r one_column}
+    cols  <- c("y")
+    dt[, .SD, .SDcols = c('y')]
+    dt[, .SD, .SDcols = cols]
+
+#options(error=recover)
+## NOT (error)
+    dt[, .SD, ..cols]
+    dt[, .SD, .SDcols = ..cols]
+```
+
+
+#### Select: one col, choose:  character vector or data.table (ie list)
+```{r same2}
+## character vector
+    dt[, y]
+
+
+## list
+    dt[, "y"]
+    dt[, 'y']
+
+```
+
+
+#### setkey 
+does NOT remove duplicate rows
+keys makes merge efficient
+keys(DT) returns key
+```
+does NOT remove duplicate rows
+keys makes merge efficient
+keys(DT) returns key
+```
+
+```{r key}
+## note:  columns are Unquoted
+    dt  <- create_dt()
+    setkey(dt, y, x)
+    dt
+##  note:
+    attributes(dt) # 'sorted'
+```
+
+#### setorder 
+```{r setorder}
+    dt  <- create_dt()
+    setorder(dt,v) 
+    dt |> head(3)
+
+    setorder(dt, -v, y)
+    dt |> head(3)
+```
+
+
+####  setDT create data.table from a list.
+```{r list_exists}
+dt1  <- setDT(x = list(1:9))
+dt1
+
+# last element
+dt1[, .N] # as dt
+dt1[.N] # as vector
+dt1[1]
+dt1[2]
+
+dt1[-2] # omit 2nd elemnt
+dt1[!2] # SAME
+```
+
+#### DT[i, j, by]
+  *  R:                 i                 j        by
+  *  SQL:  where | order by   select | update  group by  
+  *  subset
+  *  order
+  *  list .()
+  *  return vector vs dt
+```{r meaning, include=T, eval=T, echo=T}
+dt[x == "a",]
+dt[dt$x == "a",]  #SAME
+dt[x == "a" & y == 1,]
+dt[order(y, -x),]   # y is asc, x in desc
+```
+### Columns
+#### Columns:  Select/drop 
+```{r select_col, size='small'}
+dt[, list(y,v)]  
+
+# .(y) is alias for list(y)
+dt[, list(y)] # as data.table
+dt[, .(y)]  # SAME, short cut   
+dt[, .(y,v)]
+
+dt[, y]  # as vector!
+
+#  select by column range  (and including)
+dt[, x:y]
+dt[, .(x,y)]
+dt[, .SD, .SDcols=x:y] # SAME
+
+# by column number!
+dt[, 1:2]
+
+```
+####  Select 1 column, return character vector
+```{r }
+dt[, x]
+```
+
+####  Select 1 column, return as column
+```{r }
+dt[, "x"]
+dt[, c("x")]
+dt[, .(x)]  
+```
+
+
+#### Select all, but  1st column
+```{r select_a_few}
+
+# drop first column
+dt[, -(1)]
+```
+#### Select all , but  col x
+```{r drop_a_few}
+dt[, -c("x")]
+```
+
+
+## SAME:
+    dt[, c("y", "v")]
+    dt[, .(y, v)] # no quotes
+    dt[, list(y,v)]
+
+    z  <- c("y", "v")
+    dt[, ..z]
+
+    dt[, .SD, .SDcols = c("y", "v")]
+    
+## Returns vector, unlike data.table above
+  dt[, y]   # character vector
+ 
+## WRONG:
+    #   dt[, .SD, .SDcols = .(y, v)]   ## Fails, no function for `.`
+
+
+dt[!2:4]                       # all rows other than 2:4
+dt[-(2:4)]                      # SAME
+
+#### Column: calc, summarize, add new col dt[, .(x = FUN())] 
+```{r calc}
+dt[, sum(v)]  # summarizes, vector
+dt[, sum(v), by = x]  # summarizes, as table, grouping
+
+dt[, .(sum = sum(v)), by = x]  # summarizes, with new variable
+
+####select col, but with new name
+dt
+dt[,.(z = v)]   # not permanent, only prints ONE col
+
+
+## return ALL columns, rename just one
+dt1 <-  dt[,.(x,y,z = v)]
+dt1
+
+## return some columns, drop 1, rename 1
+dt[,.(y,z = v)][]
+
+##  select cols based patterns=
+    dt[, .SD, .SDcols=patterns('^[yv]')]
+
+```
+#### create 1 new col, drop another (as temp)
+```{r new_remove}
+dt  <- create_dt()
+dt
+dt[, .(new = y + v, x = NULL)]
+```
+
+#### create 3 new columns
+```{r 3_new}
+dt  <- create_dt()
+dt
+dt[, .(colA=x, colB=y, colC=v)]
+dt[, .(x,y,v, colA=x, colB=y, colC=v)]
+
+```
+
+
+#### Add/Drop New Column (in place) dt[, .(x := FUN())]
+```{r wrangle}
+# ==========================
+#   simple_dt
+# ==========================
+line  <- NULL
+trace(what=quote(simple_dt), browser())
+untrace(what=simple_dt)
+simple_dt  <- function() {
+    line  <- "TAG:    a,b,c,d,e"
+    line  <- rep(line, 10)
+    dt  <- data.table(line = line)
+}
+dt  <- simple_dt()
+dt
+
+# Add Date
+dt[, date := format(Sys.Date())]
+dt
+
+# Drop Date
+dt[, date := NULL]
+dt
+
+# remove TAGS:
+pat  <- "^TAG:\\s*"
+dt[, no_tag := sub(pat, replacement = "", line)]
+dt
+
+# Drop Column line
+dt[, line := NULL]
+dt
+```
+
+#### create 2 new columns, in-place
+```{r multiple_new}
+dt  <- create_dt()
+
+dt[, c("newA", "newB") := .(x,y)][]
+dt[, `:=` (colA =  x, colB = y)][]
+dt
+
+## but this is not in-place
+dt[, .(colA =  x, colB = y, x, y)][]
+dt
+```
+
+
+####  Add/Update/Delete Columns by reference
+  *  Ref Semantics: 2A
+  *  Read vignette notes!
+```{r 2A}
+dt = create_dt()
+
+# Form 1, Add new col
+dt[, c("new") := y+1 ]
+dt
+
+# Update col
+dt[, c("new") := new -1][]
+
+## modify only for specific values of x
+dt[x=="b", new := new -1][]
+
+# delete "new"
+dt[, c("new") := NULL][]
+
+```
+####  Columns:  Select col, change col name (temporary)
+```{r calc1}
+dt  <- create_dt()
+dt
+# temp change, not in memory
+dt[, .(x,y,v, new = y + v)]  # temp
+dt
+
+# no permanent change, display only new
+dt[, .(new = y + v)]  # temp
+dt
+
+
+# group on col x, print .N, and sum each col
+dt[, c(.N, lapply(.SD, sum)), by = .(x)]
+#    x N  y  v
+# 1: b 3 10  6
+# 2: a 3 10 15
+# 3: c 3 10 24
+
+# DIFFERENT, EXPLAIN !
+dt[, .(.N, lapply(.SD, sum)), by = .(x)]
+#    x N V2
+# 1: b 3 10
+# 2: b 3  6
+# 3: a 3 10
+# 4: a 3 15
+# 5: c 3 10
+# 6: c 3 24
+
+# 
+# Return grand total of 2 columns, new (temp) name 
+dt[, .(new = sum(y,v))]
+dt[, .(new = sum(y,v))] #SAME
+dt
+
+
+# BUT: permanently create NEW col
+# copy(dt):  not a second reference, actual 2nd copy 
+dt1  <- copy(dt)
+dt1
+identical(dt, dt1)
+
+# change in memory
+dt1[, newer := y +v]
+dt1
+identical(dt, dt1)
+rm(dt1)
+```
+
+#### Select cols to print
+```{r select1}
+dt[,c("x","y","v")]
+
+# SAME, easier!
+dt[, .(x,y,v)]
+
+# shortcut?
+col  <- c("x","y","v")
+dt[, ..col]
+
+# FAIL
+if (F) {
+  dt[, col]
+  dt[, .col]
+}
+
+dt[, .(col)]
+```
+
+### Subsets
+
+#### Ways to subset
+```{r logic}
+dt
+dt[y <5,]
+
+dt[, y < 5]  # vector
+dt[, .(y < 5)]
+
+dt[, .((y + v) > 10)]
+
+dt[, .N, by=.(x >0, y> 0)]
+#       x    y N
+# 1: TRUE TRUE 9
+
+## Seems to act like some key, on v, y; sort of .
+dt[, .N, by=.(v >0, y> 0)]
+dt[, .N, by=.(v >8, y> 0)]
+#        v    y N
+# 1: FALSE TRUE 8
+# 2:  TRUE TRUE 1
+
+# This:  do not understand!
+dt[, c(.N, v, y), by=.(v >8, y> 0)]
+```
+
+####  subset, .SD
+
+```{r subset}
+dt[, .SD[1]]  # 1st row
+dt[, .SD[1:4]]  # 1st 4 rows
+```
+
+#### head(.SD,2)
+```{r head}
+dt
+
+# returns 2 rows (out of all)
+dt[, head(.SD, 2), .SDcols= c("x")]
+
+# returns 2 rows (for each group)
+dt[, head(.SD, 2), by = .(x)]
+
+
+# return 2 rows (for each group, but only include colv + col x)
+dt[, head(.SD, 2), by = .(x), .SDcols=c("v")]
+
+```
+
+### Working with columns, j
+
+#### aggregrate, .N, by
+```{r aggregate}
+
+# 
+dt
+# for each in Col x, total, return dt
+dt[, .(.N), by = .(x)]
+dt
+
+# SAME, shortcut
+dt[, .N, by = x]
+dt
+
+# group by 2 columns, return dt
+dt[, .N, by = .(x,y)]
+```
+
+#### .N, count: returns integer vector
+```{r N}
+dt
+dt[, .N]
+dt[ x == "a", .N]
+
+```
+
+```
+DT Reference Semantics
+References are pointers to memory.  Pass by reference means NO copy needs to be
+made.  Maniupulation being done directly on object in memory.   `:=` specifies
+to create new in-place, in ram specifies to create new in-place, in ram
+Vignette: https://rdatatable.gitlab.io/data.table/articles/datatable-reference-semantics.html 
+
+Definitions:   
+`LHS := RHS`, "modify-in-place",  change object in memory; all refences to
+object see the change.
+
+
+`LHS = RHS`,  no change to object in memory;
+```
+
+
+#### LHS := RHS (general form)
+  *  Reference Semantics: 1B
+  *  2 forms: (this is not code)
+```
+FORM 1
+DT[, c("colA", "colB", ...) := list(valA, valB, ...)]
+
+ 
+# when you have only one column to assign to you
+# can drop the quotes and list(), for convenience
+DT[, colA := valA]
+
+
+FORM 2 
+DT[, `:=`(colA = valA, # valA is assigned to colA
+          colB = valB, # valB is assigned to colB
+       
+)]
+```
+
+####  unique, uniqueN: unique values and count 
+```{r unique}
+    dt  <- create_dt()
+
+dt
+##  unique values: return data.table with single col 
+    dt[, .(unique(x))]
+
+##	For each x, report number of rows and number of unique y values 
+    dt[, .(nrows= .N, nY= uniqueN(y)), by="x"]
+
+    data.table::uniqueN(dt, by = "x")
+    uniqueN(dt, by = c("x", "y"))
+# [1] 9
+
+##  return dt, with unique ROWs
+    unique(dt)
+
+##  return first row b/c unique removes all duplicates
+    unique(dt, by=c("x"))
+
+# table, count for each unique rows
+    dt[, .N, by = .(x,y)]
+    dt[, .N, by = .(x)]
+    dt[, .N, by = .(y)]
+
+```
+
+#### uniqueN
+```{r uniqueN}
+# count
+    data.table::uniqueN(dt, by = "x")
+    uniqueN(dt, by = c("x", "y"))
+
+    dt  <- create_dt()
+    dt[, .(nRows = .N, 
+           nX = uniqueN(x),
+           nY = uniqueN(y))]
+
+
+    # remove duplicated rows, base on by=
+    unique(dt, by = "x")
+    unique(dt, by = c("x", "y"))
+```
+
+
+
+#### TODO:  all fail, select rows IF y+v > 6
+```{r sum}
+
+dt[, .(x,y,v)]
+dt[(sum(y,v) > 6), .(x,y,v)]
+dt[sum(y,v) > 6, ]
+dt[, .SD[sum(y,v) > 6]  ]
+```
+
+
+
+#### TODO:  charcter to numeric?
+FIx
+```{r convert}
+# x is char
+dt[(sum(x,y) > 6)]
+dt[with(dt, x + y) > 6, ]
+
+```
+
+####  Study examples
+```{r begin2}
+create_dt  <- function()
+  DT = data.table(x=rep(c("b","a","c"),each=3), y=c(1,3,6), v=1:9)
+
+dt  <- create_dt()
+dt
+
+example(data.table)
+
+```
+
+####  Order(x) (sorting )
+```{r order}
+dt  <- create_dt()
+
+##  order on one column, but still displays ALL columns (optional extra comma)
+dt[order(x)]
+dt[order(x),]
+
+dt[order(y),]
+dt[order(y,v),]
+dt[order(y,-v),]
+dt[y == 6,][order(v),]
+
+# wrong
+dt[y == 6 & order(-v), ]
+```
+
+```{r challenge}
+
+# Challenge Problem
+# for each ID, count rows with non-zero values, 
+  build list of types (with non-zero values)
+
+my_tibble <- tidyr::tibble(
+  ID = c(1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5),
+  value = c(0,0,0,0,
+            1,1,0,1,
+            1,1,1,1,
+            0,1,0,1,
+            1,0,0,0),
+  type = rep(c("a", "b", "c", "d"), 5)
+)
+my_tibble
+dt  <- as.data.table(my_tibble) 
+
+##  Each ID, show non-zero count
+dt[value != 0, .N, by = ID]
+
+
+##  Each ID, list the types with non-zero values
+dt[value != 0, .(unique(type)), by = ID]
+
+## TODO:
+## SAME, but use list-column for the types
+dt[value != 0, c(ID, types `:=`  .(type)), by = ID]
+dt[]
+```
+
+#### Order, base on column
+```{r order1}
+create_dt()
+dt[order(x)]                   # no need for order(DT$x)
+dt[order(x),]   # SAME
+
+dt[order(-x)]   # reverse
+```
+
+    ## "y" means columns
+    ## y   means look for object y
+    ##
+    ## identical ways:  select columns 
+
+```
+#### create list-column
+```{r list_column2}
+dt[, .(y = .(y), v = .(v)), by="x"]
+```
+
+#### simple: reshape, list-column 
+```{r simple1}
+# practice dt,  use function so easy to re-create
+create_dt  <- function() {
+  data.table(x = rep(c("b", "a", "c"), each = 3),
+                  y = c(1, 3, 6),
+                  v = 1:9)
+}
+dt  <- create_dt()
+dt
+```
+
+#### Grouping;  head(.SD, 2)
+```{r}
+# 3lines for each grouping
+dt[,.SD, by=x]
+
+# here limit to 2 lines, for each grouping
+dt[,head(.SD, 2), by =x]
+
+# first x=b, then x=a ...
+dt[,print(.SD), by =x]
+
+# for each grouping, show val
+dt[, .(val = y), by =x]
+
+```{r list_column}
+# THINK
+dt[, .(val = c(y,v)), by=x]
+
+# THINK
+dt[, .(val = list(y,v)), by=x]
+dt[, .(val = list(c(y,v))), by=x]
+
+
+```
+
+#### NULL, NA, Explain !
+  *  in dt, work with NULL, NA
+```{r explain}
+dt3  <- function() {
+  data.table( ID = c(1,2,3,4,5,6),
+      tags= list(
+                 "a,b,c",
+                 NULL,    # blank
+                 NA,      # NA
+                 x,       # NA
+                 "x",
+                 "y,z,NULL,NA")
+      )
+}
+dt  <- dt3()
+dt
+
+
+# Step 1 (remove blank)
+
+f  <- function(e) ifelse(is.null(e), return(NA), return(e))
+dt[,.(ID, tags = lapply(tags, f)) ]
+
+dt[is.na(dt$tags)]
+dt[is.na(tags)]
+
+
+
+# Explainh errors ....
+if (F) {
+dt[is.null(tags)]
+dt[tags == NULL]
+dt[tags == NA]
+dt[tags == c(NA)]
+}
+
+
+# Explain behavior!
+g  <- function(e) return(e)
+
+dt[, .(ID, tags = lapply(tags, g))] 
+
+# 2 ID columns
+dt[, .(ID, tags = lapply(tags, g)), by=ID] 
+
+dt[, .(ID, tags = lapply(.SD, g)), by=ID] 
+
+if(F) dt[, tags = lapply(.SD, g), by=ID] 
+```
+
+#### remove 1 bad row
+```{r lapply_trouble}
+    dt  <- data.table(A = c(1,2), 
+                    B = c("good", "bad")
+                    )
+    dt
+    str(dt)
+
+    dt[B != "bad"]
+
+```
+
+#### lapply - problems
+```{r lapply_problems}
+
+##  NOTICE:   dt.1, dt.2 are DIFFERENCE, why?
+##  
+    dt.1  <- dt[, .(A, B = lapply(B, function(e) grep(e, pattern="^good", value=TRUE)))] 
+str(dt.1)
+
+##  
+    dt.2  <- dt[, .(A, 
+        B = unlist(lapply(B, function(e) grep(e, pattern="^good", value=TRUE))))] 
+str(dt.2)
+
+identical(dt.1, dt.2)
+
+
+# not what want:
+    dt.3  <- dt[, lapply(.SD, function(e) grep(e, pattern="^good", value=TRUE)),
+                .SDcols=c("B")] 
+dt.3
+
+
+# 
+dt.4  <- dt[, B := lapply(B,  function(e) grep(e, pattern="^good", value=TRUE)),
+                c("A", "B")] 
+dt.4
+
+```
+
+### By Reference:
+
+#### DEEP COPY (add a ref vs making a copy)  
+
+  *  by reference | no copies make | any modification (in-place) affects both. 
+  *  pass by value | make copy | leave original untouched
+
+```{r copy}
+# all dt
+tables()
+
+##  add new reference (not copy
+  new  <- dt
+  identical(new,dt)
+
+##  make a copy
+  old  <- data.table::copy(dt)
+  old
+  identical(old, dt)
+
+
+tables()
+
+## Any modification (by reference, in-place) change objects (in memory) and 
+##   anything that points to it
+
+# :=  forces by reference
+new  <- dt[, new := 3*v]  
+
+# both changed
+new
+dt
+
+# no change
+old
+
+# now change back
+dt  <- copy(old)
+dt
+```
+
+#### By reference (no copy, in-place) AKA `Reference Semantics` (see Vign) 
+  *  SYNTAX:   note!
+  *  EXAMPLE:  020 
+```{r more_by_reference }
+dt  <- create_dt()
+dt
+
+
+##  Multiply columns in-place, same column names, in-place
+    cols  <- c('y', 'v')
+    dt[, (cols) := lapply(.SD, '*', -1), .SDcols = cols]
+    dt
+
+
+##  But if you do not provide := or col names, it will do it by copy,
+    not in-place
+
+    dt  <- create_dt()
+    cols  <- c('y', 'v')
+    dt[, lapply(.SD, '*', -1), .SDcols = cols]
+    dt
+
+##  SAME as first, but create 2 new columns (in-place)
+    new_cols  <- c("one", "two")
+    dt  <- create_dt()
+    dt[, c(new_cols) := lapply(.SD, '*', -1), .SDcols = cols]
+    dt
+
+##  FANCY
+    dt  <- create_dt()
+    cols  <- c("y", "v")
+    out_cols  <- paste("log", cols, sep=".")
+    out_cols
+    dt[, c(out_cols) := lapply(.SD, 
+                               function(x) {log(x, base = exp(1))}), 
+                              .SDcols = cols]
+    dt
+
+
+## not in-place, no change to original dt
+dt  <- create_dt()
+dt[, lapply(.SD, '*', -1), .SDcols = cols]
+dt
+```
+
+#### lapply, Create new column in-place (changes dt in memory_) 
+```{r lapply_in_place}
+dt  <- create_dt()
+dt
+## 2nd ref to object in memory; change memory and both change. 
+old  <- dt
+
+## add suffix to col v, inplace
+suffix = "bye"
+
+dt[, c("v") := lapply(.SD, function(e) paste(e, suffix, sep="."   )), .SDcols = c("v")] 
+dt
+identical(old,dt)
+
+
+```
+### Data.table tools
+```{r dt_tools}
+
+## What's in memory?
+  data.table::tables()
+
+## For future, keep a ref, not a copy to DT
+  dt.ref  <- dt         # this is another ref
+  dt.copy  <- copy(dt)  # this creates 2nd copy
+```
+
+####    select rows, based on a variable (quote, eval), dt FAQ 1.6
+```{r select}
+##  REF  !so 15913832
+    dt  <- create_dt()
+
+    col= "b"
+    col= "a"
+    q = quote(col)
+    eval(q)
+    dt[x==eval(q)]
+```
+
+
+### create dt
+```{r begin}
+set.seed(10238)
+# A and B are the "id" variables within which the
+#   "data" variables C and D vary meaningfully
+
+create_dt  <- function () {
+DT = data.table(
+  A = rep(1:3, each = 5L), 
+  B = rep(1:5, 3L),
+  C = sample(15L),
+  D = sample(15L)
+)
+return(DT)
+}
+
+dt  <- create_dt()
+dt
+```
+
+#### Count, sum columns, groupings
+```{r sum_columns}
+#Sum all columns
+dt[ , lapply(.SD, sum)]
+#     A  B   C   D
+# 1: 30 45 120 120
+```
+
+#### Raw Markdown?
+```{r testing, results="asis"}
+###  Sum all columns
+dt[ , lapply(.SD, sum)]
+```
+
+#### Count Rows
+```{r  resume}
+dt[ , lapply(.SD, length)]
+dt[, .N, by=A]
+dt[, .(.N), by=A]
+dt[, .(.N), by=.(A)]
+```
+
+#### Count Rows, group by values in 1 column 
+```{r count_by}
+##  All same
+dt[, .N, by=A]
+dt[, .(.N), by=A]
+dt[, .(.N), by=.(A)]
+```
+
+#### By grouping, sum all, except A
+```{r except}
+dt[ , lapply(.SD, sum), by = A]
+#    A  B  C  D
+# 1: 1 15 38 43
+# 2: 2 15 30 49
+# 3: 3 15 52 28
+```
+#### Sum all columns EXCEPT A
+```{r except3}
+dt[ , lapply(.SD, sum), .SDcols = !"A"]
+```
+
+#### Group on A, count
+```{r count2}
+dt[ , lapply(.SD, length), by = A]
+```
+
+#### Sum all columns EXCEPT A, group on B
+```{r complex}
+#Sum all columns EXCEPT A, grouping BY B
+dt[ , lapply(.SD, sum), by = B, .SDcols = !"A"]
+#    B  C  D
+# 1: 1 27 29
+# 2: 2 17 30
+# 3: 3 33 11
+# 4: 4 23 36
+
+dt[ , lapply(.SD, length), by = B, .SDcols = !"A"]
+
+# Count, each combination of c("A", "B")
+dt[ , lapply(.SD, length), by = c("A","B")]
+```
+
+#### remove 1 col (modify in place)
+```{r remove_col}
+## start fressh
+dt  <- create_dt()
+dt
+str(dt)
+
+
+## in-place (in memory) remove col D
+    colD  <- c("D")
+    dt[, (colD) := NULL]
+    dt
+```
+#### remove >1 cols (in-place)
+```{r 2_col}
+## in-place, cols B and C
+    cols  <- c("B", "C")
+    dt[, (cols) := NULL][]
+```
+
+
+### JOINS (merge)
+First,  datatable::merge, based on, but not same, base::
+
+#### Merge:
+```{r inner}
+dt  <- create_dt()
+dt2  <- data.table(Z=c("a"))
+
+## inner join
+merge(dt,dt2, by.x = "x", by.y = "Z")
+
+merge(dt,dt2, by.x = "x", by.y = "Z", allow.cartesian=T)
+
+
+merge(dt,dt2, by.x = "x", by.y = "Z", all=TRUE)
+
+
+## left join
+merge(dt,dt2, by.x = "x", by.y = "Z", all.x=T)
+
+
+## right join
+merge(dt,dt2, by.x = "x", by.y = "Z", all.y=T)
+
+## all
+merge(dt,dt2, by.x = "x", by.y = "Z", all=T)
+
+
+## cross
+
+
+## natural
+merge(dt, dt2)
+
+## key
+```{r less_confusion}
+setkey(dt, x, verbose=T)
+setkey(dt2, Z)
+
+## check
+key(dt)
+key(dt2)
+
+tables()
+
+# FAIL	
+merge(dt, dt2, by=)
+
+```
+
+
+#### More Join Detail:   $HOME/code/try_things_here/DT/4000_DT_joins.R
+
+#### Simple Left, Inner 
+```{r inner}
+##  create table and its lookup
+    dt  <- create_dt()
+##  new dt, with limited values of x 
+    dt1  <- data.table(x=c("a", "d"))
+    dt1
+
+##  (Left) All rows of dt1, match or not in dt
+    dt[dt1, on="x"]
+
+##  (Inner) Only rows of dt1  with match in dt 
+    dt[dt1, on="x", nomatch=0]
+
+```
+
+#### Lookup Table
+```{r lookup}
+
+
+lookup  <- data.table(abbrev = c("ny", "or", "tx", "ca"),
+                      name = c("new york", "oregon", "texas", "california")
+                      )
+
+#  --------
+
+#  fix !
+l = list(list("ny", "blue"), list("ca", "blue"))
+main  <- data.table(l)
+
+#  --------
+
+main  <- data.table(abbrev = c("ny", "ca", "ma"),
+                    party = c("blue", "blue", "blue"))
+
+main
+#    abbrev party
+# 1:     ny  blue
+# 2:     ca  blue
+
+lookup
+#    abbrev       name
+# 1:     ny   new york
+# 2:     or     oregon
+# 3:     tx      texas
+# 4:     ca california
+
+
+#inner join, match in both
+lookup[main, on="abbrev", nomatch = 0]
+
+# all rows in main
+lookup[main, on="abbrev"]
+
+
+
+```
+
+
+
+#### rbindlist
+```{r rbindlist}
+
+get_filenames  <- function(e) rep(names(e), 2)
+
+
+
+
+# =====================
+#   rbindlist()
+# =====================
+
+#  TWO dt
+dt1  <- data.table(name=c("file1", "file1"),
+                   tags=c("tag1", "tag2"))
+dt1
+dt2  <- data.table(name=c("file2", "file2", "file2"),
+                   tags=c("tag3", "tag4", "tag5"))
+dt2
+
+
+rbindlist(list(dt1, dt2))
+# =========================
+# TWO lists 
+l1  <-  list(name=c("file1", "file1"), tags=c("tag1", "tag2"))
+l1
+l2  <- list(name=c("file2", "file2", "file2"), tags=c("tag3", "tag4", "tag5"))
+l2
+
+rbindlist(list(l1,l2))
+# ======================
+
+```
+
+#### normalize - votes
+Status?   not sure.
+```{r votes}
+# each=2, each element repeated twice, before moving on.
+votes <- function() {
+  data.table(issue = rep(c("issue1", "issue2"),times=1, each=2),
+             A = rep(c("Y",NA), 2),
+             B = rep(c(NA,"N"),2)
+             )
+}
+dt = votes()
+dt
+```
+
+
+#### Use melt (wide --> long)
+reprex for slack
+```{r melt}
+reprex(wd =  ".", venue = "slack",{
+
+
+#' For those of us tidyverse-averse (or just stubborn) here is one way twith data.table :
+
+library(data.table)
+#' Create fake data  in wide format ('unnormalized')
+#' Column A refers to votes of Country A, etc
+
+votes <- function() {
+  data.table(issue = rep(c("issue1", "issue2"),times=1, each=2),
+             A = rep(c("Y",NA), 2),
+             B = rep(c(NA,"N"),2)
+             )
+}
+dt = votes()
+dt
+
+
+#' melt (wide to long, aka 'normalize' the data)  
+#'  *  id.vars are the variables want to keep.  
+#'  *  measure.vars are the columns to collapse.  
+dt.1  <- data.table::melt(dt,
+                 id.vars = c("issue"),
+                 measure.vars = c("A", "B"),
+                 variable.name = "country",
+                 value.name = "vote",
+                 na.rm = TRUE
+
+)
+dt.1
+###' order by issue
+dt.2  <- dt.1[order(issue)]
+dt.2
+             })
+```
+
+
+```{r}
+dt  <- votes()
+dt_A  <- dt[!is.na(A), .(country = "A", vote=A), by = issue]
+dt_A
+dt_B  <- dt[!is.na(B), .(country = "B", vote=B), by = issue]
+dt_B
+
+```
+```{r render, eval=FALSE, include=F	} 
+args(rmarkdown::render)
+file  <- "/home/jim/code/try_things_here/DT/00291_DT_STUDY_examples.Rmd"
+file  <- normalizePath(file)
+file
+rmarkdown::render(input= file,
+                  output_format="pdf_document",
+                  #output_file=here("rmd","out")
+                  output_dir="~/Downloads/print_and_delete/"
+                  )
+
+#   *  if .gitignore balks,  then add !out/**   to close .github
+
+```

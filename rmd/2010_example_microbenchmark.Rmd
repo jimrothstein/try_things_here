@@ -1,0 +1,78 @@
+
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 4
+        toc_float: true
+        mathjax: default
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  4   
+fontsize: 11pt   
+geometry: margin=0.4in,top=0.25in   
+TAGS:  microbench
+---
+~/code/MASTER_INDEX.md
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = T   ) # T easier to read
+```
+
+
+```{r library 		}
+library(jimTools)
+library(microbenchmark)
+``` 
+
+### Two ways to multiple 
+```{r  two_ways}
+
+x  <- 12345
+32*x
+bitwShiftL(x, 5)  # base 2, 32= 2^5
+
+## but which is faster?  
+## (To compare N ways:   each gets 1 its own line in function below)
+
+res  <-   microbenchmark( 32*x,
+                 bitwShiftL(x, 5)
+                 )
+## multiplication!  
+res
+```
+
+```{r skeleton, include=F, eval=F}
+file="/home/jim/.config/nvim/templates/skeleton.Rmd"
+```
+
+```{r render, eval=FALSE, include=FALSE 	} 
+output_dir  <- Sys.getenv("OUTPUT_DIR")
+output_dir
+
+{
+file  <- "" 
+file  <- basename(file)
+file  <- here("rmd", file)
+file
+}
+
+
+
+
+## replacement for here
+if (F) {
+  the_dir  <- dirname(file)
+  file  <- file.path(the_dir, file)
+}
+
+
+```

@@ -1,0 +1,101 @@
+
+---
+title: "R4DS Notes From Advanced R"
+output: md_document
+#  html_document:
+#    toc: true
+#  	toc_float: true
+#    css: styles.css
+---
+
+
+# Chapter 4 - Basics
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE, collapse=TRUE)
+
+library(tidyverse)
+library(kableExtra)
+library(lobstr)
+```
+
+```{r}
+x  <- list()
+x
+length(x)
+y  <- x[0]
+y
+
+
+x[0]  <- "test"
+x[0]
+x
+
+
+x[[0]]
+```
+
+::: View as SETS, not vectors or lists ....
+::: Sets can have 0,1 or many elements
+```{r}
+
+# Create 4 sets
+one  <- 100:199
+two  <- 200:299
+three  <- list(a = 300:399, b=400:499)
+four  <- "hello"
+
+
+# make a new set that contains the other four
+l <- list(one, two, three, four)
+
+# l has 4 elements
+# How many elments one have?  200
+# How many elements does three have?  2
+# how many elements does four have? 1
+=====================================
+
+
+# grab 199, which is in set 'one'
+S1  <- l[1]  #returns a set with 1 element, one
+length(S1)
+
+# makes no sense to find subset of S1, it has only 1 element.
+# instead we need to get at contents of the first (and ONLY) element of S1
+S2  <-  S1[[1]]
+length(S2)  #100 elemebts
+# finally
+S2[100]  # 199
+=======
+
+# elemnt 0 of S
+l[0]
+l[[0]]
+
+# find last entry of three,  499
+S3  <- l[3]
+S3
+
+How many elements does S3 have?   1 
+length(S3)
+
+# With 1 elment, subsets make no sense, we must examine contents
+S3_1  <- S3[[1]]
+S3_1   # have many elements does this Set have,  
+length(S3_1) #2
+
+# we want only a subset
+S3_1_2  <- S3_1[2]
+S3_1_2
+
+length(S3_1_2) # 1
+
+# since only 1 subset, we must use [[]]
+S3_1_2[["b"]] # which has 100 elemnts
+
+S3_1_2[["b"]][100]  # 499
+
+```
+
+Reference: https://en.wikipedia.org/wiki/S-expression
+Peng: https://bookdown.org/rdpeng/rprogdatascience/subsetting-r-objects.html
+

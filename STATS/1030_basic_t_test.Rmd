@@ -1,0 +1,284 @@
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+    fontsize: 11pt   
+    geometry: margin=0.5in,top=0.25in   
+---
+
+
+
+### Note:  
+Base:: plots  
+- With knitr:  nothing special needed  
+- For standalone example (see bottom)  
+
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = TRUE   ) # FALSE  easier to read
+```
+### Use curve() to plot t distribution
+*  curve(expr, from = NULL, to = NULL, n = 101, add = FALSE,
+           type = "l", xname = "x", xlab = xname, ylab = NULL,
+           log = NULL, xlim = NULL, ...)
+*  N=25 for most of this file, df = 24 (N-1)
+```{r plot_t_dist}
+N  <- 25
+df  <- N-1
+x  <- function(x) dt(x, df=24)
+y  <- function(x) dt(x + 0.2, df=24) # shift "mean"
+
+curve(x, -3, 3, ylab="dt(df=24)", col="blue", )
+curve(y, -3, 3,  col="red", add = TRUE)
+```
+
+### Use  base::plot to :
+*   plot a number of t values  
+*   indicate (in red) a few quantiles for t
+```{r annotate_t_plot}
+x  <- seq(-3, +3, 0.1)
+y  <- dt(x, df=df)
+
+base::plot(x, y,
+     xlim = c(-3,3), xlab="t", ylab="density", axes=FALSE )
+
+box()
+axis(side=1, at=seq(-3,3, 1))
+#  need to ADD quantiles:   95%,  90%,  32%, 50%
+t_values  <- qt(p=c(0.025, 0.05, 0.16, .50, 0.84, 0.95, 0.975 ), df=df,
+                lower.tail=TRUE)
+t_values
+y  <- rep(c(0), length(t_values))
+y
+points(x =t_values, y=y, pch=15, col="red")
+
+```
+
+### Create sample(s) random normal data  
+$$\mu=0$$
+$$\sigma=1$$
+
+*  Then use t-test to evaluate:  
+*  H0   mean =0   
+*  H1   mean != 0   
+
+
+
+```{r samples}
+set.seed(4643)
+N  <- 25 
+pop_mean = 0.0
+pop_sd  <- 1
+sample1  <- rnorm(n = N, mean = pop_mean, sd= pop_sd )
+sample2  <- rnorm(n = N, mean = pop_mean, sd= pop_sd )
+
+# knitr::knit_exit()
+```
+### Plot samples
+```{r plot_sample}
+
+m  <- c(mean(sample1),mean(sample2))
+s  <- c(sd(sample1), sd(sample2))
+se  <- s/sqrt(N)
+x  <- rep(c(0,1), each = N)
+plot(x = jitter(x), y = c(sample1, sample2), 
+     xlim = c(-1,2), xlab="sample", ylab="value", axes=FALSE )
+
+box()
+axis(side=1, at=0:1, labels=c("sample1", "sample2"))
+axis(side=2, at=seq(-3,3, 1))
+
+# mean, 1 sd
+points(x =c(0,1), m, pch=15, col="red")
+arrows(x0=c(0,1), y0=m-se, y1=m+se, code=3, angle=90, length=.15)
+```
+
+
+### Calc se, t-value, 95% CI 
+```{r t-test}
+
+# first repeat above graph
+plot(x = jitter(x), y = c(sample1, sample2), 
+     xlim = c(-1,2), xlab="sample", ylab="value", axes=FALSE )
+
+box()
+axis(side=1, at=0:1, labels=c("sample1", "sample2"))
+axis(side=2, at=seq(-3,3, 1))
+
+# mean, 1 sd
+points(x =c(0,1), m, pch=15, col="red")
+arrows(x0=c(0,1), y0=m-se, y1=m+se, code=3, angle=90, length=.15)
+# end of repeat graph
+
+
+m
+s
+se  <- s/sqrt(N)
+se
+
+# t is actually the 'random variable', and should fit T distribution.
+t  <- (m - 0)/se
+t
+t_95  <- qt(p=c(0.025, 0.975), df=df)
+t_95
+
+upper  <- m+ t_95*se
+lower  <- m-t_95*se
+lower[1]
+upper[1]
+
+
+# 95% CI (in green)
+points(x = c(0,1), upper, pch=15, col="green")
+points(x = c(0,1), lower, pch=15, col="green")
+```
+
+### Put mean and CI on density graph
+```{r compare}
+
+N  <- 25
+df  <- N-1
+x  <- function(x) dt(x, df=24)
+
+curve(x, -3, 3, ylab="dt(df=24)", col="blue", )
+points(x = c(lower[1], upper[1]),y=c(0,0),  pch=15, col="green")
+points(x = c(t_95[1], t_95[2]),y=c(0,0),  pch=15, col="red")
+
+knitr::knit_exit()
+```
+
+## t.test()
+Compare to my calc (above)
+     t.test(x, y = NULL,
+            alternative = c("two.sided", "less", "greater"),
+            mu = 0, paired = FALSE, var.equal = FALSE,
+            conf.level = 0.95, ...)
+```{r  t_test2}
+t.test(x = sample1)
+```
+
+
+```{r }
+
+knitr::knit_exit()
+```
+  
+```{r next}
+
+if (FALSE ){
+axis(side=1, at=0:1, labels=c("nonsmokers", "smokers"))
+axis(side=2, at=seq(14,22,2))
+points(c(0,1), m, pch=15, col="red")
+arrows(x0=c(0,1), y0=m-se, y1=m+se, code=3, angle=90, length=.15)
+}
+if (FALSE ){
+pdf(paste0("~/downloads/print_and_delete/" , file, ".pdf"))
+plot(x, fake, ylim = c(-5, 5), sub = "t-value = 21.5", type = "p")
+abline(h = 0)
+abline(h = fake_mean, col=2)
+dev.off()
+}
+
+# ratio of "error" (difference of expected) to "width" (standard error)
+t_value  <- (mean(fake) - 0)/ (sd(fake)/sqrt(n))
+t_value # 21.5  large!
+
+```
+
+
+Recent NY Times article claimed the number of non-US born "Genius" awards (as
+defined by ...... Foundation) greatly exceeds the expected number, based on
+proportion of US population that is non-US born.   (The award is only open to
+US residents or citizens.)
+
+ Using the information in the article, I want to get check this (avoiding
+ introducing any political arguments).
+
+
+ The proportion of non-US born people in the US is 13 %, from 2010 US census.  
+ This is population proportion or p0 = 0.13.
+
+
+ Out of N=965 "genius" awards given since inception of the foundation,  209 or
+ 21.7% were born outside the US.   So p_hat = 0.217
+
+
+ Is this significant?
+
+
+ Hypothesis is H0 that p_hat = p0   vs   H1: p_hat != p0
+
+ For a proportion,  Standard Error is given by 
+ SE = sqrt (p0(1-p0)/n)
+
+ and the Z-test is   (p_hat -  p0) / SE
+```{r}
+
+N <- 965
+p0 <- 0.13
+p_hat <- 209/N  # 0.217
+
+SE <- sqrt(p0*(1-p0)/N)    # 0.011
+
+#
+t <- p_hat/SE  # 20.006
+
+# So   reject H0,   so clearly can be RANDOM group.
+
+pdf("~/Downloads/print_and_delete/1030_basic_t.pdf")
+plot(x = c(0,0), y=c(p0, p_hat), xlim = c (-2,2), ylim= c(0, .5))
+abline(h=p0)
+abline(h=p_hat, col=2)
+dev.off()
+
+# Method 2
+N <- 965
+# but 
+US <- 350 * 10^6
+p0 <- N/US  # 2.77 * 10^-6
+
+p_hat <- 209/(.13 * US) # 4.59 * 10^-6
+
+d <- p_hat - p0  # 1.84 * 10^-6
+
+SE <- sqrt(p0*(1-p0)/N)  # 5.35 * 10 ^-5
+
+t <- d/SE  # 0.034
+#####  Binomial #####
+
+# pmf - binomial, x=success, size=throws
+
+dbinom(x=0,size=2, prob=0.5) # n=2, x=0  prob = 0.25
+dbinom(x=1, size =2 , prob=0.5) # n=2, x=1 # 0.5
+sum(dbinom(x=0:2,size=2, prob=0.5)) # SUM = 1
+
+```
+## Examples  standalone plots
+```{r plots, eval=FALSE, include=FALSE   }
+pdf("~/Downloads/print_and_delete/04_lm_residuals.pdf")
+plot(x, r, col = 2, ylim = c(-5, 5))
+abline(h = 0)
+dev.off()
+```
+
+```{r render, eval=FALSE    }
+file  <- "1030_basic_t_test.Rmd" 
+# in general, pdf will look nicer
+rmarkdown::render(file,
+                  #output_format = "pdf_document",
+                  output_format = "html_document",
+                  output_file = "~/Downloads/print_and_delete/out")
+```

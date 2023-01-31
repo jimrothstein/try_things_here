@@ -1,0 +1,87 @@
+"# 
+
+#	basic structure
+# =================
+explain  <- function(x){
+	list(
+	 	"x" = x,
+		"typeof" = typeof(x),
+		"class" = class(x),
+		"attributes" = attributes(x))
+}
+
+z <- structure("apple", x="value: x") 
+explain(z)
+
+attr(z,"y")  <-  "value: y"
+explain(z)
+
+z <- structure("dog", name="booz", class="dog") 
+class(z)
+typeof(z)
+explain(z)
+
+mm  <- matrix(1:6, ncol=2)
+
+dim (mm)
+nrow(mm)
+length(mm)   #6
+NROW(mm)
+
+length(
+
+# list
+# ======
+x  <- list(a="apple", b="bite", c="carrot")
+x
+
+# SAME
+x$a
+x[["a"]]
+
+
+# WARNING
+cond <- c(FALSE, TRUE)
+if (cond) print ("success")
+
+# FIX: use ENV to throw ERROR, not WARNING
+Sys.setenv("_R_CHECK_LENGTH_1_CONDITION_" = "TRUE")
+if (cond) {
+    print("First entry was True, so we're fine ...")
+}
+
+Sys.getenv()
+sessionInfo() # version 3.6.3
+df_coltypes <- data.frame(
+  a = c("a", "b"),
+  b = c(TRUE, FALSE),
+  c = c(1L, 0L),
+  d = c(1.5, 2),
+  e = c("one" = 1, "two" = 2),
+  g = factor(c("f1", "f2")),
+  stringsAsFactors = FALSE
+)
+df_coltypes
+# coercion, least common denomiinate is STRING
+as.matrix(df_coltypes)
+
+df <- data.frame(x = c(TRUE, FALSE), y = "hi")
+df
+mm <- as.matrix(df)
+mm
+
+v <- as.logical(mm[,1])  # returns vector, boolean
+typeof(v)
+class(v)
+attributes(v)
+
+
+reprex::reprex({ 
+# reponse to Maya's gist
+x <- 1
+x[]
+x[0]
+x["hello"]
+x[4]
+})
+

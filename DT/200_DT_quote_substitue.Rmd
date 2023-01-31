@@ -1,0 +1,113 @@
+
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+fontsize: 11pt   
+geometry: margin=0.5in,top=0.25in   
+TAGS:  data.table,NSE,quote,substitution,eval
+---
+
+### Advanced ... gets to `some` DT internals.
+*  Recall, NSE is R special ability to manipulate code as wellas variables
+  before  evalutation.
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = FALSE   ) # easier to read
+library(jimTools)
+library(data.table)
+```
+
+REF:
+https://stackoverflow.com/questions/46834655/whats-the-difference-between-substitute-and-quote-in-r
+
+
+
+### Problem:  dyamically set value for by =
+```{r by}
+# dt[, <j> , by = eval(<dynamic>)]
+
+# using AST, substitute prepares - but not evaluate - a list
+# To obtain values, eval()
+test  <- function(...){
+  by  <- substitute(list(...))
+}
+
+
+Team  <- c("teamA", "teamB", "teamC")
+by  <- test(Team)
+typeof(by)   # language
+by
+
+# now evaluate it
+eval(by)
+```
+
+### various stages of evaluation
+```{r compare}
+## https://stackoverflow.com/questions/46834655/whats-the-difference-between-substitute-and-quote-in-r
+
+f <- function(argX) {
+   list(quote(argX), 
+        substitute(argX), 
+        argX,
+        eval(argX))
+}
+    
+suppliedArgX <- 100
+f(argX = suppliedArgX)
+
+# [[1]]
+# argX
+# 
+# [[2]]
+# suppliedArgX
+# 
+# [[3]]
+# [1] 100
+
+```
+
+
+
+
+
+
+
+
+
+
+```{r render, eval=FALSE, include=FALSE 	} 
+# TODO:  file is found when knitr runs (see above)
+
+# file must be of form:
+# dir/name_of_this_file    where dir is relative to project root
+
+## In doubt?   USE  knitr and do not waste time!
+
+## Want to embed Latex, stick to pdf output (html?   never sure!)
+
+# NOTE:   .tex only works with PDF
+# NOTE:    tex will NOT work with html
+# in general, pdf will look nicer
+
+file  <-  "/home/jim/code/try_things_here/rmd/0088_base_package_commands.Rmd"
+
+rmarkdown::render(file,
+                  #output_format = "pdf_document",
+                  output_format = "html_document",
+                  output_file = "out")
+```

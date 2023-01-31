@@ -1,0 +1,77 @@
+---
+title: "R Notebook"
+output: html_notebook
+editor_options: 
+  chunk_output_type: console
+---
+
+06-anova example --------------------------------------------------------
+#### https://m-clark.github.io/docs/mixedModels/anovamixed.html
+#### code: https://github.com/m-clark/mixed-models-anova/blob/master/anovamixed.Rmd
+
+#### 01-setup 
+```{r}
+library(tidyverse)
+
+# fake data
+assigned_group = rep(c('treat', 'control'), e=5)  #  character v
+pre = c(20,10,60,20,10,50,10,40,20,10)
+post = c(70,50,90,60,50,20,10,30,50,10)
+
+t = tibble(patient_id=factor(1:10), 
+		   assigned_group = factor( assigned_group),
+		   pre, post)  
+t %>% glimpse()
+```
+
+#### 02-data clenaup
+```{r}
+# normalize
+# 2 new columns, "time" and "value"
+
+# gather: all variable columns into 1 column
+		  #all constants (data) into 1 column
+		
+t_long <- tidyr::gather(t, key=time, value=score, pre:post) %>% arrange(patient_id)
+t_long$time <- factor(t_long$time,levels=c("pre","post"))
+
+t_long %>% glimpse()
+
+# pretty
+knitr::kable(t_long)
+
+```
+
+
+#### 03-Means
+```{r}
+# summary
+t_long %>% dplyr::group_by(assigned_group,time) %>% summarize(mean = mean(score), sd = sd(score), n=n())
+
+
+# a few possible groupings
+group_by <- t_long%>%   dplyr::group_by(assigned_group, time) 
+group_by <- t_long%>%   dplyr::group_by(assigned_group) 
+group_by <- t_long%>%   dplyr::group_by(time) 
+
+# summary for specifed grouping
+group_by %>% summarize(mean = mean(score), sd = sd(score), n=n())
+
+```
+
+```{r}
+t_long %>% 
+	ggplot (aes (x=assigned_group, y=score)) +
+	geom_boxplot()
+```
+
+#### FIX
+```{r}
+# plot
+ggplot(t_long, aes(x=time, 
+				   y=score, 
+				   group=patient_id, 
+				   color=assigned_group )) +
+	geom_point() +
+	geom_line()
+```

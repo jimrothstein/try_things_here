@@ -1,0 +1,173 @@
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 4
+        toc_float: true
+        mathjax: default
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  4   
+fontsize: 11pt   
+geometry: margin=0.4in,top=0.25in   
+TAGS: regression, correlation, simulation 
+---
+~/code/MASTER_INDEX.md
+
+###  OLS, but errors are NOT normal 
+  *  REF:  https://yihui.org/en/2021/06/ols-consistency/
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = T   ) # T easier to read
+```
+
+```{r library 		}
+library(data.table)
+``` 
+
+#### Construct nasty looking errors
+```{r examine_errors}
+A  <- 100
+
+# Observe y, x
+# Not observe:  x_t, the TRUE  value of independent variable, random variable.
+
+
+# TRUE :   y = 2x_t + e (=runif(N))
+# B0 = 0, B1 = 2
+
+simulate <- function(N = 10, noise = F){
+    A  <- 100
+
+         e = runif(N)
+        # x_t is random variable
+         x_t  <- rnorm(N)
+
+
+         if (F) {  
+             print("hi")
+          } else {
+              print("not hi")
+         }
+         
+         x  <- x_t + ifelse(noise, (e - .5) + A * (e - .5)^2, 0) 
+
+
+
+         y  <- 2 * x + e
+
+         list(e = e,
+              x = x,
+              y = y)
+}
+
+sim  <- simulate(N=1000, noise=F)
+
+sim  <- simulate(N=10^5, noise=F)
+y  <- sim$y
+x  <- sim$x
+e  <- sim$e
+
+fit  <- lm(y ~ x)
+summary(fit)
+
+
+# Faraway leaves y alone, but adds noise to x, lm (y ~ noise)
+sim  <- simulate(N=10^5, noise=T)
+fit  <- lm(y ~ sim$x)
+summary(fit)
+
+
+dt  <- data.table(y = y,
+                  x = x,
+                  e = e)
+
+head(dt)
+```
+
+
+#### plot
+```{r plot}
+plot(y)
+hist(y)
+
+plot(x)
+hist(x)
+
+plot(e)
+hist(e)
+
+plot(x=x, y=y)
+
+# x, y highly correlated.
+cor(x,y)
+cor(x, e)
+# [1] 0.0812
+cor(y, e)
+
+# par(mar = c(4, 4.5, .2, .2))
+# 
+# plot(
+#   Ns, bs, cex = .6, col = 'gray',
+#   xlab = 'N', ylab = expression(hat(beta))
+# )
+# abline(h = 2, lwd = 2)
+# points(10000, 2.0014, col = 'red', cex = 2, lwd = 2)
+# arrows(10000, 2.0014, 8000, 1.99, )
+# text(8000, 1.987, 'Estimate from the simulation
+#  mentioned in the tweet')
+
+```
+
+### model
+```{r lm}
+# y = constant
+
+fit1  <- lm(y ~ 1)
+summary(fit1)
+res1  <- fit1$residuals
+hist(res1)
+
+
+# y = intercept + slope * x
+fit2   <- lm(y ~ x)
+summary(fit2)
+res2  <- fit2$residuals
+hist(res2)
+
+
+
+```
+
+
+```{r render, eval=FALSE, include=FALSE 	} 
+output_dir  <- Sys.getenv("OUTPUT_DIR")
+output_dir
+
+{
+file  <- ""
+file  <- basename(file)
+
+## dislike here?
+ the_dir  <- dirname(file)
+ file  <- file.path(the_dir, file)
+
+#   file  <- here("rmd", file)
+file
+}
+
+rmarkdown::render(file,
+                  output_format="html_document",
+                  output_dir="."
+                  )
+
+
+
+```

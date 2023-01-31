@@ -1,0 +1,259 @@
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+fontsize: 11pt   
+geometry: margin=0.5in,top=0.25in   
+TAGS:  curve(),latex,math
+---
+* using curve() to explore districtions.
+
+* MOVE 028_  here
+## Roughly follows:   OpenInfo
+###  Begin, simple Z, T
+###  Also, FAT tail discussion
+
+Need X11
+
+### curve() - very easy to generate distribution plots:  Examples:
+```{r curve, eval=FALSE }
+curve(sin, -1, 1)
+
+curve(dnorm, -3, +3)
+
+
+# CDF - beautiful!
+curve(pnorm, -3, +3)
+curve(pnorm)  # clips the x axis
+
+
+curve(qnorm)  # indep variable is now alpha, (area) (0,1)
+```
+
+$$e^2$$
+
+
+$$\frac{a}{b}$$
+
+$$\frac{xe^-x}{x+1}$$
+$$\frac{xe^x}{x+1}$$
+
+
+\begin{equation}
+y=x
+\end{equation}
+
+left align:
+$y=x$
+
+\(y=x\)
+
+
+center?
+
+\[y=x\]
+
+### Need latex for this!
+```{r use_latex}
+
+g  <- function(x) {
+  num  <- (x)/(x+1) *exp(-x)
+  den  <- 1 
+  return(num/den)
+}
+
+curve(g, .01,10)
+```
+
+### T Distribution
+```{r t_distribution}
+x  <- function(x) dt(x, df=25)
+curve(x, -3, 3,)
+knitr::knit_exit()
+
+```
+
+### Chi-squared
+```{r chi-squared}
+curve(
+			dchisq(x, df=3),
+			xlim=c(0,10),
+			ylim=c(0,1),
+			col="blue"
+)
+
+curve(
+			dchisq(x, df=6),
+			xlim=c(0,10),
+			ylim=c(0,1),
+      add=TRUE,
+			col="green"
+)
+
+# use ADD to include 2nd graph
+curve(
+			pchisq(x, df=3),
+			xlim=c(0,10),
+			add=TRUE,
+			col="red"
+)
+```
+
+
+
+## Practice with normal
+### 00-Given Area(1 tail), find z
+```{r}
+qnorm(p=.5, mean=0, sd=1)	# z=0
+qnorm(p=.05)	# z=-1.64
+qnorm(p=0.025)	# z=-1.96
+```
+
+### 01-Given T (or quantile) value, find Area to left
+```{r}
+# Ex 7.2
+# area=?
+(area <- pt(q=-2.10, df=18 ))	# 0.025
+```
+
+### 02-Given T (or quantile) value, find Area to left (Ex7.3)
+
+```{r}
+# Ex 7.2
+# area=?
+(area <- pt(q=-1.65, df=20 ))	# 0.057
+
+# if were normal
+(area <- pnorm(q=-1.65 ))	# 0.0495
+```
+### 02A - speaking of normal:
+```{r}
+# for 2 tail normal, find area within distance 1 sd of 0
+1-(area <- 2*pnorm(q=-1 ))	# 0.68 (1- area in both tails)
+1-(area <- 2*pnorm(q=-2 ))	# 0.954	 (1- area in both tails)
+1-(area <- 2*pnorm(q=-3 ))	# 0.997 (1- area in both tails)
+```
+
+##### 02B - TODO plot - 2 tails!
+```{r}
+
+```
+
+### 03-(Ex 7.4) Given T (or quantile) value, find Area in tails
+```{r}
+# so this is area above or below 3 sd fromd from 0 
+# area=?
+(area <- 2*pt(q=-3, df=2 ))	# 0.0955
+
+(area <- 2*pnorm(q=-3 ))	# 0.027 (so T has more in far tails)
+```
+
+### Ex 7.5
+```{r}
+# area above -1.79?
+1-(area <- pt(q=-1.79, df=19)) # 0.955
+```
+
+
+### 7.14 Constrct: 1-sample confidence
+```{r}
+# CI = pt est + t*StandardError
+# known: x_mean = 4.4, s = 2.3, n=19
+(SE = 2.3/sqrt(19))  # 0.528
+
+# assume CI should be 95%,  ie 2.5% each tail
+T <- qt(0.025,df=18,lower.tail=TRUE) # -2.1    and (symmetry) +2.1
+
+#
+CI = 4.4 + c(1,-1)*2.1*.528  # c(3.291, 5.509)
+```
+
+
+### 7.16 1-sample T
+```{r}
+# compute T value, difference/SE
+SE=16.98/sqrt(100 )   # 1.698
+
+t <- (97.32-93.29)/SE    # 2.373
+
+# this corresp to area (above 2.373), assume 2-tail
+(area <- 2*pt(-2.373,df=99))   # 0.0196, which is p-value, smaller than conf level 0.05 , reject H0
+```
+
+````
+
+MOTIVATION:  You are finding sample mean.
+DATA shows a large deviation. Is a RARE events?   For example, a 4-sigma event
+in your sample?  (ie very long tail contribution)
+
+Is it 2 2-sigma events  OR  1
+4-sigma events.  
+
+REF: https://david-salazar.github.io/2020/04/17/fat-vs-thin-does-lln-work/
+
+Compare:  For each x, probability of 2 meaurements > 1x stand dev  vs
+probability of 1 measurement > 2x stand dev
+
+NOT Surprise:   For very rare events, ratio is large!  So the large deviation
+probably caused by 2 2-sigma events, not 1 4-sigma events.  ie  Safe to ignore
+tails - in normal distribution.
+````
+
+```{r fat_tails}
+library(tidyverse)
+library(hrbrthemes)
+
+y  <- seq(0,4, 1)
+(1-pnorm(y))
+
+
+x <- seq(0, 3.45, 0.05)
+
+
+NUM  <- (1 - pnorm(x))^2
+DEN   <- (1-pnorm(2*x))
+
+ratio  <- NUM/DEN
+#ratio <-((1 -pnorm(x))^2)/(1-pnorm(two_x))
+ratio
+
+g  <- {
+tibble(ratio) %>% 
+  cbind(x) %>% 
+  rename('k' = x) %>% 
+  mutate(k = as.double(k)) %>% 
+  arrange(k) %>% 
+  ggplot(aes(x = k, y = ratio)) +
+    geom_point(color = 'dodgerblue4') +
+  hrbrthemes::theme_ipsum_rc(grid = "Y") +
+  scale_y_continuous(labels = scales::comma) +
+  labs(x = "k in terms of sigma",
+       title = "Mediocristan", 
+       subtitle = "Ratio of S(X)^2/S(2X) from a Standard Normal")
+}
+g	
+```
+```{r print, eval=FALSE}
+
+{
+file  <- "rmd/01010_basic_distributions.Rmd" 
+file  <- basename(file)
+file  <- here("rmd", file)
+file
+}
+
+# in general, pdf will look nicer
+rmarkdown::render(file,
+                  output_format = "pdf_document")
+                  #output_format = "html_document")
+```

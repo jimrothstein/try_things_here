@@ -1,0 +1,120 @@
+<!--
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+-->
+
+--- 
+# Spaces, no Tabs
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
+---
+
+* Checking normality, qq, REF Hannay
+   [REF:  hannay](https://faculty.nps.edu/rbassett/_book/continuous-random-variables.html)
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  
+											comment="      ##",  
+											error=TRUE, 
+											collapse=TRUE) 
+```
+
+```{r library, include=FALSE		}
+library(jimTools) 
+library(tibble)
+library(ggplot2)
+``` 
+
+Ch 9.1.1 - fake population 
+```{r one}
+set.seed(2020)
+heights<-rnorm(1200, mean=5.5, sd=4/12.0)
+mean(heights)  # 5.49
+
+hist(
+     heights, 
+     col='coral', 
+     main='Heights of Schreiner Students', 
+     ylab='Proportion of Students', 
+     xlab='Height (ft)', 
+     freq=FALSE)
+
+```
+Be lazy, sample N=50
+```{r}
+set.seed(1942)
+N=50
+one_sample_x  <- sample(heights, replace = FALSE  , size=N)
+
+mean(one_sample_x)  #5.53 
+# this just sd of sample, NOT sd of means
+sd(one_sample_x)   # 0.327  
+
+```
+
+* Sample average is an `estimator`, is it unbiased? (Chapter 9.3)
+* compare to theory, E[sample avg]
+* replicate()
+```{r estimator}
+# take B samples (large)
+B <- 10000
+sample_mean  <- function(N=50){
+  mean(sample(heights, replace=FALSE , size=N))
+}
+
+# store is set of mean heights
+store  <- replicate(B, sample_mean(N))
+mean(store) # 5.49
+sd(store)  # 0.0486 (vs 0.047 - theory)_
+
+theory_sd  <- sqrt( (1/3)^2/N )
+theory_sd   # 0.0471
+hist(
+     store, 
+     col='coral', 
+     xlab='Sample mean', 
+     main='Distribution of Sample Means N=50')
+
+# scale
+hist(
+     scale(store), 
+     col='coral', 
+     xlab='Sample mean', 
+     main='Distribution of Sample Means N=50')
+```
+
+Ch 9.4, qq & normality?
+```{r normality}
+IQR(store)/sd(store)  # 1.35 (vs 1.3)
+
+qqnorm(store)
+qqline(store, col="red")
+
+
+# What percent are below 5.3, using as above mean= 5.5, sd=4/12
+pnorm(q=c(5.3),5.5, 1/3)    #27%
+```
+
+
+
+```{r knit_exit()} 
+knitr::knit_exit() 
+```
+
+/newpage
+
+```{r render, eval=FALSE	} 
+file <- "rmd/099_hannay_chapter_09_sampling.Rmd" 
+file  <- basename(file) 
+dir <- "rmd"
+
+jimTools::ren_pdf(file,dir)
+jimTools::ren_github(file, dir)
+```

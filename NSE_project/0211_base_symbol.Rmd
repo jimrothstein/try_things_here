@@ -1,0 +1,72 @@
+--- 
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: lualatex
+    toc: TRUE 
+    toc_depth:  4 
+fontsize: 10pt 
+geometry: margin=0.4in,top=0.25in 
+TAGS:  deparse, substitute
+---
+
+REF: https://stackoverflow.com/questions/25235240/r-variable-names-symbols-names-or-something-else/25235365#25235365
+
+
+####    Symbol, aka name
+```{r}
+q2  <- quote(x)
+is.symbol(q2)
+```
+
+#### Coerce to symbol, or name
+```{r}
+x  <- 4
+is.double(x)
+
+## for variable, use as.name
+is.symbol(as.name(x))
+is.symbol(as.name(x))
+is.symbol(quote(x))
+identical(as.name(x), quote(x))
+
+```
+
+####    Not symbol
+```{r not_symbol}
+is.symbol(4)
+
+## ??
+is.symbol(as.name(4))
+z  <- as.name(4)
+
+## weird
+is.symbol(z)
+
+
+
+##  for function, use quote
+f  <- function() {}
+is.symbol(quote(f))
+
+is.symbol(f)
+## error
+if (F) is.symbol(as.name(f))
+```
+
+
+```{r render, eval=FALSE, include = F	} 
+file <- "/home/jim/code/try_things_here/BASE/0211_base_symbol.Rmd"
+file  <- normalizePath(file)
+file
+
+
+rmarkdown::render(file, 
+       output_format="pdf_document",
+       output_dir = "~/Downloads/print_and_delete"
+       )
+
+
+```

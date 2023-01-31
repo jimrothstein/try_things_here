@@ -1,0 +1,143 @@
+
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 4
+        toc_float: true
+        mathjax: default
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  4   
+fontsize: 11pt   
+geometry: margin=0.4in,top=0.25in   
+TAGS:  
+---
+~/code/MASTER_INDEX.md
+file <- "1200_simple_likelihood.Rmd"
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = T   ) # T easier to read
+```
+
+
+Suppose throw coin:  Count number of throws till 1st head.  What is
+distribution?
+  *  if k=1 toss,  then probabily is p.
+  *  if k=2 tosses,  then probability is (1-p)p.
+  *  if k=3,  (1-p)^2 *p
+  *  if k=4,  (1-p)^3 * p
+  *  if k=n,  (1-p)^n-1 * p
+
+```{r distribution}
+
+## p usually unknown
+
+## find 1st n terms:
+f  <- function(n, p) {
+  v  <- double()
+  k   <- 1
+  while (k <= n){
+    #browser()
+    v  <- append(v, values = p*(1-p)^(k-1))
+    k  <-  k + 1
+  }
+  v
+}
+n  <- 15
+r  <- f(n=n, p = 1/2)
+r
+plot(r)
+```
+
+#### Generate fake data
+```{r, fake}
+# start with p = 1/3
+
+r  <- f(n=n, p = p)
+r
+
+## Suppose we did this with N=1000 coins
+N  <-  1000
+
+
+plot(N*r)
+
+library(data.table)
+dt  <- data.table(observations = N*r)
+dt
+
+col  <- c("fake")
+## in-place
+dt[, c(col) := observations]
+dt
+
+## create positive, negaitve noise, 1-5% of obs, need n in total
+    set.seed(2021)
+    sign  <- (-1)^sample(1:2, size=n, replace = T )
+    sign
+    ## pick a percentage
+    noise  <- sample(1:5, size=n, replace=T)/100
+    noise
+    sign*noise
+
+## fake differs form obs by a few percent, in either direction
+dt[, ("fake") := fake + fake*sign*noise]
+dt
+```
+
+#### now we fake data, what to find best p?
+```{r p}
+
+
+dt[, ("log fake") := log(fake)]
+dt
+
+#### is LINEAR!
+plot(dt$`log fake`)
+plot(dt$observations,col="blue") 
+plot(dt$fake, col="green")
+
+```
+
+
+```{r
+glm(formula = dt$fake ~1 ,   family=binomial)
+```
+
+
+
+
+
+
+
+```{r render, eval=FALSE, include=FALSE 	} 
+output_dir  <- Sys.getenv("OUTPUT_DIR")
+output_dir
+
+{
+file  <- "" 
+file  <- basename(file)
+file  <- here("rmd", file)
+file
+}
+
+
+
+
+## replacement for here
+if (F) {
+  the_dir  <- dirname(file)
+  file  <- file.path(the_dir, file)
+}
+
+
+```

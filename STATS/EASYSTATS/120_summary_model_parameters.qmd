@@ -1,0 +1,44 @@
+---
+title: "using easystats notes"
+date:  \today 
+pdf-engine: lualatex
+format:
+  pdf: 
+    include-in-header: 
+      text: |
+        \usepackage[top=.5in, bottom=.5in, left=.5in, right=.5in]{geometry}
+        \usepackage{amsmath,amssymb,amstext,amsfonts}
+        \usepackage{lipsum}
+---
+
+1.	**NOTE:  This directory is for using easystats**
+2.	For the **source** code use ~/code/easystats/
+3.	TEXT ONLY in this file, no R.
+3.	This is **.qmd**, not **.md** because I can't remember different sets of
+		pandoc, headers, etc.  *when* I run R.
+
+
+To run:	quarto render %	; zathura  
+quarto preview <file> --to pdf    # (opens in a browser)
+
+
+
+$$
+x^2
+$$
+
+$$
+ 	\langle u,v \rangle
+$$
+
+```{r}
+library(parameters)
+
+
+##  Center and normalize dot product x.y
+cor.test(iris$Sepal.Length, iris$Sepal.Width) |>
+  parameters()
+
+# compare
+cor.test(iris$Sepal.Length, iris$Sepal.Width)
+```

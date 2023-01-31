@@ -1,0 +1,65 @@
+--- 
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
+---
+SEXP
+In R, write C calls??
+http://adv-r.had.co.nz/C-interface.html
+
+<!-- 
+set cul   "cursorline
+cc=+1			"colorcolumn is 1 more than tw
+-->
+
+<!--  commments -->
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  
+											comment="      ##",  
+											error=TRUE, 
+											collapse=TRUE) 
+```
+
+<!--  RENDER:  see bottom -->
+
+```{r library, include=FALSE		}
+library(jimTools) 
+library(inline)
+``` 
+
+
+```{r begin}
+add <- cfunction(c(a = "integer", b = "integer"), "
+  SEXP result = PROTECT(allocVector(REALSXP, 1));
+  REAL(result)[0] = asReal(a) + asReal(b);
+  UNPROTECT(1);
+
+  return result;
+")
+add(1,5)
+```
+
+***
+
+```{r knit_exit()} 
+knitr::knit_exit() 
+```
+
+/newpage
+
+```{r render, eval=FALSE	} 
+file <- "" 
+file  <- basename(file) 
+dir <-"rmd"
+
+jimTools::ren_pdf(file,dir)
+jimTools::ren_github(file, dir)
+```

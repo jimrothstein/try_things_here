@@ -1,0 +1,309 @@
+---
+title:  "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: hide
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+        highlight: pygments
+        theme: cerulean
+        mathjax: default
+editor_options: 
+  chunk_output_type: console
+TAGS: sampling, rep, sample, replicate, lapply
+---
+
+
+<!--
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+-->
+### PURPOSE: Basic sampling, 
+* Verbs:   sample, rep, repetition
+* Collect all examples HERE
+* [source Rafal Chapter 14:](https://rafalab.github.io/dsbook/probability.html#discrete-probability)
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  
+											comment="      ##",  
+											error=TRUE, 
+											collapse=TRUE) 
+```
+
+#### replicate vector
+```{r rep}
+# return a vector, containing x  3 times (3 elments)
+rep(x=5,times = 3)  # ( 5 5 5	)x 3
+
+# return one vector containing "a" "z"  6 times (12 elements)
+v <- rep(x=letters[c(1,26)], times=6)
+v
+
+# be sure understand this patternpattern:
+v  <- rep (c(letters[1:3]), c(3,2,1))
+v
+
+```
+
+## generate seq
+```{r seq}
+head(seq(from = 1, to = 10, by=0.1))
+
+x <- seq(1:4)
+x
+
+rep(x, 3) # 1...10 1 ...10  1...10
+```
+
+## take a sample, returns vector
+*  size = repeat this many times (length of return vector)
+```{r sample}
+sample(x=c(0,1), size= 7, replace=TRUE)
+
+sample(x=c("blue","red"), size=10, replace=TRUE, prob=c(0.8,0.2))
+
+sample(x=1:5, size=4,  replace=TRUE)
+
+# note:
+m <- matrix(data=1:100, nrow=25) # fills 1st column, then second ...
+head(m)
+```
+
+
+
+#### replicate, apply verb repeatedly
+* HOWEVER, replicate is wrapper for sapply, which tries to `simplify`
+* n = repeat number of times
+* expr = ususally a call, such as mean(rnorm(10)) to repeat
+* return DEPENDS 
+```{r replicate}
+replicate(n =3 , mean(1:100))
+replicate(n =3,  mean(rnorm(10)))
+
+# STUDY:  return 3 samples, each sample of size=4 as a COLUMN, in matrix
+replicate(n =3,  sample(c(0,1),size=4, replace=T)) 
+knitr::knit_exit()
+```
+
+Construct list of vectors for lapply
+  *  replicate is version of sapply
+  *  simply=FALSE ; returns list of vectors
+  *  DEFAULT would return array or matrix
+
+```{r lapply }
+n  <- 3
+l  <- replicate(3, rnorm(5), simplify = FALSE )
+l
+
+lapply(l, mean)
+```
+
+### median
+```{r median}
+# From normal distribution, take N values at random.  Compute median. To
+# generate the sampling distribution of the median,  repeat this B times.
+#
+# Compute point estimate and 95% CI for TRUE  median.  
+
+N  <- 100    # 1 sample
+B  <- 10^4 
+
+#  Generate a list of length B, each element containing double of length N
+l  <- replicate(B, rnorm(N), simplify = FALSE)
+if (F) str(l)
+
+# For each of the B elements of l, compute the median.
+m  <- lapply(l, median)
+
+if (F) length(m); str(m)
+
+# the Sampling Distribution appears Normal
+hist(unlist(m))
+
+# What can we say about the properities of Sampling Distribution.
+# Is it normal?   If so, can we compare its mean and standard error and compare
+# to theory?
+#
+
+```
+
+### range
+```{r range}
+# From normal distribution, take N values at random.  Compute range. To
+# generate the sampling distribution of the range,  repeat this B times.
+#
+# Compute point estimate and 95% CI for TRUE  range.  
+
+N  <- 100    # 1 sample
+B  <- 10^4 
+
+#  Generate a list of length B, each element containing double of length N
+l  <- replicate(B, rnorm(N), simplify = FALSE)
+if (F) str(l)
+
+# For each of the B elements of l, compute the median.
+m  <- lapply(l, range)
+m.1 <- lapply(l, function(e) {r  <- range(e); r[2] - r[1]})
+
+
+if (F) {length(m); str(m)}
+
+# the Sampling Distribution appears Normal
+hist(unlist(m))
+hist(breaks=20, unlist(m.1))
+
+# What can we say about the properities of Sampling Distribution.
+# Is it normal?   If so, can we compare its mean and standard error and compare
+# to theory?
+#
+
+```
+### sine (careful with # repetitions)
+```{r sine}
+# From sine wave distribution (x=0 to x=pi), take N values at random.  Repeat this B times.
+# Compute point estimate and 95% CI for TRUE  median.  
+N  <-  100
+B  <- 10^2
+y  <- replicate (B, runif(N, min=0, max=1), simplify=FALSE)
+length(y)
+inv  <- function(y) (acos(1-2*y))
+x  <- lapply(y, inv)
+
+m  <- lapply(x, mean)
+
+pi/2
+
+hist(unlist(x))
+
+# PDF = sin
+# CDF = integral sin bet 0 and x 
+
+CDF  <- function(x) {1/2*(1 - cos(x))}
+curve(CDF, from = 0, to = pi)
+
+# given y, solve for x
+x  <- acos(1 - 2*y)
+x
+hist(x)
+
+curve(sin)
+
+N  <- 100  
+B  <- 10^4 
+l  <- replicate(B, rnorm(N), simplify = FALSE)
+
+m  <- lapply(l, median)
+hist(unlist(m))
+```
+LEGACY (below)  move to 1060_sample binom?
+======
+game
+```{r game}
+# game:  roll 2 dice, 7 or 11?
+# construct matrix of 2 cols, so simulate throwing 2 die, 50x.
+
+B  <- 50  # experiments (rows)
+n  <- 2   # each experment, 2 dice
+
+s <- sample(1:6,B*n, replace=TRUE) # returns vector
+m <- matrix(s, nrow= B, ncol=n)
+head(m)
+```
+
+replicate is wrapper to repeatedly apply sapply
+```{r replicate2}
+# replicate
+```
+
+```{r norm}
+
+#### 0050_from_norm
+df <- data.frame(matrix(rnorm(1000), ncol =10))
+head(df)	
+
+```
+```{r coin flip1}
+N  <- 10000
+roll <- sample(x=c(-1,1),size=N,replace=TRUE, prob=c(0.5,0.5))
+roll  <- as.integer(roll)
+is_integer(roll)
+is_vector(roll)# T
+is_atomic(roll)
+str(roll)
+
+
+t  <- tibble(raw =roll,
+	     cum_total = cumsum(raw))
+print(t, n=20)
+tail(t)
+plot( x=1:N, y=t$cum_total)
+
+```
+```{r coin_flip}
+
+
+#### 0060_coin_flip_running_avg
+# 1/n converges slowly!
+size <- 100000
+t <- tibble(x=sample(x=c(1,0),size=size, replace = TRUE),
+			run_avg = dplyr::cummean(x)
+			) %>% 
+	mutate(line = 1:size)
+
+t %>% head()
+
+t$run_avg %>% tail()
+t %>% ggplot(aes(x=line, y=run_avg)) +
+	geom_point()
+	
+
+# create 'urn' with 5 balls
+beads <- rep(c("red", "blue"), times = c(2,3))
+beads
+
+# pick sample (of 1)
+event <- sample(beads,size=1)
+event
+
+# many events
+set.seed(2012)
+B <- 10000
+events <- replicate(B,sample(beads,size=1))
+table(events)  #  5988 blue, 4012 blue
+t <- tibble(events)
+	
+# shortcut...
+events1 <- sample(beads, size = B, replace = TRUE)
+table(events1)  # 5988, 4012
+
+x <- rnorm(10000,0,1)
+mean(x <= 0)  # cute,  returns area, percentile
+```
+
+
+
+
+```{r knit_exit(), eval = FALSE   } 
+knitr::knit_exit() 
+```
+
+```{r render, eval=FALSE, include=FALSE 	} 
+
+# TODO:  file is found when knitr runs (see above)
+
+# file must be of form:
+# dir/name_of_this_file    where dir is relative to project root
+getwd()
+{
+file <- "1050_sampling_basic.Rmd" 
+file  <- here("STATS", file)
+file
+}
+# in general, pdf will look nicer
+rmarkdown::render(file,
+                  output_format = "pdf_document",
+                  #output_format = "html_document",
+                  output_dir =  "~/Downloads/print_and_delete/")
+```
