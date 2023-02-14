@@ -94,12 +94,43 @@ sprintf("hello %04s", 23)         # min of 4
 sprintf("hello %04f", 23)         # 23.000000
 sprintf("hello %04i", 23)         # int, min of 4 digits
 
+
+##  tricky
+  n = 3
+  x  <- paste0("e with %2d digits= %.", n, "g")
+  x
+  sprintf(x, n, exp(1))       # e with 3 digits=2.72
+
+# 4, 5 digits
+sprintf("e = %.4g", exp(1))
+sprintf("e = %.5g", exp(1))   # 2.7183
+sprintf("e = %.5f", exp(1))   # 2.71828
+
+sprintf("e = %5.2f", exp(1))   # 2.72
+sprintf("e = %5.3f", exp(1))   # 2.718
+
+
+## exponential
+sprintf("e = %5.2g", 1e6 * exp(1))   # 2.7e+06
+sprintf("e = %5.3g", 1e6 * exp(1))   # 2.72e+06
+sprintf("e = %5.3g", 1e9 * exp(1))   # 2.72e+06
+sprintf("e = %.3g", 1e9 * exp(1))   #
+sprintf("e = %.8g", 1e9 * exp(1))   # 2.71882818e...
+
+sprintf("10^7 = %.3g", 10^7)
+sprintf("10^7 = %.4g", 10^7)
+sprintf("10^7 = %7.4g", 10^7)
+sprintf("10^7 = %7.4G", 10^7)
+sprintf("10^7 = %7.4f", 10^7)
+
 # five digits,  great for prefix!
   N  <- 10 
   sprintf("%05i", 1:N)
 
 
-  sprintf("This is e= %2d", exp(1))
+  sprintf("This is e= %f", exp(1))
+  sprintf("This is e= %f", exp(1))
+
   sprintf("This is exponential %02e", 1000)
 
 
