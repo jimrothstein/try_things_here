@@ -283,3 +283,4 @@ A[B, .(A.id = A$id, B.id= B$id,  A.x_val = A$x_val, B$y_val), on=.(id), nomatch=
 # 2:     2     2      x2     y2
 # 3:     3     4      x3     y3
 
+

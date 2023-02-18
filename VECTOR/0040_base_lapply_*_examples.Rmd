@@ -381,6 +381,78 @@ length(y)
 y[1]
 
 ```
+
+sapply - rules (SEE: https://stackoverflow.com/questions/12339650/why-is-vapply-safer-than-sapply/12340888#12340888)
+sapply - given length 0 input, almost always returns empty list
+```{r}
+##  identity returns its argument
+  sapply(1:5, identity)
+  ## [1] 1 2 3 4 5
+
+##  zero length:  sapply returns list
+  sapply(integer(), identity)
+# list()
+  sapply(list(), identity)
+# list()
+  sapply(c(), identity)
+# list()
+
+# list()
+  length(array())  # 1
+  sapply(array(), identity)
+# [1] NA
+  sapply(date(), identity)
+
+  # empty function is actually length=1
+  z = sapply(function() {}, identity)
+  length(function(){}) #1
+  length(z) #1
+# [[1]]
+# {
+# }
+# 
+length("")   # length = 1 !
+length(character(0))   # length = 0 !
+length(character(1))   # length = 1 !
+
+
+##  same, vapply - always 
+
+  vapply(1:5, identity, integer(1))
+# [1] 1 2 3 4 5
+  if(F) vapply(1:5, identity, "")   # "" denotes character(1) which fails
+
+  vapply(integer(), identity, integer(1))
+# integer(0)
+  vapply(list(), identity, integer(1))
+# integer(0)
+  vapply(c(), identity, integer(1))
+# integer(0)
+
+  vapply(character(), identity, character(0))
+# <0 x 0 matrix>
+  vapply(character(), identity, character(1))
+# named character(0)
+  vapply(character(), identity, character(2))
+#     
+# [1,]
+# [2,]
+  vapply(character(), identity, character(3))
+#     
+# [1,]
+# [2,]
+# [3,]
+
+
+##
+
+## list()    
+vapply(1:5, identity, integer(1))
+## [1] 1 2 3 4 5
+vapply(integer(), identity, integer(1))
+## integer(0)
+```
+
 #### Nested lists
 
 ```
