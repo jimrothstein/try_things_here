@@ -18,6 +18,25 @@ X <- jsonlite::fromJSON(the_file,
 
 bookmarks =  as_tibble(X)
 bookmarks
+
+listviewer::jsonedit(X)
+
+# These are bookmarks I see:  G-mail, NYT ....
+# Some are singletons, some are folders
+X$children$children[[2]][[2]]
+X$children$children[[2]]["uri"]  # only signaltons
+# --------------------------------------------------
+
+listviewer::jsonedit(Y)
+listviewer::jsonedit(Y[1])
+
+
+str(Y[2], list.len = 3)
+t  <- as_tibble(Y[2])
+Y[2]
+
+
+
 toolbar = bookmarks[2,]
 toolbar
 colnames(toolbar)
