@@ -391,6 +391,21 @@ f(x,y,z)
 
 ```
 
+Return the unevaluated expression, deparsed (not a call?)
+```{r}
+f  <- function(x = { 2*x}){
+  as.character(rlang::enexpr(x))
+    }
+    
+
+
+f(2+2)
+f(sin(2))
+f(sin(2) + cos(2))
+f(sin(x))
+```
+
+
 ```{r knit_exit()} 
 knitr::knit_exit() 
 ```

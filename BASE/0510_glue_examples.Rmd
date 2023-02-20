@@ -32,6 +32,8 @@ knitr::opts_chunk$set(echo = TRUE,
 https://twitter.com/cararthompson/status/1550475986210361347
 ---
 
+####  PURPOSE:  glue prints as regular text (not as char[])
+
 ####	Example of glue and purrr::walk
 ```{r a_glue_purrr_example}
 
@@ -46,8 +48,8 @@ penguin_salute <- function(penguin) {
 	#	Glue:  simple string
 	# Without glue: get a char[1]
 
-	print(glue::glue("Hi, {penguin}!"))  
-	print(paste0("Hi ", penguin))
+	print(glue::glue("Hi, {penguin}!"))       ##  prints as regular text 
+	print(paste0("Hi ", penguin))             ##  prints as char[]
 
 }
 
@@ -83,77 +85,6 @@ Hi, Gentoo!
 ### Both sprint and glue offer improved over print 
   *  REF:  [Glue](https://www.r-bloggers.com/2019/07/glue-magic-part-i/)
 
-### sprintf:
-  * sprintf(x, FORMAT)
-  * wrapper for os command
-
-```{r sprint}
-sprintf("hello %s", "jim")
-sprintf("hello %s", 23)
-sprintf("hello %04s", 23)         # min of 4
-sprintf("hello %04f", 23)         # 23.000000
-sprintf("hello %04i", 23)         # int, min of 4 digits
-
-
-##  tricky
-  n = 3
-  x  <- paste0("e with %2d digits= %.", n, "g")
-  x
-  sprintf(x, n, exp(1))       # e with 3 digits=2.72
-
-# 4, 5 digits
-sprintf("e = %.4g", exp(1))
-sprintf("e = %.5g", exp(1))   # 2.7183
-sprintf("e = %.5f", exp(1))   # 2.71828
-
-sprintf("e = %5.2f", exp(1))   # 2.72
-sprintf("e = %5.3f", exp(1))   # 2.718
-
-
-## exponential
-sprintf("e = %5.2g", 1e6 * exp(1))   # 2.7e+06
-sprintf("e = %5.3g", 1e6 * exp(1))   # 2.72e+06
-sprintf("e = %5.3g", 1e9 * exp(1))   # 2.72e+06
-sprintf("e = %.3g", 1e9 * exp(1))   #
-sprintf("e = %.8g", 1e9 * exp(1))   # 2.71882818e...
-
-sprintf("10^7 = %.3g", 10^7)
-sprintf("10^7 = %.4g", 10^7)
-sprintf("10^7 = %7.4g", 10^7)
-sprintf("10^7 = %7.4G", 10^7)
-sprintf("10^7 = %7.4f", 10^7)
-
-# five digits,  great for prefix!
-  N  <- 10 
-  sprintf("%05i", 1:N)
-
-
-  sprintf("This is e= %f", exp(1))
-  sprintf("This is e= %f", exp(1))
-
-  sprintf("This is exponential %02e", 1000)
-
-
-```
-
-### sprintf examples from help
-```{r from_help}
-     sprintf("%f", pi)
-     sprintf("%.3f", pi)   # 3 decimal places
-     sprintf("%1.0f", pi)
-     sprintf("%5.1f", pi)
-     sprintf("%05.1f", pi)
-     sprintf("%+f", pi)
-     sprintf("% f", pi)
-     sprintf("%-10f", pi) # left justified
-     sprintf("%e", pi)
-     sprintf("%.3e", pi)  # 3 digits
-     sprintf("%E", pi)
-     sprintf("%g", pi)
-     sprintf("%g",   1e6 * pi) # -> exponential
-     sprintf("%.9g", 1e6 * pi) # -> "fixed"
-     sprintf("%G", 1e-6 * pi)
-```
 
 ```{r if_run_knitr}
 

@@ -54,7 +54,8 @@ manual_calc(26)
 
 # Lucky for us, each term in series has closed form
 
-old_digits  <- getOption("digits")
+(old_digits  <- getOption("digits"))
+
 options("digits" = 10)  
 
 # use lowest form
@@ -84,7 +85,7 @@ getOption("digits")
 
 ```
 
-k
+
 ***
 
 ```{r knit_exit(), include = FALSE  , eval=FALSE } 
