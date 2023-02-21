@@ -56,7 +56,8 @@ rrapply::rrapply(oceania,
 ) |> str(list.len=3, give.attr=F)                 # as   
 
 
-#  replace logical to 0 for countries with missing values (NA), but do not drop
+#  replace all logical to 0 for countries with missing values (NA), but do not drop
+# -------------------------------------------------------------------------------
 rrapply::rrapply(oceania,
                 f = \(x) 0,
                 classes = "logical",
@@ -65,11 +66,14 @@ rrapply::rrapply(oceania,
 
 
 ## prune , flatten (to named atomic vector double[])
-rrapply::rrapply(oceania,
+## Lost structure (Oceania, Region, Country)
+# ----------------------------------------------------
+z  <- rrapply::rrapply(oceania,
                 classes = "numeric",
                 how  = "flatten"
 ) 
-
+z
+##  double[]
 typeof(rrapply::rrapply(oceania,
                 classes = "numeric",
                 how  = "flatten"
@@ -77,12 +81,46 @@ typeof(rrapply::rrapply(oceania,
 
 
 
-## Beautiful, z is list, str shows contents named double[]
+## Beautiful, z is named list, str shows contents named double[]
+## named list, with `structure` recorded! (if not kept )
+# ----------------------------------------------------------
+#
 z  <- rrapply::rrapply(oceania,
                 classes = "numeric",
                 how  = "flatten",
                 options = list(namesep=".", simplify = F)
 
-) |> str(list.len=10, give.attr=F) 
+) 
+z |> str(list.len=10, give.attr=F) 
+
+listviewer::jsonedit(z)
 
 
+##  melt, includes prune
+## drop all logical NA's and return melted data.frame
+## note:  something going on with attr
+# -----------------------------------------------------
+  oceania_melt <- rrapply(
+    oceania,
+    classes = "numeric",
+    how = "melt"
+  ) 
+  str(z, give.attr=F)   # list of 22
+  typeof(z)
+
+  head(oceania_melt, n = 10)   # note:  L1, L2
+
+
+##  unmelt,  only works if list was melted with rrapply?
+# --------------------------------------------------------
+#
+#
+#
+##
+##
+##  how=bind     POKEDEX
+# ------------
+listviewer::jsonedit(pokedex)
+
+rrapply(pokedex, how = "bind")[, c(1:3, 5:8)] |>
+  head(n = 10)

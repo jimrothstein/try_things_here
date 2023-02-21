@@ -2,41 +2,47 @@
 ##  Compare to base::rapply
 ##
 library(rrapply)
+library(listviewer)
 data(package = "rrapply")
 
-str(pokedex , list.len=3)
-str(renewable_energy_by_country, list.len=3)  
-str(renewable_energy_by_country$World$Oceania, list.len=3)
 
 ##  give.attr=F (cleaner):w
-##  
+##  list.len=3
+##  max.level = 
 str(renewable_energy_by_country$World$Oceania, list.len=3, give.attr = F)
 
 
-oceania  <- renewable_energy_by_country$World$Oceania
-str(oceania, list.len=3 )
-str(oceania, list.len=3 , give.attr = F)
 
-##  Cocos Islands has no number, prune to exclude
-##  give.attr=F much cleaner w/o attributes
-rrapply::rrapply(oceania,
-                f = \(x) x,
-                classes = "numeric",
-                how  = "prune"
-) |> str(list.len=3, give.attr=F)
+the_dir  <- "~/Downloads/to_Drive"
+the_dir
+the_file  <- paste0(the_dir, "/", "bookmarks-2023-01-22.json")
 
-## prune , flatten
-rrapply::rrapply(oceania,
-                classes = "numeric",
-                how  = "flatten"
-) |> head(10)
+the_file
 
-## Beautiful
-rrapply::rrapply(oceania,
-                classes = "numeric",
-                how  = "flatten",
-                options = list(namesep=".", simplify = F)
-
-) |> str(list.len=10, give.attr=F)
+##  no attempt to simplify
+##  x is a list of lists
+x  <- jsonlite::read_json(the_file)
+#
+listviewer::jsonedit(x)
 
 
+menu  <- x$children[[1]]
+str(menu, list.len=3)
+
+head(menu, 10)
+str(menu, list.len=10)
+
+str(menu$children[[1]], list.len=4, max.level=6)
+
+rrapply(menu, 
+  f = \(x) names(x) == "uri",  
+  how="bind")[, c(2,9)] |> head(n=10)
+
+rrapply(menu$children[1], how = "bind")[, c(2, 9)] |> head(n = 10)
+
+
+
+rrapply(menu,
+  f = \(x) names(x) != "uri",
+  how="prune"
+)
