@@ -1,6 +1,6 @@
 file <- "43_rrapply_example.R#"
 ##  Compare to base::rapply
-##  PURPOSE:  !so 47603578; extract data.frames as list from nested structure
+##  PURPOSE:  use rrapply with simplest list structure
 ##
 library(rrapply)
 library(listviewer)
@@ -42,6 +42,7 @@ str(X)
 # ------------------------------
 replace(X, 2, NULL)
 str(replace(X, 2, NULL))
+
 # List of 1
 #  $ a: num [1:3] 1 2 3
 #  - attr(*, "class")= chr "myclass"
@@ -67,7 +68,7 @@ str(X)
 # ------------------------------
 # 3) use rrapply
 # ------------------------------
-# toupper
+# toupper, list names
 X  <- create_X()
 rrapply(X, 
         how="names",
@@ -77,9 +78,12 @@ rrapply(X,
 
 names(X)[-2]  # from right, drop
 # [1] "a"
-#
+# #
+# -------------------------------------------------------------------------
+# apply  identity to elements in 1st position, prune (remove) rest, ie $b
+# OR, apply identity to elemnts where .xname == "a"
+# -------------------------------------------------------------------------
 rrapply(X, 
-        #condition = function(x, .xname, .xpos)  .xname %in% names(X)[-2] && .xpos == 1,  
         condition = function(x, .xname, .xpos)  .xpos == 1,  
         f = identity, 
         how="prune")
