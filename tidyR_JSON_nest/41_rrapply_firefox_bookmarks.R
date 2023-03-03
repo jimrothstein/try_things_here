@@ -35,6 +35,19 @@ str(menu, list.len=10)
 str(menu$children[[1]], list.len=11, max.level=2)
 str(menu$children[[1]], list.len=11, max.level=3)
 
+# ----------------------------------------------------------
+menu_melt <- rrapply(
+    menu,
+    condition = function(x, .xname) .xname %in% c("title", "uri"),
+    classes = "character",
+    how = "melt"
+  ) 
+menu_melt
+as_tibble(menu_melt)
+# ----------------------------------------------------------
+
+head(z, n=20)
+
 y  <- rrapply(menu, 
   classes="character",
   how="prune",
