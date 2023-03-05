@@ -19,9 +19,13 @@ l3 <- list(1, l1, l2, 5)
 # ----------------------------------------------------------
 ##  STUDY
   unlist(l1)
+# [1] 1 2 3
   unlist(l2)
+# [1] 1 2 1 2 3 4
   rrapply(l1, f = function(x, .xpos) .xpos, how = "unlist")
+# [1] 1 2 3
   rrapply(l1, f = function(x, .xpos) length(.xpos), how = "unlist")
+# [1] 1 1 1
 # ----------------------------------------------------------
 
 max(rrapply(l1, f = function(x, .xpos) length(.xpos), how = "unlist"))
