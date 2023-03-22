@@ -1,0 +1,59 @@
+# https://www.rostrum.blog/2023/03/03/getparsedata/
+#   webD version: https://webr-parse-test.netlify.app/
+# https://renkun.me/2020/11/08/using-parse-data-to-analyze-r-code/
+# https://github.com/wch/r-source/blob/0ee550ff68f22b8a1807377e728f99f2775cc43c/src/main/gram.y#L2312-L235
+#
+#
+# PURPOSE:  Basic intro to  parse, token,
+#
+#
+x <- subset(mtcars, subset = carb == 8)
+
+e <- parse(text = "x = subset(mtcars, subset = carb == 8)")
+
+getParseData(e)[, c("token", "terminal", "text")]
+#                     token terminal   text
+# 29 expr_or_assign_or_help    FALSE
+# 1                  SYMBOL     TRUE      x
+# 3                    expr    FALSE
+# 2               EQ_ASSIGN     TRUE      =
+# 26                   expr    FALSE
+# 5    SYMBOL_FUNCTION_CALL     TRUE subset
+# 7                    expr    FALSE
+# 6                     '('     TRUE      (
+# 8                  SYMBOL     TRUE mtcars
+# 10                   expr    FALSE
+# 9                     ','     TRUE      ,
+# 14             SYMBOL_SUB     TRUE subset
+# 15                 EQ_SUB     TRUE      =
+# 22                   expr    FALSE
+# 16                 SYMBOL     TRUE   carb
+# 18                   expr    FALSE
+# 17                     EQ     TRUE     ==
+# 19              NUM_CONST     TRUE      8
+# 20                   expr    FALSE
+# 21                    ')'     TRUE      )
+#
+cols <- c("token", "text")
+cols
+#
+y <- getParseData(e)
+y
+y[y$text != "", cols]
+#
+#
+#
+#       poorman
+mtcars[mtcars$mpg < 15, c("carb", "mpg")]
+sessionInfo()
+select_env <- new.env()
+select_env$setup <- function(.data, calling_frame) {
+  select_env$.data <- .data
+  select_env$calling_frame <- calling_frame
+}
+
+x <- select_env$setup(mtcars, environment())
+str(x)
+str(select_env)
+select_env$calling_frame
+select_env$.data
