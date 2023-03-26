@@ -12,9 +12,19 @@ mtcars[, hp]
 mtcars[hp > 100, ]
 mtcars[hp > 200, ]
 
+get("hp", as.environment(mtcars)) # ok
+get(hp, as.environment(mtcars)) # error
 # not the mean of column created by adding 2 columns !!
 mtcars$cyl + mtcars$am |> mean()
 
+
+# works
+hp_expr <- quote(hp > 200)
+eval(hp_expr, envir = mtcars)
+eval(hp_expr, envir = as.environment(mtcars))
+
+# err
+eval(hp_expr, data = mtcars)
 
 # with works
 with(mtcars, hp > 200)
@@ -63,7 +73,9 @@ e <- expression(mean(hp))
 
 # FAILS
 eval(substitute(e), envir = mtcars)
-eval(substitute(e), enclos = parent.frame())
+eval(substitute(e), envir = mtcars)
+eval(substitute(e), data = mtcars, enclos = parent.frame())
+eval(substitute(e), data = mtcars, enclos = parent.frame())
 eval((mean(hp)), envir = mtcars)
 eval(substitute(e), data = mtcars, enclos = parent.frame(1))
 

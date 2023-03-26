@@ -1,0 +1,35 @@
+##  Bruno_Book  Chapter 04
+
+
+
+
+```{r}
+library(dplyr)
+data("starwars")
+```
+```{r}
+mean(starwars$height, na.rm = TRUE)
+```
+
+aggregate is a pain
+```{r}
+?stats::aggregate
+
+
+# grouping
+aggregate(starwars$height, 
+          by = list(sex = starwars$sex),
+          FUN=mean, 
+    #      na.action = na.omit)
+          na.rm = TRUE)
+```
+```{r data.table}
+library(data.table)
+dt <- data.table(starwars)
+dt <- as.data.table(starwars)
+dt
+
+dt[!is.na(height), ]
+x <- dt[!is.na(height), mean(height), by=c("sex") ]
+head(x)
+```
