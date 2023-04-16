@@ -1,0 +1,8 @@
+[2,"\n"]
+[1,"\n  -----------------------------------------  \n\n"]
+[1,"\u001B[31m\n\nprocessing file: 1050_base_plot_multiple_values_lines.qmd\n\u001B[39m\r  |                                                          \r  |                                                    |   0%\r  |                                                          \r  |..........................                          |  50%                  \r  |                                                          \r  |....................................................| 100% (unnamed-chunk-1)"]
+[1,"\r                                                                                                            \n"]
+[1,"\u001B[31moutput file: 1050_base_plot_multiple_values_lines.knit.md\n\n\u001B[39m"]
+[1,"\u001B[1mpandoc \u001B[22m\n  to: html\n  output-file: 1050_base_plot_multiple_values_lines.html\n  standalone: true\n  section-divs: true\n  html-math-method: katex\n  wrap: none\n  default-image-extension: png\n  toc: true\n  css:\n    - styles.css\n  \n\u001B[1mmetadata\u001B[22m\n  document-css: false\n  link-citations: true\n  date-format: long\n  lang: en\n  fontsize: 10pt\n  geometry: 'margin=0.5in,top=0.25in'\n  editor_options:\n    chunk_output_type: console\n  \n"]
+[1,"Output created: 1050_base_plot_multiple_values_lines.html\n\n\u001B[32mWatching files for changes\u001B[39m\n\u001B[32mBrowse at \u001B[39m\u001B[4m\u001B[32mhttp://localhost:3645/\u001B[39m\u001B[24m\n"]
+[1,"\u001B[31m  /styles.css (404: Not Found)\u001B[39m\n"]

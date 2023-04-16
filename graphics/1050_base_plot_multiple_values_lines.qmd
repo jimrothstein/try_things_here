@@ -1,0 +1,141 @@
+---
+format:
+  html:
+    toc: true
+    html-math-method: katex
+    css: styles.css
+#		 DEFAULT:  built-in template
+#    template: trivial_template.tex 	
+  pdf:
+    include-in-header:  
+      -  text:  |
+          \usepackage{helvet}  
+          \usepackage{ulem}
+fontsize: 10pt   
+geometry: margin=0.5in,top=0.25in   
+editor_options: 
+  chunk_output_type: console
+output-dir:  output
+---
+
+
+
+\footnotesize {is this footnotesize?}
+
+REF:    https://dcgerard.github.io/stat234/base_r_cheatsheet.html#two_variables 
+
+```{r}
+data(mpg, package = "ggplot2")
+str(mpg)
+x <- jitter(mpg$hwy)
+y <- jitter(mpg$cty)
+z <- factor(mpg$drv)
+plot(x, y, col = z)
+legend("topleft", legend = levels(z), col = 1:nlevels(z), pch = 1, title = "Drive")
+```
+
+REF:    http://www.sthda.com/english/wiki/line-plots-r-base-graphsk
+
+```{r}
+# Create some variables
+x <- 1:10
+y1 <- x*x
+y2  <- 2*y1
+
+# Gives first line
+plot(x, y1, type = "b", frame = FALSE, pch = 19, 
+     col = "red", xlab = "x", ylab = "y")
+
+# Add a second line
+lines(x, y2, pch = 18, col = "blue", type = "b", lty = 2)
+# Add a legend to the plot
+legend("topleft", legend=c("Line 1: x*x", "Line 2: 2*x*x"),
+       col=c("red", "blue"), lty = 1:2, cex=0.8)
+```
+
+
+Example:  plot likelihood (binonmial)
+p is unknown.
+Given `evidence`, values for N and for k `successes`, plot mass density function against values values for p.
+
+```{r}
+f <- function(size=N, k, prob){
+  dbinom(x=k,
+         size=N,
+         prob=prob)
+}
+
+N=100
+k=90
+prop=.5
+
+##
+## dbinom(x=c(500), size=N, prob=c(.1, .5))
+  
+##  Try lty=2,3,4....  "line type"
+##  Fix N, and vary k.   Each k adds new curve.
+curve(f(N, k, prob), 
+      from = 0,
+      to = 1,
+      col =4, 
+      lwd = 1,
+      lty = 12, 
+      xname = "prob"
+)
+
+k=10
+curve(f(N, k, prob), 
+      from = 0,
+      to = 1,
+      col =3, 
+      lwd = 1,
+      lty = 1,
+      xname = "prob",
+      add = T
+)
+
+curve(f(N, k, prob), 
+      from = 0,
+      to = 1,
+      col =5, 
+      lwd = 3,
+      xname = "prob",
+      add = T
+)
+N=5
+k=2
+curve(f(N, k, prob), 
+      from = 0,
+      to = 1,
+      col =5, 
+      lwd = 1,
+      xname = "prob",
+      add = T
+)
+
+
+
+z = c("k=500", "k=100", "k=990") 
+levels(z)
+legend("topleft", legend = z, col = 1:nlevels(z), pch = 1, title = "k successes")
+```
+```
+
+N=5
+k=2
+curve(f(N, k, prob), 
+      from = 0,
+      to = 1,
+      col =5, 
+      lwd = 1,
+      xname = "prob"
+      )
+```
+
+```
+# THIS IS WHAT I WANT
+# curve(dbinom(x=2, size=5, prob), from=0, to=1, xname="prob")
+```   
+ 
+ 
+ 

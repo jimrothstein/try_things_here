@@ -1,30 +1,18 @@
 ---
-title: "`r knitr::current_input()`"
-date: "`r paste('last updated', 
-    format(lubridate::now(), ' %d %B %Y'))`"
-output:   
-  html_document:  
-        code_folding: hide
-        toc: true 
-        toc_depth: 2
-        toc_float: true
-  pdf_document:   
-#		 comment
-#		 DEFAULT:  built-in template
-#		 uncomment next line for custom
-#    template: trivial_template.tex 	
-    latex_engine: lualatex  
-    toc:  true
-		toc_depth:  4
-		keep_tex:  true
-  header-includes:  
-    -  \usepackage{helvet}  
-#		-  \renewcommand{\familydefault}{\sfdefault}  
-    -  \usepackage{ulem}
+format:
+  html:
+    toc: true
+    html-math-method: katex
+    css: styles.css
+  pdf:
+    include-in-header:  
+      -  text:  |
+          \usepackage{helvet}  
+          \usepackage{ulem}
 fontsize: 10pt   
 geometry: margin=0.5in,top=0.25in   
 ---
-
+    
 <!-- 
 			NOTE:	 modified template (template:  )
 
@@ -47,18 +35,25 @@ geometry: margin=0.5in,top=0.25in
 -	`cairo` - type of system?
 	...)
 
+-Examples and details:   http://www.sthda.com/english/wiki/graphical-parameters
 -	cex	(point size)
 -	pch (point shape)
 - col (color)
 - lty (line type)
 
-```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,
-                      comment = "      ##",
-                      error = TRUE,
-                      collapse = T   ) # easier to read
-library(ggplot2) # only for databas
+```{r}
+library(tibble)
+names=base::names(par())
+names
+
+values=unname(par())
+values = as.character(values)
+
+t = tibble(names=names, values=values)
+print(t, n=72)
+
 ```
+
 
 ####	Capabilities vary with R build
 ```{r build}
@@ -160,14 +155,14 @@ abline(h = 0)
 dev.off()
 ```
 
-```{r density}
+```{r density, eval=F}
 density_object <- density(mpg$hwy)
 pdf("~/Downloads/print_and_delete/out.pdf")
 plot(density_object)
 dev.off()
 ```
 
-```{r png_example}
+```{r png_example, eval=F}
 filename  <- "~/Downloads/print_and_delete/out.png"
 png(filename = filename,
          width = 480, height = 480, units = "px", pointsize = 12)
@@ -175,12 +170,12 @@ plot(density_object)
 dev.off()
 ```
 
-```{r in_line_html}
+```{r in_line_html, eval=F}
 plot(density_object)
 ```
 
 stripchart()
-```{r sripchart}
+```{r sripchart, eval=F}
 
 png(filename = paste0("~/Downloads/print_and_delete/" , file,".png"),
          width = 480, height = 480, units = "px", pointsize = 12,
