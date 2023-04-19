@@ -1,3 +1,20 @@
+z <- factor(mpg$drv)
+plot(x, y, col = z)
+legend("topleft", legend = levels(z), col = 1:nlevels(z), pch = 1, title = "Drive")
+line(x,y, col=z)
+f <- function(N, k) {
+curve(f(N, k, prob),
+from = 0,
+to = 1,
+col =5,
+lwd = 3,
+xname = "prob"
+)
+}
+f(N=100, k=50)
+f <- function(N, k) {
+curve(f(N, k, prob),
+from = 0,
 to = 1,
 col =5,
 lwd = 3,
@@ -480,33 +497,16 @@ col = "red", xlab = "x", ylab = "y")
 lines(x,y, pch=18, col="blue", type="b", lty=3)
 lines(x,y=rep(4, times=length(x)), pch=18, col="blue", type="b", lty=3)
 lines(x,y=rep(3, times=length(x)), pch=18,cex=5,  col="blue", type="b", lty=3)
+library(dplyr)
+# What is the problem?
+#
+mtcars[, "hp"]
+mtcars[, c("hp")]
+mtcars[mtcars$hp > 200, ]
+subset(mtcars, hp > 200)
+is.environment(mtcars)
+attach(mtcars)
+is.environment(mtcars)
+search()
+mtcars[1:5, hp]
 head(mtcars)
-mtcars[1:5, hp]
-mtcars[1:5, c(hp)]
-mtcars[1:5, c("hp")]
-mtcars[1:5, hp]
-mtcars[1:5, "hp"]
-ls()
-hp
-with(mtcars, hp)
-?with
-ls()
-search()
-ls(globalenv())
-ls(base)
-?ls
-ls("package:base")
-?data
-data(mtcars)
-search()
-ls()
-rm(mtcars)
-ls()
-# This puts data in globalenv()
-data(mtcars)
-ls(base)
-ls()
-rm(mtcars)
-ls()
-mtcars[1:5, ]
-ls()

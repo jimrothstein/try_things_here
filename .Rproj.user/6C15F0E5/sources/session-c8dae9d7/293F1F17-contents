@@ -3,6 +3,8 @@ title: "using easystats notes"
 date:  \today 
 pdf-engine: lualatex
 format:
+  html: 
+    html-math-method: katex
   pdf: 
     toc: false
     toc_depth:  4   
@@ -15,12 +17,11 @@ format:
         \usepackage{amsmath,amssymb,amstext,amsfonts}
         \usepackage{lipsum}
         \usepackage{setspace}
-#   YAML comment
-#   2nd way, use file
 #format:
 #  pdf: 
 #    include-in-header: 
-#        -   geometry.tex
+editor_options: 
+  chunk_output_type: console
 ---
 
 \section{To run:}

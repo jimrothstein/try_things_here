@@ -1,0 +1,127 @@
+---
+title: "using easystats notes"
+date:  \today 
+pdf-engine: lualatex
+format:
+  html: 
+    html-math-method: katex
+  pdf: 
+    toc: false
+    toc_depth:  4   
+    number-sections: false
+    colorlinks: true
+    keep_tex:  false
+    include-in-header: 
+      text: |
+        \usepackage[top=.5in, bottom=.5in, left=.5in, right=.5in]{geometry}
+        \usepackage{amsmath,amssymb,amstext,amsfonts}
+        \usepackage{lipsum}
+        \usepackage{setspace}
+#format:
+#  pdf: 
+#    include-in-header: 
+editor_options: 
+  chunk_output_type: console
+---
+
+\section{To run:}
+
+- quarto preview <file> --to pdf    # (opens in a viewer)
+- quarto render %	; zathura         # not quite right cli
+
+- math mode latex,  seems to work if *outside* R chunk
+$$
+x^2
+$$
+
+\section{mtcars has problem}
+\code{mtcars} has several numerical columns.
+Should be able to write function that takes column name as argument and
+computer the mean.
+
+f = function(col) {
+    mean(mtcars[[col]])
+#    mean(mtcars$col)
+}
+
+f1 = function(col) {
+    mtcars |> mean(col)
+}
+f1(mpg)
+f1("mpg")
+
+my_summary <- function(df, grouping_var){
+ df %>%
+  group_by(grouping_var) %>% 
+  summarise(
+   avg = mean(air_time),
+   sum = sum(air_time),
+   min = min(air_time),
+   max = max(air_time),
+   obs = n()
+  )
+}
+my_summary(airline_df, origin)
+
+subset(mtcars, cyl == 4, select=mpg) 
+str(mtcars)
+##  Without substitute, R can not find a variable h(mpg) ... ERROR.
+##  With substitute, evaluation is paused; 
+##  Explaination here:   https://dplyr.tidyverse.org/articles/programming.html
+mtcars
+names(mtcars)
+str(mtcars)
+
+h  <- function(col) {
+    y  <- substitute(col)
+    mean(mtcars[[y]])
+    
+}
+(h("mpg"))
+(h(mpg))
+(h(hp))
+
+
+\section{select a column}
+g = function(col) {
+    mtcars[[col]]
+}
+g("mpg")
+g(mpg)
+
+
+\section{explain}
+
+##  substitute: returns expr as name, string as string
+##  is a name; not a call, not string
+is.call(substitute(col))  #F
+is.character(substitute(col)) #F
+is.name(substitute(col))   #TRUE
+
+col = "mpg"
+substitute(col)  # col
+substitute("col") # [1] "col"
+substitute(substitute(col)) # substitute(col)
+
+
+is.name(substitute(col)) #T
+## random alpha, returns as name, not character
+substitute(abc) # abc
+is.name(substitute(abc)) #T
+is.character(substitute(abc)) #F
+
+## string returns as string 
+substitute("abc")   # character[1]
+
+##  not referencial
+identical(col, "mpg") # TRUE
+identical(substitute(col), substitute("mpg"))  # FALSE
+
+## b/c
+substitute(col)   # col
+substitute("mpg") # "mpg"
+
+##  NOTE
+is.call(substitute(col))  # F
+is.expression(substitute(col))   # F
+is.name(substitute(col))   #T
