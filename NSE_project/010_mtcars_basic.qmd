@@ -6,6 +6,7 @@ editor_options:
   chunk_output_type: console
 execute: 
   error: true
+output-dir: docs
 ---
 
 <!-- #| error:   true means display error, but DO NOT halt -->
@@ -25,7 +26,7 @@ But using just col name fails.
 mtcars[1:5, hp]
 ```
 
-The reason as explained in many places, such as [dplyr](https://dplyr.tidyverse.org/articles/programming.html) ....., is mtcars exisits in the environment, but not hp.
+The reason as explained in many places, such as [dplyr](https://dplyr.tidyverse.org/articles/programming.html) ....., is mtcars exists in the environment, but not hp.
 
 ```{r}
 hp
@@ -40,6 +41,45 @@ Of course, R's help also explains this but you must be comfortable with terms li
 ?with
 ```
 
+
+And where does "mtcars" live?   I happen to know it is in packages on search tree:  "package:datasets"
+```{r}
+exists("mtcars",
+       envir = as.environment("package:datasets"),
+       inherits = FALSE)
+
+# alas, not hp
+exists("hp",
+       envir = as.environment("package:datasets"),
+       inherits = T)
+```
+
+```{r}
+any(sapply(1:(which(search() == "tools:rstudio") - 1L),
+           function(pp) exists("mtcars",  where = pp, inherits = FALSE)))
+
+(which(search() == "tools:rstudio") -1L )
+which(search() == ".GlobalEnv")
+which(search() == "package:base")
+
+# print vertically
+search() |> tibble() |> print(n=length(search()))
+```
+
+from !so, next hook to search()
+```{r}
+is.defined <- function(sym) {
+  sym <- deparse(substitute(sym))
+  env <- parent.frame()
+  exists(sym, env)
+}
+
+is.defined(a)
+# FALSE
+a <- 10
+is.defined(a)
+# TRUE
+```
 
 Here is my own take.   It is same as above, but I find this way clearer.
 
