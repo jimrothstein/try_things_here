@@ -10,6 +10,8 @@ output:
 fontsize: 10pt 
 geometry: margin=0.4in,top=0.25in 
 TAGS:  deparse, substitute
+editor_options: 
+  chunk_output_type: console
 ---
 
 REF: https://stackoverflow.com/questions/25235240/r-variable-names-symbols-names-or-something-else/25235365#25235365
@@ -24,7 +26,45 @@ is.symbol(q2)
 #### Coerce to symbol, or name
 ```{r}
 x  <- 4
-is.double(x)
+
+typeof(x)
+is.symbol(x)
+is.name(x)
+names(x)
+
+is.object(x)   # see ?
+
+# coerce
+as.name(x)
+as.symbol(x)
+identical(as.name(x), as.symbol(x))
+
+ls()
+```
+
+#### What is `4`
+```{r}
+is.object(`4`)
+typeof(`4`)
+is.symbol(`4`)
+```
+
+#### convert to symbol name
+```{r}
+ls()
+y = as.name(x)
+y
+
+is.object(y)
+typeof(y)
+is.symbol(y)
+is.name(y)
+
+names(y)
+attributes(y)
+```
+
+```{r}
 
 ## for variable, use as.name
 is.symbol(as.name(x))
@@ -32,6 +72,19 @@ is.symbol(as.name(x))
 is.symbol(quote(x))
 identical(as.name(x), quote(x))
 
+eval(y)
+eval(`4`)
+```
+
+
+
+####    cast to vector of type symbol
+```{r}
+z = as.vector(x, "symbol")
+z
+is.symbol(z)
+is.name(z)
+typeof(z)
 ```
 
 ####    Not symbol
@@ -57,16 +110,4 @@ if (F) is.symbol(as.name(f))
 ```
 
 
-```{r render, eval=FALSE, include = F	} 
-file <- "/home/jim/code/try_things_here/BASE/0211_base_symbol.Rmd"
-file  <- normalizePath(file)
-file
 
-
-rmarkdown::render(file, 
-       output_format="pdf_document",
-       output_dir = "~/Downloads/print_and_delete"
-       )
-
-
-```

@@ -6,26 +6,32 @@ editor_options:
   chunk_output_type: console
 execute: 
   error: true
-output-dir: docs
+  collapse: true
+  output-dir: docs   
 ---
 
 <!-- #| error:   true means display error, but DO NOT halt -->
 
-A frequent problem occurs when trying to access columns inside a data.frame.
+Problem:  Try to access directly columns inside a data.frame.
 
 ```{r}
-#| errors:  true
-head(mtcars)
+# TODO: use option()
+head = function(df = NULL, n=3) utils::head(df, n)
+library(tibble)
 
-mtcars[1:5, c("hp")]
 ```
 
-But using just col name fails.
+But using just unquoted col name fails.
 
 ```{r}
+# works
+mtcars[1:5, c("hp")]
+
+# fails
 mtcars[1:5, hp]
 ```
 
+SEE BELOW :       eval(expr, envir=mtcars, enclos=as.environment())
 The reason as explained in many places, such as [dplyr](https://dplyr.tidyverse.org/articles/programming.html) ....., is mtcars exists in the environment, but not hp.
 
 ```{r}
@@ -137,4 +143,47 @@ ls()
 ```
 
 
+eval(expr, envir=mtcars, enclos=as.environment())
+GOAL;    evaluate mean(cyl + am)
+```{r}
 
+#   RESTART 
+ls()
+search()
+
+code = expr(mean(cyl+am))
+typeof(code)
+
+is.expression(code)
+rlang::is_expression(code)
+
+# EXPLAIN:  why works?
+
+eval(code, envir=mtcars)
+eval(code, envir=mtcars, enclos=globalenv())
+eval(code, envir=mtcars, enclos=as.environment("tools:rstudio"))
+eval(code, envir=mtcars, enclos=as.environment("package:stats"))
+eval(code, envir=mtcars, enclos=as.environment("package:base"))
+
+```
+
+##    From Hadley
+
+```{r}
+getOption("digits")
+old = options(digits=7)
+getOption("digits")
+cyl = 1000
+dplyr::summarize(mtcars, .data$cyl)
+dplyr::summarize(mtcars, mean(.data$cyl))
+dplyr::summarize(mtcars, mean(.env$cyl))
+
+dplyr::summarize(mtcars, mean(am+cyl))
+dplyr::summarize(mtcars, mean(.data$am+cyl))
+dplyr::summarize(mtcars, mean(.data$am+.env$cyl))    # am mostly 0, 1
+
+options(old)
+getOption("digits")
+```
+
+vim:conceallevel=0
