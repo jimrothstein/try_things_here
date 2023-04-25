@@ -12,6 +12,10 @@ execute:
 
 <!-- #| error:   true means display error, but DO NOT halt -->
 
+
+SEE:  https://rfordatascience.slack.com/archives/C04LH661EUX/p1679540376937849
+envir=mtcars and enclosure
+
 Problem:  Try to access directly columns inside a data.frame.
 
 ```{r}
@@ -184,6 +188,34 @@ dplyr::summarize(mtcars, mean(.data$am+.env$cyl))    # am mostly 0, 1
 
 options(old)
 getOption("digits")
+```
+
+
+## List all environments
+```{r}
+N = length(search())
+x = vector("list", N+1)
+x
+f = function(e) {
+  if (e == 1) {x[[e]] <<- globalenv()
+  return()
+  }
+    
+  
+  if ( identical( x[[e-1]] , emptyenv()) )
+       return(NULL)
+       
+  
+  x[[e]] <<- parent.env(x[[e-1]])
+}
+  
+
+i = N+1
+lapply(1:i,  f)
+
+
+
+
 ```
 
 vim:conceallevel=0

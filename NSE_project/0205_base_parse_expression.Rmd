@@ -84,7 +84,9 @@ attributes(e)
 ```{r more_detail}`r ''`
 
 length(e)
+
 e[[1]]
+
 ## Using character vector, sapply will provide name 
     l  <- c("class", "typeof", "attributes","is.language", "is.expression", "is.pairlist")
     sapply(l, do.call, args=list(e))
