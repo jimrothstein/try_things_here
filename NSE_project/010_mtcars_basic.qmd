@@ -16,8 +16,7 @@ execute:
 SEE:  https://rfordatascience.slack.com/archives/C04LH661EUX/p1679540376937849
 envir=mtcars and enclosure
 
-Problem:  Try to access directly columns inside a data.frame.
-
+## Problem:  Try to access directly columns inside a data.frame.
 ```{r}
 # TODO: use option()
 head = function(df = NULL, n=3) utils::head(df, n)
@@ -42,7 +41,7 @@ The reason as explained in many places, such as [dplyr](https://dplyr.tidyverse.
 hp
 ```
 
-Again this is explained in many places, along with several ways to `fix`, for example.
+### Again this is explained in many places, along with several ways to `fix`, for example.
 ```{r}
 with(mtcars, hp)
 ```
@@ -52,22 +51,29 @@ Of course, R's help also explains this but you must be comfortable with terms li
 ```
 
 
-And where does "mtcars" live?   I happen to know it is in packages on search tree:  "package:datasets"
+## And where does "mtcars" live?   I happen to know it is in packages on search tree:  "package:datasets"
 ```{r}
 exists("mtcars",
        envir = as.environment("package:datasets"),
        inherits = FALSE)
+```
 
+## But not "hp"
+```{r}
 # alas, not hp
 exists("hp",
        envir = as.environment("package:datasets"),
        inherits = T)
 ```
 
+### Another way to find 'mtcars'
 ```{r}
 any(sapply(1:(which(search() == "tools:rstudio") - 1L),
            function(pp) exists("mtcars",  where = pp, inherits = FALSE)))
+any(sapply(1:(which(search() == "tools:rstudio") - 1L),
+           function(pp) exists("mtcars",  where = pp, inherits = TRUE)))
 
+## find position
 (which(search() == "tools:rstudio") -1L )
 which(search() == ".GlobalEnv")
 which(search() == "package:base")
@@ -91,7 +97,7 @@ is.defined(a)
 # TRUE
 ```
 
-Here is my own take.   It is same as above, but I find this way clearer.
+## Here is my own take.   It is same as above, but I find this way clearer.
 
 Let's check what is current globalenv() the the environment.   Then packages attached to search path.
 ```{r}
@@ -114,9 +120,32 @@ attach(mtcars)
 search()
 ```
 
-Now, can find `hp`
+Now, can find `hp`, but not subset
 ```{r}
 hp
+
+mtcars[hp>200]
+```
+
+
+Need the 
+```{r}
+code1 = expression(hp>200)
+code = quote(hp>200)
+identical(code1, code)
+
+
+
+#  works, explain
+eval(code, envir=mtcars )
+eval(code, envir=mtcars, enclos=as.environment("package:base"))
+eval(code, envir=mtcars, enclos=as.environment(emptyenv()))
+
+
+# fails - explain
+eval(code, envir=as.environment(mtcars))
+eval(code, envir=as.environment(mtcars), enclos=as.environment("package:base"))
+eval(code, envir=as.environment(mtcars), enclos=as.environment("package:datasets"))
 ```
 
 Why?  col names are in environment one level up from  globalenv()
@@ -212,6 +241,8 @@ f = function(e) {
 
 i = N+1
 lapply(1:i,  f)
+unlist(lapply(1:i,  f))
+
 
 
 
