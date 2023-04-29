@@ -15,12 +15,11 @@ format:
         \usepackage{amsmath,amssymb,amstext,amsfonts}
         \usepackage{lipsum}
         \usepackage{setspace}
-#   YAML comment
-#   2nd way, use file
 #format:
 #  pdf: 
 #    include-in-header: 
-#        -   geometry.tex
+editor_options: 
+  chunk_output_type: console
 ---
 
 \section{To run:}
@@ -44,15 +43,37 @@ y       # 1
 identical(x,y) # TRUE
 identical(x, "y") # FALSE
 
+# bquote - step by step ,   .() operator
+```{r}
+
+bquote(1+2)       # 1 + 2
+
+two = 2
+bquote(1 + two)   # 1 + two
+bquote(1 + .(two))   # 1 + 2   (substitution, not eval)
+
+eval(bquote(1 + two)) # 3 
+eval(bquote(1 + .(two)))   # 3 
+
+```
+
 #-----------------------------
 ##  quote, bquote do NOT return strings or expressions.
 ##  these are unevaluated expressions, is.call TRUE
+x = 1
+y = 2
+z = 3
 xyz <- bquote((x + y + z))
 xyz
+
 is.expression(xyz)
 is.character(xyz)
 typeof(xyz)
 is.call(xyz)
+
+eval(xyz)
+
+##    
 bquote(-.(xyz) / 2)    ## TRUE
 
 (abc = quote((x+y+z)))
@@ -65,28 +86,76 @@ is.call(abc)            ##  TURE
 ##  FAILS
 x = "jim"
 bquote(my names is .(x))
+
+eval(bquote("my name is .(x)   ")))
 #-----------------------------
 # bquote:   takes an R expression, evaluates .(), returns expression
 (unevaluated)
 rm(x)
+
+##    compare quote and bquote
+```{r}
 x = 1
 
-bquote(1 + .(x))  # 1 + 1
 quote(1 + .(x))   # 1 + .(x) 
+bquote(1 + .(x))  # 1 + 1
+
+bquote(template + .(x))
+
 bquote(sin(.(x))) # sin(1)
 
+## (stole from https://github.com/klmr/box)
+subject="bquote"
+mod_name="base"
+bquote(help(topic = .(subject), package = .(mod_name)))
+eval( bquote(help(topic = .(subject), package = .(mod_name))))
 
+subject="quote"
+eval( bquote(help(topic = .(subject), package = .(mod_name))))
+##
 
-#-----------------------------
+d = 2
+bquote(a+b+c + .(d))       ## a + b + c + 2
+
+##  
+theta = pi/4
+bquote(sin(1 + .(theta)))  ## sin(1 + 0.7853...)
+eval(bquote(sin(1 + .(theta))))  ## 0.977
+
+##
+z= bquote(sin(1 + .(theta)))  ## sin(1 + 0.7853...)
+typeof(z)                     ## "language"
+is.call(z)                    ## T
+eval(z)                       ## 0.977
+
+```   
+
+```{r}
+x = 5 
+bquote(x == .(x))
+bquote(.(x))
+
+## from ethz documentation, takes expr, returns lang ob
+default <- 1
+(z = bquote( function(x, y = .(default)) x+y ))
+
+typeof(z)
+is.call(z)  #T
+is.expression(z) #F 
+is.symbol(z) #F
+a = 2
+plot(1:10, a*(1:10), main = bquote(a == .(a)))
+
 
 (angle  = 1:10)
-(variable = as.name("angle"))
+(variable = as.name("angle"))             ## variable is now a symbol
 
 is.character(variable)  # FALSE
 
 is.name(variable)   # TRUE
 is.symbol(variable) # TRUE
 typeof(variable)    # TRUE
+
 ##
 expr = quote(x+y)
 is.expression(expr) # FALSE
@@ -102,10 +171,39 @@ plot(x = 1:10, y=91:100)
 
 bquote(x= .(variable))
 bquote(
-  
   plot(x = .(variable), 
        y = sin(.(variable)))
-  
   )
 
 dev.off()
+
+```
+
+```{r}
+## A variable to pass in
+cor <- -.321
+cor2 <- '-.321'
+
+par(mfrow = c(1, 2))
+plot(1:10, 1:10, main = bquote("Hello" ~ r[xy] == .(cor) ~ "and" ~ B^2))
+plot(1:10, 1:10, main = bquote("Hello" ~ r[xy] == .(cor2) ~ "and" ~ B^2))
+```
+
+```{r}
+bquote("Hello")
+bquote("Hello" ~ 3)
+bquote("Hello" ~ r[xy])
+x = 2
+bquote("hello" ~ .(x))
+bquote("x" ~ .(x))
+bquote("The answer "  ~.(x))
+bquote(x == .(x))
+bquote(x = .(x))
+
+y = 1
+x=2
+bquote( function(x, y = .(y)) x+y )
+eval(bquote( function(x, y = .(y)) x+y ))
+eval(eval(bquote( function(x, y = .(y)) x+y )))
+=
+```

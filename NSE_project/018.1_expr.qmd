@@ -1,0 +1,76 @@
+---
+title: "18_1"
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r}
+library(rlang)
+
+
+a=1
+b=2
+
+rlang::expr(a+b)
+rlang::expr(a + !!b)      ## a + 2
+rlang::expr(!!a + !!b)      ## 1 + 2
+
+rlang::expr(a + {{b}} )     ## a + ~2
+```
+
+---
+
+```{r}
+e = rlang::expr(a+b)
+e                         ## a+b
+{{e}}                     ## a+b
+
+eval(e)                   ## a+b 
+
+
+##
+expr(log(e))              ##  log(e)
+expr(log(!!e))            ##  log(a+b)
+expr(log( {{e}}) )        ##  log(~a+b)
+
+
+eval(expr(log(!!e)))      ## 1.1
+eval(expr(log( {{e}} )))  ## Error
+
+
+
+expr(log( eval(e ) )   ## Error
+
+```
+
+```{r}
+#y<- x * 10
+
+# how to capture expression BEFORE evaluated?
+z <- rlang::expr(y <- x * 10)
+z
+
+z = expr(1+1)
+as.list(z)
+eval(z)
+
+x = 2
+z = expr(1 + .(x))
+z
+eval(z)
+
+name="jim"
+eval(print("hello",  {{name}}))
+
+
+```
+
+# z is 'expression'
+```{r}
+z
+x<-4
+# now eval the expression
+base::eval(z)
+y
+```

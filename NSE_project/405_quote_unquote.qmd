@@ -38,6 +38,14 @@ knitr::opts_chunk$set(echo = TRUE,
 # [1] 6
 ```
 
+
+##    What does quote return?
+```{r}
+is.expression(quote(1+2))       # F
+is.character(quote(1 + 2))
+
+```
+
 ####  Use case:   plot title
 ```{r}
 a  <- 2

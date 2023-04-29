@@ -15,6 +15,9 @@ output:
         mathjax: default
 fontsize: 12pt
 geometry: margin=0.5in,top=0.25in
+execute:
+  error:    true
+  cache:    true
 ---
 \small{make small}
 
@@ -24,7 +27,6 @@ knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE,
 ```
 
 ```{r library, include=FALSE} 
-library(jimTools)
 ```
 
 

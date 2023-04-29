@@ -1,0 +1,99 @@
+---
+title: cheat
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r}
+library(rlang)
+
+
+a=1
+b=2
+
+rlang::expr(a+b)
+rlang::expr(a + !!b)      ## a + 2
+rlang::expr(!!a + !!b)      ## 1 + 2
+
+rlang::expr(a + {{b}} )     ## a + ~2
+```
+
+---
+
+```{r}
+e = rlang::expr(a+b)
+e                         ## a+b
+{{e}}                     ## a+b
+
+eval(e)                   ## a+b 
+
+
+##
+expr(log(e))              ##  log(e)
+expr(log(!!e))            ##  log(a+b)
+expr(log( {{e}}) )        ##  log(~a+b)
+
+
+eval(expr(log(!!e)))      ## 1.1
+if(F) eval(expr(log( {{e}} )))  ## Error
+
+
+
+expr(log( eval(e ) ))   ##   log(eval(e))
+
+```
+
+```{r}
+#y<- x * 10
+
+# how to capture expression BEFORE evaluated?
+z <- rlang::expr(y <- x * 10)
+z
+
+z = expr(1+1)
+as.list(z)
+eval(z)
+
+x = 2
+z = expr(1 + .(x))
+z
+eval(z)
+
+name="jim"
+eval(print("hello",  {{name}}))
+
+
+```
+
+# z is 'expression'
+```{r}
+z
+x<-4
+# now eval the expression
+base::eval(z)
+y
+```
+
+##    basic NSE
+```{r}
+a=2
+b=10
+z=quote(a+b)
+eval(z)   # 12
+
+z
+(zz = as.list(z))
+
+```
+# change
+```{r}
+zz[[1]] = `*`
+zz
+
+## but zz is list
+(as.call(zz))
+eval(as.call(zz))   #20
+```
+##    Quote can return.... (SEE Lionell)
+https://rpubs.com/lionel-/programming-draft

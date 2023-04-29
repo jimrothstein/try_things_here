@@ -12,6 +12,9 @@ geometry: margin=0.4in,top=0.25in
 TAGS:  deparse, substitute
 editor_options: 
   chunk_output_type: console
+execute: 
+  cache: true   #  no re-render if unchnaged
+  error: true
 ---
 
 REF: https://stackoverflow.com/questions/25235240/r-variable-names-symbols-names-or-something-else/25235365#25235365

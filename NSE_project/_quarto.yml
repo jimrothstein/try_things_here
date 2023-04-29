@@ -1,5 +1,11 @@
 project:
   type: website
+  render: 
+    - "018.2_abstract_syntax_tree.qmd"
+    - "!*.R"          # do not render
+    - "!*.Rmd"        # do not render 
+   
+  
 
 website:
   title: "."

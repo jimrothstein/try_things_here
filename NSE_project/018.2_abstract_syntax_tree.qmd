@@ -1,36 +1,39 @@
 ---
 title: "18.2_Abstract_syntax trees"
-output: pdf_document
+format:  html 
 editor_options: 
   chunk_output_type: console
+output-dir:  docs
+execute: 
+  error: true    # do not halt
+  cache: true    # re-render only if change
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 
 
 ```{r}
 library(rlang)
 library(lobstr)
+
 lobstr::ast(f(x, "y", 1))   # knitr complains about character
-```
-```{r}
+
 lobstr::ast(
     f(g(1, 2), h(3, 4, i()))
 )
+
+
 lobstr::ast(
     f(g(h(2)))
 )
-```
+
 # 18.2.3 infix
-```{r}
+x = 2
 y <- x * 10
+
 # as prefix
 `<-`(y, `*`(x, 10))
+
 lobstr::ast(
         `<-`(y, `*`(x, 10))
 )
-```
-
+``` 
 
