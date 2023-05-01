@@ -10,18 +10,26 @@ execute:
   output-dir: docs   
 ---
 
-<!-- #| error:   true means display error, but DO NOT halt -->
-
-
 SEE:  https://rfordatascience.slack.com/archives/C04LH661EUX/p1679540376937849
 envir=mtcars and enclosure
 
+##  Set options
+```{r}
+getOption("digits")
+old = options(digits=7)
+getOption("digits")
+
+##  at end
+if (F){
+    options(old)
+    getOption("digits")
+}
+```
 ## Problem:  Try to access directly columns inside a data.frame.
 ```{r}
 # TODO: use option()
 head = function(df = NULL, n=3) utils::head(df, n)
 library(tibble)
-
 ```
 
 Using just unquoted col name fails.
@@ -75,14 +83,6 @@ is.call(hp_exp)                 ##  T
 eval(hp_exp, envir=mtcars)      ## logical vector
 ```
 
-## solution from Rlang:
-https://rlang.r-lib.org/reference/topic-defuse.html
-```{r}
-
-e <- expr(mean(cyl))
-eval(e, mtcars)
-#> [1] 6.1875
-```
 
 ### Another way to find 'mtcars'
 ```{r}

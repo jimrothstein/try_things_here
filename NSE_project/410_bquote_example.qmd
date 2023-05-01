@@ -3,7 +3,19 @@ title: "using easystats notes"
 date:  \today 
 pdf-engine: lualatex
 format:
-  pdf: 
+  html
+editor_options: 
+  chunk_output_type: console
+execute: 
+  error: true
+  cache: true
+  collapse: true
+  output-dir: docs
+---
+
+<!--
+For PDF
+  pdf:
     toc: false
     toc_depth:  4   
     number-sections: false
@@ -18,9 +30,8 @@ format:
 #format:
 #  pdf: 
 #    include-in-header: 
-editor_options: 
-  chunk_output_type: console
----
+-->
+
 
 \section{To run:}
 
@@ -36,8 +47,9 @@ $$
 #-----------------------------
 ##  R allows string or symbol
 x = 1
-"y" = 1
-y       # 1
+
+"y" = 10
+y       # 
 
 
 identical(x,y) # TRUE
@@ -57,13 +69,16 @@ eval(bquote(1 + .(two)))   # 3
 
 ```
 
-#-----------------------------
-##  quote, bquote do NOT return strings or expressions.
-##  these are unevaluated expressions, is.call TRUE
+###-----------------------------
+
+###  quote, bquote do NOT return strings or expressions.
+
+###  these are unevaluated expressions, is.call TRUE
+
 x = 1
 y = 2
 z = 3
-xyz <- bquote((x + y + z))
+xyz <- bquote((x + y + z))                ##    (x + y + z)
 xyz
 
 is.expression(xyz)
@@ -82,13 +97,16 @@ is.character(abc)
 typeof(abc)
 is.call(abc)            ##  TURE
 
-#-----------------------------
-##  FAILS
+###-----------------------------
+
+###  FAILS
+
 x = "jim"
 bquote(my names is .(x))
 
 eval(bquote("my name is .(x)   ")))
 #-----------------------------
+
 # bquote:   takes an R expression, evaluates .(), returns expression
 (unevaluated)
 rm(x)
@@ -198,12 +216,12 @@ bquote("hello" ~ .(x))
 bquote("x" ~ .(x))
 bquote("The answer "  ~.(x))
 bquote(x == .(x))
-bquote(x = .(x))
+if (F) bquote(x = .(x))
 
+# want 1 + 2
 y = 1
 x=2
 bquote( function(x, y = .(y)) x+y )
 eval(bquote( function(x, y = .(y)) x+y ))
 eval(eval(bquote( function(x, y = .(y)) x+y )))
-=
 ```

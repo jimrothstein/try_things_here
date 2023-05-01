@@ -2,23 +2,28 @@ project:
   type: website
   render: 
     - "018.2_abstract_syntax_tree.qmd"
+    - "410_bquote_example.qmd"
     - "!*.R"          # do not render
     - "!*.Rmd"        # do not render 
+  output-dir: docs
    
   
 
 website:
-  title: "."
+  title: "Meta + NSE"
   navbar:
     left:
       - href: index.qmd
         text: Home
-      - about.qmd
+      - href: 410_bquote_example.qmd
+        text: 410_bquote_example.qmd
+      - href: about.qmd
+        text: about.qmd
 
 format:
   html:
     theme: cosmo
-    css: styles.css
+    # css: styles.css
     toc: true
 
 

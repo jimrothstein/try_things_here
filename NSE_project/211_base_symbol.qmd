@@ -2,13 +2,15 @@
 title: Template for .Rmd 
 date: "`r paste('last updated', 
     format(lubridate::now(), '%H:%M, %d %B %Y'))`"
-output: 
-  pdf_document: 
-    latex_engine: lualatex
-    toc: TRUE 
-    toc_depth:  4 
+format:
+    html:
+       
+    pdf_document: 
+        latex_engine: lualatex
+        toc: TRUE 
+        toc_depth:  4 
 fontsize: 10pt 
-geometry: margin=0.4in,top=0.25in 
+qeometry: margin=0.4in,top=0.25in 
 TAGS:  deparse, substitute
 editor_options: 
   chunk_output_type: console
@@ -24,6 +26,11 @@ REF: https://stackoverflow.com/questions/25235240/r-variable-names-symbols-names
 ```{r}
 q2  <- quote(x)
 is.symbol(q2)
+```
+####    Symbol represents value or stored object (Hadley, tidyr cheat)
+```{r}
+is.symbol(expr(pi))
+
 ```
 
 #### Coerce to symbol, or name

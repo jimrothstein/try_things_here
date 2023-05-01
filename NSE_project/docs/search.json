@@ -1,0 +1,30 @@
+[
+  {
+    "objectID": "410_bquote_example.html",
+    "href": "410_bquote_example.html",
+    "title": "using easystats notes",
+    "section": "",
+    "text": "quarto preview  –to pdf # (opens in a viewer)\nquarto render % ; zathura # not quite right cli\nmath mode latex, seems to work if outside R chunk \\[\nx^2\n\\]\n#—————————– ## R allows string or symbol x = 1\n“y” = 10 y #\nidentical(x,y) # TRUE identical(x, “y”) # FALSE"
+  },
+  {
+    "objectID": "410_bquote_example.html#section",
+    "href": "410_bquote_example.html#section",
+    "title": "using easystats notes",
+    "section": "",
+    "text": "bquote(-.(xyz) / 2) ## TRUE\n(abc = quote((x+y+z))) is.expression(abc) is.character(abc) typeof(abc) is.call(abc) ## TURE\n###—————————–\n\nFAILS\nx = “jim” bquote(my names is .(x))\neval(bquote(“my name is .(x)”))) #—————————–"
+  },
+  {
+    "objectID": "410_bquote_example.html#compare-quote-and-bquote",
+    "href": "410_bquote_example.html#compare-quote-and-bquote",
+    "title": "using easystats notes",
+    "section": "compare quote and bquote",
+    "text": "compare quote and bquote\n\nx = 1\n\nquote(1 + .(x))   # 1 + .(x) \n\n1 + .(x)\n\nbquote(1 + .(x))  # 1 + 1\n\n1 + 1\n\nbquote(template + .(x))\n\ntemplate + 1\n\nbquote(sin(.(x))) # sin(1)\n\nsin(1)\n\n## (stole from https://github.com/klmr/box)\nsubject=\"bquote\"\nmod_name=\"base\"\nbquote(help(topic = .(subject), package = .(mod_name)))\n\nhelp(topic = \"bquote\", package = \"base\")\n\neval( bquote(help(topic = .(subject), package = .(mod_name))))\n\nsubject=\"quote\"\neval( bquote(help(topic = .(subject), package = .(mod_name))))\n##\n\nd = 2\nbquote(a+b+c + .(d))       ## a + b + c + 2\n\na + b + c + 2\n\n##  \ntheta = pi/4\nbquote(sin(1 + .(theta)))  ## sin(1 + 0.7853...)\n\nsin(1 + 0.785398163397448)\n\neval(bquote(sin(1 + .(theta))))  ## 0.977\n\n[1] 0.9770613\n\n##\nz= bquote(sin(1 + .(theta)))  ## sin(1 + 0.7853...)\ntypeof(z)                     ## \"language\"\n\n[1] \"language\"\n\nis.call(z)                    ## T\n\n[1] TRUE\n\neval(z)                       ## 0.977\n\n[1] 0.9770613\n\n\n\nx = 5 \nbquote(x == .(x))\n\nx == 5\n\nbquote(.(x))\n\n[1] 5\n\n## from ethz documentation, takes expr, returns lang ob\ndefault &lt;- 1\n(z = bquote( function(x, y = .(default)) x+y ))\n\nfunction(x, y = 1) x + y\n\ntypeof(z)\n\n[1] \"language\"\n\nis.call(z)  #T\n\n[1] TRUE\n\nis.expression(z) #F \n\n[1] FALSE\n\nis.symbol(z) #F\n\n[1] FALSE\n\na = 2\nplot(1:10, a*(1:10), main = bquote(a == .(a)))\n\n\n\n(angle  = 1:10)\n\n [1]  1  2  3  4  5  6  7  8  9 10\n\n(variable = as.name(\"angle\"))             ## variable is now a symbol\n\nangle\n\nis.character(variable)  # FALSE\n\n[1] FALSE\n\nis.name(variable)   # TRUE\n\n[1] TRUE\n\nis.symbol(variable) # TRUE\n\n[1] TRUE\n\ntypeof(variable)    # TRUE\n\n[1] \"symbol\"\n\n##\nexpr = quote(x+y)\nis.expression(expr) # FALSE\n\n[1] FALSE\n\nis.call(expr)      # TRUE\n\n[1] TRUE\n\nstr(expr)\n\n language x + y\n\n#-----------------------------\n##  quasiquotation:  insert .... into an expr template; return expression\npdf()\n\n\nplot(x = 1:10, y=91:100)\n\nbquote(x= .(variable))\n\nError in bquote(x = .(variable)): unused argument (x = .(variable))\n\nbquote(\n  plot(x = .(variable), \n       y = sin(.(variable)))\n  )\n\nplot(x = angle, y = sin(angle))\n\ndev.off()\n\npng \n  2 \n\n\n\n## A variable to pass in\ncor &lt;- -.321\ncor2 &lt;- '-.321'\n\npar(mfrow = c(1, 2))\nplot(1:10, 1:10, main = bquote(\"Hello\" ~ r[xy] == .(cor) ~ \"and\" ~ B^2))\nplot(1:10, 1:10, main = bquote(\"Hello\" ~ r[xy] == .(cor2) ~ \"and\" ~ B^2))\n\n\n\n\n\nbquote(\"Hello\")\n\n[1] \"Hello\"\n\nbquote(\"Hello\" ~ 3)\n\n\"Hello\" ~ 3\n\nbquote(\"Hello\" ~ r[xy])\n\n\"Hello\" ~ r[xy]\n\nx = 2\nbquote(\"hello\" ~ .(x))\n\n\"hello\" ~ 2\n\nbquote(\"x\" ~ .(x))\n\n\"x\" ~ 2\n\nbquote(\"The answer \"  ~.(x))\n\n\"The answer \" ~ 2\n\nbquote(x == .(x))\n\nx == 2\n\nif (F) bquote(x = .(x))\n\n# want 1 + 2\ny = 1\nx=2\nbquote( function(x, y = .(y)) x+y )\n\nfunction(x, y = 1) x + y\n\neval(bquote( function(x, y = .(y)) x+y ))\n\nfunction(x, y = .(y)) x+y\n\neval(eval(bquote( function(x, y = .(y)) x+y )))\n\nfunction(x, y = .(y)) x+y"
+  },
+  {
+    "objectID": "018.2_abstract_syntax_tree.html",
+    "href": "018.2_abstract_syntax_tree.html",
+    "title": "18.2_Abstract_syntax trees",
+    "section": "",
+    "text": "library(rlang)\nlibrary(lobstr)\n\nlobstr::ast(f(x, \"y\", 1))   # knitr complains about character\n\n█─f \n├─x \n├─\"y\" \n└─1 \n\nlobstr::ast(\n    f(g(1, 2), h(3, 4, i()))\n)\n\n█─f \n├─█─g \n│ ├─1 \n│ └─2 \n└─█─h \n  ├─3 \n  ├─4 \n  └─█─i \n\nlobstr::ast(\n    f(g(h(2)))\n)\n\n█─f \n└─█─g \n  └─█─h \n    └─2 \n\n# 18.2.3 infix\nx = 2\ny &lt;- x * 10\n\n# as prefix\n`&lt;-`(y, `*`(x, 10))\n\nlobstr::ast(\n        `&lt;-`(y, `*`(x, 10))\n)\n\n█─`&lt;-` \n├─y \n└─█─`*` \n  ├─x \n  └─10"
+  }
+]
