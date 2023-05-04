@@ -3,9 +3,8 @@ title: Template for .Rmd
 date: "`r paste('last updated', 
     format(lubridate::now(), '%H:%M, %d %B %Y'))`"
 format:
-    html:
-       
-    pdf_document: 
+    html
+    pdf: 
         latex_engine: lualatex
         toc: TRUE 
         toc_depth:  4 
@@ -22,6 +21,15 @@ execute:
 REF: https://stackoverflow.com/questions/25235240/r-variable-names-symbols-names-or-something-else/25235365#25235365
 
 
+##  R allows string or symbol
+x = 1
+
+"y" = 10
+y       # 
+
+
+identical(x,y) # TRUE
+identical(x, "y") # FALSE
 ####    Symbol, aka name
 ```{r}
 q2  <- quote(x)

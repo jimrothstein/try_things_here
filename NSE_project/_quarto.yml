@@ -1,6 +1,6 @@
 project:
   type: website
-  render: 
+  render:                             ## limit dir? 
     - "018.2_abstract_syntax_tree.qmd"
     - "410_bquote_example.qmd"
     - "!*.R"          # do not render
@@ -25,6 +25,12 @@ format:
     theme: cosmo
     # css: styles.css
     toc: true
+execute:
+  error: true
+  cache: true
+  collapse: true
+  output-dir: docs
+  standalone: true 
 
 
 

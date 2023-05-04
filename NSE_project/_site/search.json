@@ -1,9 +1,0 @@
-[
-  {
-    "objectID": "018.2_abstract_syntax_tree.html",
-    "href": "018.2_abstract_syntax_tree.html",
-    "title": "18.2_Abstract_syntax trees",
-    "section": "",
-    "text": "library(rlang)\nlibrary(lobstr)\n\nlobstr::ast(f(x, \"y\", 1))   # knitr complains about character\n\n█─f \n├─x \n├─\"y\" \n└─1 \n\nlobstr::ast(\n    f(g(1, 2), h(3, 4, i()))\n)\n\n█─f \n├─█─g \n│ ├─1 \n│ └─2 \n└─█─h \n  ├─3 \n  ├─4 \n  └─█─i \n\nlobstr::ast(\n    f(g(h(2)))\n)\n\n█─f \n└─█─g \n  └─█─h \n    └─2 \n\n# 18.2.3 infix\nx = 2\ny &lt;- x * 10\n\n# as prefix\n`&lt;-`(y, `*`(x, 10))\n\nlobstr::ast(\n        `&lt;-`(y, `*`(x, 10))\n)\n\n█─`&lt;-` \n├─y \n└─█─`*` \n  ├─x \n  └─10"
-  }
-]
