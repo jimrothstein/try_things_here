@@ -20,17 +20,21 @@ website:
       - href: about.qmd
         text: about.qmd
 
+##  project-wide
 format:
   html:
     theme: cosmo
     # css: styles.css
     toc: true
+knitr:
+  opts_chunk: 
+    collapse: true
+    comment: "..........>" 
 execute:
   error: true
   cache: true
-  collapse: true
   output-dir: docs
   standalone: true 
-
+  collapse: true
 
 

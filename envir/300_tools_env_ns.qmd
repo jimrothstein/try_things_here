@@ -1,0 +1,61 @@
+---
+title: "300_tools_env_ns.qmd"
+date: today
+editor_options: 
+  chunk_output_type: console
+---
+
+## TAGS:  tools, namespace, rlang, environment
+
+
+# PURPOSE:  misc tools for env, NS  
+-   getAnywhere()
+-   exists()
+-   makeActiveBinding
+-   assign()    
+
+---
+
+
+
+##    base::getAnywhere() finds pkg, NS, and code
+```{r}
+getAnywhere(aes)
+getAnywhere(vapply)
+getAnywhere(getAnywhere)
+getAnywhere(.rs.restart)
+
+```
+##-----------------------------------------
+
+# Where is package installed? (pkgload:: part of devtools::)
+``
+
+```{r}
+
+library(pkgload)
+library(rlang)
+
+pkgload::inst("ggplot2") #/home/jim/R/x86...-library/3.6/ggplot2
+pkgload::inst("base")   #/usr/lib/R/library/base
+
+##  IS PACKAGE LOADED & ATTACHED?
+
+base::search()
+
+#
+# insert env, single ":"
+base::objects("package:stats")
+
+# OR, a bit easier to read
+rlang::search_envs()
+
+library(ggplot2)
+rlang::search_envs()
+
+library(magrittr)	# now this will be parent of 'workspace'
+rlang::search_envs()
+
+```
+
+

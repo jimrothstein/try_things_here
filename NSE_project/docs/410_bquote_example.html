@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="dcterms.date" content="2023-05-03">
 
-<title>Meta + NSE - using easystats notes</title>
+<title>Meta + NSE - 410_bquote</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -93,8 +94,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 </head>
 
@@ -143,18 +142,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#bquote---step-by-step-.-operator" id="toc-bquote---step-by-step-.-operator" class="nav-link active" data-scroll-target="#bquote---step-by-step-.-operator">bquote - step by step , .() operator</a>
-  <ul class="collapse">
-  <li><a href="#quote-bquote-do-not-return-strings-or-expressions." id="toc-quote-bquote-do-not-return-strings-or-expressions." class="nav-link" data-scroll-target="#quote-bquote-do-not-return-strings-or-expressions.">quote, bquote do NOT return strings or expressions.</a></li>
-  <li><a href="#these-are-unevaluated-expressions-is.call-true" id="toc-these-are-unevaluated-expressions-is.call-true" class="nav-link" data-scroll-target="#these-are-unevaluated-expressions-is.call-true">these are unevaluated expressions, is.call TRUE</a></li>
-  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"></a>
-  <ul class="collapse">
-  <li><a href="#fails" id="toc-fails" class="nav-link" data-scroll-target="#fails">FAILS</a></li>
-  </ul></li>
-  </ul></li>
+  <li><a href="#like-quote-bquote-can-quote-its-argument" id="toc-like-quote-bquote-can-quote-its-argument" class="nav-link active" data-scroll-target="#like-quote-bquote-can-quote-its-argument">Like quote, bquote can quote its argument</a></li>
+  <li><a href="#like-quote-bquote-can-return-character-call-expression" id="toc-like-quote-bquote-can-return-character-call-expression" class="nav-link" data-scroll-target="#like-quote-bquote-can-return-character-call-expression">Like quote, bquote can return character, call, expression</a></li>
+  <li><a href="#bquote-also-allows-parts-to-be-quote-and-parts-to-be-evaluated-and-substituted-immediately" id="toc-bquote-also-allows-parts-to-be-quote-and-parts-to-be-evaluated-and-substituted-immediately" class="nav-link" data-scroll-target="#bquote-also-allows-parts-to-be-quote-and-parts-to-be-evaluated-and-substituted-immediately">bquote also allows parts to be quote and parts to be evaluated and substituted immediately</a></li>
+  <li><a href="#splice-in-r-4.0.0-multiple-expresssions" id="toc-splice-in-r-4.0.0-multiple-expresssions" class="nav-link" data-scroll-target="#splice-in-r-4.0.0-multiple-expresssions">SPLICE in R 4.0.0 (multiple expresssions)</a></li>
   <li><a href="#bquote-takes-an-r-expression-evaluates-.-returns-expression" id="toc-bquote-takes-an-r-expression-evaluates-.-returns-expression" class="nav-link" data-scroll-target="#bquote-takes-an-r-expression-evaluates-.-returns-expression">bquote: takes an R expression, evaluates .(), returns expression</a>
   <ul class="collapse">
   <li><a href="#compare-quote-and-bquote" id="toc-compare-quote-and-bquote" class="nav-link" data-scroll-target="#compare-quote-and-bquote">compare quote and bquote</a></li>
+  <li><a href="#stole-from-httpsgithub.comklmrbox" id="toc-stole-from-httpsgithub.comklmrbox" class="nav-link" data-scroll-target="#stole-from-httpsgithub.comklmrbox">(stole from https://github.com/klmr/box)</a></li>
+  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"></a></li>
+  <li><a href="#section-1" id="toc-section-1" class="nav-link" data-scroll-target="#section-1"></a></li>
   </ul></li>
   </ul>
 </nav>
@@ -164,7 +161,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">using easystats notes</h1>
+<h1 class="title">410_bquote</h1>
 </div>
 
 
@@ -175,7 +172,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">Invalid Date</p>
+      <p class="date">May 3, 2023</p>
     </div>
   </div>
   
@@ -186,6 +183,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 <!--
+
 For PDF
   pdf:
     toc: false
@@ -202,289 +200,287 @@ For PDF
 #format:
 #  pdf: 
 #    include-in-header: 
+
 -->
-<ul>
-<li><p>quarto preview <file> –to pdf # (opens in a viewer)</file></p></li>
-<li><p>quarto render % ; zathura # not quite right cli</p></li>
-<li><p>math mode latex, seems to work if <em>outside</em> R chunk <span class="math display">\[
+<!--  
+  USAGE:
+  
+- quarto preview <file> --to pdf    # (opens in a viewer)
+- quarto render %   ; zathura         # not quite right cli
+
+- math mode latex,  seems to work if *outside* R chunk
+$$
 x^2
-\]</span></p></li>
-</ul>
-<p>#—————————– ## R allows string or symbol x = 1</p>
-<p>“y” = 10 y #</p>
-<p>identical(x,y) # TRUE identical(x, “y”) # FALSE</p>
-<section id="bquote---step-by-step-.-operator" class="level1">
-<h1>bquote - step by step , .() operator</h1>
-<div class="cell" data-hash="410_bquote_example_cache/html/unnamed-chunk-1_4587418cf853f2a11a550bd33e8e075f">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(<span class="dv">1</span><span class="sc">+</span><span class="dv">2</span>)       <span class="co"># 1 + 2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>1 + 2</code></pre>
+$$
+
+-->
+<section id="like-quote-bquote-can-quote-its-argument" class="level2">
+<h2 class="anchored" data-anchor-id="like-quote-bquote-can-quote-its-argument">Like quote, bquote can quote its argument</h2>
+<div class="cell" data-hash="410_bquote_example_cache/html/unnamed-chunk-1_1ca1fb6a59ef66e62e7dbf9a3b8c60f0">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(hello)                             <span class="do">##  hello</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> hello</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(<span class="st">"hello"</span>)                           <span class="do">##  "hello"</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="st">"hello"</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="do">## even when x is undefined</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(x)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> Warning <span class="cf">in</span> <span class="fu">rm</span>(x)<span class="sc">:</span> object <span class="st">'x'</span> not found</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(x)                   <span class="do">## x</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> x</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> <span class="dv">1</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>y <span class="ot">=</span> <span class="dv">2</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>z <span class="ot">=</span> <span class="dv">3</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>(xyz <span class="ot">&lt;-</span> <span class="fu">bquote</span>(x <span class="sc">+</span> y <span class="sc">+</span> z))                <span class="do">##    (x + y + z)</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> x <span class="sc">+</span> y <span class="sc">+</span> z</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>two <span class="ot">=</span> <span class="dv">2</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(<span class="dv">1</span> <span class="sc">+</span> two)   <span class="co"># 1 + two</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>1 + two</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(<span class="dv">1</span> <span class="sc">+</span> .(two))   <span class="co"># 1 + 2   (substitution, not eval)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>1 + 2</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">eval</span>(<span class="fu">bquote</span>(<span class="dv">1</span> <span class="sc">+</span> two)) <span class="co"># 3 </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 3</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">eval</span>(<span class="fu">bquote</span>(<span class="dv">1</span> <span class="sc">+</span> .(two)))   <span class="co"># 3 </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 3</code></pre>
-</div>
-</div>
-<p>###—————————–</p>
-<section id="quote-bquote-do-not-return-strings-or-expressions." class="level3">
-<h3 class="anchored" data-anchor-id="quote-bquote-do-not-return-strings-or-expressions.">quote, bquote do NOT return strings or expressions.</h3>
 </section>
-<section id="these-are-unevaluated-expressions-is.call-true" class="level3">
-<h3 class="anchored" data-anchor-id="these-are-unevaluated-expressions-is.call-true">these are unevaluated expressions, is.call TRUE</h3>
-<p>x = 1 y = 2 z = 3 xyz &lt;- bquote((x + y + z)) ## (x + y + z) xyz</p>
-<p>is.expression(xyz) is.character(xyz) typeof(xyz) is.call(xyz)</p>
-<p>eval(xyz)</p>
+<section id="like-quote-bquote-can-return-character-call-expression" class="level2">
+<h2 class="anchored" data-anchor-id="like-quote-bquote-can-return-character-call-expression">Like quote, bquote can return character, call, expression</h2>
+<div class="cell" data-hash="410_bquote_example_cache/html/unnamed-chunk-2_d957796184544e5962dadc5dac1c7800">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>xyz</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> x <span class="sc">+</span> y <span class="sc">+</span> z</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">is.expression</span>(xyz)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="cn">FALSE</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">is.character</span>(xyz)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="cn">FALSE</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">typeof</span>(xyz)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="st">"language"</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">is.call</span>(xyz)            <span class="do">## TRUE</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="cn">TRUE</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">eval</span>(xyz)               <span class="do">## 6</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="dv">6</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>(<span class="at">res =</span> (<span class="fu">bquote</span>(hello)))</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> hello</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="fu">is.call</span>(res)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="cn">FALSE</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="fu">is.character</span>(res)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="cn">FALSE</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="fu">is.expression</span>(res)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="cn">FALSE</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="fu">is.symbol</span>(res)          <span class="do">## TRUE</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="cn">TRUE</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="fu">eval</span>(res)               <span class="do">## Error, b/c no object </span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> Error <span class="cf">in</span> <span class="fu">eval</span>(res)<span class="sc">:</span> object <span class="st">'hello'</span> not found</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>(<span class="at">res =</span> (<span class="fu">bquote</span>(<span class="st">"hello"</span>)))</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="st">"hello"</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="fu">is.call</span>(res)</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="cn">FALSE</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="fu">is.character</span>(res)       <span class="do">## TRUE</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="cn">TRUE</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="fu">is.expression</span>(res)</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="cn">FALSE</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="fu">is.symbol</span>(res)          <span class="do">## </span></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="cn">FALSE</span></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a><span class="fu">eval</span>(res)               <span class="do">## "hello"</span></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="st">"hello"</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>(<span class="at">res =</span> <span class="fu">bquote</span>(<span class="sc">~</span>x<span class="sc">+</span>y))    <span class="do">## ~x+y</span></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> <span class="er">~</span>x <span class="sc">+</span> y</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a><span class="fu">is.call</span>(res)            <span class="do">## TRUE </span></span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="cn">TRUE</span></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>purrr<span class="sc">::</span><span class="fu">is_formula</span>(res)</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="cn">TRUE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
-<section id="section" class="level2">
-<h2 class="anchored" data-anchor-id="section"></h2>
-<p>bquote(-.(xyz) / 2) ## TRUE</p>
-<p>(abc = quote((x+y+z))) is.expression(abc) is.character(abc) typeof(abc) is.call(abc) ## TURE</p>
-<p>###—————————–</p>
-<section id="fails" class="level3">
-<h3 class="anchored" data-anchor-id="fails">FAILS</h3>
-<p>x = “jim” bquote(my names is .(x))</p>
-<p>eval(bquote(“my name is .(x)”))) #—————————–</p>
+<section id="bquote-also-allows-parts-to-be-quote-and-parts-to-be-evaluated-and-substituted-immediately" class="level2">
+<h2 class="anchored" data-anchor-id="bquote-also-allows-parts-to-be-quote-and-parts-to-be-evaluated-and-substituted-immediately">bquote also allows parts to be quote and parts to be evaluated and substituted immediately</h2>
+<div class="cell" data-hash="410_bquote_example_cache/html/unnamed-chunk-3_899fe5f7852b0a5ab123c88ca458de8c">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> <span class="dv">1</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">quote</span>(<span class="dv">1</span> <span class="sc">+</span> .(x))   <span class="co"># 1 + .(x) </span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> <span class="dv">1</span> <span class="sc">+</span> .(x)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>(<span class="at">res=</span><span class="fu">bquote</span>(<span class="dv">1</span> <span class="sc">+</span> .(x)))  <span class="co"># 1 + 1</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> <span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">is.call</span>(res)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="cn">TRUE</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">is.expression</span>(res)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="cn">FALSE</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>(<span class="at">res=</span><span class="fu">bquote</span>(template <span class="sc">+</span> .(x)))</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> template <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="fu">is.call</span>(res)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="cn">TRUE</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="fu">is.expression</span>(res)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="cn">FALSE</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>(<span class="at">res=</span><span class="fu">bquote</span>(<span class="fu">sin</span>(.(x)))) <span class="co"># sin(1)</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> <span class="fu">sin</span>(<span class="dv">1</span>)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>(<span class="at">res=</span><span class="fu">bquote</span>(<span class="fu">sin</span>(.(x<span class="sc">+</span><span class="dv">1</span>)))) <span class="co"># sin(1)</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> <span class="fu">sin</span>(<span class="dv">2</span>)</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="fu">is.call</span>(res)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="cn">TRUE</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="fu">is.expression</span>(res)</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="cn">FALSE</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>(<span class="at">res=</span><span class="fu">bquote</span>(<span class="fu">sin</span>(.(x<span class="sc">+</span><span class="dv">1</span>)), <span class="at">splice=</span><span class="cn">TRUE</span>)) <span class="co"># sin(1)</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> <span class="fu">sin</span>(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
-</section>
+<section id="splice-in-r-4.0.0-multiple-expresssions" class="level2">
+<h2 class="anchored" data-anchor-id="splice-in-r-4.0.0-multiple-expresssions">SPLICE in R 4.0.0 (multiple expresssions)</h2>
+<p>https://stackoverflow.com/a/60689381/5057251 https://stackoverflow.com/q/72039909/5057251 (multiple ways)</p>
 </section>
 <section id="bquote-takes-an-r-expression-evaluates-.-returns-expression" class="level1">
 <h1>bquote: takes an R expression, evaluates .(), returns expression</h1>
 <p>(unevaluated) rm(x)</p>
 <section id="compare-quote-and-bquote" class="level2">
 <h2 class="anchored" data-anchor-id="compare-quote-and-bquote">compare quote and bquote</h2>
-<div class="cell" data-hash="410_bquote_example_cache/html/unnamed-chunk-2_f947dee6112f021e1cc1c3616500a9ed">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> <span class="dv">1</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">quote</span>(<span class="dv">1</span> <span class="sc">+</span> .(x))   <span class="co"># 1 + .(x) </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>1 + .(x)</code></pre>
+<div class="cell" data-hash="410_bquote_example_cache/html/unnamed-chunk-5_824e5872013b4d626f3c6d6ef0778352">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># bquote - step by step ,   .() operator</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(<span class="dv">1</span><span class="sc">+</span><span class="dv">2</span>)       <span class="co"># 1 + 2</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> <span class="dv">1</span> <span class="sc">+</span> <span class="dv">2</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>two <span class="ot">=</span> <span class="dv">2</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(<span class="dv">1</span> <span class="sc">+</span> two)   <span class="co"># 1 + two</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> <span class="dv">1</span> <span class="sc">+</span> two</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(hello)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> hello</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(<span class="dv">1</span> <span class="sc">+</span> .(two))   <span class="co"># 1 + 2   (substitution, not eval)</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> <span class="dv">1</span> <span class="sc">+</span> <span class="dv">2</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="fu">eval</span>(<span class="fu">bquote</span>(<span class="dv">1</span> <span class="sc">+</span> two)) <span class="co"># 3 </span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="dv">3</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="fu">eval</span>(<span class="fu">bquote</span>(<span class="dv">1</span> <span class="sc">+</span> .(two)))   <span class="co"># 3 </span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="dv">3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(<span class="dv">1</span> <span class="sc">+</span> .(x))  <span class="co"># 1 + 1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>1 + 1</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(template <span class="sc">+</span> .(x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>template + 1</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(<span class="fu">sin</span>(.(x))) <span class="co"># sin(1)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>sin(1)</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="do">## (stole from https://github.com/klmr/box)</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>subject<span class="ot">=</span><span class="st">"bquote"</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>mod_name<span class="ot">=</span><span class="st">"base"</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(<span class="fu">help</span>(<span class="at">topic =</span> .(subject), <span class="at">package =</span> .(mod_name)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>help(topic = "bquote", package = "base")</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">eval</span>( <span class="fu">bquote</span>(<span class="fu">help</span>(<span class="at">topic =</span> .(subject), <span class="at">package =</span> .(mod_name))))</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>subject<span class="ot">=</span><span class="st">"quote"</span></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="fu">eval</span>( <span class="fu">bquote</span>(<span class="fu">help</span>(<span class="at">topic =</span> .(subject), <span class="at">package =</span> .(mod_name))))</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="do">##</span></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>d <span class="ot">=</span> <span class="dv">2</span></span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(a<span class="sc">+</span>b<span class="sc">+</span>c <span class="sc">+</span> .(d))       <span class="do">## a + b + c + 2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>a + b + c + 2</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="do">##  </span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>theta <span class="ot">=</span> pi<span class="sc">/</span><span class="dv">4</span></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(<span class="fu">sin</span>(<span class="dv">1</span> <span class="sc">+</span> .(theta)))  <span class="do">## sin(1 + 0.7853...)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>sin(1 + 0.785398163397448)</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">eval</span>(<span class="fu">bquote</span>(<span class="fu">sin</span>(<span class="dv">1</span> <span class="sc">+</span> .(theta))))  <span class="do">## 0.977</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.9770613</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="do">##</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>z<span class="ot">=</span> <span class="fu">bquote</span>(<span class="fu">sin</span>(<span class="dv">1</span> <span class="sc">+</span> .(theta)))  <span class="do">## sin(1 + 0.7853...)</span></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">typeof</span>(z)                     <span class="do">## "language"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "language"</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">is.call</span>(z)                    <span class="do">## T</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] TRUE</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">eval</span>(z)                       <span class="do">## 0.977</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.9770613</code></pre>
-</div>
-</div>
-<div class="cell" data-hash="410_bquote_example_cache/html/unnamed-chunk-3_361eaa0c3b920f62131c9dd6c6079875">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> <span class="dv">5</span> </span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(x <span class="sc">==</span> .(x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>x == 5</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(.(x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 5</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="do">## from ethz documentation, takes expr, returns lang ob</span></span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>default <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>(<span class="at">z =</span> <span class="fu">bquote</span>( <span class="cf">function</span>(x, <span class="at">y =</span> .(default)) x<span class="sc">+</span>y ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>function(x, y = 1) x + y</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">typeof</span>(z)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "language"</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">is.call</span>(z)  <span class="co">#T</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] TRUE</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">is.expression</span>(z) <span class="co">#F </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] FALSE</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">is.symbol</span>(z) <span class="co">#F</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] FALSE</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>a <span class="ot">=</span> <span class="dv">2</span></span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, a<span class="sc">*</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>), <span class="at">main =</span> <span class="fu">bquote</span>(a <span class="sc">==</span> .(a)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>###—————————–</p>
+</section>
+<section id="stole-from-httpsgithub.comklmrbox" class="level2">
+<h2 class="anchored" data-anchor-id="stole-from-httpsgithub.comklmrbox">(stole from https://github.com/klmr/box)</h2>
+<p>subject=“bquote” mod_name=“base” bquote(help(topic = .(subject), package = .(mod_name))) eval( bquote(help(topic = .(subject), package = .(mod_name))))</p>
+<p>subject=“quote” eval( bquote(help(topic = .(subject), package = .(mod_name)))) ##</p>
+<p>d = 2 bquote(a+b+c + .(d)) ## a + b + c + 2</p>
+</section>
+<section id="section" class="level2">
+<h2 class="anchored" data-anchor-id="section"></h2>
+<p>theta = pi/4 bquote(sin(1 + .(theta))) ## sin(1 + 0.7853…) eval(bquote(sin(1 + .(theta)))) ## 0.977</p>
+</section>
+<section id="section-1" class="level2">
+<h2 class="anchored" data-anchor-id="section-1"></h2>
+<p>z= bquote(sin(1 + .(theta))) ## sin(1 + 0.7853…) typeof(z) ## “language” is.call(z) ## T eval(z) ## 0.977</p>
+<pre><code>
+::: {.cell hash='410_bquote_example_cache/html/unnamed-chunk-6_bfc5dd3dd7e360f94032c16c06e1ea63'}
+
+```{.r .cell-code}
+x = 5 
+bquote(x == .(x))
+..........&gt; x == 5
+bquote(.(x))
+..........&gt; [1] 5
+
+## from ethz documentation, takes expr, returns lang ob
+default &lt;- 1
+(z = bquote( function(x, y = .(default)) x+y ))
+..........&gt; function(x, y = 1) x + y
+
+typeof(z)
+..........&gt; [1] "language"
+is.call(z)  #T
+..........&gt; [1] TRUE
+is.expression(z) #F 
+..........&gt; [1] FALSE
+is.symbol(z) #F
+..........&gt; [1] FALSE
+a = 2
+plot(1:10, a*(1:10), main = bquote(a == .(a)))</code></pre>
 <div class="cell-output-display">
-<p><img src="410_bquote_example_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+<p><img src="410_bquote_example_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>(<span class="at">angle  =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code> [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>(<span class="at">variable =</span> <span class="fu">as.name</span>(<span class="st">"angle"</span>))             <span class="do">## variable is now a symbol</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>angle</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">is.character</span>(variable)  <span class="co"># FALSE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] FALSE</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">is.name</span>(variable)   <span class="co"># TRUE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] TRUE</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">is.symbol</span>(variable) <span class="co"># TRUE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] TRUE</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">typeof</span>(variable)    <span class="co"># TRUE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "symbol"</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="do">##</span></span>
-<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>expr <span class="ot">=</span> <span class="fu">quote</span>(x<span class="sc">+</span>y)</span>
-<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a><span class="fu">is.expression</span>(expr) <span class="co"># FALSE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] FALSE</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">is.call</span>(expr)      <span class="co"># TRUE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] TRUE</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(expr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code> language x + y</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="co">#-----------------------------</span></span>
-<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a><span class="do">##  quasiquotation:  insert .... into an expr template; return expression</span></span>
-<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a><span class="fu">pdf</span>()</span>
-<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb66-5"><a href="#cb66-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb66-6"><a href="#cb66-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="at">y=</span><span class="dv">91</span><span class="sc">:</span><span class="dv">100</span>)</span>
-<span id="cb66-7"><a href="#cb66-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb66-8"><a href="#cb66-8" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(<span class="at">x=</span> .(variable))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-error">
-<pre><code>Error in bquote(x = .(variable)): unused argument (x = .(variable))</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(</span>
-<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="at">x =</span> .(variable), </span>
-<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="fu">sin</span>(.(variable)))</span>
-<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>plot(x = angle, y = sin(angle))</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>png 
-  2 </code></pre>
-</div>
-</div>
-<div class="cell" data-hash="410_bquote_example_cache/html/unnamed-chunk-4_b6896d6c51c05c237d6b3e70f114eca1">
-<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="do">## A variable to pass in</span></span>
-<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>cor <span class="ot">&lt;-</span> <span class="sc">-</span>.<span class="dv">321</span></span>
-<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a>cor2 <span class="ot">&lt;-</span> <span class="st">'-.321'</span></span>
-<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb72-6"><a href="#cb72-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="at">main =</span> <span class="fu">bquote</span>(<span class="st">"Hello"</span> <span class="sc">~</span> r[xy] <span class="sc">==</span> .(cor) <span class="sc">~</span> <span class="st">"and"</span> <span class="sc">~</span> B<span class="sc">^</span><span class="dv">2</span>))</span>
-<span id="cb72-7"><a href="#cb72-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="at">main =</span> <span class="fu">bquote</span>(<span class="st">"Hello"</span> <span class="sc">~</span> r[xy] <span class="sc">==</span> .(cor2) <span class="sc">~</span> <span class="st">"and"</span> <span class="sc">~</span> B<span class="sc">^</span><span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>(<span class="at">angle  =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span>  [<span class="dv">1</span>]  <span class="dv">1</span>  <span class="dv">2</span>  <span class="dv">3</span>  <span class="dv">4</span>  <span class="dv">5</span>  <span class="dv">6</span>  <span class="dv">7</span>  <span class="dv">8</span>  <span class="dv">9</span> <span class="dv">10</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>(<span class="at">variable =</span> <span class="fu">as.name</span>(<span class="st">"angle"</span>))             <span class="do">## variable is now a symbol</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> angle</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">is.character</span>(variable)  <span class="co"># FALSE</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="cn">FALSE</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="fu">is.name</span>(variable)   <span class="co"># TRUE</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="cn">TRUE</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="fu">is.symbol</span>(variable) <span class="co"># TRUE</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="cn">TRUE</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="fu">typeof</span>(variable)    <span class="co"># TRUE</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="st">"symbol"</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="do">##</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>expr <span class="ot">=</span> <span class="fu">quote</span>(x<span class="sc">+</span>y)</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="fu">is.expression</span>(expr) <span class="co"># FALSE</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="cn">FALSE</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="fu">is.call</span>(expr)      <span class="co"># TRUE</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="cn">TRUE</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(expr)</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span>  language x <span class="sc">+</span> y</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="co">#-----------------------------</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="do">##  quasiquotation:  insert .... into an expr template; return expression</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="fu">pdf</span>()</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="at">y=</span><span class="dv">91</span><span class="sc">:</span><span class="dv">100</span>)</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(<span class="at">x=</span> .(variable))</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> Error <span class="cf">in</span> <span class="fu">bquote</span>(<span class="at">x =</span> .(variable))<span class="sc">:</span> unused <span class="fu">argument</span> (<span class="at">x =</span> .(variable))</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="at">x =</span> .(variable), </span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="fu">sin</span>(.(variable)))</span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> <span class="fu">plot</span>(<span class="at">x =</span> angle, <span class="at">y =</span> <span class="fu">sin</span>(angle))</span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> png </span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span>   <span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>:::</p>
+<div class="cell" data-hash="410_bquote_example_cache/html/unnamed-chunk-7_60b7353ddfadc72cedfabe4795f90323">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="do">## A variable to pass in</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>cor <span class="ot">&lt;-</span> <span class="sc">-</span>.<span class="dv">321</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>cor2 <span class="ot">&lt;-</span> <span class="st">'-.321'</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="at">main =</span> <span class="fu">bquote</span>(<span class="st">"Hello"</span> <span class="sc">~</span> r[xy] <span class="sc">==</span> .(cor) <span class="sc">~</span> <span class="st">"and"</span> <span class="sc">~</span> B<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="at">main =</span> <span class="fu">bquote</span>(<span class="st">"Hello"</span> <span class="sc">~</span> r[xy] <span class="sc">==</span> .(cor2) <span class="sc">~</span> <span class="st">"and"</span> <span class="sc">~</span> B<span class="sc">^</span><span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="410_bquote_example_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+<p><img src="410_bquote_example_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<div class="cell" data-hash="410_bquote_example_cache/html/unnamed-chunk-5_bc302568bf9ebde12502f1f3ddfad07e">
-<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(<span class="st">"Hello"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Hello"</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(<span class="st">"Hello"</span> <span class="sc">~</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>"Hello" ~ 3</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(<span class="st">"Hello"</span> <span class="sc">~</span> r[xy])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>"Hello" ~ r[xy]</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> <span class="dv">2</span></span>
-<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(<span class="st">"hello"</span> <span class="sc">~</span> .(x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>"hello" ~ 2</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(<span class="st">"x"</span> <span class="sc">~</span> .(x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>"x" ~ 2</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(<span class="st">"The answer "</span>  <span class="sc">~</span>.(x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>"The answer " ~ 2</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(x <span class="sc">==</span> .(x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>x == 2</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (F) <span class="fu">bquote</span>(<span class="at">x =</span> .(x))</span>
-<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a><span class="co"># want 1 + 2</span></span>
-<span id="cb87-4"><a href="#cb87-4" aria-hidden="true" tabindex="-1"></a>y <span class="ot">=</span> <span class="dv">1</span></span>
-<span id="cb87-5"><a href="#cb87-5" aria-hidden="true" tabindex="-1"></a>x<span class="ot">=</span><span class="dv">2</span></span>
-<span id="cb87-6"><a href="#cb87-6" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>( <span class="cf">function</span>(x, <span class="at">y =</span> .(y)) x<span class="sc">+</span>y )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>function(x, y = 1) x + y</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="fu">eval</span>(<span class="fu">bquote</span>( <span class="cf">function</span>(x, <span class="at">y =</span> .(y)) x<span class="sc">+</span>y ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>function(x, y = .(y)) x+y</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="fu">eval</span>(<span class="fu">eval</span>(<span class="fu">bquote</span>( <span class="cf">function</span>(x, <span class="at">y =</span> .(y)) x<span class="sc">+</span>y )))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>function(x, y = .(y)) x+y</code></pre>
-</div>
+<div class="cell" data-hash="410_bquote_example_cache/html/unnamed-chunk-8_07224c6bf49f5edbd922e0f782067db0">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(<span class="st">"Hello"</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="st">"Hello"</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(<span class="st">"Hello"</span> <span class="sc">~</span> <span class="dv">3</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> <span class="st">"Hello"</span> <span class="sc">~</span> <span class="dv">3</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(<span class="st">"Hello"</span> <span class="sc">~</span> r[xy])</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> <span class="st">"Hello"</span> <span class="sc">~</span> r[xy]</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> <span class="dv">2</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(<span class="st">"hello"</span> <span class="sc">~</span> .(x))</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> <span class="st">"hello"</span> <span class="sc">~</span> <span class="dv">2</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(<span class="st">"x"</span> <span class="sc">~</span> .(x))</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> <span class="st">"x"</span> <span class="sc">~</span> <span class="dv">2</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(<span class="st">"The answer "</span>  <span class="sc">~</span>.(x))</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> <span class="st">"The answer "</span> <span class="sc">~</span> <span class="dv">2</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>(x <span class="sc">==</span> .(x))</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> x <span class="sc">==</span> <span class="dv">2</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (F) <span class="fu">bquote</span>(<span class="at">x =</span> .(x))</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co"># want 1 + 2</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>y <span class="ot">=</span> <span class="dv">1</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>x<span class="ot">=</span><span class="dv">2</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="fu">bquote</span>( <span class="cf">function</span>(x, <span class="at">y =</span> .(y)) x<span class="sc">+</span>y )</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> <span class="cf">function</span>(x, <span class="at">y =</span> <span class="dv">1</span>) x <span class="sc">+</span> y</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="fu">eval</span>(<span class="fu">bquote</span>( <span class="cf">function</span>(x, <span class="at">y =</span> .(y)) x<span class="sc">+</span>y ))</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> <span class="cf">function</span>(x, <span class="at">y =</span> .(y)) x<span class="sc">+</span>y</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="fu">eval</span>(<span class="fu">eval</span>(<span class="fu">bquote</span>( <span class="cf">function</span>(x, <span class="at">y =</span> .(y)) x<span class="sc">+</span>y )))</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>..........<span class="sc">&gt;</span> <span class="cf">function</span>(x, <span class="at">y =</span> .(y)) x<span class="sc">+</span>y</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 

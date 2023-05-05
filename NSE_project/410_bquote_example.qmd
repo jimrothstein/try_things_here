@@ -3,7 +3,8 @@ title: "410_bquote"
 date:  today 
 pdf-engine: lualatex
 format:
-  html
+  html:
+    toc: true
 editor_options: 
   chunk_output_type: console
 execute: 
@@ -65,7 +66,7 @@ z = 3
 (xyz <- bquote(x + y + z))                ##    (x + y + z)
 ```
 
-###  Like quote, bquote can return character, call, expression 
+##  Like quote, bquote can return character, call, expression 
 ```{r}
 xyz
 is.expression(xyz)
