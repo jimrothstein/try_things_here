@@ -221,3 +221,36 @@ rmarkdown::render(file,
 
 
 ```
+# z is 'expression'
+
+added 5 MAY
+```{r}
+z
+x<-4
+# now eval the expression
+base::eval(z)
+y
+```
+
+##    basic NSE
+```{r}
+a=2
+b=10
+z=quote(a+b)
+eval(z)   # 12
+
+z
+(zz = as.list(z))
+
+```
+# change
+```{r}
+zz[[1]] = `*`
+zz
+
+## but zz is list
+(as.call(zz))
+eval(as.call(zz))   #20
+```
+##    Quote can return.... (SEE Lionell)
+https://rpubs.com/lionel-/programming-draft

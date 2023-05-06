@@ -70,9 +70,38 @@ g(x + y + z)
 
 ##  surprise, f(arg) returns the code user submitted:  arg  , it does Not allow evaluate and so does not see 1:10
 ## 'substitute returns the parse tree for the (unevaluated) expression expr, substituting any variables bound in env.'
+
+f = function(arg) substitute(arg )
 f(arg)
+f(arg + 5*3)
+
 g = function(arg) deparse(f(arg))
+g1 = function(arg) deparse(f(arg+3))
+h = function(arg) {
+  print(arg)
+  deparse(f(arg))
+  
+}
+
+g(x)          # "arg"
+g(2*5)        # "arg"
+g(2*5+x)      # "arg"
+
 g(1:10)   ## "arg"
+
+g1(x )
+g1(2*5+x)
+
+## do not understand
+h(x)        # errror
+h(2*5)        # arg)
+eval(h(2*5))
+
+## do not undrestand
+play = function(x) cat(x)
+play(2)
+play(z)
+     
 ```
 
 

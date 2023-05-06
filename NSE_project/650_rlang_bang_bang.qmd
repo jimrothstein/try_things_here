@@ -1,0 +1,82 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+## REF:   https://www.r-bloggers.com/2019/06/curly-curly-the-successor-of-bang-bang-2/
+
+##    Use columns in df
+```{r}
+library(dplyr)
+library(tibble)
+
+how_many_na <- function(dataframe, column_name){
+  dataframe %>%
+    dplyr::filter(is.na(column_name)) %>%      # include rows where value in specified column_name is na
+    dplyr::count()
+}
+
+
+data(starwars)
+head(starwars, n=3L)
+
+# tidyverse triggers error
+how_many_na(starwars, "hair_color")
+
+```   
+
+##
+# Base R is ok, why?
+```{r}
+
+col = "hair_color"
+sum(is.na(starwars[, eval(col) ]) )
+sum(is.na(starwars[, col ]) )
+
+```
+
+## But this is harder with just Base R [ Exercise]
+```{r}
+
+##  Goal:  Given an dataframe, grouping, column  - compute mean of column
+summarise_groups <- function(dataframe, grouping_var, column_name){
+  dataframe %>%
+    group_by(grouping_var) %>%  
+    summarise(mean(column_name, na.rm = TRUE))
+}
+
+```
+
+##    Tidyverse (pre-bang-bang)
+```{r}
+
+summarise_groups <- function(dataframe, grouping_var, column_name){
+  grouping_var <- enquo(grouping_var)
+  column_name <- enquo(column_name)
+  mean_name <- paste0("mean_", quo_name(column_name))
+
+  dataframe %>%
+    group_by(!!grouping_var) %>%  
+    summarise(!!(mean_name) := mean(!!column_name, na.rm = TRUE))
+}
+```
+
+
+##    ast first quotes argument, so must !! to unquote
+```{r}
+x=quote(a+b+c)        ## x is a call
+as.list(x)
+
+ast(x)    ## double quoting
+ast({{x}})
+ast(!!x)
+
+## but
+ast(x=substitute(a+b+c))
+ast(x=quote(a+b+c))
+ast(x=a+b+c)
+
+## how to use !! ?
+identical(`!!` x, {{x}})
+```
+
