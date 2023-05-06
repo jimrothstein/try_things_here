@@ -49,6 +49,14 @@ f(x + y^2)
 # z does not exist
 f(x+y+z)
 ```
+##  Compare quote and substitute
+
+```{r}
+r1 = quote(x + 5*3)
+r2 = substitute(x + 5*3 )
+is.call(r1,r2)
+```
+
 
 ```{r}
 g = function(arg) deparse(substitute(arg))
