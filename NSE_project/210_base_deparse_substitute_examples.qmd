@@ -1,5 +1,5 @@
 --- 
-title: Template for .Rmd 
+title: "210_base_deparse_substitute_examples.qmd"
 date: "`r paste('last updated', 
     format(lubridate::now(), '%H:%M, %d %B %Y'))`"
 format: 
@@ -13,7 +13,7 @@ format:
 #     toc: TRUE 
 #     toc_depth:  4 
 geometry: margin=0.4in,top=0.25in 
-TAGS:  deparse, substitute
+TAGS:  deparse, substitute, USECASE: capture function
 editor_options: 
   chunk_output_type: console
 execute: 
@@ -24,12 +24,41 @@ execute:
 ---
 
 
+PURPOSE:    Collect basic examples of substitute
+TODO:       Clean up !   Make coherent
+
 #### REF: 
 https://stackoverflow.com/questions/46834655/whats-the-difference-between-substitute-and-quote-in-r
 https://statisticsglobe.com/parse-deparse-expression-r-function
 
-\section{USE CASE:  base::subtitute}
 - User calls function `f` \code{f};   what did user use as argument?
+
+
+##  USE CASE:  Write one function to accept any of several   functions
+
+##  Pass mean, mode, max, min, sd to single function
+```{r}
+f = function(fun, args=NULL) {
+    deparse(substitute(fun))
+    #cat(as.character(typeof(new)), "\n")     ## symbol
+}
+typeof(f(mean))                 ## character
+call(f(mean), list(1:10))       ## mean(list(1:10))
+eval(f(mean), list(1:10))       ## "mean"
+do.call(f(mean), list(1:10))    ##  5.5
+do.call(f(max), list(1:10))     ##  10
+
+# examine
+
+(f(mean))        ## mean
+(f(mode))        ## mode
+is.expression(f(mode))    ## FALSE
+is.call(f(mode))          ## FALSE
+typeof(f(mode))           ## symbol
+
+eval(f(mode), list(x=1:10))
+```
+
 ```{r}
 w = function(arg) print(arg)
 
@@ -122,56 +151,49 @@ f(suppliedArgX)
 
 ```{r}
 
-## substitute return a call (unevaluated)
+## substitute return a call (unevaluated) - TODO how to evaluate???!!
     expr  <- substitute(suppliedArgX  <- 100)
-    is.call(expr)
+    is.call(expr)                       ## TRUE
+    eval(expr)                          ## eval(expr)
+    is.symbol(expr)                     ## FALSE
+    deparse(expr)                       ## "suppliedArgX <- 100"
+    as.character(expr)                  ## list turned to character ???
+    as.list(expr)                       ## STUDY
+    as.call(expr)                       ## 
 
 ## quote returns a symbol, which is NOT a call.
     expr2  <- quote(suppliedArgX)
-    typeof(expr2)
-    is.call(expr2)
-    expr2
+    typeof(expr2)                       ## symbol
+    is.call(expr2)                      ## FALSE
+    is.expression(expr2)                ## FALSE
+    is.symbol(expr2)                    ## TRUE
+    expr2                               ## suppliedArgX
+
 ## but easy to evaluate:
-    eval(expr2)
+    eval(expr2)                         ## 100
 ```
 
 
-####  String can not be 'evaluated'
+####  String can not be 'evaluated', quote first! (becomes a call)
 ```{r call}
 s  <- "5+5"
 
 ##  Not 10  
-eval(s)
-# [1] "5+5"
-
-is.call(s)
-# [1] FALSE
-
-is.expression(s)
-# [1] FALSE
-
+eval(s)             # "5+5"
+is.call(s)          ## FALSE
+is.expression(s)    ## FALSE
 
 ##  But quote will allow eval
-    s  <- quote(5+5)
-    s
-    # 5 + 5
-
-    eval(s)
-    # [1] 10
+    (s  <- quote(5+5))  ## 5+5
+    eval(s)             ## 10
     
     ## because it is a call
-    is.call(s)
-    # [1] TRUE
-    is.expression(s)
-    # [1] FALSE
-
-
+    is.call(s)      ## TRUE
+    is.expression(s)    ## FALSE
 ```
-
 
 ```{r simplest??}
 rm(x)
-
 
 ## x undefined, which is fine.  
 ## quote captures the UNEVALUATED expression.
@@ -200,6 +222,7 @@ if (F)
 eval(g(a+1), list(a=1))
 # [1] 2
 ```
+
 
 ```{r mtcars}
 
