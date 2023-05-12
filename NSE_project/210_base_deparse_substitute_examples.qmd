@@ -27,16 +27,10 @@ execute:
 PURPOSE:    Collect basic examples of substitute
 TODO:       Clean up !   Make coherent
 
-#### REF: 
-https://stackoverflow.com/questions/46834655/whats-the-difference-between-substitute-and-quote-in-r
-https://statisticsglobe.com/parse-deparse-expression-r-function
-
-- User calls function `f` \code{f};   what did user use as argument?
-
+- Substitute:  User calls function `f` \code{f};   what did user use as argument?
 
 ##  USE CASE:  Write one function to accept any of several   functions
-
-##  Pass mean, mode, max, min, sd to single function
+###  Pass mean, mode, max, min, sd to single function
 ```{r}
 f = function(fun, args=NULL) {
     deparse(substitute(fun))
@@ -59,44 +53,63 @@ typeof(f(mode))           ## symbol
 eval(f(mode), list(x=1:10))
 ```
 
+### Compare (REF:   Hadley, Adv, v.1)
 ```{r}
-w = function(arg) print(arg)
+w = function(arg) print(arg)    ## normal
+f = function(arg) substitute(arg) ## substitute
 
-f = function(arg) substitute(arg)
-
-(res = f(1:10))     ## 1:10, which is a call.
 w(1:10)     #  1 2 3 ... 10
+(res = f(1:10))     ## 1:10, res is a call.
 
 x = 10
-f(x)
 w(x)        # 10
+f(x)        # x
 
 x = 10
 y = 100
-f(x + y^2)
+f(x + y^2)  # x + y^2
 
-# z does not exist
+# z does not exist        # x + y + z
 f(x+y+z)
 ```
 ##  Compare quote and substitute
-
 ```{r}
 r1 = quote(x + 5*3)
 r2 = substitute(x + 5*3 )
-is.call(r1,r2)
+is.call(r1) ##  T
+is.call(r2) ## T
+
+eval(r1)    ## 25
+eval(r2)    ## 25
 ```
 
-
+##  Study   
 ```{r}
+f <- function(argX) {
+   list(argX, 
+        quote(argX), 
+        substitute(argX)
+        )
+}
+    
+suppliedArgX <- 100
+f(argX  <-  suppliedArgX)
+f(argX = suppliedArgX)
+f(suppliedArgX)
+```
+
+##  Compare substitute with/without depars
+```{r}
+##  Use deparse to convert to stirng
 g = function(arg) deparse(substitute(arg))
 
-g(1:10)
-g(x)
-g(x + y^2)
-g(x + y + z)
+g(1:10)  # "1:10"
+g(x) # "x"
+g(x + y^2) # [1] "x + y^2"
+ g(x + y + z) # "x + y + z"
 ```
-```{r}
 
+```{r}
 ##  surprise, f(arg) returns the code user submitted:  arg  , it does Not allow evaluate and so does not see 1:10
 ## 'substitute returns the parse tree for the (unevaluated) expression expr, substituting any variables bound in env.'
 
@@ -104,7 +117,6 @@ f = function(arg) substitute(arg )
 f(arg)
 f(arg + 5*3)
 
-g = function(arg) deparse(f(arg))
 g1 = function(arg) deparse(f(arg+3))
 h = function(arg) {
   print(arg)
@@ -130,27 +142,10 @@ eval(h(2*5))
 play = function(x) cat(x)
 play(2)
 play(z)
-     
 ```
 
-
-```{r example}
-
-f <- function(argX) {
-   list(argX, 
-        quote(argX), 
-        substitute(argX)
-        )
-}
-    
-suppliedArgX <- 100
-f(argX = suppliedArgX)
-f(argX  <-  suppliedArgX)
-f(suppliedArgX)
-```
-
+##  TODO:  explain !
 ```{r}
-
 ## substitute return a call (unevaluated) - TODO how to evaluate???!!
     expr  <- substitute(suppliedArgX  <- 100)
     is.call(expr)                       ## TRUE
@@ -172,7 +167,6 @@ f(suppliedArgX)
 ## but easy to evaluate:
     eval(expr2)                         ## 100
 ```
-
 
 ####  String can not be 'evaluated', quote first! (becomes a call)
 ```{r call}
@@ -223,83 +217,36 @@ eval(g(a+1), list(a=1))
 # [1] 2
 ```
 
-
-```{r mtcars}
-
-{ ## no error
-f  <- function(x) {}
-f(abdcd)
-}
-
-{ ## ERROR 
-    if (F) {
-    g  <- function(x) {x}
-    g(abdcd)}
-}
-
-mtcars
-
-##  Without substitute, R can not find a variable h(mpg) ... ERROR.
-##  With substitute, evaluation is paused; 
-h  <- function(col) {
-    y  <- substitute(col)
-    mean(mtcars[[y]])
-    
-}
-
-(h("mpg"))
-(h(mpg))
-
-(h(hp))
-
-```
-
-
 #### parse:  string --> R expression
 ```{r parse}
-
 ## create expression
     create_expr <- function(string = "2^2") {
         parse(text = string)
     }
 
-    ex1  <- create_expr()
-# expression(2^2)
+    ex1  <- create_expr() # expression(2^2)
+    ## verify:
 
-
-## verify it is R expression
-
-    is.expression(ex1)
-    # [1] TRUE
-    typeof(ex1)
-    # [1] "expression"
-
-
+    is.expression(ex1) # [1] TRUE
+    typeof(ex1) # [1] "expression"
 
 string  <- "2^2"
-typeof(string)
-# [1] "character"
+typeof(string) # [1] "character"
 
-res  <- parse(text = string)
-res
-# expression(2^2)
-
-is.expression(res)
-# [1] TRUE
-typeof(res)
-# [1] "expression"
+res  <- parse(text = string) # expression(2^2)
+is.expression(res) # [1] TRUE
+typeof(res) # [1] "expression"
 ```
 
 #### eval:  R expression --> value?
 ```{r eval}
-eval(res)
-# [1] 4
+eval(res) # [1] 4
 ```
 
 #### eval: R expression in different env, 2 results!
 ```{r env}
-## create
     e1  <- create_expr("x + 1")
+## create
     # expression(x + 1)
 
 
@@ -327,42 +274,28 @@ eval(res)
     if (F) eval(e1) # error
 
     x  <- NULL
-    eval(e1)
-    # numeric(0)
+    eval(e1) # numeric(0)
 ```
 
-
+### sin(x=1)
 ```{r is.call}
 is.call(sin(1))
 # [1] FALSE
 
-
-typeof(sin(x=1))
-# [1] "double"
+typeof(sin(x=1)) # [1] "double"
 
 {
-substitute(sin(1))
-# sin(1)
+substitute(sin(1)) # sin(1)
 
-substitute(sin(x=1))
-# sin(x = 1)
+substitute(sin(x=1)) # sin(x = 1)
 
-typeof(substitute(sin(x=1)))
-# [1] "language"
+typeof(substitute(sin(x=1))) # [1] "language"
 
-is.expression(sin(x=1))
-# [1] FALSE
-
-
-is.expression(substitute(sin(x=1)))
-# [1] FALSE
-
-is.call(substitute(sin(x=1)))
-# [1] TRUE
-is.call(substitute(sin(x)))
-# [1] TRUE
-is.call(substitute(sin(1)))
-# [1] TRUE
+is.expression(sin(x=1)) # [1] FALSE
+is.expression(substitute(sin(x=1))) # [1] FALSE
+is.call(substitute(sin(x=1))) # [1] TRUE
+is.call(substitute(sin(x))) # [1] TRUE
+is.call(substitute(sin(1))) # [1] TRUE
 }
 ```
 ```{r }
@@ -376,7 +309,6 @@ f  <- function(x) {
                 #expression = parse(text = as.character(res))
     )
     )
-
 }
 
 (f(a))
@@ -388,8 +320,6 @@ f  <- function(x) {
 typeof((f(function(e) e^2))[[1]])
 is.call((f(function(e) e^2))[[1]])
 (f(function(e) b + e^2))
-
-
 ```
 
 #### deparse:   R expression --> string (actually structure, not an inverse)
@@ -516,19 +446,3 @@ f(sin(x))
 ```
 
 
-```{r knit_exit()} 
-knitr::knit_exit() 
-```
-
-```{r render, eval=FALSE, include = F	} 
-file <- "0210_base_deparse_substitute_examples.Rmd"
-file  <- normalizePath(file)
-
-
-rmarkdown::render(file, 
-       output_format="pdf_document",
-       output_dir = "~/Downloads/print_and_delete"
-       )
-
-
-```
