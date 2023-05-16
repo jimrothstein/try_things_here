@@ -8,19 +8,23 @@ format:
     html-math-method: katex
     fontsize: smaller
     number-sections: true
-#   pdf:
-#     latex_engine: lualatex
-#     toc: TRUE 
-#     toc_depth:  4 
+    embed-resources: true           ## standalone, 1-file
 geometry: margin=0.4in,top=0.25in 
-TAGS:  deparse, substitute, USECASE: capture function
+TAGS:  deparse, substitute, USECASE capture function
 editor_options: 
   chunk_output_type: console
 execute: 
-  error: true
+  error: true                   ## include errors in output
+  warning: true
   collapse: true
   standalone: true
-  output-dir: docs
+output-dir: docs
+knitr:
+  opts_chunk: 
+    collapse: true
+    comment: "#>" 
+    R.options:
+      knitr.graphics.auto_pdf: true
 ---
 
 
@@ -31,27 +35,39 @@ TODO:       Clean up !   Make coherent
 
 ##  USE CASE:  Write one function to accept any of several   functions
 ###  Pass mean, mode, max, min, sd to single function
+
+Create function accepts basename of another function (`mean, max, etc`)
+Returns basename, but as a call??
 ```{r}
 f = function(fun, args=NULL) {
     deparse(substitute(fun))
     #cat(as.character(typeof(new)), "\n")     ## symbol
 }
+
+f(mean)                         ## [1] "mean"
 typeof(f(mean))                 ## character
-call(f(mean), list(1:10))       ## mean(list(1:10))
-eval(f(mean), list(1:10))       ## "mean"
+
+##  USAGE
 do.call(f(mean), list(1:10))    ##  5.5
 do.call(f(max), list(1:10))     ##  10
-
-# examine
-
-(f(mean))        ## mean
-(f(mode))        ## mode
+do.call(f(length), list(1:10))  ##  10
+```
+What did this create? nothing?
+```{r}
 is.expression(f(mode))    ## FALSE
 is.call(f(mode))          ## FALSE
-typeof(f(mode))           ## symbol
+is.function(f(mode))      ## F
+is.function(mode)         ## TRUE
+is.symbol(f(mode))         ## F 
 
-eval(f(mode), list(x=1:10))
+
+call(f(mean), list(1:10))       ## mean(list(1:10))
+eval(f(mean), list(1:10))       ## "mean"
+
+eval(f(mode, list(x=1:10)))     ## [1] "mode"
+eval(f(mode), list(x=1:10))     ## [1]  "mode"
 ```
+***
 
 ### Compare (REF:   Hadley, Adv, v.1)
 ```{r}
