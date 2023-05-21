@@ -36,3 +36,6 @@
  create mode 100644 STATS/01030_poisson_distribution_files/libs/quarto-html/tippy.css
  create mode 100644 STATS/01030_poisson_distribution_files/libs/quarto-html/tippy.umd.min.js
  create mode 100644 TIDYVERSE/001_dplyr_glimpse.qmd
+[main 92cd759] wip
+ 1 file changed, 38 insertions(+)
+ create mode 100644 git_log.log
