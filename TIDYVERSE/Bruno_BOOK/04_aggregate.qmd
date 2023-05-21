@@ -1,28 +1,63 @@
-##  Bruno_Book  Chapter 04
-
-
-
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+##  Bruno_Book  Chapter 04 - my notes
 
 ```{r}
 library(dplyr)
 data("starwars")
 ```
-```{r}
-mean(starwars$height, na.rm = TRUE)
-```
-
 aggregate is a pain
 ```{r}
 ?stats::aggregate
-
-
 # grouping
-aggregate(starwars$height, 
+stats::aggregate(starwars$height, 
           by = list(sex = starwars$sex),
           FUN=mean, 
     #      na.action = na.omit)
           na.rm = TRUE)
 ```
+  
+introduces pipe
+```{r pipe}
+quote(10 |> log())
+##  log(10)
+```
+
+...and with
+```{r quote}
+with(starwars,
+     mean(height, na.rm = TRUE))
+
+quote(with(starwars,
+     mean(height, na.rm = TRUE)))
+```
+
+...finally, group and then summarize with mean
+```{r}
+starwars |>
+  subset(!is.na(sex)) |>
+  with(aggregate(height,
+                 by = list(Species = species,
+                           Sex = sex),
+                 mean))
+
+```
+
+de-verbose
+```{r}
+quote(
+starwars |>
+  subset(!is.na(sex)) |>
+  with(aggregate(height,
+                 by = list(Species = species,
+                           Sex = sex),
+                 mean))
+)
+```
+###   Using data.table is simpler, once know the syntax
 ```{r data.table}
 library(data.table)
 dt <- data.table(starwars)
@@ -30,6 +65,48 @@ dt <- as.data.table(starwars)
 dt
 
 dt[!is.na(height), ]
-x <- dt[!is.na(height), mean(height), by=c("sex") ]
+x <- dt[!is.na(height), .(ht = mean(height)), by=c("sex") ]
 head(x)
+print(x)
 ```
+
+base::transform   
+```{r}
+args(transform)
+transform
+transform.default
+transform(mtcars, twice = hp * 2)
+```
+same as with , examine first line of transform.data.frame
+eval(expr, envir, enclos)
+for expr, uses substitute(list(...))
+for envir uses df
+for enclo uses parent.frame
+```{r}
+debug(f)
+f <- function(`_data`, ...) {
+  expr <- substitute(list(...))
+  envir <- `_data`
+  enclos <- parent.frame()
+  
+}
+debug(f)
+f(mtcars, twice = hp*2)
+undebug(f)
+```
+
+create environment, convert to data.frame
+```{r}
+e <- new.env(hash=TRUE,size=3)
+assign(x="a",value=10,envir=e)
+assign(x="b",value=100,envir=e)
+assign(x="c",value=1000,envir=e)
+e
+ls(e)
+df <- data.frame(setNames(lapply(ls(e), get, envir=e), ls(e)))
+```
+use that data.frame
+```{r}
+transform(df, twice = 2*b)
+```
+

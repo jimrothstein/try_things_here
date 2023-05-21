@@ -1,0 +1,86 @@
+---
+title: "Binonmial to Poisson"
+editor: source
+---
+
+------------------------------------------------------------------------
+
+## Begin with Binomial.
+
+-   u = expected number of events (letters)
+-   in N = number of draws
+
+```{r}
+
+set.seed(2021)
+draws_approx  <- function(u, N) sum (rbinom(N, 1, u/N))
+
+draws_approx(9, N=9)  # this says,  p = 1 for each draw
+
+draws_approx(9, N=18) # here p = 1/2, like flipping a coin, so total heads will vary.
+```
+
+## Redo above, using my notation:
+
+-   p = prob of success (u/N)
+-   u = expected number of successes (letters)
+-   in N = number of draws
+-   B = repeat with this many samples
+
+```{r}
+
+B   <- 1000
+u   <- 9
+N  <-  18
+
+
+# expect to see an avergae of 9 (successes from 18 draws at p = 1/2)
+# expect sd to be 3 (if poisson holds)
+# double[B], each is success for N in 1 sample
+x  <- rbinom(B, N, u/N)
+mean(x)
+sd(x)
+
+
+# suppose N really much larger, ie prob = u/N  much smaller
+# getting closer!
+N  <- 100
+x  <- rbinom(B, N, u/N)
+mean(x)
+sd(x)
+
+
+# now N huge, p = u/n tiny
+N  <- 10^6
+x  <- rbinom(B, N, u/N)
+mean(x)
+sd(x)
+
+hist(x)
+boxplot(x)
+plot(density(x))
+
+```
+
+## Using sample to estimate expect value and variance, compare to Poisson.
+
+```{r knit_exit(), include = FALSE  , eval=FALSE }
+# knitr::knit_exit()
+```
+
+/newpage
+
+```{r plot_density, eval=FALSE  }
+density_object <- density(mpg$hwy)
+pdf("~/Downloads/print_and_delete/out.pdf")
+plot(density_object)
+dev.off()
+```
+
+```{r plot_png_example, eval=FALSE  }
+filename  <- "~/Downloads/print_and_delete/out.png"
+png(filename = filename,
+         width = 480, height = 480, units = "px", pointsize = 12)
+plot(density_object)
+dev.off()
+```

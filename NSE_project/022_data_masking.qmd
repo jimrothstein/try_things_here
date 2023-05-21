@@ -1,0 +1,35 @@
+---
+title: "022_data_masking.qmd"
+format: html
+---
+
+df1 <- data.frame(x = letters[1:10],
+                  y = 10:19,
+                  z = 20:29
+)
+
+
+# errror
+x
+
+
+# atttach df1
+attach(df1)
+
+x
+
+
+
+df2 <- data.frame(x = LETTERS[1:10],
+                  yy = 10:19,
+                  z = 120:129
+)
+
+# attach df2, # masks
+attach(df2)
+
+x           # df2
+y           # df1, no change
+z           # df2
+
+

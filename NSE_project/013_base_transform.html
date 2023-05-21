@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>transform</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="013_base_transform_files/libs/clipboard/clipboard.min.js"></script>
+<script src="013_base_transform_files/libs/quarto-html/quarto.js"></script>
+<script src="013_base_transform_files/libs/quarto-html/popper.min.js"></script>
+<script src="013_base_transform_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="013_base_transform_files/libs/quarto-html/anchor.min.js"></script>
+<link href="013_base_transform_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="013_base_transform_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="013_base_transform_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="013_base_transform_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="013_base_transform_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">transform</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="todo" class="level3">
+<h3 class="anchored" data-anchor-id="todo">ToDo</h3>
+<ul>
+<li>Read Advanced R (first version) on NSE and how to use df in transform, or with, or …</li>
+<li>Convert df to environment, why as.environment fails</li>
+</ul>
+<p>You can add options to executable code like this</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4</code></pre>
+</div>
+</div>
+<p>base::transform - allows unquoted operations on column in data.frame</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">args</span>(transform)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>function (`_data`, ...) 
+NULL</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>transform</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>function (`_data`, ...) 
+UseMethod("transform")
+&lt;bytecode: 0x57f2df50b8b0&gt;
+&lt;environment: namespace:base&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>transform.default</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>function (`_data`, ...) 
+transform.data.frame(data.frame(`_data`), ...)
+&lt;bytecode: 0x57f2df0fa468&gt;
+&lt;environment: namespace:base&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">transform</span>(mtcars, <span class="at">twice =</span> hp <span class="sc">*</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                     mpg cyl  disp  hp drat    wt  qsec vs am gear carb twice
+Mazda RX4           21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4   220
+Mazda RX4 Wag       21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4   220
+Datsun 710          22.8   4 108.0  93 3.85 2.320 18.61  1  1    4    1   186
+Hornet 4 Drive      21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1   220
+Hornet Sportabout   18.7   8 360.0 175 3.15 3.440 17.02  0  0    3    2   350
+Valiant             18.1   6 225.0 105 2.76 3.460 20.22  1  0    3    1   210
+Duster 360          14.3   8 360.0 245 3.21 3.570 15.84  0  0    3    4   490
+Merc 240D           24.4   4 146.7  62 3.69 3.190 20.00  1  0    4    2   124
+Merc 230            22.8   4 140.8  95 3.92 3.150 22.90  1  0    4    2   190
+Merc 280            19.2   6 167.6 123 3.92 3.440 18.30  1  0    4    4   246
+Merc 280C           17.8   6 167.6 123 3.92 3.440 18.90  1  0    4    4   246
+Merc 450SE          16.4   8 275.8 180 3.07 4.070 17.40  0  0    3    3   360
+Merc 450SL          17.3   8 275.8 180 3.07 3.730 17.60  0  0    3    3   360
+Merc 450SLC         15.2   8 275.8 180 3.07 3.780 18.00  0  0    3    3   360
+Cadillac Fleetwood  10.4   8 472.0 205 2.93 5.250 17.98  0  0    3    4   410
+Lincoln Continental 10.4   8 460.0 215 3.00 5.424 17.82  0  0    3    4   430
+Chrysler Imperial   14.7   8 440.0 230 3.23 5.345 17.42  0  0    3    4   460
+Fiat 128            32.4   4  78.7  66 4.08 2.200 19.47  1  1    4    1   132
+Honda Civic         30.4   4  75.7  52 4.93 1.615 18.52  1  1    4    2   104
+Toyota Corolla      33.9   4  71.1  65 4.22 1.835 19.90  1  1    4    1   130
+Toyota Corona       21.5   4 120.1  97 3.70 2.465 20.01  1  0    3    1   194
+Dodge Challenger    15.5   8 318.0 150 2.76 3.520 16.87  0  0    3    2   300
+AMC Javelin         15.2   8 304.0 150 3.15 3.435 17.30  0  0    3    2   300
+Camaro Z28          13.3   8 350.0 245 3.73 3.840 15.41  0  0    3    4   490
+Pontiac Firebird    19.2   8 400.0 175 3.08 3.845 17.05  0  0    3    2   350
+Fiat X1-9           27.3   4  79.0  66 4.08 1.935 18.90  1  1    4    1   132
+Porsche 914-2       26.0   4 120.3  91 4.43 2.140 16.70  0  1    5    2   182
+Lotus Europa        30.4   4  95.1 113 3.77 1.513 16.90  1  1    5    2   226
+Ford Pantera L      15.8   8 351.0 264 4.22 3.170 14.50  0  1    5    4   528
+Ferrari Dino        19.7   6 145.0 175 3.62 2.770 15.50  0  1    5    6   350
+Maserati Bora       15.0   8 301.0 335 3.54 3.570 14.60  0  1    5    8   670
+Volvo 142E          21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2   218</code></pre>
+</div>
+</div>
+<p>However, I am still stuck with how df can be used instead of envir same as with , examine first line of transform.data.frame eval(expr, envir, enclos) for expr, uses substitute(list(…)) for envir uses df for enclo uses parent.frame</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># debug(f)</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="st">`</span><span class="at">_data</span><span class="st">`</span>, ...) {</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  expr <span class="ot">&lt;-</span> <span class="fu">substitute</span>(<span class="fu">list</span>(...))</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  envir <span class="ot">&lt;-</span> <span class="st">`</span><span class="at">_data</span><span class="st">`</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  enclos <span class="ot">&lt;-</span> <span class="fu">parent.frame</span>()</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="fu">debug</span>(f)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="fu">f</span>(mtcars, <span class="at">twice =</span> hp<span class="sc">*</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>debugging in: f(mtcars, twice = hp * 2)
+debug at &lt;text&gt;#2: {
+    expr &lt;- substitute(list(...))
+    envir &lt;- `_data`
+    enclos &lt;- parent.frame()
+}
+debug at &lt;text&gt;#3: expr &lt;- substitute(list(...))
+debug at &lt;text&gt;#4: envir &lt;- `_data`
+debug at &lt;text&gt;#5: enclos &lt;- parent.frame()
+exiting from: f(mtcars, twice = hp * 2)</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># undebug(f)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="create-environemnt-convert-to-data.frame" class="level2">
+<h2 class="anchored" data-anchor-id="create-environemnt-convert-to-data.frame">Create Environemnt – convert to data.frame</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>e <span class="ot">&lt;-</span> <span class="fu">new.env</span>(<span class="at">hash=</span><span class="cn">TRUE</span>,<span class="at">size=</span><span class="dv">3</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">assign</span>(<span class="at">x=</span><span class="st">"a"</span>,<span class="at">value=</span><span class="dv">10</span>,<span class="at">envir=</span>e)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">assign</span>(<span class="at">x=</span><span class="st">"b"</span>,<span class="at">value=</span><span class="dv">100</span>,<span class="at">envir=</span>e)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="fu">assign</span>(<span class="at">x=</span><span class="st">"c"</span>,<span class="at">value=</span><span class="dv">1000</span>,<span class="at">envir=</span>e)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>e</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;environment: 0x57f2e2bf54f0&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span>(e)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "a" "b" "c"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">setNames</span>(<span class="fu">lapply</span>(<span class="fu">ls</span>(e), get, <span class="at">envir=</span>e), <span class="fu">ls</span>(e)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>use that data.frame</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">transform</span>(df, <span class="at">twice =</span> <span class="dv">2</span><span class="sc">*</span>b)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   a   b    c twice
+1 10 100 1000   200</code></pre>
+</div>
+</div>
+</section>
+<section id="reverse-data.frame-to-environment" class="level2">
+<h2 class="anchored" data-anchor-id="reverse-data.frame-to-environment">Reverse: data.frame to environment</h2>
+<div class="cell">
+
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
