@@ -1,3 +1,6 @@
+---
+TAGS:   stringr, dplyr
+---
 ## Misc useful stuff
 
 ## Tags: stop(), str\_c(), function(…), row\_number(),
@@ -103,11 +106,3 @@
 
           ## Error in UseMethod("explain"): no applicable method for 'explain' applied to an object of class "function"
 
-    file  <- here("", "")
-    file  <- "rmd/00010_dplyr_misc_factor_examples.Rmd"
-
-    # in general, pdf will look nicer
-    rmarkdown::render(file,
-                      #output_format = "pdf_document",
-                      output_format = "html_document",
-                      output_file = "~/Downloads/print_and_delete/out")
