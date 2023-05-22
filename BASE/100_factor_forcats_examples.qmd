@@ -1,4 +1,7 @@
-     vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+---
+TAGS: factors, forcats, unclass, 
+---
+
 
 <!-- 
 set cul   "cursorline
@@ -422,3 +425,5 @@ fct\_reorder
                       #output_format = "pdf_document",
                       output_format = "html_document",
                       output_file = "~/Downloads/print_and_delete/out")
+
+     vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
