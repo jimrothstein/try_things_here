@@ -1,19 +1,30 @@
 ##
 ##
 #
+library(listviewer)
 library(rrapply)
 library(tidyr)
-library(listviewer)
-data(package = "rrapply")
+# library(listviewer)
 
 
 ##  give.attr=F (cleaner):w
 ##  list.len=3
 ##  max.level = 
 
+# ----------------------------------------------------------
+## NOTES
+# str(menu, list.len=10, max.level=2) |> head(3)
+# 
+# ##  list of 87 lists
+# menu$children
+# str(menu$children, list.len=11, max.depth=1)
+# 
+# ## Look at first list, with 9 elementsj
+# str(menu$children[[1]], list.len=11, max.level=2)
 
 # ----------------------------------------------------------
 # from 900_   load functions.qmd
+source("900_functions.qmd")   # errors
 the_file = get_file()
 
 
@@ -33,25 +44,31 @@ toolbar <- x$children[[2]]  # has 16 children
 menu  <- x$children[[1]]    # has   89 children, menu has length 10
 # ------------------------menu----------------------------------
 
-jsonedit(menu)
-str(menu, list.len=10, max.level=2) |> head(3)
+length(menu)  #10
+length(menu$children) #87 lists
 
-##  list of 87 lists
-menu$children
-str(menu$children, list.len=11, max.depth=1)
-
-## Look at first list, with 9 elementsj
-str(menu$children[[1]], list.len=11, max.level=2)
-
-
-##  Some of 87 lists, have list of 9, some list 10
-
-##  each of 87 lists becomes 1 row, in tibble
+##  each of 87 lists becomes 1 row, in tibble, only cols 9, 10 (needed)
 one  <- as_tibble(menu)[9:10]
+one
 
-unlist(one[3, 2])
+#
+# ------------------------toolbar----------------------------------
 
-two  <- tidyr::unnest_wider(one, "children")[, c(1,2,3,7,9,10,11)][c("title", "tags",  "uri")]
+length(toolbar)   #10
+length(toolbar$children)   #14
+
+
+names(toolbar)
+two = as_tibble(toolbar)[, c(2, 9:10)]
+two
+
+
+# ------------------------unnest----------------------------------
+
+two  <- tidyr::unnest_wider(one, "children") # [, c(1,2,3,7,9,10,11)][c("title", "tags",  "uri")]
+two  <- tidyr::unnest_wider(one, "children")[, c(1,2,3,7,9,10,11)]#[c("title", "tags",  "uri")]
+two  <- tidyr::unnest_wider(one, "children")[, c(1,2,3,7,9,10,11)][c("title",   "uri")]
+two
 one
 two
 

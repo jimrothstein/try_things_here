@@ -26,7 +26,7 @@ str(renewable_energy_by_country$World$Oceania, list.len=3, give.attr = F)
 # ------- pop off 2 levels, oceania & oceania[[1]] = ANZ ---------------------
 oceania  <- renewable_energy_by_country$World$Oceania
 listviewer::jsonedit(oceania)
-str(oceania, list.len=4 , give.attr = F)
+str(oceania, list.len = 4, give.attr = FALSE)
 
 
 # ----------------------------------  ASIDE -------------------------------------

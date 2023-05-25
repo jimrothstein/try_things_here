@@ -2,8 +2,12 @@
 
 ## Once bookmarks are downloaded to rrapply/bookmarks, 
 ##  get the file
+```{r}
+
+
 get_file <- function() {
     the_dir <- "~/code/try_things_here/rrapply/bookmarks"
     the_file <- paste0(the_dir, "/", "bookmarks-2023-05-24_FF.json")
 }
 the_file <- get_file()
+```

@@ -1,4 +1,5 @@
 #
+#  0430_tidyr_firefox_bookmarks_WORKS.R
 ##  Compare to base::rapply
 ##
 
@@ -26,20 +27,25 @@ x1  <- x$children %>% tibble()
 jsonedit(x1)
 
 
-##  named list of 10,   4 rows
+##  4 x 1 tibble, each cell: named list of 10 ellements
 x1
 
 
 names(x1)  <- "first"
 x2  <- x1$first  %>% tibble()
 
+x2
 x3  <- x2 %>% hoist(".", 
   title = "title",
   children = "children"
   )
+x3
 
 
 x4  <- x3 %>% unnest_longer("children")
+x4
+
+names(x4)
 unique(x4$title)
 
 x5  <- x4 %>% hoist("children",
@@ -48,6 +54,6 @@ x5  <- x4 %>% hoist("children",
 )
 
 
-x5 %>% select(c("title", "uri", "title1"))
+x5 %>% dplyr::select(c("title", "uri", "title1"))
 x5 %>% select(c("title1"))
 
