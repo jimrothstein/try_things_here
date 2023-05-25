@@ -25,31 +25,42 @@ knitr::opts_chunk$set(echo = TRUE,
 ####    Quote
 ```{r quote_eval}
   x <-6
-  y  <- quote(x)
-# x
-  quote(6)
-# [1] 6
-
+  y  <- quote(x)        # x
+  quote(6) # [1] 6
 ```
 
 ####    Eval is opposite of Quote
 ```{r eval}
-  eval(y)
-# [1] 6
+eval(y) # [1] 6
 ```
-
 
 ##    What does quote return?
 ```{r}
 is.expression(quote(1+2))       # F
-is.character(quote(1 + 2))
-
+is.character(quote(1 + 2))      # F
 ```
+
+##  Example; Exercise:   how to capture log(2+3)
+```{r}
+x = 2; y = 3
+z= x + y
+
+log(z)              # 1.61
+quote(log(z))       # log(z)
+quote(log(z=x+y))       ## log(z = x + y)
+
+
+##  To capture a call (function + evaluated arguments)
+call("log", list(z)) # log(list(5))
+call("log", list(z=x+y)) # log(list(z = 5))
+```
+
+
 
 ####  Use case:   plot title
 ```{r}
 a  <- 2
-bquote(a == .(a))
+bquote(a == .(a))           # a == 2
 plot(1:10, a*(1:10), main = bquote(a == .(a)))
 ```
 ####  Assignment, at run-time

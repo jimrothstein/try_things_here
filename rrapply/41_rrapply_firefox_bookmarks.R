@@ -1,7 +1,8 @@
-#
-##  Compare to base::rapply
 ##
+##
+#
 library(rrapply)
+library(tidyr)
 library(listviewer)
 data(package = "rrapply")
 
@@ -12,31 +13,46 @@ data(package = "rrapply")
 
 
 # ----------------------------------------------------------
-the_dir  <- "./data"
-# the_dir
-the_file  <- paste0(the_dir, "/", "bookmarks-2023-03-01.json")
-the_file
+# from 900_   load functions.qmd
+the_file = get_file()
 
 
 ##  no attempt to simplify
 ##  x is a list of lists
 x  <- jsonlite::read_json(the_file)
+length(x) # [1] 10
+names(x)
+#  [1] "guid"         "title"        "index"        "dateAdded"   
+#  [5] "lastModified" "id"           "typeCode"     "type"        
+#  [9] "root"         "children"    
 #
 listviewer::jsonedit(x)
+# ------------------------Layers----------------------------------
+# Need to peel off branches of json tree
+toolbar <- x$children[[2]]  # has 16 children
+menu  <- x$children[[1]]    # has   89 children, menu has length 10
 # ------------------------menu----------------------------------
 
-
-menu  <- x$children[[1]]    # has   89 children, menu has length 10
-toolbar <- x$children[[2]]  # has 16 children
 jsonedit(menu)
-str(menu, list.len=3)
-str(menu, list.len=10)
+str(menu, list.len=10, max.level=2) |> head(3)
 
+##  list of 87 lists
+menu$children
+str(menu$children, list.len=11, max.depth=1)
+
+## Look at first list, with 9 elementsj
 str(menu$children[[1]], list.len=11, max.level=2)
-str(menu$children[[1]], list.len=11, max.level=3)
+
+
+##  Some of 87 lists, have list of 9, some list 10
+
+##  each of 87 lists becomes 1 row, in tibble
 one  <- as_tibble(menu)[9:10]
-one
+
+unlist(one[3, 2])
+
 two  <- tidyr::unnest_wider(one, "children")[, c(1,2,3,7,9,10,11)][c("title", "tags",  "uri")]
+one
 two
 
 # -------------------- Toolbar--------------------------------------
