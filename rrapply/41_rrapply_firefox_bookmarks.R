@@ -38,6 +38,8 @@ names(x)
 #  [9] "root"         "children"    
 #
 listviewer::jsonedit(x)
+listviewer::jsonview(x)
+jsonedit(mtcars)
 # ------------------------Layers----------------------------------
 # Need to peel off branches of json tree
 toolbar <- x$children[[2]]  # has 16 children

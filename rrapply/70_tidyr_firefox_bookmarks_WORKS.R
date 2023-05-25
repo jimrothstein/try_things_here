@@ -1,7 +1,6 @@
 #
 #  0430_tidyr_firefox_bookmarks_WORKS.R
 ##  Compare to base::rapply
-##
 
 library(tibble)
 library(jsonlite)
@@ -10,9 +9,9 @@ library(listviewer)
 library(tidyr)
 
 
-the_dir  <- "~/Downloads/to_Drive"
+    the_dir <- "~/code/try_things_here/rrapply/bookmarks"
+    the_file <- paste0(the_dir, "/", "bookmarks-2023-05-24_FF.json")
 the_dir
-the_file  <- paste0(the_dir, "/", "bookmarks-2023-01-22.json")
 
 the_file
 

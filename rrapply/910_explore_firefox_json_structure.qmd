@@ -1,0 +1,94 @@
+---
+---
+
+```{r}
+
+
+library(rrapply)
+library(jsonlite)
+library(listviewer)
+library(tibble)
+
+
+
+the_dir <- "~/code/try_things_here/rrapply/bookmarks"
+the_file <- paste0(the_dir, "/", "bookmarks-2023-05-24_FF.json")
+the_dir
+the_file
+
+##  approach 1
+  X <- jsonlite::fromJSON(the_file, 
+      simplifyVector = T, 
+      simplifyDataFrame = T, flatten=T)
+
+
+  bookmarks =  as_tibble(X)
+  bookmarks
+
+listviewer::jsonedit(X)
+
+# --------------------------------------------------
+##  approach 2 - structure
+# --------------------------------------------------
+  X = jsonlite::read_json(the_file)
+
+
+  str(X,  max.level = 1, vec.len=1)
+  ?str
+
+##  list simulation of X
+  y = list(guid="root____", title="", root="placesRoot", children=list(list(1), list(2), list(3), list(4)))
+  str(y,  max.level = 1, vec.len=1)
+# --------------------------------------------------
+#  next level  
+# --------------------------------------------------
+  str(X$children, max.level=1, vec.len=1)
+  str(X$children[[1]], max.level=1, vec.len=1)  # menu
+  str(X$children[[2]], max.level=1, vec.len=1)  # toolbar
+  str(X$children[[3]], max.level=1, vec.len=1)  # unfiled
+  str(X$children[[4]], max.level=1, vec.len=1)  # mobile
+
+
+##  list simulation of X - compare to X$children[[1]]
+  y = list(guid="root", title="title", root="bookmarksMenuFolder", numberOfchildren=4,
+          children=list(list(guid = "menu____", title="menu", root="bookmarksMenuFolder", numberOfchildren=87,
+                             children=list(list(1), list(2), list(3), list(3), list(5))
+                             )
+                        )
+          )
+
+  str(y,  max.level = 3, vec.len=4)
+
+# --------------------------------------------------
+# One of 87 children
+# --------------------------------------------------
+
+  # 'prefix'
+  X$children[[1]][1:9]
+
+
+  str(X$children[[1]]$children[[1]], max.level=1, vec.len=1)  # folder
+  str(X$children[[1]]$children[[2]], max.level=1, vec.len=1)  # singleton
+  str(X$children[[1]]$children[[87]], max.level=1, vec.len=1)  # singleton 
+# --------------------------------------------------
+
+listviewer::jsonedit(Y)
+listviewer::jsonedit(Y[1])
+
+
+str(Y[2], list.len = 3)
+t  <- as_tibble(Y[2])
+Y[2]
+
+
+
+toolbar = bookmarks[2,]
+toolbar
+colnames(toolbar)
+
+
+
+toolbar$children
+toolbar %>% unnest_longer(children)
+
+```
