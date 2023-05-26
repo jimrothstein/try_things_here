@@ -4,7 +4,6 @@
 library(listviewer)
 library(rrapply)
 library(tidyr)
-# library(listviewer)
 
 
 ##  give.attr=F (cleaner):w
@@ -38,12 +37,10 @@ names(x)
 #  [9] "root"         "children"    
 #
 listviewer::jsonedit(x)
-listviewer::jsonview(x)
-jsonedit(mtcars)
 # ------------------------Layers----------------------------------
 # Need to peel off branches of json tree
-toolbar <- x$children[[2]]  # has 16 children
 menu  <- x$children[[1]]    # has   89 children, menu has length 10
+toolbar <- x$children[[2]]  # has 16 children
 # ------------------------menu----------------------------------
 
 length(menu)  #10
@@ -52,43 +49,33 @@ length(menu$children) #87 lists
 ##  each of 87 lists becomes 1 row, in tibble, only cols 9, 10 (needed)
 one  <- as_tibble(menu)[9:10]
 one
-
 #
 # ------------------------toolbar----------------------------------
 
 length(toolbar)   #10
 length(toolbar$children)   #14
 
-
 names(toolbar)
-two = as_tibble(toolbar)[, c(2, 9:10)]
 two
-
+two = as_tibble(toolbar)[, c(2, 9:10)]
+names(two)
 
 # ------------------------unnest----------------------------------
+# BROKEN
 
-two  <- tidyr::unnest_wider(one, "children") # [, c(1,2,3,7,9,10,11)][c("title", "tags",  "uri")]
-two  <- tidyr::unnest_wider(one, "children")[, c(1,2,3,7,9,10,11)]#[c("title", "tags",  "uri")]
-two  <- tidyr::unnest_wider(one, "children")[, c(1,2,3,7,9,10,11)][c("title",   "uri")]
+two  <- tidyr::unnest_wider(two, "children") # [, c(1,2,3,7,9,10,11)][c("title", "tags",  "uri")]
+dim(two)
+toolbar_wider  <- tidyr::unnest_wider(two, "children") # [, c(1,2,3,7,9,10,11)][c("title", "tags",  "uri")]
+toolbar_wider  <- tidyr::unnest_wider(two, "children")[, c(1,2,3,7,9,10,11)][c("title", "tags",  "uri")]
 two
-one
-two
-
-# -------------------- Toolbar--------------------------------------
-toolbar <- x$children[[2]]  # has 16 children
-toolbar
-one  <- as_tibble(toolbar)[9:10]
-one
-
-two  <- tidyr::unnest_wider(one, "children")[, c(1,2,3,12,13)]
 
 
 # ---------------------------- toolbar_wider------------------------------
-toolbar_wider  <- tidyr::unnest_wider(one, "children")[, c(1,2,3,12,13)]
 dim(toolbar_wider) # 16 x 5 
+toolbar_wider  <- tidyr::unnest_wider(two, "children")[, c(1,2,3,12,13)]
 
+toolbar_wider|> head(4)
 # separate uri from no uri?
-toolbar_wider|> head(10)
 # # A tibble: 10 × 5
 #    root          guid         title        uri                     child…¹
 #    <chr>         <chr>        <chr>        <chr>                   <list> 
