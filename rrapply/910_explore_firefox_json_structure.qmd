@@ -2,20 +2,16 @@
 ---
 
 ```{r}
-
-
 library(rrapply)
 library(jsonlite)
 library(listviewer)
 library(tibble)
-
-
-
 the_dir <- "~/code/try_things_here/rrapply/bookmarks"
 the_file <- paste0(the_dir, "/", "bookmarks-2023-05-24_FF.json")
 the_dir
 the_file
 
+# -------- tibble:  immediately------------------------------------------
 ##  approach 1
   X <- jsonlite::fromJSON(the_file, 
       simplifyVector = T, 
@@ -31,18 +27,24 @@ listviewer::jsonedit(X)
 ##  approach 2 - structure
 # --------------------------------------------------
   X = jsonlite::read_json(the_file)
+str(X,  max.level = 1, vec.len=1, list.len=9)
 
 
-  str(X,  max.level = 1, vec.len=1)
-  ?str
 
-##  list simulation of X
+# --------------------------------------------------
+# -------  Aside:  simulation-------------------------------------------
+# --------------------------------------------------
+#   Aside:  manually contruct lis, list of lists that resembles json
+#           Demonstrate a mapping between manual list of lists and str from JSON.
+
+#   compare to top level
   y = list(guid="root____", title="", root="placesRoot", children=list(list(1), list(2), list(3), list(4)))
   str(y,  max.level = 1, vec.len=1)
 # --------------------------------------------------
-#  next level  
-# --------------------------------------------------
-  str(X$children, max.level=1, vec.len=1)
+#  next level  - list containing 4 lists 
+ # --------------------------------------------------
+  str(X$children, max.level=2, vec.len=1, list.len=3)
+
   str(X$children[[1]], max.level=1, vec.len=1)  # menu
   str(X$children[[2]], max.level=1, vec.len=1)  # toolbar
   str(X$children[[3]], max.level=1, vec.len=1)  # unfiled
@@ -56,30 +58,48 @@ listviewer::jsonedit(X)
                              )
                         )
           )
-
   str(y,  max.level = 3, vec.len=4)
 
 # --------------------------------------------------
 # One of 87 children
 # --------------------------------------------------
 
-  # 'prefix'
-  X$children[[1]][1:9]
-
-
-  str(X$children[[1]]$children[[1]], max.level=1, vec.len=1)  # folder
-  str(X$children[[1]]$children[[2]], max.level=1, vec.len=1)  # singleton
-  str(X$children[[1]]$children[[87]], max.level=1, vec.len=1)  # singleton 
+# --------------------------------------------------
+# --------  pop off 4 children-----------------------------------------
 # --------------------------------------------------
 
-listviewer::jsonedit(Y)
-listviewer::jsonedit(Y[1])
+menu = X$children[[1]]
+#   Pop off the 4 children, each is folder (with children)
+length(menu)
+
+toolbar = X$children[[2]]
+length(toolbar)
+
+unfiled = X$children[[3]]
+length(unfiled)
+
+mobile = X$children[[4]]
+
+# --------  check mobile-----------------------------------------
+# --------------------------------------------------
+# --------------------------------------------------
+mobile[1:5] 
+length(mobile)
+str(mobile, list.len=9)
+
+##  see mobile 212 chilren
+str(mobile, list.len=10, max.level=2)
+length(mobile[["children"]]) # [1] 212
+length(mobile$children) # [1] 212
 
 
-str(Y[2], list.len = 3)
-t  <- as_tibble(Y[2])
-Y[2]
+##  Worsk on lenovo
+listviewer::jsonedit(X)
 
+
+# --------------------------------------------------
+# ----------- isolated each of 4 main folders---------------
+# --------------------------------------------------
 
 
 toolbar = bookmarks[2,]
@@ -90,5 +110,4 @@ colnames(toolbar)
 
 toolbar$children
 toolbar %>% unnest_longer(children)
-
 ```
