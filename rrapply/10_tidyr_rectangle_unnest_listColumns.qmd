@@ -1,4 +1,5 @@
-
+---
+---
 SEE  https://tidyr.tidyverse.org/articles/rectangle.html
 - unnest_wider
 - unnest_longer
@@ -14,6 +15,7 @@ SEE  https://tidyr.tidyverse.org/articles/rectangle.html
 - Step #3 https://github.com/jennybc/repurrrsive
 
 ####  01-setup
+```{r}
 library(tidyverse)
 library(purrr)
 library(repurrrsive)  # recursive lists, R, JSON, ...
@@ -21,8 +23,10 @@ library(listviewer)   # interactive exam
 
 
 ##  helper?
+#'  list.len = 3   peers
+#'  vec.len  = 1   elements to display
   g <- function(x,max.level=1,list.len=3, vec.len=1, give.attr=F, ...) {
-    cat("max.level=", max.level, "list.len=", list.len, "\n")
+    cat("max.level=", max.level, "list.len (peers)=", list.len,"vec.len (elements)", vec.len,  "\n")
     str(x, max.level, list.len, vec.len, give.attr, ...)
   }
 g(gh_repos)
@@ -30,50 +34,61 @@ g(gh_repos)
 # show list of datasets
 data(package="repurrrsive") 
 
-##  examine
+##  examine TODO:  get strucutre of gh_users, use str
     listviewer::jsonedit(gh_users)
 
-is.list(gh_users),   # list of 6 users
-# [1] TRUE
-#
-users  <- gh_users %>% tibble(user = .)
+# --------------- get structure  TODO:  ---------------------------------------------
+is.list(gh_users)   # [1] TRUE
+g(gh_users)         # list of 6
+gh_users[1][[1]]$name
+gh_users[1][[1]][[1]]
+gh_users[1][[1]][1]
+gh_users[1][[1]]$public_repos
 
+##  subset, just first list, 
+gh_users[1][[1]]
+gh_users[1][[1]]$name
+gh_users[1][[1]]$user
+names(gh_users[1][[1]])
+dput(gh_users[1][[1]])
+
+## first element of list is first user
+one=gh_users[[1]]
+length(one)  # 30
+#
+# ---------------  create tibble  ---------------------------------------------
+##  each Row is a user
+users  <- gh_users %>% tibble(user = .)
+dim(users)   # 6 x 1
 
 # ---------------  Optional ---------------------------------------------
-##  what is users?  6 x 1 tibble, column `user` list-column of 6 elemnts
-  is.tibble(users)
-# [1] TRUE
 
-  dim(users)
-# [1] 6 1
-
-  length(users$user)
-# [1] 6
-
-
-  # save some trial and error by focusing on column `user`
-  glimpse(users$user)
+##  only 1 column, but want the first row
   glimpse(users$user[1])
 
 
   # OR,  trial & error, but tighter control
+  str(users$user, max.level=1, list.len=3)  # not deep enough
   str(users$user, max.level=2, list.len=3)
+  str(users$user[[1]], max.level=1, list.len=50)   # just first user
 # ------------------------------------------------------------
 #
 #
+users
 ##  KEY STEP
 ##  break out list in col `user`  6 x 30,  but not normal or tidy
-users %>% unnest_wider(user)
+(users %>% unnest_wider(user))
 
-##  hoist:  select only specific cols to break out
-x  <- users %>% hoist(user, 
-  followers = 'followers', login = 'login', url = 'html_url')
-
+names(users[1])
+##  hoist:  select only specific cols to break out,  remainer put in last col
+(x  <- users %>% hoist(user, 
+                      followers = 'followers', login = 'login', url = 'html_url')
+)
 ##  everything NOT broken out (<named_list [27]) 
 glimpse(x$user[[1]])
 
 
-# ----------------------------- gh_repos-------------------------------
+# ----------------------------- now use gh_repos-------------------------------
 repos  <- tibble(repo = gh_repos)
 repos   # tibble 6 x 1, col is <list> each row is <list[30])
 
@@ -81,14 +96,22 @@ repos   # tibble 6 x 1, col is <list> each row is <list[30])
 #
 ##  first col, first row, 1st elent of list of 30 entries, show names
 names(repos[[1]][[1]][[1]])
+(one=repos[[1]][[1]][[1]])
+length(one)
+
+
+##  TODO Fix
 g(repos, max.level=2)
 g(repos$repo[[1]], max.level=2, list.len=10, vec.len=2)
 
-repos  <- repos  %>% unnest_longer(repo)  # 106  x 1
+
+repos  <- repos  %>% unnest_longer(repo)  # 176  x 1
+dim(repos)
+
 
 ##  some probing
   repos
-  str(repos$repo[[1]], list.len=10, max.level=1)
+  str(repos$repo[[1]], list.len=68, max.level=1)
 
 
 ##  unnest wider, specific cols only
@@ -109,41 +132,7 @@ repos %>% hoist(repo,
 #
 #
 # ---------------- LEGACY --------------------------------------------
-#### 03_gh_users:   list of 6, each is list of 30 singletons
-# ------------------------------------------------------------
 
-# List of 6 unamed lists
-gh_users %>% str(max.level = 1) # list of 6 lists
-
-##  STOP
-## -------------------------------------------------------------------------
-##  WRONG APPROACH, might work, but ... JUMP to unnest_wider list-column,
-##  tibble
-##
-# examine first list: list of 30 singletons
-gh_users[[1]] %>% str(max.level = 1) # "gaborscardi"
-gh_users[[1]]$name
-
-x  <- gh_users[[1]]
-
-## remove
-  x$bio  <- NULL
-  x$hireable  <- NULL
-
-x
-as_tibble(x)
-
-gh_users[[1]] %>% str(max.level = 1, list.len =2) # trunc after first 2
-gh_users[[1]] %>% str(max.level = 1, list.len =2) # trunc after first 2
-
-# play -------
-
-s <- function(t, max.level=1, list.len=2){
-  t %>% str(max.level=max.level, list.len=list.len)
-}
-s(gh_users[[1]], 1, 2)
-
-#   ---------------------------------------------------------------------
 
 #### 04_exercises-set I
 # 1 str()
@@ -369,24 +358,5 @@ map_chr(gh_repos,
         c(1,4,"login"))
 
 
-#### 14_tidyr - easier
 
-# hoist(<tibble>, <list-column>, <specifc name>) -> <tibble> with <list_c
-
-repos <- tibble(repo = gh_repos)
-
-# each user has up to 30 repos, we want list of all the repos
-unnest_longer(repos, repo)
-
-repos %>% unnest_longer(repo) %>% 
-  hoist(repo, 
-  login = c("owner", "login"), 
-  name = "name",
-  homepage = "homepage",
-  watchers = "watchers_count")
-
-repos %>% 
-  hoist(repo, owner = "owner")
-
-knitr::knit_exit()
-
+```

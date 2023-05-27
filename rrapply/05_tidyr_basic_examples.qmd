@@ -1,4 +1,7 @@
-# Messy Data -  The Problem
+---
+TAGS:  pivot, nest, tidyr
+---
+# Simple Examples of the Messy Data 
 
 # SEE https://tidyr.tidyverse.org/articles/tidy-data.html
 - non-tidy
@@ -7,6 +10,9 @@
 - pivot_wider
 - separate (one combo column, split into two)
 # 
+```{r}
+
+
 library(dplyr)
 library(tibble)
 library(tidyr)
@@ -35,41 +41,31 @@ tribble(
 # OR  Tidy (normalize), where columns and rows HAVE MEANING (semantics)
 #
 str(classroom)
+classroom |> head()
+# # A tibble: 4 × 4
+#   name   quiz1 quiz2 test1
+#   <chr>  <chr> <chr> <chr>
+# 1 Billy  <NA>  D     C    
+# 2 Suzy   F     <NA>  <NA> 
+# 3 Lionel B     C     B    
+# 4 Jenny  A     A     B    
 
-classroom2 <- classroom %>% 
+
+##  To normalize:   index becomes (in effect) all combos name, quizes (assessment  )
+(classroom2 <- classroom %>% 
   tidyr::pivot_longer(cols = quiz1:test1, 
     names_to = "assessment", 
     values_to = "grade") %>% 
-  arrange(name, assessment)
+  arrange(name, assessment))
 
-# Now Tidy
-classroom2
-
-
-classroom3  <- classroom  %>%  unnest_longer(name)
-classroom3
-
-classroom2
-classroom2
-#> # A tibble: 12 × 3
-#>    name   assessment grade
-#>    <chr>  <chr>      <chr>
-#>  1 Billy  quiz1      NA   
-#>  2 Billy  quiz2      D    
-#>  3 Billy  test1      C    
-#>  4 Jenny  quiz1      A    
-#>  5 Jenny  quiz2      A    
-#>  6 Jenny  test1      B    
-#>  7 Lionel quiz1      B    
-#>  8 Lionel quiz2      C    
-#>  9 Lionel test1      B    
-#> 10 Suzy   quiz1      F    
-#> # … with 2 more rowsoolbar$children
+##  inverse !  returns to orginal 
+(classroom3  <- classroom  %>%  unnest_longer(name))
 
 
 
 
 # ------------ relig_income----------------------------------
+##  Normalize!   Create all combos religion x income, 
 relig_income
 str(relig_income)
 
@@ -78,3 +74,4 @@ relig2  <- relig_income %>%
   names_to = "income",
   values_to = "freqency") 
 relig2
+```
