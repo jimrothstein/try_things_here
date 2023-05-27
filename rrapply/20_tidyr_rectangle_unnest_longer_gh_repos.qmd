@@ -7,7 +7,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-### Tidyr:     unnest_longer
+### Tidyr:     unnest_longer, similar to 10_ but more using map_
 ### But EASIEST to follow:
 - Step #4 https://tidyr.tidyverse.org/articles/rectangle.html
 
@@ -26,7 +26,6 @@ library(listviewer)   # interactive exam
 ```
 
 ```{r}
-
 repos <- tibble(repo = gh_repos)
 repos
 jsonedit(repos)   # each of 6 siblings, has list of ~30 (total = 176)

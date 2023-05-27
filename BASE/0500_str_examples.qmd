@@ -1,7 +1,15 @@
+---
+---
+##  TODO: 
+##    2023-05-26
+-     collect examples from elsewhere
+-     str:  review args
+-     dput: keep list(...), but remove other output
+
 ####	PURPOSE:
-###				Consolidate str() examples here:
+str:  THIS IS MAIN COLLECTECTION
+Consolidate str() examples here:
 ###		-	basic syntax of str()
-###		-	THIS IS MAIN COLLECTECTION
 ###		- examples drawn from elsewhere (
 ###
 ###
@@ -11,12 +19,17 @@
 ###		-	example from gh, VECTOR, from purrr
 ###
 
-?str
+##		-----------------------------------
+```{r}
+library(tibble)
+library(constructive)   # alternative to dput, experimental:  see  remotes::install_github("cynkra/constructive")
+```
 
 ##	atomic, data.frame
-{
-v  <- letters[1:10]
-str(v)
+
+```{r}
+v  <- letters[1:10] #  [1] "a" "b" "c" "d" "e" "f" "g" "h" "i" "j"
+str(v) #  chr [1:10] "a" "b" "c" "d" "e" "f" "g" "h" "i" "j"
 
 
 df  <- data.frame(x=v,
@@ -25,22 +38,61 @@ df  <- data.frame(x=v,
 
 df
 str(df)
-}
+# 'data.frame':	10 obs. of  3 variables:
+#  $ x: chr  "a" "b" "c" "d" ...
+#  $ y: chr  "a" "b" "c" "d" ...
+#  $ z: chr  "a" "b" "c" "d" ...
+```
 
-{  ##	list.len specifies number of columns of df
-f  <- function(x, list.len=NULL) str(x, list.len=list.len)
-f(df, 1)  # 1 col
-f(df, 2)  # 2
-f(df, 3)  # 3
-}
+##  Probe
+```{r}
+probe = function(x, max.depth=1, list.len=3, vec.len=1) str(x, max.depth, list.len, vec.len)
 
-##	Number of rows, specified by vec.len
-f  <- function(x, list.len=NULL, vec.len=NULL, max.depth=NULL) str(x, list.len=list.len, vec.len=vec.len, max.depth=max.depth)
+#   even simple gets messy
+L = list(1, c(2), list(3, list(4,list(5))))
+probe(L)
+probe(L, max.depth=2)
+probe(L, max.depth=3)
+```
 
-f(df, 3, 5) # 3 col, 1st 5 elements
-f(df, 3, 2) # 3 col, 1st 2 elements
-##		-----------------------------------
-##
+##  dput (control = ??)
+
+##  Pop off outer list
+```{r}
+L[1]  # subset
+# [[1]]
+# [1] 1
+# 
+dput(L[1])   # get suppress line2 , 3?
+# list(1)
+# [[1]]
+# [1] 1
+# 
+# 
+# 
+## easier way to see effect of [[]]
+dput(L[[1]], control=NULL)  # remove line 2
+# 1
+# [1] 1
+# 
+# 
+# 
+dput(as.data.frame(L[[1]]))
+# structure(list(`L[[1]]` = 1), row.names = c(NA, -1L), class = "data.frame")
+#   L[[1]]
+# 1      1
+dput(tibble(L[[1]]))
+# structure(list(`L[[1]]` = 1), class = c("tbl_df", "tbl", "data.frame"
+# ), row.names = c(NA, -1L))
+# # A tibble: 1 × 1
+#   `L[[1]]`
+#      <dbl>
+# 1        1
+
+```
+
+
+
 
 ##	df more complicated
 
