@@ -28,6 +28,14 @@ obj)
 y  <- list(a=1, b=2)
 dput(y)
 
+##  Compare:
+dput(y[1])          R code notation
+# list(a = 1)
+
+y[1]   #    [[]], [] notation
+# $a
+# [1] 1
+
 # keeps meta data
 dput(mtcars[1:2,])
 ```
@@ -35,7 +43,6 @@ dput(mtcars[1:2,])
 #### EXAMPLE:  dput simple data.frame  
 
 ```{r dput2}
-
 test <- data.frame(x = 1, y = 1)
 dput(test)
 
@@ -44,12 +51,12 @@ dput(test)
 # structure
 output <- dput(test) # output is to console
 output
-typeof(output)  # list
+typeof(output) # list
 
 # write structure to file
-if (FALSE )
-  dput(test, "junk.txt")
-
+if (FALSE) {
+    dput(test, "junk.txt")
+}
 ```
 
 #### EXAMPLE:  capture.output 
@@ -62,13 +69,13 @@ if (FALSE )
 ```{r capture_output}
 # capture.output()
 
-v  <- capture.output(dput(test))
-v  
+v <- capture.output(dput(test))
+v
 typeof(v) # char[]
 
 
 # collapse to single ch[]
-paste0(v, collapse="/n")
+paste0(v, collapse = "/n")
 
 
 # function?
@@ -76,9 +83,8 @@ paste0(v, collapse="/n")
 capture.output(dput(paste0))
 
 # single chr[]
-s  <- paste0(capture.output(dput(paste0)), collapse = "/n")
+s <- paste0(capture.output(dput(paste0)), collapse = "/n")
 s
-
 ```
 
 #### save structure as expression, expr()
@@ -86,29 +92,27 @@ s
   *  so prevents execution of code
   *  see help for `expr`
 ```{r dput_expr}
-z  <- rlang::expr(dput(test))
+z <- rlang::expr(dput(test))
 z
 typeof(z)
 
-c  <- eval(z)
+c <- eval(z)
 ```
 
 ```{r knit_exit()} 
-knitr::knit_exit() 
+knitr::knit_exit()
 ```
 
 ```{r render, eval=FALSE, include = F	} 
 file <- "BASE/0200_base_dput_structure.Rmd"
-file  <- basename(file) 
+file <- basename(file)
 
-dir <-"BASE/"
-file  <- paste0(dir, file)
+dir <- "BASE/"
+file <- paste0(dir, file)
 file
 
-rmarkdown::render(file, 
-       output_format="pdf_document",
-       output_dir = "~/Downloads/print_and_delete"
-       )
-
-
+rmarkdown::render(file,
+    output_format = "pdf_document",
+    output_dir = "~/Downloads/print_and_delete"
+)
 ```
