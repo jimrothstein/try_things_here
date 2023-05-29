@@ -43,6 +43,43 @@ str(df)
 #  $ y: chr  "a" "b" "c" "d" ...
 #  $ z: chr  "a" "b" "c" "d" ...
 ```
+ -------------------------------------------------- 
+##  list.len, for sibblings(a one level) number to display
+```{r}
+L=list(1,2,3,4,5)
+str(L)
+# List of 5
+#  $ : num 1
+#  $ : num 2
+#  $ : num 3
+#  $ : num 4
+#  $ : num 5
+
+str(L, list.len=2)
+#  $ : num 1
+# List of 5
+#  $ : num 2
+#   [list output truncated]
+```
+ -------------------------------------------------- 
+##  vec.len TODO
+```{r}
+str(letters[1:11], vec.len=3)
+#  chr [1:11] "a" "b" "c" ...
+
+str(list(1,2,   letters[1:11], list(1,2,3,4,5)), vec.len=3)
+# List of 4
+#  $ : num 1
+#  $ : num 2
+#  $ : chr [1:11] "a" "b" "c" ...
+#  $ :List of 5
+#   ..$ : num 1
+#   ..$ : num 2
+#   ..$ : num 3
+#   ..$ : num 4
+#   ..$ : num 5
+# NULL
+```
 
 ##  Probe
 ```{r}

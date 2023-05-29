@@ -1,10 +1,13 @@
-output:
 ---
+output:
   pdf_document: default
   html_document: default
 TAGS:  rlang, expr, call2, ast
 ---
-
+## TODO:
+## 2023-05-28
+-   SEE defuse, seems same as quote
+##
 ```{r}
 require(tidyverse)
 ####
@@ -198,4 +201,37 @@ cv <- function(var) {
 }
 ```
 
+##  rlang:  defuse and boom!
+##  REF: https://rlang.r-lib.org/reference/topic-defuse.html
+##  TODO:  Dont't understand why Hadley introduces new term "defuse", isn't is just quotation?
+```{r}
+ignore <- function(arg) NULL
+force <- function(arg) arg
+
+ignore(1+1) # NULL
+force(1+1) # [1] 2
+
+##  Compare result
+warning("boom") # [1] "boom"
+force(warning("boom")) # [1] "boom"
+ignore(warning("boom")) # NULL
+
+
+##  Problem ?   Diffuse, delay the  force function from evaluation?
+##  All the same
+bquote(force(warning("boom"))) # force(warning("boom"))
+quote(force(warning("boom"))) # force(warning("boom"))
+expr(force(warning("boom"))) # force(warning("boom"))
+
+
+##  defuse, make expression vector
+e = expression(force(warning("boom")))
+is.expression(e) # [1] TRUE
+
+e # expression(force(warning("boom")))
+
+# now let it go!
+eval(e) # [1] "boom"
+
+```
 
