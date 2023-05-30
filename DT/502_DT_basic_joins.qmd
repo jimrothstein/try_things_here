@@ -1,22 +1,5 @@
 ---
-title: "`r knitr::current_input()`"
-date: "`r paste('last updated', 
-    format(lubridate::now(), ' %d %B %Y'))`"
-output:   
-  html_document:  
-        code_folding: show
-        toc: true 
-        toc_depth: 2
-        toc_float: true
-        mathjax: default
-  pdf_document:   
-    latex_engine: xelatex  
-    toc: true
-    toc_depth:  2   
-fontsize: 11pt   
-geometry: margin=0.4in,top=0.25in   
 ---
-
 
 ###	PURPOSE:   Collect DT merge/join examples
 REF: https://stackoverflow.com/questions/54864132/intuition-for-data-table-join-syntax
@@ -29,6 +12,89 @@ knitr::opts_chunk$set(echo = TRUE,
 library(data.table)
 ```
 
+
+```{r}
+dt = data.table(abbrev = c("NJ" , "NY", 'NM', 'CA', 'TX'))
+dt
+lookup = data.table(long_name = c('New Jersey', 'New York', 'New Mexico',  'California', 'Florida' ),
+abbrev = c("NJ" , "NY", 'NM', 'CA', 'FL'))
+
+setkey(dt, abbrev)
+setkey(lookup, abbrev)
+
+lookup
+
+lookup[dt, nomatch=0]
+
+
+# Our observation, for TX is missing
+lookup[dt]
+#     long_name abbrev
+# 1: California     CA
+# 2: New Jersey     NJ
+# 3: New Mexico     NM
+# 4:   New York     NY
+# 5:       <NA>     TX
+
+# include every row in lookup, skip TX b/c it is NOT in lookup
+dt[lookup]
+#    abbrev  long_name
+# 1:     CA California
+# 2:     FL    Florida
+# 3:     NJ New Jersey
+# 4:     NM New Mexico
+# 5:     NY   New York
+
+```
+
+### Inner join is easist to understand.  Merge creates a new table with cols x and y.
+The rows include only where a common value exisits. 
+```{r simplest}
+
+A  <- data.table(x=c(1,2,3,4))
+#    x
+# 1: 1
+# 2: 2
+# 3: 3
+# 4: 4
+B  <- data.table(y=c(2,3,4,5))
+#    y
+# 1: 2
+# 2: 3
+# 3: 4
+# 4: 5
+
+setkey(A,x)
+setkey(B,y)
+
+## inner
+A[B, nomatch=0]
+#    x
+# 1: 2
+# 2: 3
+# 3: 4
+
+##  But this requirement can be very restitive. If only one table has a value, we can choose to inlcude.
+
+And even if there is NO 
+## right outer 
+A[B]   
+#    x
+# 1: 2
+# 2: 3
+# 3: 4
+# 4: 5
+
+
+## left
+B[A]
+#    y
+# 1: 1
+# 2: 2
+# 3: 3
+# 4: 4
+
+```
 ###	STOP, understand these before proceeding
 ```{r}
 ##	Which columns?
@@ -172,36 +238,6 @@ criteria for match:  DT.x == X.a && DT.y == X.c (always left to right)
 
 
 
-```{r simplest}
-A  <- data.table(x=c(1,2,3,4))
-B  <- data.table(y=c(2,3,4,5))
-
-setkey(A,x)
-setkey(B,y)
-## right outer 
-A[B]   
-#    x
-# 1: 2
-# 2: 3
-# 3: 4
-# 4: 5
-
-## inner
-A[B, nomatch=0]
-#    x
-# 1: 2
-# 2: 3
-# 3: 4
-
-## left
-B[A]
-#    y
-# 1: 1
-# 2: 2
-# 3: 3
-# 4: 4
-
-```
 #### simple DT join
 
   *  DT[X] is a right-join (odd, yes) on X.
