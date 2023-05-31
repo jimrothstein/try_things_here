@@ -1,29 +1,47 @@
 ---
+title: "502_DT_basic_joins.qmd"
+author: "jr"
+date: "5/22/2021"
+pdf-engine: lualatex
+format:
+    html:
+        toc: true
+        html-math-method: katex
+        css: styles.css
+        embed-resources: true
+output-dir: docs
+editor_options: 
+  chunk_output_type: console
+execute: 
+  error: true                   ## include errors in output
+  warning: true
+  collapse: true
+  standalone: true
 ---
 
 ###	PURPOSE:   Collect DT merge/join examples
 REF: https://stackoverflow.com/questions/54864132/intuition-for-data-table-join-syntax
 
-```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,
-                      comment = "      ##",
-                      error = TRUE,
-                      collapse = T   ) # T easier to read
-library(data.table)
-```
-
-
+Simple example:
+-dt is observations, uses an abbrev for each state
+-lookup gives full state name
 ```{r}
+library(data.table)
+
+# observations
 dt = data.table(abbrev = c("NJ" , "NY", 'NM', 'CA', 'TX'))
 dt
-lookup = data.table(long_name = c('New Jersey', 'New York', 'New Mexico',  'California', 'Florida' ),
-abbrev = c("NJ" , "NY", 'NM', 'CA', 'FL'))
 
-setkey(dt, abbrev)
-setkey(lookup, abbrev)
+lookup = data.table(long_name = c('New Jersey', 'New York', 'New Mexico',  'California', 'Florida' ),
+                    abbrev = c("NJ" , "NY", 'NM', 'CA', 'FL'))
 
 lookup
 
+#   optional, but good habit
+setkey(dt, abbrev)
+setkey(lookup, abbrev)
+
+# inner join
 lookup[dt, nomatch=0]
 
 
@@ -35,6 +53,10 @@ lookup[dt]
 # 3: New Mexico     NM
 # 4:   New York     NY
 # 5:       <NA>     TX
+
+#   TODO, same rsult?
+dt[lookkup, nomatch=0]
+
 
 # include every row in lookup, skip TX b/c it is NOT in lookup
 dt[lookup]
@@ -67,6 +89,8 @@ B  <- data.table(y=c(2,3,4,5))
 setkey(A,x)
 setkey(B,y)
 
+# the values 1 and 5 are NOT in both tables
+
 ## inner
 A[B, nomatch=0]
 #    x
@@ -74,7 +98,6 @@ A[B, nomatch=0]
 # 2: 3
 # 3: 4
 
-##  But this requirement can be very restitive. If only one table has a value, we can choose to inlcude.
 
 And even if there is NO 
 ## right outer 
@@ -137,6 +160,7 @@ DT[X, on=.(r=x)]
 	DT[Y, on = .(r = x)]
 
 
+##  TODO:   label as X.x, X.x, X.z
 # insist on column for x
 	DT[X, on=.(r=x), .(r,s, t, x, y, z)]
 #    r s t x y z
@@ -181,6 +205,7 @@ DT[X, on =.(r==x, s > y), nomatch=NULL]
 # 2: 1 NA NA NA
 
 ```	
+-------------------- Intro ONE-------------------- --------------------
 When you have a X[Y] join it means: "For every value in Y try to join a value
 from X", hence, basically this is a left join to Y and the result will be the
 length of Y (I agree it's kind of counter-intuitive). – David Arenburg Feb 25 '19 at 11:17
@@ -237,14 +262,13 @@ on= .(x=a, y <= c)
 criteria for match:  DT.x == X.a && DT.y == X.c (always left to right)
 
 
+## -------------------- ---------  Intro TWO ?----------- --------------------B
 
 #### simple DT join
 
   *  DT[X] is a right-join (odd, yes) on X.
   *  REF:  https://gist.github.com/nacnudus/ef3b22b79164bbf9c0ebafbf558f22a0
   *  REF:  https://stackoverflow.com/questions/67261777/data-table-join-is-hard-to-understand
-
-
 
  ```{r  simple_join}
 
@@ -357,34 +381,8 @@ vignette("Joins and rolling joins")
 
 ```
 
-```{r join}
+##  ---- TODO --------------------------------------
 
-a <- data.frame(
-  one = 1:5,
-  two_a = 10:14
-)
-
-b <- data.frame(
-  one = 3:5,
-  two_b = c("a", "b", NA)
-)
-
-left_join(a, b) %>%
-  # but ONLY calculate this for one %in% b
-  mutate(three = two_a + 2)
-
-Desired output:
-
-c  <- data.frame(
-  one = 1:5,
-  two_a = 10:14,
-  two_b = c(NA, NA, "a", "b", NA),
-  # this column "knows" the last three rows have data frame b info
-  three = c(NA, NA, 14, 15, 16)
-)
-a; b; c
-
-```
 
 ```{r so}
 library(data.table)
@@ -502,27 +500,7 @@ if (F)
 
 ```
 
----
-title: "`r knitr::current_input()`"
-date: "`r paste('last updated', 
-    format(lubridate::now(), ' %d %B %Y'))`"
-output:   
-  html_document:  
-        code_folding: show
-        toc: true 
-        toc_depth: 4
-        toc_float: true
-  pdf_document:   
-    latex_engine: xelatex  
-    toc: true
-    toc_depth:  4   
-fontsize: 11pt   
-geometry: margin=0.4in,top=0.25in   
-TAGS:  DT,joins 
----
-~/code/MASTER_INDEX.md
-
-
+##  TODO   Another repeat?
 ### REF:  https://gist.github.com/nacnudus/ef3b22b79164bbf9c0ebafbf558f22a0
 library(data.table)
 
