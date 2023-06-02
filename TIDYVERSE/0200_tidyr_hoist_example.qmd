@@ -1,0 +1,58 @@
+---
+---
+
+###     PURPOSE:  tidyr::hoist to extract from ROWS in list-column
+```{r}
+library(tidyr)
+
+df <- tibble(
+  character = c("Toothless", "Dory"),
+  metadata = list(
+    list(
+      species = "dragon",
+      color = "black",
+      films = c(
+        "How to Train Your Dragon",
+        "How to Train Your Dragon 2",
+        "How to Train Your Dragon: The Hidden World"
+      )
+    ),
+    list(
+      species = "blue tang",
+      color = "blue",
+      films = c("Finding Nemo", "Finding Dory")
+    )
+  )
+)
+df
+
+##  Compare films
+    str(df)
+    str(df, vec.len =1 )
+    str(df, list.len=2)
+
+
+#   Note:  The 2 lists hold 3 and 2 films respectively
+# Extract only specified components
+z = (df %>% hoist(metadata,
+  "species",
+  first_film = list("films", 1L),   ## 1st films entry in EACH list
+  third_film = list("films", 3L)    ## 3rd entry, if any
+))
+
+
+str(z)
+# tibble [2 × 5] (S3: tbl_df/tbl/data.frame)
+#  $ character : chr [1:2] "Toothless" "Dory"
+#  $ species   : chr [1:2] "dragon" "blue tang"
+#  $ first_film: chr [1:2] "How to Train Your Dragon" "Finding Nemo"
+#  $ third_film: chr [1:2] "How to Train Your Dragon: The Hidden World" NA
+#  $ metadata  :List of 2
+#   ..$ :List of 2
+#   .. ..$ color: chr "black"
+#   .. ..$ films: chr "How to Train Your Dragon 2"
+#   ..$ :List of 2
+#   .. ..$ color: chr "blue"
+#   .. ..$ films: chr "Finding Dory"
+# NULL
+```
