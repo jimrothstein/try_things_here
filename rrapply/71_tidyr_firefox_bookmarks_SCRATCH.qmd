@@ -1,0 +1,131 @@
+---
+---
+
+PURPOSE:   Scratch area.   Goal is to annotate 70_ and hoist
+#
+#  0430_tidyr_firefox_bookmarks_WORKS.R
+##  Compare to base::rapply
+##  TODO
+##      -   2023-05-31
+
+library(tibble)
+library(jsonlite)
+library(dplyr)
+library(listviewer)
+library(tidyr)
+
+
+the_dir <- "~/code/try_things_here/rrapply/bookmarks"
+the_file <- paste0(the_dir, "/", "bookmarks-2023-05-24_FF.json")
+the_dir
+
+the_file
+
+##  no attempt to simplify
+##  x is a list of lists
+x <- jsonlite::read_json(the_file)
+#
+listviewer::jsonedit(x)     ## list(guid, title, ... children=list(...))
+listviewer::jsonedit(x$children) ## list of 4 ( list(..), list(..), list(..), list(..))
+
+x1 <- x$children %>% tibble()
+jsonedit(x1)
+
+##  4 x 1 tibble, each cell: named list of 10 ellements
+x1
+# # A tibble: 4 × 1
+#   .                
+#   <list>           
+# 1 <named list [10]>
+# 2 <named list [10]>
+# 3 <named list [10]>
+# 4 <named list [10]>
+
+##  each of 4 chlidren holds another list of 10 
+str(x1, max.depth=1, list.len=4)
+
+
+names(x1) <- "first"
+x2 <- x1$first %>% tibble()
+# # A tibble: 4 × 1
+#   .                
+#   <list>           
+# 1 <named list [10]>
+# 2 <named list [10]>
+# 3 <named list [10]>
+# 4 <named list [10]>
+#
+length(x2)   # 1 column
+##  1st row of x2    
+x2[[1]][[1]]
+names(x2[[1]][[1]])   # children is list of list
+str(x2[[1]][[1]], max.depth=1, list.len=9)   # stop just before children
+#
+x3 <- x2 %>% hoist(".", # pull out from list-column
+    title = "title",
+##    id = "id",
+    children = "children"
+)
+x3
+# # A tibble: 4 × 3
+#   <chr>   <list>         <list>
+#   title   children       .
+# 1 menu    <list [87]>    <named list [8]>
+# 2 toolbar <list [14]>    <named list [8]>
+# 3 unfiled <list [1,196]> <named list [8]>
+# 4 mobile  <list [212]>   <named list [8]>
+
+
+x4 <- x3 %>% unnest_longer("children")
+x4
+
+names(x4)
+unique(x4$title)
+
+x5 <- x4 %>% hoist("children",
+    uri = "uri",
+    title1 = "title"
+)
+
+head(x5)
+# # A tibble: 6 × 5
+#   title uri                               title1 children     .
+#   <chr> <chr>                             <chr>  <list>       <list>
+# 1 menu  <NA>                              Mozil… <named list> <named list>
+# 2 menu  https://github.com/jarun/Buku     jarun… <named list> <named list>
+# 3 menu  https://github.com/r-lib/remotes  r-lib… <named list> <named list>
+# 4 menu  https://usethis.r-lib.org/articl… pr gi… <named list> <named list>
+# 5 menu  https://quantifyinghealth.com/in… Inter… <named list> <named list>
+# 6 menu  https://support.apple.com/guide/… Locat… <named list> <named list>
+x5 %>% dplyr::select(c("title", "uri", "title1"))
+# # A tibble: 1,509 × 3
+#    title uri                                                        title1
+#    <chr> <chr>                                                      <chr>
+#  1 menu  <NA>                                                       "Mozi…
+#  2 menu  https://github.com/jarun/Buku                              "jaru…
+#  3 menu  https://github.com/r-lib/remotes                           "r-li…
+#  4 menu  https://usethis.r-lib.org/articles/pr-functions.html       "pr g…
+#  5 menu  https://quantifyinghealth.com/interpret-logistic-regressi… "Inte…
+#  6 menu  https://support.apple.com/guide/icloud/locate-a-device-mm… "Loca…
+#  7 menu  https://bookdown.org/markhoff/social_network_analysis/     "R | …
+#  8 menu  https://dplyr.tidyverse.org/articles/programming.html      "Env …
+#  9 menu  https://dcl-prog.stanford.edu/tidy-eval-section.html       "12 I…
+# 10 menu  https://www.meetup.com/twincitiesrug/                      "Twin…
+# # ℹ 1,499 more rows
+# # ℹ Use `print(n = ...)` to see more rows
+x5 %>% select(c("title1"))
+# # A tibble: 1,509 × 1
+#    title1
+#    <chr>
+#  1 "Mozilla Firefox"
+#  2 "jarun/buku: |  bookmark manager"
+#  3 "r-lib/remotes: Install R packages from GitHub, GitLab, Bitbucket, git…
+#  4 "pr github! r helpers"
+#  5 "Interpret Logistic Regression Coefficients [For Beginners] – QUANTIFY…
+#  6 "Locate a device in Find Devices on iCloud.com - Apple Support"
+#  7 "R | book | Methods for Network Analysis"
+#  8 "Env var   Or    Data var "
+#  9 "12 Introduction | Functional Programming r tidyeval "
+# 10 "Twin Cities R User Group (TCRUG) (Minneapolis, MN) | Meetup"
+# # ℹ 1,499 more rows
+# # ℹ Use `print(n = ...)` to see more rows
