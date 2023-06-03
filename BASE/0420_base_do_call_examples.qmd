@@ -1,0 +1,46 @@
+---
+---
+
+PURPOSE:    more examples of do.call()
+TODO
+2023-06-02
+-   more do.call examples (from r-bloggers this REF)
+-   show how do.call can be constructed, manipulated  (or better with  call object)
+
+REF: https://www.r-bloggers.com/2023/05/the-do-call-function-in-r-unlocking-efficiency-and-flexibility/
+### match.call , in real life
+  *  use case:
+  *  do.call(what, args), where `what` is function, args is list
+  *  here:  match.call()[-1] drops 1st element (function) 
+
+##  match.call() returns call (only allowed inside function)
+```{r begin}
+f <- function(x, y, z) {
+    z = as.list(match.call())
+    cat(unlist(z[-1]), "\n")   ## args only
+
+  do.call("sum", as.list(match.call()[-1])) 
+}
+
+f(1, 2, 3)
+```
+
+
+
+
+rbind a list  of atomic
+Try with df, explain as written NOT a df
+```{r}
+vectors <- list(c(1, 2, 3), c(4, 5, 6), c(7, 8, 9))   ## list   
+combined_matrix <- do.call(rbind, vectors)            ## 
+
+##  NOTE
+    class(combined_matrix) # [1] "matrix" "array" 
+    typeof(combined_matrix) # [1] "double"
+
+
+combined_matrix
+```
+
+
+
