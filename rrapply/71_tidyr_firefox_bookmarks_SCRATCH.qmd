@@ -1,4 +1,6 @@
 ---
+editor_options: 
+  chunk_output_type: console
 ---
 
 PURPOSE:   Scratch area.   Goal is to annotate 70_ and hoist
@@ -8,32 +10,79 @@ PURPOSE:   Scratch area.   Goal is to annotate 70_ and hoist
 ##  TODO
 ##      -   2023-05-31
 
+```{r}
 library(tibble)
 library(jsonlite)
 library(dplyr)
 library(listviewer)
 library(tidyr)
+```   
 
+```{r}
+the_dir = "~/code/try_things_here/rrapply/bookmarks"
 
-the_dir <- "~/code/try_things_here/rrapply/bookmarks"
 the_file <- paste0(the_dir, "/", "bookmarks-2023-05-24_FF.json")
 the_dir
-
 the_file
 
 ##  no attempt to simplify
 ##  x is a list of lists
 x <- jsonlite::read_json(the_file)
 #
+```
+### Attempt:  dput, str
+### This approach is brute force, step by step into list.
+### PROBLEM: dput
+### Very helpful for seeing the structure, but easily becomes mess.
+### tools like str and dput  easily recurse and for very large files can tie up machine.
+```{r}
+#   x is list of lenth 10, 9 are singletons, the 10th is list   
 listviewer::jsonedit(x)     ## list(guid, title, ... children=list(...))
-listviewer::jsonedit(x$children) ## list of 4 ( list(..), list(..), list(..), list(..))
 
+## 
+dput(x[1:9])
+
+# first 9, As a list:
+# list(guid = "root________", title = "", index = 0L, dateAdded = 1684955179130000, 
+#     lastModified = 1684985711947000, id = 1L, typeCode = 2L, 
+#     type = "text/x-moz-place-container", root = "placesRoot")
+#   
+#   10th, is list of lists and recurses!
+if (F) # x$children
+
+length(x$children)
+str(x$children, max.depth=1, list.len=4)
+
+
+menu = x$children[[1]]
+toolbar = x$children[[2]]
+unfiled = x$children[[3]]
+mobile = x$children[[4]]
+
+
+dput(menu[1:9])
+##  
+
+## but this recurses
+if (F) dput(x$children[1:9])
+
+
+
+if (F) dput(x[[10]])
+# [1] 4
+listviewer::jsonedit(x$children) ## list of 4 ( list(..), list(..), list(..), list(..))
+```
+
+
+###  Much better is capture lists in the very top list
+###  And use various tools  (tidyr, hoist etc  and NOT with lists)
+```{r}
 x1 <- x$children %>% tibble()
 jsonedit(x1)
-
 ##  4 x 1 tibble, each cell: named list of 10 ellements
-x1
+
 # # A tibble: 4 × 1
+x1
 #   .                
 #   <list>           
 # 1 <named list [10]>
@@ -129,3 +178,4 @@ x5 %>% select(c("title1"))
 # 10 "Twin Cities R User Group (TCRUG) (Minneapolis, MN) | Meetup"
 # # ℹ 1,499 more rows
 # # ℹ Use `print(n = ...)` to see more rows
+```

@@ -1,9 +1,10 @@
-#
-#  0430_tidyr_firefox_bookmarks_WORKS.R
-##  Compare to base::rapply
-##  TODO
-##      -   2023-05-31
+---
+---
+##  70_tidyr_firefox_bookmarks_WORKS.qmd
+##  (71_tidyr_firefox_bookmarks.qmd is  TESTING AREA)
+## 
 
+```{r}
 library(tibble)
 library(jsonlite)
 library(dplyr)
@@ -16,17 +17,22 @@ the_file <- paste0(the_dir, "/", "bookmarks-2023-05-24_FF.json")
 the_dir
 
 the_file
+```
 
+### Look (listviewer fails on Acer_DESKTOP)
+```{r}
 ##  no attempt to simplify
 ##  x is a list of lists
 x <- jsonlite::read_json(the_file)
-#
 listviewer::jsonedit(x)
 listviewer::jsonedit(x$children)
+```
+### Layers
+```{r}
+
 
 x1 <- x$children %>% tibble()
 jsonedit(x1)
-
 
 ##  4 x 1 tibble, each cell: named list of 10 ellements
 x1
@@ -111,3 +117,4 @@ x5 %>% select(c("title1"))
 # 10 "Twin Cities R User Group (TCRUG) (Minneapolis, MN) | Meetup"
 # # ℹ 1,499 more rows
 # # ℹ Use `print(n = ...)` to see more rows
+```

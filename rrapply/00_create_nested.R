@@ -1,9 +1,19 @@
+---
+---
+
+
+PURPOSE:    -   Examples of creating nested tibbles
+            -   Examples of (basic) tools to examine such tibbles 
+            -   str, dput, 
 library(tidyr)
 library(purrr)
 #  2023-05-24
 
-##  PURPOSE:   create df with 1 column, each cell is list[20]
-##
+```
+Many tools to work with list-columns in tibbles.
+This file shows basic construction and probing of such tibbles.
+Mostly excluded:  tidyr, rrapply, etc.
+```
 ##  create list of 132 elements, each is list of 20 char
 l <- replicate(
     132,
@@ -65,3 +75,42 @@ df <- data.frame(
 unlist(df)
 #  a1  a2  a3  b1  b2  b3
 # "a" "b" "c" "A" "B" "C"
+---
+---
+
+
+### Create tibble from simple, 1-level list
+```{r}
+library(tibble)
+
+A = list(letters[1:10])
+(TA = tibble(A))
+
+## probe
+str(TA)
+TA$A
+```
+
+### Create tibble from 2-level list
+```{r}
+B = list(A, list(LETTERS[10:20]))
+B
+str(B)
+# List of 2
+#  $ :List of 1
+#   ..$ : chr [1:10] "a" "b" "c" "d" ...
+#  $ :List of 1
+#   ..$ : chr [1:11] "J" "K" "L" "M" ...
+# NULL
+
+(TB = tibble(B))
+
+### Rmk
+q=quote(letters[10:19])
+(C = list(A, letters[1:10], eval(q), list(eval(q)) ))
+(TC = tibble(C))
+```
+
+
+
+
