@@ -26,10 +26,34 @@ df <- tibble(
 )
 df
 
+##---------------------------------------- 
 ##  Compare films
     str(df)
     str(df, vec.len =1 )
     str(df, list.len=2)
+
+##---------------------------------------- 
+args(hoist)
+# function (.data, .col, ..., .remove = TRUE, .simplify = TRUE, 
+#     .ptype = NULL, .transform = NULL) 
+
+##---------------------------------------- 
+
+# easiest
+hoist(df, metadata, "species")
+# # A tibble: 2 × 3
+#   character species   metadata        
+#   <chr>     <chr>     <list>          
+# 1 Toothless dragon    <named list [2]>
+# 2 Dory      blue tang <named list [2]>
+
+hoist(df, metadata, "films")
+# # A tibble: 2 × 3
+#   character films     metadata        
+#   <chr>     <list>    <list>          
+# 1 Toothless <chr [3]> <named list [2]>
+# 2 Dory      <chr [2]> <named list [2]>
+##---------------------------------------- 
 
 
 #   Note:  The 2 lists hold 3 and 2 films respectively
@@ -41,6 +65,8 @@ z = (df %>% hoist(metadata,
 ))
 
 
+
+##---------------------------------------- 
 str(z)
 # tibble [2 × 5] (S3: tbl_df/tbl/data.frame)
 #  $ character : chr [1:2] "Toothless" "Dory"

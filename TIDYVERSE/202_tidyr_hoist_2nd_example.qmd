@@ -1,7 +1,8 @@
 ---
 ---
 
-PURPOSE:  tidyr::hoist to extract from ROWS in list-column, slightly more complex
+PURPOSE:  compare to 0200_tidyr
+-   HERE tidyr::hoist to extract from ROWS in list-column, slightly more complex
 -   df now has 3rd (fake) list added to  orginal 
 -   study how names in this 3rd named list affect hoist output!
 -   This example reveals much of hoist.

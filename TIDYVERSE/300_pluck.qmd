@@ -1,0 +1,70 @@
+
+#### HELPER function
+```{r}
+    
+
+
+# GIVEN named list of strings, flatten list into single string
+format_single_string  <- function(l) {
+	map2_chr(names(l), l, ~ paste0(.x ,": ",pluck(.y), "\t\t")  )
+}
+
+
+# EXAMPLE: 
+l  <- list(one="a", two="b", three="c")
+single  <- format_single_string(l)
+cat(single, "\n")
+```
+
+### Pluck [REF](https://purrr.tidyverse.org/reference/pluck.html)     
+```{r review_purrr_pluck}
+# [REF](https://purrr.tidyverse.org/reference/pluck.html)     
+
+		obj1 <- list("a", list(1, elt = "foo"))
+    obj2 <- list("b", list(2, elt = "bar"))
+    x <- list(obj1, obj2)
+
+pluck(x,1)
+pluck(x,1,2)
+
+pluck(x,1,2,"elt")
+pluck(x,1,2,2) # SAME
+
+# compare pluck to map, find 2nd element of each
+map(x, 2)
+map(x, list(2, "elt"))  # just walk the hierarchy
+
+# mix and match!  (just walk ....)
+# Recall:   map(.x, .f, ...),  where ... are args for .f
+map(x, pluck, 2, "elt")
+```
+
+### Accssor (return certain element of list)
+```{r accessor_function}
+# pluck() also supports accessor functions:
+my_element <- function(x) x[[2]]$elt
+
+pluck(x, 1, my_element)	# grab 1st elment, then apply my_element to it
+pluck(x, 2, my_element)
+
+# compare to:     cool!
+map(x, my_element)
+```
+
+```{r pluck_my_example}
+l1  <- list(a="a", b="b", c="c")
+l2  <- list(a=1, b=2, c=3)
+l3  <- list(a="joe", b="john", c="moe")
+l  <- list(l1=l1, l2=l2, l3=l3)
+
+# crawls the hierachy ....
+pluck(l, 1)
+pluck(l, 2 )
+pluck(l, 1, 2)
+pluck(l, 3, "c")
+# pluck(l,c(1,2,3), "c")
+
+```
+#### HELPER function
+#### HELPER function
+#### HELPER function

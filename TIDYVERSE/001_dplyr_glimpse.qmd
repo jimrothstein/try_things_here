@@ -1,10 +1,14 @@
 
-```{r}
+##  compare dplyr::glimpse to str
 ```{r}
 library(dplyr)
 library(pillar)
 mtcars |> dplyr::glimpse()
 ``` 
+```{r}
+#   vec.len is multiplied by factor
+str(mtcars, vec.len=2) 
+```
 
 ##  compare print
 ```{r}
