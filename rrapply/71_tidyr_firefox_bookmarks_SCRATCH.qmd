@@ -20,7 +20,6 @@ library(tidyr)
 
 ```{r}
 the_dir = "~/code/try_things_here/rrapply/bookmarks"
-
 the_file <- paste0(the_dir, "/", "bookmarks-2023-05-24_FF.json")
 the_dir
 the_file
@@ -30,6 +29,11 @@ the_file
 x <- jsonlite::read_json(the_file)
 #
 ```
+
+
+
+# ----------------------------------------------------------------------------------------
+
 ### Attempt:  dput, str
 ### This approach is brute force, step by step into list.
 ### PROBLEM: dput
@@ -66,22 +70,19 @@ dput(menu[1:9])
 ## but this recurses
 if (F) dput(x$children[1:9])
 
-
-
 if (F) dput(x[[10]])
 # [1] 4
 listviewer::jsonedit(x$children) ## list of 4 ( list(..), list(..), list(..), list(..))
 ```
 
 
+# ------------------------------------------------------------------
 ###  Much better is capture lists in the very top list
 ###  And use various tools  (tidyr, hoist etc  and NOT with lists)
+# ------------------------------------------------------------------
 ```{r}
 x1 <- x$children %>% tibble()
-jsonedit(x1)
 ##  4 x 1 tibble, each cell: named list of 10 ellements
-
-# # A tibble: 4 × 1
 x1
 #   .                
 #   <list>           
@@ -93,6 +94,11 @@ x1
 ##  each of 4 chlidren holds another list of 10 
 str(x1, max.depth=1, list.len=4)
 
+```
+
+# ----------------------------------- SKIP-------------------------------------
+## BRUTE FORCE, skip
+```{r}
 
 names(x1) <- "first"
 x2 <- x1$first %>% tibble()
@@ -109,13 +115,14 @@ length(x2)   # 1 column
 x2[[1]][[1]]
 names(x2[[1]][[1]])   # children is list of list
 str(x2[[1]][[1]], max.depth=1, list.len=9)   # stop just before children
+# ----------------------------------- END SKIP-------------------------------------
 #
-x3 <- x2 %>% hoist(".", # pull out from list-column
+x2 <- x1 %>% hoist(".", # pull out from list-column
     title = "title",
 ##    id = "id",
     children = "children"
 )
-x3
+x2
 # # A tibble: 4 × 3
 #   <chr>   <list>         <list>
 #   title   children       .
@@ -125,18 +132,18 @@ x3
 # 4 mobile  <list [212]>   <named list [8]>
 
 
-x4 <- x3 %>% unnest_longer("children")
-x4
+x3 <- x2 %>% unnest_longer("children")
+x3
 
-names(x4)
-unique(x4$title)
+names(x3)
+unique(x3$title)
 
-x5 <- x4 %>% hoist("children",
+x4 <- x3 %>% hoist("children",
     uri = "uri",
     title1 = "title"
 )
 
-head(x5)
+head(x4)
 # # A tibble: 6 × 5
 #   title uri                               title1 children     .
 #   <chr> <chr>                             <chr>  <list>       <list>
@@ -146,7 +153,7 @@ head(x5)
 # 4 menu  https://usethis.r-lib.org/articl… pr gi… <named list> <named list>
 # 5 menu  https://quantifyinghealth.com/in… Inter… <named list> <named list>
 # 6 menu  https://support.apple.com/guide/… Locat… <named list> <named list>
-x5 %>% dplyr::select(c("title", "uri", "title1"))
+x4 %>% dplyr::select(c("title", "uri", "title1"))
 # # A tibble: 1,509 × 3
 #    title uri                                                        title1
 #    <chr> <chr>                                                      <chr>
@@ -162,7 +169,7 @@ x5 %>% dplyr::select(c("title", "uri", "title1"))
 # 10 menu  https://www.meetup.com/twincitiesrug/                      "Twin…
 # # ℹ 1,499 more rows
 # # ℹ Use `print(n = ...)` to see more rows
-x5 %>% select(c("title1"))
+x4 %>% select(c("title1"))
 # # A tibble: 1,509 × 1
 #    title1
 #    <chr>
