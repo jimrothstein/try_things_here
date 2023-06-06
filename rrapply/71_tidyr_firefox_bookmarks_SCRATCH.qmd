@@ -8,7 +8,11 @@ PURPOSE:   Scratch area.   Goal is to annotate 70_ and hoist
 #  0430_tidyr_firefox_bookmarks_WORKS.R
 ##  Compare to base::rapply
 ##  TODO
-##      -   2023-05-31
+##  2023-06-05
+##  -     add remarks to x1, x2, x3, (length of each list)
+##  -     possible to dput?  writeLines(???)
+##  -     
+
 
 ```{r}
 library(tibble)
@@ -24,17 +28,12 @@ the_file <- paste0(the_dir, "/", "bookmarks-2023-05-24_FF.json")
 the_dir
 the_file
 
-##  no attempt to simplify
-##  x is a list of lists
+##  no attempt to simplify; x is list of lists
 x <- jsonlite::read_json(the_file)
-#
 ```
-
-
-
 # ----------------------------------------------------------------------------------------
 
-### Attempt:  dput, str
+### One approach:   dput, str
 ### This approach is brute force, step by step into list.
 ### PROBLEM: dput
 ### Very helpful for seeing the structure, but easily becomes mess.
@@ -42,59 +41,41 @@ x <- jsonlite::read_json(the_file)
 ```{r}
 #   x is list of lenth 10, 9 are singletons, the 10th is list   
 listviewer::jsonedit(x)     ## list(guid, title, ... children=list(...))
-
 ## 
 dput(x[1:9])
-
 # first 9, As a list:
 # list(guid = "root________", title = "", index = 0L, dateAdded = 1684955179130000, 
 #     lastModified = 1684985711947000, id = 1L, typeCode = 2L, 
 #     type = "text/x-moz-place-container", root = "placesRoot")
 #   
-#   10th, is list of lists and recurses!
+#   But 10th, is list of lists and recurses!
 if (F) # x$children
-
 length(x$children)
 str(x$children, max.depth=1, list.len=4)
 
 
+# ----------------------------------------------------------------------------------------
 menu = x$children[[1]]
 toolbar = x$children[[2]]
 unfiled = x$children[[3]]
 mobile = x$children[[4]]
 
-
+length(menu)
+str(menu)
+str(menu, max.depth=1, list.len=5)
+str(menu, max.depth=2, list.len=10)
+# ------ CAUTION:   ----------------------------------------------------------------------------------
 dput(menu[1:9])
 ##  
 
-## but this recurses
 if (F) dput(x$children[1:9])
+## but this recurses
 
 if (F) dput(x[[10]])
-# [1] 4
 listviewer::jsonedit(x$children) ## list of 4 ( list(..), list(..), list(..), list(..))
 ```
 
 
-# ------------------------------------------------------------------
-###  Much better is capture lists in the very top list
-###  And use various tools  (tidyr, hoist etc  and NOT with lists)
-# ------------------------------------------------------------------
-```{r}
-x1 <- x$children %>% tibble()
-##  4 x 1 tibble, each cell: named list of 10 ellements
-x1
-#   .                
-#   <list>           
-# 1 <named list [10]>
-# 2 <named list [10]>
-# 3 <named list [10]>
-# 4 <named list [10]>
-
-##  each of 4 chlidren holds another list of 10 
-str(x1, max.depth=1, list.len=4)
-
-```
 
 # ----------------------------------- SKIP-------------------------------------
 ## BRUTE FORCE, skip
@@ -117,9 +98,30 @@ names(x2[[1]][[1]])   # children is list of list
 str(x2[[1]][[1]], max.depth=1, list.len=9)   # stop just before children
 # ----------------------------------- END SKIP-------------------------------------
 #
+# --------------------------------  MUCH BETTER ----------------------------------
+# ------------------------------------------------------------------
+###  Much better is capture lists in the very top list
+###  And use various tools  (tidyr, hoist etc  and NOT with lists)
+# ------------------------------------------------------------------
+```{r}
+x1 <- x$children %>% tibble()
+##  4 x 1 tibble, each cell: named list of 10 ellements
+x1
+#   .                
+#   <list>           
+# 1 <named list [10]>
+# 2 <named list [10]>
+# 3 <named list [10]>
+# 4 <named list [10]>
+
+##  each of 4 chlidren holds another list of 10 
+str(x1, max.depth=1, list.len=4)
+
+```
+```{r}
 x2 <- x1 %>% hoist(".", # pull out from list-column
     title = "title",
-##    id = "id",
+##  id = "id",
     children = "children"
 )
 x2
@@ -131,10 +133,15 @@ x2
 # 3 unfiled <list [1,196]> <named list [8]>
 # 4 mobile  <list [212]>   <named list [8]>
 
+## remarks- no suprise
+length(x2$children) # [1] 4
+length(x2$children[[1]]) # [1] 87
 
 x3 <- x2 %>% unnest_longer("children")
-x3
+x3 |> head(n=4L)
 
+## remarks no surprise
+length(x3$children) # [1] 1509
 names(x3)
 unique(x3$title)
 
@@ -144,45 +151,26 @@ x4 <- x3 %>% hoist("children",
 )
 
 head(x4)
-# # A tibble: 6 × 5
-#   title uri                               title1 children     .
-#   <chr> <chr>                             <chr>  <list>       <list>
-# 1 menu  <NA>                              Mozil… <named list> <named list>
-# 2 menu  https://github.com/jarun/Buku     jarun… <named list> <named list>
-# 3 menu  https://github.com/r-lib/remotes  r-lib… <named list> <named list>
-# 4 menu  https://usethis.r-lib.org/articl… pr gi… <named list> <named list>
-# 5 menu  https://quantifyinghealth.com/in… Inter… <named list> <named list>
-# 6 menu  https://support.apple.com/guide/… Locat… <named list> <named list>
-x4 %>% dplyr::select(c("title", "uri", "title1"))
-# # A tibble: 1,509 × 3
-#    title uri                                                        title1
-#    <chr> <chr>                                                      <chr>
-#  1 menu  <NA>                                                       "Mozi…
-#  2 menu  https://github.com/jarun/Buku                              "jaru…
-#  3 menu  https://github.com/r-lib/remotes                           "r-li…
-#  4 menu  https://usethis.r-lib.org/articles/pr-functions.html       "pr g…
-#  5 menu  https://quantifyinghealth.com/interpret-logistic-regressi… "Inte…
-#  6 menu  https://support.apple.com/guide/icloud/locate-a-device-mm… "Loca…
-#  7 menu  https://bookdown.org/markhoff/social_network_analysis/     "R | …
-#  8 menu  https://dplyr.tidyverse.org/articles/programming.html      "Env …
-#  9 menu  https://dcl-prog.stanford.edu/tidy-eval-section.html       "12 I…
-# 10 menu  https://www.meetup.com/twincitiesrug/                      "Twin…
-# # ℹ 1,499 more rows
-# # ℹ Use `print(n = ...)` to see more rows
-x4 %>% select(c("title1"))
-# # A tibble: 1,509 × 1
-#    title1
-#    <chr>
-#  1 "Mozilla Firefox"
-#  2 "jarun/buku: |  bookmark manager"
-#  3 "r-lib/remotes: Install R packages from GitHub, GitLab, Bitbucket, git…
-#  4 "pr github! r helpers"
-#  5 "Interpret Logistic Regression Coefficients [For Beginners] – QUANTIFY…
-#  6 "Locate a device in Find Devices on iCloud.com - Apple Support"
-#  7 "R | book | Methods for Network Analysis"
-#  8 "Env var   Or    Data var "
-#  9 "12 Introduction | Functional Programming r tidyeval "
-# 10 "Twin Cities R User Group (TCRUG) (Minneapolis, MN) | Meetup"
-# # ℹ 1,499 more rows
-# # ℹ Use `print(n = ...)` to see more rows
+tail(x4)
+
+
+x4 %>% dplyr::select(c("title", "uri", "title1")) |> head(4)
+# # A tibble: 4 × 3
+#   title uri                                                  title1       
+#   <chr> <chr>                                                <chr>        
+# 1 menu  <NA>                                                 Mozilla Fire…
+# 2 menu  https://github.com/jarun/Buku                        jarun/buku: …
+# 3 menu  https://github.com/r-lib/remotes                     r-lib/remote…
+# 4 menu  https://usethis.r-lib.org/articles/pr-functions.html pr github! r…
+
+x4 %>% select(c("title1")) |> nrow() # [1] 1509
+
+x4 %>% select(c("title1")) |> head(4)
+# # A tibble: 4 × 1
+#   title1                                                                  
+#   <chr>                                                                   
+# 1 Mozilla Firefox                                                         
+# 2 jarun/buku: |  bookmark manager                                         
+# 3 r-lib/remotes: Install R packages from GitHub, GitLab, Bitbucket, git, …
+# 4 pr github! r helpers                                                    
 ```
