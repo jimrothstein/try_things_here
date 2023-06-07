@@ -4,10 +4,13 @@
 
 PURPOSE:    USE pluck notation.   This is also used in tidyr::hoist and unnesting list-columns.
 300_pluck.qmd
+TODO:
+2023-06-06
+-   compare pluck and map (below)
 
 ```{r}
-library(tidyr)
 library(purrr)
+library(tidyr)
 ```
 
 ### Pluck [REF](https://purrr.tidyverse.org/reference/pluck.html)     
@@ -23,6 +26,7 @@ dput(x)
     list("b", list(2, elt = "bar"))
    )
 
+##  Two identical ways to pull 1 element from list
 ##  I prefer dput notation!
 dput(purrr::pluck(x,1))
 dput(x[[1]])
@@ -30,11 +34,16 @@ identical(dput(x[[1]]), dput(purrr::pluck(x, 1)))   #T
 
 # 
 # 
+##  Examples
 pluck(x,1,2)
+dput(pluck(x,1,2))
+# list(1, elt = "foo")
 
-pluck(x,1,2,"elt")
-pluck(x,1,2,2) # SAME
+pluck(x,1,2,"elt") # [1] "foo"
+identical(pluck(x,1,2,"elt"), pluck(x,1,2,2)) #  [1] TRUE
+```
 
+```{r}
 # compare pluck to map, find 2nd element of each
 map(x, 2)
 map(x, list(2, "elt"))  # just walk the hierarchy

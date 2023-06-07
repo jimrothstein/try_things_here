@@ -8,9 +8,12 @@ PURPOSE:   Scratch area.   Goal is to annotate 70_ and hoist
 #  0430_tidyr_firefox_bookmarks_WORKS.R
 ##  Compare to base::rapply
 ##  TODO
+##  2023-06-06
+##  -     using dput, pluck ... can sketch out tree ... need paper sketch
+##  -     pluck and `accessor`
 ##  2023-06-05
 ##  -     add remarks to x1, x2, x3, (length of each list)
-##  -     possible to dput?  writeLines(???)
+
 ##  -     
 
 
@@ -42,6 +45,8 @@ x <- jsonlite::read_json(the_file)
 #   x is list of lenth 10, 9 are singletons, the 10th is list   
 listviewer::jsonedit(x)     ## list(guid, title, ... children=list(...))
 ## 
+
+length(x) # 10
 dput(x[1:9])    # root
 # list(guid = "root________", title = "", index = 0L, dateAdded = 1684955179130000, 
 #     lastModified = 1684985711947000, id = 1L, typeCode = 2L, 
@@ -65,16 +70,49 @@ mobile = x$children[[4]]
 length(menu) # [1] 10
 length(menu[1:9]) # [1] 9
 dput(menu[1:9])  # not 10th
-    title = "menu", index = 0L, dateAdded = 1684955179130000, 
-# list(guid = "menu________", 
+# list(guid = "menu________", title = "menu", index = 0L, dateAdded = 1684955179130000, 
 #     lastModified = 1684955182298000, id = 2L, typeCode = 2L, 
 #     type = "text/x-moz-place-container", root = "bookmarksMenuFolder")
 # 
 
-
+# because 10th list list of 87
 length(menu[[10]]) # [1] 87
+length(menu[[10]][1])  # subset
+length(menu[[10]][[1]]) # list of 9 
+
+## same with pluck
+length(pluck(menu[[10]], 1)) # [1] 9
+length(pluck(menu[[10]], 1, 1)) # [1] 1
+
+
+##
+dput(menu[[10]][[1]][1:8])
+# list(guid = "MyDaQnuz1WZg", title = "Mozilla Firefox", index = 0L, 
+#     dateAdded = 1684955182298000, lastModified = 1.68498571e+15, 
+#     id = 7L, typeCode = 2L, type = "text/x-moz-place-container")
+dput(menu[[10]][[1]][[9]][1])
+dput(menu[[10]][[1]][[9]][2])
+# list(list(guid = "0NnW5hxLFL5f", title = "Get Involved", index = 1L, 
+#     dateAdded = 1684955182298000, lastModified = 1.68498571e+15, 
+#     id = 10L, typeCode = 1L, iconUri = "fake-favicon-uri:https://www.mozilla.org/contribute/", 
+#     type = "text/x-moz-place", uri = "https://www.mozilla.org/contribute/"))
+
+##      DRAW PICTURE !!
+
+## Or, pluck
+pluck(menu[[10]], 1, 1)
+# [1] "MyDaQnuz1WZg"
+pluck(menu[[10]], 1, 2) # [1] "Mozilla Firefox"
+pluck(menu[[10]], 1, 3) # [1] 0
+pluck(menu[[10], [1], "type")
+* pluck(menu[[10], [1], "children")
+
+dput(pluck(menu[[10]], 1))
+pluck(menu[[10]], 1, 1)
+dput(menu[[10]][[1]]) # contents 
 dput(menu[[10]][1])
 dput(menu[10])
+pluck(menu[[10]], 1)
 ```
 
 
