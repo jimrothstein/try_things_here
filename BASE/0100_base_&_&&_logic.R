@@ -11,7 +11,6 @@ fontsize: 10pt
 geometry: margin=0.4in,top=0.25in 
 TAGS:  &, &&
 ---
-
  
 #### Logic:    & vs &&
 
