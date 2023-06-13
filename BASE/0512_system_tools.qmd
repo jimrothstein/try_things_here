@@ -1,20 +1,23 @@
 
-
-#### Package Info ?   See jimTools.
-###  Sat  15 May 2021, This file 085 is MESS.
-  *  sort out :  useful vs not
-  *  sort out:  base vs add-on package
-  *  Much good info here, but needs update!
-
-
-##  Mon 20Feb2023
-TODO
-
+# ---------------------------------------------
+Package Commands?
+SEE:    088
+SEE     jimTools::
+# ---------------------------------------------
+#
+#
+TODO:
 - CLEAN UP, so mostly BASE tools, R ENV 
 - PUT non-BASE, tidyverse, etc.  into separate file, OR clearly separate
-##  PURPOSE:    use BASE 
 
+# ---------------------------------------------
+##  PURPOSE:    (mostly) BASE to probe system 
+##  ALSO  some related useful RLANG:: 
+- Includes cmds related to options, finding files, sessions, ....
+ (JennyBC)
+# ---------------------------------------------
 
+```{r}
 library(tibble)
 library(tidyr)
 library(purrr)
@@ -36,19 +39,7 @@ system.time( r  <- rnorm(1000))
     end
   }
 
-## ENV variables
-*  See: https://stat.ethz.ch/R-manual/R-devel/library/base/html/EnvVar.html
-
-# /usr/lib/R
-(r_home <-R.home(component="home"))
-Sys.getenv("R_HOME") 			# /usr/lib/R ; where R installed
-Sys.getenv("R_LIBS_USER") # ~R/x86 .../4.0
-Sys.getenv("R_HIST_SIZE")
-Sys.getenv("R_BROWSER")   # croutonurlhandler
-
-# too lengthy
-if  (FALSE) Sys.getenv()		
-
+### Search path
 # search(), vector: gives all env + attached pkgs
 (t_search <- search())
 
@@ -75,36 +66,9 @@ l  <- options()
 
 
 
-Versions
-
-packageVersion("rmarkdown") # 2.20
-R.version.string     # 3.5.1
 getwd()                 # ~/code/r_
 list.files()            # list filesin wd
 dir()
-Dependncies
-TODO:   utils::depends(pkg =  c(), dependencies=c ())
-
-# For each installed pkg, find its dependencies
-#### return list of character vectors, ~15,293 
-	
-l <- tools::package_dependencies(
-							"tibble",
-							db=installed.packages(),
-							reverse=TRUE	)
-l
-
-# And "tibble" is dependenat upon:
-l <- tools::package_dependencies("tibble", reverse=FALSE)
-str(l) # named list, 1 elemnt named tibble,  a chr[12]
-l
-
-t  <- tibble(pkg=l$tibble)
-t
-##### 010-for <pkg>, find packages dependent upon it
-
-if (FALSE) remove.packages("cellranger")
-
 
 
 
@@ -165,17 +129,6 @@ X <- as.data.frame(
 r1 <- lapply(X,median)
 
 r2 <- parallel::mclapply(X, median)
-
-
-
-# ---- 002 update  all R packages ----
-#update.packages(ask = FALSE)
-
-
-# ----  003 view all installed R packages? ----
-# at cmd line  which needed?
-# apt-get cache search "^r-*" | sort
-
 
 
 
@@ -261,32 +214,6 @@ Sys.getenv()[n]
 
 
 
-#### 4-.libPaths(), list all paths, purpose, name
-
-.libPaths()
-# fix:
-
-# t_libPaths <- tibble(.libPaths()) %>% 
-#   mutate(
-#   purpose =  c("added packages", 
-#                ".Library.site", 
-#                ".Library.site", 
-#                "base R pkgs"),  
-# 
-#   quantity  = c("many", "Empty", "Empty", "many")  ,
-#   env_var = c("R_LIBS_USER","","","R_LIBS?"),
-#   aka = c("",".Library.site", ".Library.site", ".Library.site, .Library"))
-# 
-# t_libPaths
-
-## Each path in .libPaths(), list installed packages
-
-.Library
-if (FALSE)
-  .Library
-  lapply(.libPaths(), list.dirs, recursive=FALSE)
-
-
 
 ### Session_info
 
@@ -342,42 +269,6 @@ file.exists("~/.Rprofile") # True, also
 options()
 # 2 sign digits  (3.7)
 options(prompt = "R> ", digits = 2, show.signif.stars = FALSE, continue = "  ")
-
-getOption("repos")  # cran.rstudio.com
-
-
-# -----------------------------jennyBC ------------------------------------------------------------------
-##### 013_jennyBC
-####  from https://github.com/smithjd/explore-libraries/blob/master/01_explore-libraries_jenny.R
-ipt <- installed.packages() %>%
-  as_tibble()
-
-installed_pkgs  <- ipt %>% select("Package")
-print(installed_pkgs, n=200)
-
-ipt %>% glimpse()
-nrow(ipt)
-dim(ipt)
-
-####' 014_Exploring the packages
-
-####   * tabulate by LibPath, Priority, or both
-#### base: 14, recommended:15, my library:165
-ipt %>%
-  count(LibPath, Priority)
-
-####   * what proportion need compilation?
-####   2nd line produces 3 rows x 2 (NeedCompliation n)
-ipt %>%
-  count(NeedsCompilation) %>%
-  mutate(prop = n / sum(n))
-
-#### 015_remove pkg
-# uninstall()  vs remove.packages() ??
-#### Find (and remove) package BH (it is gone!)
-ipt %>% filter(Package=="BH") 
-
-uninstall(BH)
 
 
 
@@ -486,3 +377,4 @@ map_chr(t$value, ~get_typeof(.))
  
 map(t$value, ~process)
 t$value[[1]]
+```

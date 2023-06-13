@@ -1,0 +1,296 @@
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+fontsize: 11pt   
+geometry: margin=0.5in,top=0.25in   
+TAGS:  RPI, rpi,Rscripts
+---
+
+TODO:
+-   any in devtools?
+-
+=============================================
+PURPOSE: Collect functions to manage 3rd party packages, library locations, etc.
+Polished CODE related to package mgmt ? SEE  jimTools
+=============================================
+https://stackoverflow.com/questions/4090169/elegant-way-to-check-for-missing-packages-and-install-them
+
+SEE ALSO:  ~/code/zsh_scripts_project/071_run_R_to_update_packages.sh
+SEE ALSO:  0512_system_tools.R_
+
+
+# ---------------------------------------------
+### most important now
+Installed Packages
+# ---------------------------------------------
+```{r}
+tmp = as_tibble(installed.packages())
+names(tmp)
+#  [1] "Package"               "LibPath"              
+#  [3] "Version"               "Priority"             
+#  [5] "Depends"               "Imports"              
+#  [7] "LinkingTo"             "Suggests"             
+#  [9] "Enhances"              "License"              
+# [11] "License_is_FOSS"       "License_restricts_use"
+# [13] "OS_type"               "MD5sum"               
+# [15] "NeedsCompilation"      "Built"                
+
+p = tmp |> select(c("Package", "Version", "LibPath",  "Built"))
+str(p)
+```
+### unique paths
+```{r}
+p |> select("LibPath")  |> count(LibPath) 
+# # A tibble: 2 × 2
+#   LibPath                                         n
+#   <chr>                                       <int>
+# 1 /home/jim/R/x86_64-pc-linux-gnu-library/4.3   157
+# 2 /usr/lib/R/library                             29
+
+
+```
+
+# -----------------------------------------------------
+#   /usr/lib/R/library is NOT updatable (only sudo)
+#   List these packages  (29)
+
+# -----------------------------------------------------
+```{r}
+p$LibPath[grepl(pattern="/usr/lib/", x=p$LibPath)]
+print(dplyr::filter(p, LibPath == "/usr/lib/R/library") ,
+    n=29)
+```
+
+Update old.packages
+```{r}
+update.packages(oldPkgs= old.packages())
+` `
+
+
+# ---------------------------------------------
+## ENV variables
+# ---------------------------------------------
+*  See: https://stat.ethz.ch/R-manual/R-devel/library/base/html/EnvVar.html
+# /usr/lib/R
+```{r}
+(r_home <-R.home(component="home")) # [1] "/usr/lib/R"
+Sys.getenv("R_HOME") 			# /usr/lib/R ; where R installed
+Sys.getenv("R_LIBS_USER") # # [1] "/home/jim/R/x86_64-pc-linux-gnu-library/4.3"
+Sys.getenv("R_HIST_SIZE") # [1] ""
+Sys.getenv("R_BROWSER")  # [1] "xdg-open"
+# ---------------------------------------------
+length(Sys.getenv()) # 132
+
+# too lengthy
+if  (FALSE) Sys.getenv()		
+```
+
+# ---------------------------------------------
+### Package Versions
+# ---------------------------------------------
+```{r}
+packageVersion("rmarkdown") # 3.5.1
+R.version.string     # [1] "R version 4.3.0 (2023-04-21)"
+```
+
+# ---------------------------------------------
+Dependncies
+TODO:   utils::depends(pkg =  c(), dependencies=c ())
+# ---------------------------------------------
+```{r}
+# For each installed pkg, find its dependencies
+#### return list of character vectors, ~15,293 
+	
+l <- tools::package_dependencies(
+							"tibble",
+							db=installed.packages(),
+							reverse=TRUE	)
+l
+
+# And "tibble" is dependenat upon:
+l <- tools::package_dependencies("tibble", reverse=FALSE)
+str(l) # named list, 1 elemnt named tibble,  a chr[12]
+l
+
+t  <- tibble(pkg=l$tibble)
+t
+##### 010-for <pkg>, find packages dependent upon it
+
+```
+
+# ---------------------------------------------
+### Remove Package
+# ---------------------------------------------
+```{r}
+if (FALSE) remove.packages("cellranger")
+```
+
+
+
+
+# ---------------------------------------------
+### LEGACY
+# ---------------------------------------------
+### Loads,  but does not attach; TRUE if able to load.
+```{r}
+check_suggests <- function(package) {
+  if (!requireNamespace(package, quietly = TRUE)) {
+    #stop("Suggested package '{package}' not present.")
+    stop("Not found")
+  }
+}
+check_suggests("tibble")
+check_suggests("joke")
+check_suggests("glue")
+check_suggests("ggplot2")
+```
+
+*  May 16, 2021 - best code is in jimTools:: Rscripts
+### =========================
+###   UPDATE  - 2 step process?
+###   jimTools - has newer version of this
+### =========================
+
+## To update `old` packages
+*   Appears that need to do this first, before update others
+*   To increase `old` to include those comipiled earlier minor version of R
+*   Use checkBuilt= T to force
+
+```{r update_old}
+update.packages(ask = F,
+                oldPkgs = old.packages(),
+                checkBuilt=F)
+```
+
+## To upgrade
+
+vs update.packages() ?
+```{r upgrade}
+
+{
+begin  <- Sys.time()
+    update.packages(ask = FALSE , checkBuild=TRUE)
+    end  <- Sys.time()
+    diff  <- end - begin
+    diff
+}
+# ---- 002 update  all R packages ----
+#update.packages(ask = FALSE)
+
+
+# ----  003 view all installed R packages? ----
+# at cmd line  which needed?
+# apt-get cache search "^r-*" | sort
+
+
+```
+#### 4-.libPaths(), list all paths, purpose, name
+```{r}
+
+
+.libPaths()
+# fix:
+
+# t_libPaths <- tibble(.libPaths()) %>% 
+#   mutate(
+#   purpose =  c("added packages", 
+#                ".Library.site", 
+#                ".Library.site", 
+#                "base R pkgs"),  
+# 
+#   quantity  = c("many", "Empty", "Empty", "many")  ,
+#   env_var = c("R_LIBS_USER","","","R_LIBS?"),
+#   aka = c("",".Library.site", ".Library.site", ".Library.site, .Library"))
+# 
+# t_libPaths
+
+## Each path in .libPaths(), list installed packages
+
+.Library
+if (FALSE)
+  .Library
+  lapply(.libPaths(), list.dirs, recursive=FALSE)
+
+getOption("repos")  # cran.rstudio.com
+```
+
+# -----------------------------jennyBC ------------------------------------------------------------------
+##### 013_jennyBC
+####  from https://github.com/smithjd/explore-libraries/blob/master/01_explore-libraries_jenny.R
+```{r}
+
+ipt <- installed.packages() %>%
+  as_tibble()
+
+dim(ipt) # [1] 186  16
+
+installed_pkgs  <- ipt %>% select("Package")
+
+print(installed_pkgs, n=200)
+
+ipt %>% glimpse()
+
+####' 014_Exploring the packages
+
+####   * tabulate by LibPath, Priority, or both
+#### base: 14, recommended:15, my library:165
+ipt %>%
+  count(LibPath, Priority)
+
+####   * what proportion need compilation?
+####   2nd line produces 3 rows x 2 (NeedCompliation n)
+ipt %>%
+  count(NeedsCompilation) %>%
+  mutate(prop = n / sum(n))
+
+#### 015_remove pkg
+# uninstall()  vs remove.packages() ??
+#### Find (and remove) package BH (it is gone!)
+ipt %>% filter(Package=="BH") 
+
+uninstall(BH)
+```
+
+
+```{r}
+
+
+## NOTES:  re:  install on Rpi
+I installed R 4.0.4 from source on Raspberry Pi 400, which uses ARM processessors.  This seemed fine.
+
+However, when I tried to upgrade installed packages I ran into a few problems.
+
+My question is:  After installing R 4.0.4 but before upgrading packages, what
+steps should I take to insure the package upgrade will be successful?
+
+This is what I did do; which did not succeed:
+
+First, I ran packageStatus to see ~29 packages needed an upgrade.
+>> x  <- packageStatus()
+>> print(x)
+>>
+
+Then a did the upgrade which reported ~ 31 warnings (packages that had non-zero exit status).  About 1 or 2 packages did upgrade successfully.
+
+
+>> upgrade(x, ask=FALSE)
+>> update(x)
+>>
+However, I also noted errors during the upgrade such as:
+*  Wrong ELF class ELFCLASS64.
+*  lazy loading failed for package:   "DT"
+
+
+
+```
