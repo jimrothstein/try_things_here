@@ -1,4 +1,4 @@
----
+--
 title: "`r knitr::current_input()`"
 date: "`r paste('last updated', 
     format(lubridate::now(), ' %d %B %Y'))`"
@@ -35,6 +35,7 @@ SEE ALSO:  0512_system_tools.R_
 Installed Packages
 # ---------------------------------------------
 ```{r}
+library(dplyr)
 tmp = as_tibble(installed.packages())
 names(tmp)
 #  [1] "Package"               "LibPath"              
@@ -75,7 +76,7 @@ print(dplyr::filter(p, LibPath == "/usr/lib/R/library") ,
 Update old.packages
 ```{r}
 update.packages(oldPkgs= old.packages())
-` `
+```
 
 
 # ---------------------------------------------
@@ -101,6 +102,8 @@ if  (FALSE) Sys.getenv()
 # ---------------------------------------------
 ```{r}
 packageVersion("rmarkdown") # 3.5.1
+packageVersion("MASS")      # 7.3.60
+packageVersion("class")      # 7.3.22:
 R.version.string     # [1] "R version 4.3.0 (2023-04-21)"
 ```
 
@@ -128,6 +131,26 @@ t
 ##### 010-for <pkg>, find packages dependent upon it
 
 ```
+###	check installed packages  - can be in TWO locations !!!	
+```{r}
+ip = installed.packages(lib.loc=NULL)
+ip = as_tibble(ip)
+str(ip)
+ip = ip |> dplyr::select("Package","LibPath", "Version", "Built") 
+ip
+##	Look !  MASS installed in two locations
+ip |> dplyr::filter(Package==("MASS")) 
+ip |> dplyr::filter(Package==("KernSmooth")) 
+
+##	only 
+ip |> dplyr::filter(Package==("dplyr") )
+ 
+
+##	Where is MASS
+m = installed.packages(lib.loc=NULL)
+m
+```
+
 
 # ---------------------------------------------
 ### Remove Package
@@ -180,6 +203,7 @@ vs update.packages() ?
 
 {
 begin  <- Sys.time()
+#    update.packages(ask = FALSE , checkBuild=TRUE)
     update.packages(ask = FALSE , checkBuild=TRUE)
     end  <- Sys.time()
     diff  <- end - begin
