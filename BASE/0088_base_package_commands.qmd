@@ -30,12 +30,13 @@ SEE ALSO:  ~/code/zsh_scripts_project/071_run_R_to_update_packages.sh
 SEE ALSO:  0512_system_tools.R_
 
 
-# ---------------------------------------------
+#---------------------------------------------
 ### most important now
 Installed Packages
 # ---------------------------------------------
 ```{r}
 library(dplyr)
+library(kableExtra)
 tmp = as_tibble(installed.packages())
 names(tmp)
 #  [1] "Package"               "LibPath"              
@@ -58,8 +59,6 @@ p |> select("LibPath")  |> count(LibPath)
 #   <chr>                                       <int>
 # 1 /home/jim/R/x86_64-pc-linux-gnu-library/4.3   157
 # 2 /usr/lib/R/library                             29
-
-
 ```
 
 # -----------------------------------------------------
@@ -129,13 +128,12 @@ l
 t  <- tibble(pkg=l$tibble)
 t
 ##### 010-for <pkg>, find packages dependent upon it
-
 ```
-###	check installed packages  - can be in TWO locations !!!	
+# ------------------------------------------------------------
+###	PROBLEM:  R pkgs   - can be in TWO locations !!!	
+# ------------------------------------------------------------
 ```{r}
-ip = installed.packages(lib.loc=NULL)
-ip = as_tibble(ip)
-str(ip)
+ip = as_tibble(installed.packages(lib.loc=NULL))   # NULL, searches all paths
 ip = ip |> dplyr::select("Package","LibPath", "Version", "Built") 
 ip
 ##	Look !  MASS installed in two locations
