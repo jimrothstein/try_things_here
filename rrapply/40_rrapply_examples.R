@@ -32,6 +32,7 @@ str(oceania, list.len = 4, give.attr = FALSE)
 # 1 more level
 str(australia_new_zealand  <- oceania[[1]], list.len=4, give.attr = F) 
 australia_new_zealand
+dput(australia_new_zealand, )
 
 # check, atomic?   tibble? 
 u  <- unlist(australia_new_zealand)
