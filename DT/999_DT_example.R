@@ -31,7 +31,8 @@ dt.tbl> ##D example(data.table)  # to run these examples yourself
 dt.tbl> ## End(Not run)
 dt.tbl> DF = data.frame(x=rep(c("b","a","c"),each=3), y=c(1,3,6), v=1:9)
 
-dt.tbl> DT = data.table(x=rep(c("b","a","c"),each=3), y=c(1,3,6), v=1:9)
+dt.tbl> 
+    DT = data.table(x=rep(c("b","a","c"),each=3), y=c(1,3,6), v=1:9)
 
 dt.tbl> DF
   x y v
@@ -45,7 +46,9 @@ dt.tbl> DF
 8 c 3 8
 9 c 6 9
 
+# -------------------------------------------------------
 dt.tbl> DT
+# -------------------------------------------------------
         x     y     v
    <char> <num> <int>
 1:      b     1     1
@@ -57,6 +60,7 @@ dt.tbl> DT
 7:      c     1     7
 8:      c     3     8
 9:      c     6     9
+# -------------------------------------------------------
 
 dt.tbl> identical(dim(DT), dim(DF))    # TRUE
 [1] TRUE
@@ -396,15 +400,20 @@ dt.tbl> DT[c("b","c"), sum(v), by=.EACHI, on=.(x)]  # same, using on=.()
 2:      c    24
 
 dt.tbl> # joins as subsets
-dt.tbl> X = data.table(x=c("c","b"), v=8:7, foo=c(4,2))
+dt.tbl> 
+      X = data.table(x=c("c","b"), v=8:7, foo=c(4,2))
 
+
+# -------------------------------------------------------
 dt.tbl> X
+# -------------------------------------------------------
         x     v   foo
    <char> <int> <num>
 1:      c     8     4
 2:      b     7     2
+# -------------------------------------------------------
 
-dt.tbl> DT[X, on="x"]                         # right join
+dt.tbl> DT[X, on="x"]                         # right join (no "a" in DT)
         x     y     v   i.v   foo
    <char> <num> <int> <int> <num>
 1:      c     1     7     8     4
@@ -443,6 +452,9 @@ dt.tbl> DT[!X, on="x"]                        # not join
 1:      a     1     4
 2:      a     3     5
 3:      a     6     6
+
+DT[X, .(X.x=x, X.v=v, X.foo = foo, DT.foo = foo), on="x"]   # change output columns
+DT
 
 dt.tbl> DT[X, on=c(y="v")]                    # join using column "y" of DT with column "v" of X
         x     y     v    i.x   foo
