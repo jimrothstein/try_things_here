@@ -17,23 +17,20 @@ geometry: margin=0.5in,top=0.25in
 TAGS:  RPI, rpi,Rscripts
 ---
 
-TODO:
--   any in devtools?
--   find.package to find packages in TWO locations
 
-SEE ALSO:
--   (update issues) https://github.com/ColinGoodall1/editUtilsR
-SEE ALSO:  ~/code/zsh_scripts_project/071_run_R_to_update_packages.sh
-SEE ALSO:  0512_system_tools.R_
+##  Packages installed twice ?
+##  (none on Acer, it has open permissions)
+```{r}
 
-=============================================
-PURPOSE: Collect functions to manage 3rd party packages, library locations, etc.
-Polished CODE related to package mgmt ? SEE  jimTools
-=============================================
-https://stackoverflow.com/questions/4090169/elegant-way-to-check-for-missing-packages-and-install-them
+SEE ?find.pacakge()
+     findPkgAll <- function(pkg)
+       unlist(lapply(.libPaths(), function(lib)
+                find.package(pkg, lib, quiet=TRUE, verbose=FALSE)))
+     
+     findPkgAll("MASS")
+     findPkgAll("knitr")
 
-
-
+```
 #---------------------------------------------
 ### most important now
 Installed Packages
@@ -54,34 +51,45 @@ names(tmp)
 
 p = tmp |> select(c("Package", "Version", "LibPath",  "Built"))
 ```
-
-# -----------------------------------------------------
-#   packages in /usr/lib/R/library (NOT updatable (only sudo))
-#   List these packages  (29)
-# -----------------------------------------------------
+## Separate into 2; Based on  LibPath
+##  RO is read only /usr/lib/R/library
 ```{r}
-p$LibPath[grepl(pattern="/usr/lib/", x=p$LibPath)]
-print(dplyr::filter(p, LibPath == "/usr/lib/R/library") ,
-    n=29)
+p = as.data.table(p)
+is.data.table(p)
+p
+p |> head()
+RO <- p[LibPath == "/usr/lib/R/library"]
+RO
 ```
-  
+```{r}
+Add = p[LibPath == "/home/jim/R/x86_64-pc-linux-gnu-library/4.3"]
+Add
+
+```
+Example, in both
+```{r}
+
+RO[Package == "MASS"]
+Add[Package == "boot | survival"]
+```
+
+
+
+
 # -----------------------------------------------------
 #   packages in ~/R/x86_64-pc-linux-gnu-library/4.3/ 
 #   List these packages  (29)
+#   Add
 # -----------------------------------------------------
-```{r}
-
-```
 
 ##  save to dt
-```{r}
-
-```
 ##   joins
 packages in both locations
 packages only in /usr/lib/R/library
 
+Both, inner join
 ```{r}
+Add[RO, nomatch=NULL, on=.(Package)]
 dt_all = as.data.table(p)
 dt_all
 dt_read_only = as.data.table(dplyr::filter(p, LibPath== "/usr/lib/R/library"))
