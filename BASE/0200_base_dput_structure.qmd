@@ -40,6 +40,14 @@ y[1]   #    [[]], [] notation
 dput(mtcars[1:2,])
 ```
 
+.deparseOpts
+```{r}
+.deparseOpts
+dput(mtcars, control=NULL)
+L =   dput(mtcars, control=NULL)
+
+```
+
 #### EXAMPLE:  dput simple data.frame  
 
 ```{r dput2}

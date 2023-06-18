@@ -10,7 +10,6 @@
 
 
 ```{r}
-
 L = list(1, c(2,3), list(4, list(5))) 
 
 ##  count number of elements
@@ -39,10 +38,13 @@ L[[3]]
 dput(L[[3]]) # list(4, list(5))
 
 ##  dput makes much easier to follow, I think.
-
-
-
 ```
+
+
+```{r}
+dput(mtcars)
+```
+
 
 ### LEGACY
 

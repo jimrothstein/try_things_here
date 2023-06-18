@@ -19,15 +19,19 @@ TAGS:  RPI, rpi,Rscripts
 
 TODO:
 -   any in devtools?
--
+-   find.package to find packages in TWO locations
+
+SEE ALSO:
+-   (update issues) https://github.com/ColinGoodall1/editUtilsR
+SEE ALSO:  ~/code/zsh_scripts_project/071_run_R_to_update_packages.sh
+SEE ALSO:  0512_system_tools.R_
+
 =============================================
 PURPOSE: Collect functions to manage 3rd party packages, library locations, etc.
 Polished CODE related to package mgmt ? SEE  jimTools
 =============================================
 https://stackoverflow.com/questions/4090169/elegant-way-to-check-for-missing-packages-and-install-them
 
-SEE ALSO:  ~/code/zsh_scripts_project/071_run_R_to_update_packages.sh
-SEE ALSO:  0512_system_tools.R_
 
 
 #---------------------------------------------
@@ -36,7 +40,6 @@ Installed Packages
 # ---------------------------------------------
 ```{r}
 library(dplyr)
-library(kableExtra)
 tmp = as_tibble(installed.packages())
 names(tmp)
 #  [1] "Package"               "LibPath"              
@@ -64,7 +67,6 @@ p |> select("LibPath")  |> count(LibPath)
 # -----------------------------------------------------
 #   /usr/lib/R/library is NOT updatable (only sudo)
 #   List these packages  (29)
-
 # -----------------------------------------------------
 ```{r}
 p$LibPath[grepl(pattern="/usr/lib/", x=p$LibPath)]
@@ -148,6 +150,37 @@ ip |> dplyr::filter(Package==("dplyr") )
 m = installed.packages(lib.loc=NULL)
 m
 ```
+#   2nd way to find directories for ONE pkg  
+```{r}
+
+#    SEE ?find.pacakge()
+     findPkgAll <- function(pkg)
+       unlist(lapply(.libPaths(), function(lib)
+                find.package(pkg, lib, quiet=TRUE, verbose=FALSE)))
+     
+     findPkgAll("MASS")
+     findPkgAll("knitr")
+```
+
+#   Bug in find.package?
+
+```{r}
+#   MASS is in 2 directories
+#   But .. 
+    find.package("MASS")
+    find.package("MASS", lib.loc=NULL)
+
+    # must use verbose=T, to get 
+    x = find.package("MASS", verbose=T)
+
+Warning message:
+In find.package("MASS", verbose = T) :
+  package ‘MASS’ found more than once, using the first from
+  “/home/jim/R/x86_64-pc-linux-gnu-library/4.3/MASS”,
+  “/usr/lib/R/library/MASS”
+  
+```
+
 
 
 # ---------------------------------------------
