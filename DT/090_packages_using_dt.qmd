@@ -8,32 +8,29 @@ output:
         toc: true 
         toc_depth: 2
         toc_float: true
-  pdf_document:   
-    latex_engine: xelatex  
-    toc: true
-    toc_depth:  2   
 fontsize: 11pt   
 geometry: margin=0.5in,top=0.25in   
 TAGS:  RPI, rpi,Rscripts
 ---
 
 
-##  Packages installed twice ?
+#------------------------------------------------------------
+##  Purpose:   Using data.table, find R packages installed in 2 locations.
 ##  (none on Acer, it has open permissions)
-```{r}
+#------------------------------------------------------------
 
-SEE ?find.pacakge()
-     findPkgAll <- function(pkg)
+##  USE Base R
+```{r}
+#SEE ?find.pacakge()
+    findPkgAll <- function(pkg)
        unlist(lapply(.libPaths(), function(lib)
                 find.package(pkg, lib, quiet=TRUE, verbose=FALSE)))
      
      findPkgAll("MASS")
      findPkgAll("knitr")
-
 ```
 #---------------------------------------------
-### most important now
-Installed Packages
+      Installed Packages
 # ---------------------------------------------
 ```{r}
 library(dplyr)
@@ -51,73 +48,54 @@ names(tmp)
 
 p = tmp |> select(c("Package", "Version", "LibPath",  "Built"))
 ```
-## Separate into 2; Based on  LibPath
-##  RO is read only /usr/lib/R/library
+
+#------------------------------------------------------------
+    Separate installed packages into 2 tab; Based on  LibPath
+    RO is read only /usr/lib/R/library
+#------------------------------------------------------------
+
 ```{r}
 p = as.data.table(p)
-is.data.table(p)
-p
 p |> head()
 RO <- p[LibPath == "/usr/lib/R/library"]
 RO
 ```
+
+#------------------------------------------------------------
+    Add is dt for packages added or updated in  ~/R/x86_64-pc-linux-gnu-library/4.3/MASS/R/...
+#------------------------------------------------------------
 ```{r}
 Add = p[LibPath == "/home/jim/R/x86_64-pc-linux-gnu-library/4.3"]
 Add
-
 ```
-Example, in both
+Example, in both directories
 ```{r}
-
 RO[Package == "MASS"]
-Add[Package == "boot | survival"]
+Add[Package == "MASS"]
 ```
 
 
-
-
-# -----------------------------------------------------
-#   packages in ~/R/x86_64-pc-linux-gnu-library/4.3/ 
-#   List these packages  (29)
-#   Add
-# -----------------------------------------------------
-
-##  save to dt
-##   joins
-packages in both locations
-packages only in /usr/lib/R/library
+#------------------------------------------------------------
+Using dt and joins, FIND:
+-   packages in both locations
+-   packages only in /usr/lib/R/library
+REF:  joins: 999_DT_example.R (~ line 400)
+#------------------------------------------------------------
 
 Both, inner join
 ```{r}
-Add[RO, nomatch=NULL, on=.(Package)]
-dt_all = as.data.table(p)
-dt_all
-dt_read_only = as.data.table(dplyr::filter(p, LibPath== "/usr/lib/R/library"))
-dt_read_only
+both = Add[RO, nomatch=NULL, on=.(Package)]   # 7 packages
 
-## NOTE:   c("Package", "LibPath")  fails
-setkey(x=dt_all, Package, LibPath)
-head(dt_all)
+both[, .(Package)]
 
-setkey(x=dt_read_only, Package, LibPath)
-dt_read_only
-
-
-
-
-## in both
-dt_all[dt_read_only, .(Package, LibPath, RO.url = LibPath), nomatch=0, .on=.(Package, LibPath)]
-
-##  only in /usr/lib/R
-## in /usr/lib/R/library but NOT ~/R/x86_64-pc-linux-gnu-library/4.3/
-dt_all[dt_read_only, on=.c("Package", "LibPath")]
-
-
-
-
+# Check
+RO[Add, nomatch=NULL, on=.(Package)]   # 7 packages
 ```
 
+#------------------------------------------------------------
 
+LEGACY
+#------------------------------------------------------------
 
 Update old.packages
 ```{r}
