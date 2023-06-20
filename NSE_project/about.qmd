@@ -1,5 +1,15 @@
 ---
 title: "About"
+format:
+  html:
+    embed-resources: true
 ---
 
 About this site
+```{r}
+#| comment= "**"
+citation("data.table")
+```
+#| echo: false
+#| comment: ''
+
