@@ -14,70 +14,29 @@ output:
     toc_depth:  2   
 fontsize: 11pt   
 geometry: margin=0.5in,top=0.25in   
-TAGS:  Rscripts, update
+TAGS:  RPI, rpi,Rscripts
 ---
 
-# ---------------------------------------- PURPOSE -------------------------------------------
--   Collect functions to manage updates, 3rd party updates, library locations, etc.
--   Polished version? SEE  Rscripts in jimTools
--   DEEPER PROBE?             see 0088A_
-# -----------------------------------------------------------------------------------
-https://stackoverflow.com/questions/4090169/elegant-way-to-check-for-missing-packages-and-install-them
+This is DEEPER version of 0088_
+0088 is more streamlined.
+Rscripts/jim Tools - is intended for daily produciton
+TODO:
+-   W-I-P
+-   anything NOT necessary in 0088; Doc here!
+-   any in devtools?
+-   find.package to find packages in TWO locations
 
 SEE ALSO:
 -   (update issues) https://github.com/ColinGoodall1/editUtilsR
 SEE ALSO:  ~/code/zsh_scripts_project/071_run_R_to_update_packages.sh
 SEE ALSO:  0512_system_tools.R_
-
-TODO:
--   W-I-P, more to debug
--   Then get Rscripts version to work
--   DEEPER Version:   use 088A_ 
-
-# -------------------
-1.  Update old.packages
-# -------------------
-```{r}
-update.packages(oldPkgs= old.packages())
-```
-
-### =========================
-###   UPDATE  - 2 step process?
-###   jimTools - has newer version of this
-### =========================
-
-Ask:  if directory is not writable prompt user to OK ~/R/x86_64-pc-linux-gnu-library/4.3/
-
-*   Use checkBuilt= T to force
-```{r update_old}
-update.packages(ask = F,
-                oldPkgs = old.packages(),
-                checkBuilt=F)
-```
-
-```{r upgrade}
-{
-begin  <- Sys.time()
-    update.packages(ask = FALSE , checkBuild=TRUE)
-    end  <- Sys.time()
-    diff  <- end - begin
-    diff
-}
-
-# ---------------------------------------------
-### Remove Package
-# ---------------------------------------------
-```{r}
-if (FALSE) remove.packages("cellranger")
-```
-
-OPTIONAL
+https://stackoverflow.com/questions/4090169/elegant-way-to-check-for-missing-packages-and-install-them
 
 #---------------------------------------------
-##  Installed Packages
+Currently Installed Packages
 # ---------------------------------------------
 ```{r}
-library(dplyr)                         # Not BASE, but easier  
+library(dplyr)
 tmp = as_tibble(installed.packages())
 names(tmp)
 #  [1] "Package"               "LibPath"              
@@ -89,14 +48,12 @@ names(tmp)
 # [13] "OS_type"               "MD5sum"               
 # [15] "NeedsCompilation"      "Built"                
 
-p = tmp |> dplyr::select(c("Package", "Version", "LibPath",  "Built"))
+p = tmp |> select(c("Package", "Version", "LibPath",  "Built"))
+str(p)
 ```
-
-# -----------------------------------------------------------------------------------
-#                       LEGACY (more 088A)
-# -----------------------------------------------------------------------------------
-
+# ---------------------------------------------
 ### unique paths
+# ---------------------------------------------
 ```{r}
 p |> select("LibPath")  |> count(LibPath) 
 # # A tibble: 2 × 2
@@ -115,7 +72,6 @@ p$LibPath[grepl(pattern="/usr/lib/", x=p$LibPath)]
 print(dplyr::filter(p, LibPath == "/usr/lib/R/library") ,
     n=29)
 ```
-
 
 
 # ---------------------------------------------
@@ -169,6 +125,7 @@ t  <- tibble(pkg=l$tibble)
 t
 ##### 010-for <pkg>, find packages dependent upon it
 ```
+
 # ------------------------------------------------------------
 ###	PROBLEM:  R pkgs   - can be in TWO locations !!!	
 # ------------------------------------------------------------
@@ -219,10 +176,12 @@ In find.package("MASS", verbose = T) :
   
 ```
 
-
-
-
-
+# ---------------------------------------------
+### Remove Package
+# ---------------------------------------------
+```{r}
+if (FALSE) remove.packages("cellranger")
+```
 
 
 # ---------------------------------------------
@@ -315,6 +274,5 @@ ipt %>% filter(Package=="BH")
 
 uninstall(BH)
 ```
-
 
 
