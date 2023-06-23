@@ -43,16 +43,20 @@ update.packages(oldPkgs= old.packages())
 
 ### =========================
 ###   UPDATE  - 2 step process?
-###   jimTools - has newer version of this
 ### =========================
 
 Ask:  if directory is not writable prompt user to OK ~/R/x86_64-pc-linux-gnu-library/4.3/
 
 *   Use checkBuilt= T to force
+NOTE:    if dir not writeable, R asks to use personal directory (independent of value for `ask`)
+instlib =  avoids the warning
+ask = refers to each individual update
+checkBuilt=T    turns a package into `old` if compiled under older R version
 ```{r update_old}
-update.packages(ask = F,
+update.packages(ask = F,    ## TRUE means asks for each pkg
                 oldPkgs = old.packages(),
-                checkBuilt=F)
+                instlib = .libPaths()[[1]],       # avoids WARNING that R_HOME not writable
+                checkBuilt=T)
 ```
 
 ```{r upgrade}

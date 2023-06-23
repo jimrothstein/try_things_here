@@ -1,30 +1,32 @@
---
-title: "`r knitr::current_input()`"
-date: "`r paste('last updated', 
-    format(lubridate::now(), ' %d %B %Y'))`"
-output:   
-  html_document:  
+---
+title: " update_packages.qmd "  
+author: "JR"  
+date: "5/22/2021"  
+pdf-engine: lualatex  
+format:   
+  html:  
         code_folding: show
         toc: true 
-        toc_depth: 2
+        toc_depth: 3
         toc_float: true
-  pdf_document:   
-    latex_engine: xelatex  
-    toc: true
-    toc_depth:  2   
-fontsize: 11pt   
-geometry: margin=0.5in,top=0.25in   
+        embed-resources:  true
+execute:
+    error: true 
+    warning: true
+    collapse: true
+    standalone: true
 TAGS:  RPI, rpi,Rscripts
 ---
 
 This is DEEPER version of 0088_
 0088 is more streamlined.
 Rscripts/jim Tools - is intended for daily produciton
-TODO:
--   W-I-P
--   anything NOT necessary in 0088; Doc here!
--   any in devtools?
--   find.package to find packages in TWO locations
+
+TODO:  
+    *    W-I-P
+    *    anything NOT necessary in 0088; Doc here!
+*   any in devtools?
+*   find.package to find packages in TWO locations
 
 SEE ALSO:
 -   (update issues) https://github.com/ColinGoodall1/editUtilsR
@@ -32,11 +34,39 @@ SEE ALSO:  ~/code/zsh_scripts_project/071_run_R_to_update_packages.sh
 SEE ALSO:  0512_system_tools.R_
 https://stackoverflow.com/questions/4090169/elegant-way-to-check-for-missing-packages-and-install-them
 
-#---------------------------------------------
-Currently Installed Packages
-# ---------------------------------------------
+### =========================
+###   UPDATE  - 2 step process?
+### =========================
+
+Ask:  if directory is not writable prompt user to OK ~/R/x86_64-pc-linux-gnu-library/4.3/
+
+*   Use checkBuilt= T to force
+NOTE:    if dir not writeable, R asks to use personal directory (independent of value for `ask`)
+instlib =  avoids the warning
+ask = refers to each individual update
+checkBuilt=T    turns a package into `old` if compiled under older R version
+```{r update_old}
+update.packages(ask = F,    ## TRUE means asks for each pkg
+                oldPkgs = old.packages(),
+                instlib = .libPaths()[[1]],       # avoids WARNING that R_HOME not writable
+                checkBuilt=T)
+```
+
+```{r upgrade}
+{
+begin  <- Sys.time()
+    update.packages(ask = FALSE ,  instlib= .libPaths()[[1]], checkBuild=TRUE)
+    end  <- Sys.time()
+    diff  <- end - begin
+    diff
+}
+```
+***
+### List Currently Installed Packages
+***
+
 ```{r}
-library(dplyr)
+suppressMessages(library(dplyr))
 tmp = as_tibble(installed.packages())
 names(tmp)
 #  [1] "Package"               "LibPath"              
@@ -51,9 +81,10 @@ names(tmp)
 p = tmp |> select(c("Package", "Version", "LibPath",  "Built"))
 str(p)
 ```
-# ---------------------------------------------
-### unique paths
-# ---------------------------------------------
+***
+###     Show unique paths
+***
+
 ```{r}
 p |> select("LibPath")  |> count(LibPath) 
 # # A tibble: 2 × 2
@@ -63,22 +94,20 @@ p |> select("LibPath")  |> count(LibPath)
 # 2 /usr/lib/R/library                             29
 ```
 
-# -----------------------------------------------------
-#   /usr/lib/R/library is NOT updatable (only sudo)
-#   List these packages  (29)
-# -----------------------------------------------------
+-----------------------------------------------------
+
+### Packages in /usr/lib/R/library, which is NOT updatable (only sudo can)
+
+-----------------------------------------------------
 ```{r}
-p$LibPath[grepl(pattern="/usr/lib/", x=p$LibPath)]
+# p$LibPath[grepl(pattern="/usr/lib/", x=p$LibPath)]
 print(dplyr::filter(p, LibPath == "/usr/lib/R/library") ,
     n=29)
 ```
-
-
-# ---------------------------------------------
-## ENV variables
-# ---------------------------------------------
+***
+###  ENV variables
+***
 *  See: https://stat.ethz.ch/R-manual/R-devel/library/base/html/EnvVar.html
-# /usr/lib/R
 ```{r}
 (r_home <-R.home(component="home")) # [1] "/usr/lib/R"
 Sys.getenv("R_HOME") 			# /usr/lib/R ; where R installed
@@ -103,9 +132,10 @@ R.version.string     # [1] "R version 4.3.0 (2023-04-21)"
 ```
 
 # ---------------------------------------------
-Dependncies
-TODO:   utils::depends(pkg =  c(), dependencies=c ())
+### Dependncies  
+TODO:   utils::depends(pkg =  c(), dependencies=c ())    
 # ---------------------------------------------
+
 ```{r}
 # For each installed pkg, find its dependencies
 #### return list of character vectors, ~15,293 
@@ -168,12 +198,11 @@ m
     # must use verbose=T, to get 
     x = find.package("MASS", verbose=T)
 
-Warning message:
-In find.package("MASS", verbose = T) :
-  package ‘MASS’ found more than once, using the first from
-  “/home/jim/R/x86_64-pc-linux-gnu-library/4.3/MASS”,
-  “/usr/lib/R/library/MASS”
-  
+# Warning message:                       # 
+# In find.package("MASS", verbose = T) :
+#   package ‘MASS’ found more than once, using the first from
+#   “/home/jim/R/x86_64-pc-linux-gnu-library/4.3/MASS”,
+#   “/usr/lib/R/library/MASS”
 ```
 
 # ---------------------------------------------
@@ -188,7 +217,7 @@ if (FALSE) remove.packages("cellranger")
 ### LEGACY
 # ---------------------------------------------
 ### Loads,  but does not attach; TRUE if able to load.
-```{r}
+```{r, eval=F}
 check_suggests <- function(package) {
   if (!requireNamespace(package, quietly = TRUE)) {
     #stop("Suggested package '{package}' not present.")
@@ -207,11 +236,8 @@ check_suggests("ggplot2")
 # apt-get cache search "^r-*" | sort
 
 
-```
 #### 4-.libPaths(), list all paths, purpose, name
 ```{r}
-
-
 .libPaths()
 # fix:
 
@@ -272,7 +298,7 @@ ipt %>%
 #### Find (and remove) package BH (it is gone!)
 ipt %>% filter(Package=="BH") 
 
-uninstall(BH)
+# uninstall(BH)
 ```
 
 
