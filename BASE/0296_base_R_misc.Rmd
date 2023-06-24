@@ -29,6 +29,11 @@ knitr::opts_chunk$set(echo = TRUE,
 											collapse=F) 
 ```
 
+### assign
+```{r}
+assign("x", 5)                         # must be quotes (string) 
+x
+```
 
 ### Not so keen on \code{else if} construct.
 ```{r if}

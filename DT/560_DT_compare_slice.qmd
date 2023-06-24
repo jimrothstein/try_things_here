@@ -1,0 +1,79 @@
+
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+fontsize: 11pt   
+geometry: margin=0.5in,top=0.25in   
+TAGS:  data.table,purrr,structure,dput,normalize,starwars
+---
+
+PURPOSE:    Compare dplyr::slice to data.table::
+
+
+REF:  https://yjunechoe.github.io/posts/2023-06-11-row-relational-operations/
+```{r setup, include=FALSE		}
+library(data.table)
+library(dplyr)
+```
+###     Row 
+```{r}
+starwars_sm <- dplyr::starwars[1:10, 1:3]
+starwars_sm
+dt  <- data.table::as.data.table(starwars_sm)
+```
+```{r}
+  dt[1:6]                              # first 6 rows 
+
+## last
+  last(dt)
+  last(dt, n=3)
+
+dt[, .N]
+dt[c(1:.N), .N]                        # TODO
+
+## arbitrary
+dt[1:2]
+dt[c(1,3)]
+dt[c(1, 4:5)]
+
+
+## row_number
+
+starwars_sm
+starwars_sm |> slice( row_number() )   # RANK 
+dt
+
+(v = c(1,2,4,3))
+# [1] 1 2 4 3
+
+seq_along(v)                           # seq of length(v) 
+# [1] 1 2 3 4
+
+(base::rank(v))
+# [1] 1 2 4 3
+ 
+## TODO
+v = c(5:1)
+rank(v)
+dt[1:3]
+dt[-(1:3)]
+
+```
+
+
+
+
+
+
+
