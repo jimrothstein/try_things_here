@@ -91,7 +91,8 @@ p |> select("LibPath")  |> count(LibPath)
 #   LibPath                                         n
 #   <chr>                                       <int>
 # 1 /home/jim/R/x86_64-pc-linux-gnu-library/4.3   157
-# 2 /usr/lib/R/library                             29
+# 2 /opt/R/4.3.1/lib/R/library                     29 (eff 23JUNE 2023)
+# 2 /usr/lib/R/library                             29 (deprecated)
 ```
 
 -----------------------------------------------------
@@ -101,6 +102,12 @@ p |> select("LibPath")  |> count(LibPath)
 -----------------------------------------------------
 ```{r}
 # p$LibPath[grepl(pattern="/usr/lib/", x=p$LibPath)]
+
+.libPaths()
+# [1] "/home/jim/R/x86_64-pc-linux-gnu-library/4.3"
+# [2] "/opt/R/4.3.1/lib/R/library"                 
+print(dplyr::filter(p, LibPath == "/opt/R/4.3.1/lib/R/library") , n=29)
+
 print(dplyr::filter(p, LibPath == "/usr/lib/R/library") ,
     n=29)
 ```
