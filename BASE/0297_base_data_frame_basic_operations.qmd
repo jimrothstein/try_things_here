@@ -1,0 +1,27 @@
+
+## BASE:   basic data.frame operations
+-   subset
+-   aggregate
+-   with
+-   transform
+
+## subset rows
+```{r}
+df  <-  mtcars
+df |>
+    subset(hp > 200)
+```
+
+## select columns
+```{r}
+df[, c("mpg", "cyl")]
+```
+```
+
+base::transform
+  -   allows unquoted operations on column in data.frame
+  -   adds new column
+```{r}
+transform(mtcars, twice = hp * 2) |> head(n=3)
+```
+
