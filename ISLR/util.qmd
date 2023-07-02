@@ -1,0 +1,7 @@
+
+## mkdir  new directory
+```{r}
+
+dir.create("03_chapter")
+list.files()
+```

@@ -1,0 +1,51 @@
+```{r}
+library("MASS")
+library("ISLR")
+library("skimr")
+```
+
+### Boston, predict median house (medv), 12 predictors
+```{r}
+head(Boston)
+names(Boston)
+dim(Boston) # [1] 506  14
+
+```
+
+###     Plots
+```{r}
+plot(lstat, medv)
+plot(crim, medv)                       # crime
+plot(age, medv)                        # age 
+plot(rm, medv)                         # rooms
+plot(tax, medv)
+plot(ptratio, medv)                    # pupil-teacher 
+plot(chas, medv)                       # near Charles (categorical)
+```
+```{r}
+skimr::skim(Boston[["medv"]])
+skim(medv)
+skim(lstat)
+max(lstat)   # $38,000, most expensive medv house !
+
+## add to search path, so can use unquoted variable names (environment)
+attach(Boston)
+search()
+```
+```{r}
+lm.fit  <- lm(medv ~ lstat, data=Boston)
+lm.fit
+
+summary(lm.fit)
+```
+```{r}
+plot(lstat, medv)
+plot(crim, medv)                       # crime
+plot(age, medv)                        # age 
+plot(rm, medv)                         # rooms
+plot(tax, medv)
+plot(ptratio, medv)                    # pupil-teacher 
+plot(chas, medv)                       # near Charles (categorical)
+ ```
+
+

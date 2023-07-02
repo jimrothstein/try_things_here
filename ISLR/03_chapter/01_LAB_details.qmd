@@ -1,0 +1,33 @@
+
+
+### Use multiple samples of Boston, training data
+```{r}
+library("MASS")
+library("ISLR")
+library("skimr")
+```
+
+### Boston, predict median house (medv), 12 predictors
+```{r}
+head(Boston)
+names(Boston)
+dim(Boston) # [1] 506  14
+```
+
+### Choose from 1:length(Boston) , each size = size, take K of these
+### TODO:   use lapply
+```{r}
+
+size=10
+rnumber = sample(x=1:nrow(Boston),size=size,  replace=FALSE)
+rnumber
+(sample_k = Boston[rnumber , c("lstat", "medv") ])
+str(sample_k)
+attributes(sample_k) ## includes $row.names (numbered)
+```
+
+
+### each K samples, compute coef, sd
+
+
+### take average
