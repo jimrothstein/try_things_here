@@ -1,0 +1,58 @@
+Chapter 3
+
+
+```{r}
+library(ISLR2)
+library(MASS)
+data(package="MASS")
+data(package="ISLR2")
+
+library(ggplot2)
+library(dplyr)
+library(readr)
+```
+### Download Advertising
+```{r}
+Advertising = read_csv(
+    "https://www.statlearning.com/s/Advertising.csv",
+    col_types = "-dddd",
+    skip = 1,
+    col_names = c("row", "TV", "radio", "newspaper", "sales")
+  ) 
+
+
+
+```
+
+##  plot
+```{r}
+read_csv(
+    "https://www.statlearning.com/s/Advertising.csv",
+    col_types = "-dddd",
+    skip = 1,
+    col_names = c("row", "TV", "radio", "newspaper", "sales")
+  ) %>% 
+  pivot_longer(cols = -sales) %>% 
+  ggplot(aes(value, sales)) +
+  geom_point(shape = 21, color = "red") +
+  geom_smooth(method = "lm", color = "blue",
+              se = FALSE, formula = "y ~ x") +
+  facet_wrap(vars(name),
+             scales = "free_x",
+             strip.position = "bottom") +
+  theme_bw() +
+  theme(strip.placement = "outside",
+        panel.grid = element_blank(),
+        strip.background = element_blank()) +
+  labs(x = NULL,
+       caption = "Source: https://www.statlearning.com/s/Advertising.csv | A simple least squares fit shown in blue")
+```
+```{r}
+fit  <- lm(Advertising$sales ~ Advertising$TV)
+summary(fit)
+plot(Advertising$TV, Advertising$sales)
+
+```
+
+
+
