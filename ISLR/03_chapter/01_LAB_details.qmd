@@ -1,4 +1,5 @@
 
+ISLR Chapter 3.6 - LAB
 
 ### Use multiple samples of Boston, training data
 ```{r}
@@ -10,14 +11,15 @@ library("skimr")
 ### Boston, predict median house (medv), 12 predictors
 ```{r}
 head(Boston)
+?Boston
 names(Boston)
 dim(Boston) # [1] 506  14
 ```
 
+### Training Data (TODO)
 ### Choose from 1:length(Boston) , each size = size, take K of these
 ### TODO:   use lapply
 ```{r}
-
 size=10
 rnumber = sample(x=1:nrow(Boston),size=size,  replace=FALSE)
 rnumber
@@ -26,8 +28,66 @@ str(sample_k)
 attributes(sample_k) ## includes $row.names (numbered)
 ```
 
+### lm.fit
+```{r}
+fit  <- lm(medv ~ lstat, data=Boston)
+```
 
-### each K samples, compute coef, sd
+### Compute important numbers
+### summary(lm.fit)
+### NOTES:  506 residues
+```{r}
+summary(fit)
+
+names(fit)
+#  [1] "coefficients"  "residuals"     "effects"       "rank"         
+#  [5] "fitted.values" "assign"        "qr"            "df.residual"  
+#  [9] "xlevels"       "call"          "terms"         "model"        
+
+## fit$coef
+    fit$coefficients
+# (Intercept)       lstat 
+#       34.55       -0.95 
+
+## sum of square residuals
+    sum( (fit$residuals)^2 )            # 19,472
+
+## model, df of medv, lstat
+    fit$model  
+
+## confi Inter
+    confint(fit)
+#             2.5 % 97.5 %
+# (Intercept) 33.45 35.659              # CI for B0   
+# lstat       -1.03 -0.874
+
+```
+## fails
+```{r}
+dev.new()
+plot(fit)
+dev.off()
+```
+
+###     Plots
+```{r}
+attach(Boston)
+plot(lstat, medv)
+abline(fit, lwd=3, col="red")
+```
+
+###  Plot 4,  residues do not look normal or same variance
+```{r}
+## set  paramaters, for 2 x 2 pltos
+par(mfrow = c(2, 2))
+plot(fit)
+
+```
 
 
-### take average
+
+
+
+
+
+

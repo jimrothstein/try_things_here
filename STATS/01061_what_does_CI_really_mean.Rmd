@@ -31,8 +31,7 @@ r  <- sample(x = 0:1,
              prob = c(0.6, 0.4))
 r
 sum(r) #31
-p_bar = sum(r)/n
-p_bar   # 0.413
+(p_bar = sum(r)/n) # [1] 0.4
 
 #####   OR 
 # ===========================================
@@ -64,7 +63,6 @@ one_sample  <- function(DUMMY = null) {  # 1 sample
     invisible()
 }
 
-
 ans  <- lapply(0:99, one_sample)
 
 # view
@@ -73,15 +71,12 @@ t
 print(t, n=100)
 
 # to see only FALSE   
-t[!t$contains_TRUE,]
-t[!t$contains_TRUE,]
+    t[!t$contains_TRUE,]
 
 # order
 z  <- print(t[order(-t$L),], n=100)
 head(z)
 tail(z)
-
-
 ```
 ## plots
 ```{r plot}
@@ -111,10 +106,4 @@ abline(h = 35, col=2)
 dev.off()
 ```
 
-```{r render, eval=FALSE  }
-file  <- "rmd/01060_sampling_BINOM.Rmd"
-rmarkdown::render(file,  
-                  output_format = "html_document",
-                  output_file="~/Downloads/print_and_delete/out") 
-```
 

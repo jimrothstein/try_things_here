@@ -1,0 +1,41 @@
+Chapter 03
+Problem #8 (applied)
+
+## auto
+```{r}
+library(ISLR2)
+library(broom)
+data(package="ISLR2")
+attach(Auto)
+search()
+
+dim(Auto) # [1] 392   9
+
+```
+```{r}
+fit  <- lm(mpg ~ horsepower)
+summary(fit)
+broom::tidy(fit)
+confint(fit)
+#              2.5 % 97.5 %
+# (Intercept) 38.525 41.347
+# horsepower  -0.171 -0.145
+
+fit2  <- lm(mpg ~ 1)
+summary(fit2)
+
+?predict
+predict.lm(fit, mpg=98)#
+predict.lm(fit, data.frame(mpg=98), interval="prediction")#
+
+pred = +39.9 + -0.16*98
+pred # [1] 24.2 mpg
+
+
+```
+
+i)  predictor and response ARE related
+ii) strength?
+iii) negative (-0.16)
+iv) if hp = 98
+
