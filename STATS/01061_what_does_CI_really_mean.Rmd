@@ -36,7 +36,9 @@ sum(r) #31
 #####   OR 
 # ===========================================
 ## What does 95% confident actually mean??
-## rbinom (n=1, size = 75, prob= 0.4)retrun string of yes/no, 1,0  (size # trials)
+
+## rbinom (n=1, size = 75, prob= 0.4):  ren string of yes/no, 1,0  (size # trials)
+
 ## To me:  n=1 means 1 SAMPLE, 
 ## size=throws in 1 SAMPLE, 
 ## return is # successes in 1 SAMPLE
@@ -50,34 +52,57 @@ t  <- tibble::tibble()
 
 one_sample  <- function(DUMMY = null) {  # 1 sample
 
+    # true value
     prob = 0.4
+
+    # p_bar is percentage heads 
     p_bar  <- rbinom(n=1, size=75, prob = prob)/N
-    ## And the range?
+
+    ## And the range, for any single p_bar, standard error
     se_bar = sqrt( p_bar * (1 - p_bar)/N)
+    ## CI
     L  <- p_bar - 1.96*se_bar
     U  <- p_bar + 1.96*se_bar
-    # cat("p_bar = ", p_bar, "\n", "CI = ", "(", L, ", ", U, ")",  "\n")
     contains_TRUE =  (L < prob)   && ( prob < U )
     new  <- tibble::tibble(p_bar = p_bar, L=L, U=U, contains_TRUE = contains_TRUE)
     t <<- rbind(t, new)
     invisible()
 }
-
-ans  <- lapply(0:99, one_sample)
+#   Run experiment many, many times (expected value)
+lapply(0:9999, one_sample)
 
 # view
 t
+t[order(t$L), ]
+hist(t$p_bar)
 
 print(t, n=100)
 
-# to see only FALSE   
-    t[!t$contains_TRUE,]
 
-# order
-z  <- print(t[order(-t$L),], n=100)
-head(z)
-tail(z)
+nrow(z[!z$contains_TRUE,])
 ```
+
+## Plot sample estimate with error bars
+```{r}
+
+NAME <- c("A", "A", "B", "B", "C", "C")
+ YEAR <- c(2016, 2011, 2016, 2011, 2016, 2011)
+ YEAR <- as.factor(YEAR)
+ VALUE <- c(1, 4, 1, 5, 2, 8)
+ DATA <- data.frame(NAME, YEAR, VALUE)
+ DATA
+
+rownames(t)
+
+ggplot(t, aes(x = L,y = rownames())  ) +
+  geom_line(arrow = arrow(length=unit(0.30,"cm"), ends="first", type = "closed"))
+
+ggplot(DATA, aes(x=VALUE, y=NAME)) + 
+  #geom_point(size=5, aes(colour=YEAR)) +
+  geom_line(arrow = arrow(length=unit(0.30,"cm"), ends="first", type = "closed"))
+
+```
+
 ## plots
 ```{r plot}
 

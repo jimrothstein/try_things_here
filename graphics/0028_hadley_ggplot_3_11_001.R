@@ -3,18 +3,19 @@ TAGS:
 ---
 #hadley_ggplot_3_11_001.R
 
-# se
-# http://ms.mcmaster.ca/~bolker/misc/ggplot2-book.pdf
-require(tidyverse)
+# line segments (bottom) 
+library(ggplot2)
 
 # ---- 001-histogram ----
 ggplot(diamonds, aes(depth)) +
         geom_histogram(binwidth=0.1) + 
         xlim(55, 70)
-g <- ggplot(diamonds, aes(depth)) 
-g <- g + geom_histogram(binwidth = 0.1)
-g <- g + xlim(55,70)
-g
+
+## build piece by piece
+    g <- ggplot(diamonds, aes(depth)) 
+    g <- g + geom_histogram(binwidth = 0.1)
+    g <- g + xlim(55,70)
+    g
 
 
 caption <-"caption"
@@ -205,4 +206,50 @@ ggplot(diamonds, aes(carat, price)) + geom_point()
 ggplot(aes(log(brainwt), log(bodywt)), data = msleep) + geom_point()
 str(msleep) # brainwt, bodywt both num
 
-# PLOT 3
+# ---------------------------------------
+##  Arrows
+# ---------------------------------------
+NAME <- c("A", "A", "B", "B", "C", "C")
+ YEAR <- c(2016, 2011, 2016, 2011, 2016, 2011)
+ YEAR <- as.factor(YEAR)
+ VALUE <- c(1, 4, 1, 5, 2, 8)
+ DATA <- data.frame(NAME, YEAR, VALUE)
+ DATA
+
+ggplot(DATA, aes(x=VALUE, y=NAME)) + 
+  geom_point(size=5, aes(colour=YEAR)) +
+  geom_line(arrow = arrow(length=unit(0.30,"cm"), ends="first", type = "closed"))
+
+# ---------------------------------------
+#  Multiple line segments: 
+# ---------------------------------------
+# http://ms.mcmaster.ca/~bolker/misc/ggplot2-book.pdf
+# segmens and color
+#
+#   # background points
+    data <- data.frame(x = 1:6,                      # Create example data frame
+                   y = c(5, 3, 4, 8, 2, 3))
+#   base plot
+    ggp <- ggplot(data, aes(x, y)) +                 # Create ggplot2 plot without lines & curves
+    geom_point()
+    ggp                                              # Draw ggplot2 plot
+
+    # segments
+
+    # my segments (horizontal)
+    data_lines <- data.frame(x = c(2,2,2),                # Create data for multiple segments
+                            y = c(2,3,4),
+                            xend = c(4,4,4),
+                            yend = c(2,3,4),
+                            col = paste0("line_", letters[1:3]))
+    data_lines       
+
+ggp +                                            # Draw multiple line segments
+  geom_segment(data = data_lines,
+               aes(x = x,
+                   y = y,
+                   xend = xend,
+                   yend = yend,
+                   col = col,
+                   arrow = rep(arrow(), 3  )))
+
