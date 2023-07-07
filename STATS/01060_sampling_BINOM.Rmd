@@ -31,7 +31,9 @@ library(tibble)
 ```
 
 
+# ---------------------------------
 ##  Toss coin 100 times, # heads?
+# ---------------------------------
 ```{r rbinom}
 # 1 sample(set 100 obs)
 
@@ -46,9 +48,10 @@ x #52
 ```
 
 
-## Repeat 40 times, each one is 100 flips, # heads? 
+## Repeat with 40  times, each one is 100 flips, # heads? 
 ```{r repeat_experiment}
 B  <- 40
+B  <- 1000
 
 x <- rbinom(n=B, size=n, p=0.5)
 x # int[B], vector of size B, number of SUCCESSes in each  
@@ -122,21 +125,18 @@ BEGIN HERE, CI
 
 # FOR REAL
 set.seed(1492)
-nExp = 100
-nThrows = 1000 # IN EACH TRIAL
+B = 100                                # B, number samples 
+n = 1000                               # n, throws in  each trial
 X  <- sample(x = c(1,0),
-		size= nThrows* nExp,# NUMBER THROWS
+		size= B * n,# NUMBER THROWS
 		replace= TRUE,
 		prob= c(0.5,0.5)
 		)
-#X # VECTOR_DBL, ATOMIC
 
-#M <- AS.MATRIX(X, NROW = NtHROWs, ncol=nExp, byrow=TRUE)
-## matrix fill first by column, then next row
-m <- matrix(rbinom(n=nExp*nThrows, 
+m <- matrix(rbinom(n=B * n, 
 		   size=1,
 		   0.5), 
-	    ncol=nExp) # n total number of random
+	       ncol=n) # 
 m[1,1]
 ## test
 m1 <- matrix (rbinom(n=nExp*nThrows,size=1,
@@ -184,27 +184,15 @@ cat("p_bar = ", p_bar, "\n", "CI = ", "(", L, ", ", U, ")",  "\n")
 contains_TRUE =  p_bar >= L   && p_bar <= U
 contains_TRUE
 
-#####   OR 
-# ===========================================
+# ------------------------------------------
 ## What does 95% confident actually mean??
-## rbinom (n=1, size = 75, prob= 0.4)retrun string of yes/no, 1,0  (size # trials)
-## To me:  n=1 means 1 SAMPLE, 
-## size=throws in 1 SAMPLE, 
-## return is # successes in 1 SAMPLE
-##
-## n =2 means, return will be 2 values, one for each sample
-##
-###  FUNCTION
-###
- N=75
-t  <- tibble::tibble()
-
+# ------------------------------------------
 one_sample  <- function(DUMMY = null) {  # 1 sample
+    # proporation, each trial: 
+    p_bar  <- sum(rbinom(n=1, size=size, prob = prob))/size
 
-    prob = 0.4
-    p_bar  <- rbinom(n=1, size=75, prob = prob)/N
-    ## And the range?
-    se_bar = sqrt( p_bar * (1 - p_bar)/N)
+    ## And the range in proportion, each trial?
+    se_bar = sqrt( p_bar * (1 - p_bar)/size)
     L  <- p_bar - 1.96*se_bar
     U  <- p_bar + 1.96*se_bar
     # cat("p_bar = ", p_bar, "\n", "CI = ", "(", L, ", ", U, ")",  "\n")
@@ -214,8 +202,13 @@ one_sample  <- function(DUMMY = null) {  # 1 sample
     invisible()
 }
 
+size =  1000                            # each trial, number throws 
+B    =  1000                           # number of trials 
+prob = 0.5 
 
-ans  <- lapply(0:99, one_sample)
+t  <- tibble::tibble()
+
+lapply(0:B, one_sample)
 
 # view
 t
@@ -223,21 +216,11 @@ print(t, n=100)
 
 # to see only FALSE   
 t[!t$contains_TRUE,]
-t[!t$contains_TRUE,]
+count(t[!t$contains_TRUE,])   # 64
 
 # order
 print(t[order(-t$L),], n=100)
 
-###
-f  <- function(x) invisible(print("hi"))
-f()
-r  <- lapply(0:1, f)
-
-
-#### ARGH!  need dummy variable
-f  <- function(dummy) {print("hi")}
-
-l  <-   lapply (1:2, f)
 ```
 ## plots
 ```{r plot}
@@ -249,28 +232,20 @@ png(filename = paste0("~/Downloads/print_and_delete/" , file,".png"),
          type = c("cairo", "cairo-png", "Xlib", "quartz")
 )
 
- hist(x)
-# boxplot(x, col="green", names=c("UrOx"))
+mean(t$p_bar)
 
-stripchart(x = x, 
-           ylim=c(0, 225),
-           pch = 1, 
-           cex = 0.5,
-           frame = TRUE, 
-           vertical = TRUE,
-           main = "24-hour Ur Ox")
+var(t$p_bar)                           # 0.000238 
 
-abline(h = 35, col=2)
-
-# plot(x, fake, ylim = c(-5, 5), sub = "t-value = 21.5", type = "p")
-# abline(h = fake_mean, col=2)
+hist(t$p_bar)
 dev.off()
+
+##   Theory, count should be np,  sd should be sqrt(size*p*q)
+##   n=100 per throw, p = 1/2
+##   expect 50, 2 * 5 = 10  (95%) 
+##   5, +- 2* 1/sqrt(10)
+##   5 +- 2*sqrt(p*p/n)
+n
+2*sqrt(p*p/n)                          # 0.1 
 ```
 
-```{r render, eval=FALSE  }
-file  <- "rmd/01060_sampling_BINOM.Rmd"
-rmarkdown::render(file,  
-                  output_format = "html_document",
-                  output_file="~/Downloads/print_and_delete/out") 
-```
 
