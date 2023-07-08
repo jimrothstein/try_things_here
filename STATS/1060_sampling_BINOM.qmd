@@ -1,12 +1,11 @@
 ---
 title:  "`r knitr::current_input()`"
 date: "`r lubridate::today()`"
-output:
+format:
     html_document:
         toc: true 
         toc_depth: 3
         toc_float: true
-font_size: 10
 ---
 
 ## Binomial Sampling
@@ -22,14 +21,17 @@ Purpose:   Examples of sampling from binomial distribution
 ### rbinom(n = B, size = n, p = p) returns SUCCESSes
 
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,  
-											comment="      ##",  
-											error=TRUE, 
-											collapse=FALSE  ) 
-
 library(tibble)
 ```
 
+### Theory:   
+
+*   heads in 1 sample = n*p
+*   sd = sqrt(n*p*q)
+*   confidence interval (assuming n large enough to be 'normal'): 2 * sd 
+
+Meaning:   repeat sample 100 times, 95% of computed confidence intervals will
+include the true mean (which know is np)
 
 # ---------------------------------
 ##  Toss coin 100 times, # heads?
@@ -46,18 +48,31 @@ set.seed(2020) # 52 successes
 x <- rbinom(n = B , size=n, p=p)
 x #52
 ```
+Mean, in this sample, is 52.
 
-
-## Repeat with 40  times, each one is 100 flips, # heads? 
+## Repeat trial B  times, each one is 100 flips, # heads? 
 ```{r repeat_experiment}
-B  <- 40
+B  <- 10
 B  <- 1000
+B  <- 2000
+B  <- 10000
 
 x <- rbinom(n=B, size=n, p=0.5)
-x # int[B], vector of size B, number of SUCCESSes in each  
+head(x)
 
-hist(x)
+#   expect normal?
+mean(x) # [1] 50.4
+sd(x) # [1] 4.96
+# 95 CI
+L = mean(x) - sd(x)
+U = mean(x) + sd(x)
+
+paste0("[", as.character(L), ",",as.character(U), "]")
+hist(x, breaks=10 )
 ```
+
+Theory:
+*   mean
 
 ## Want to see each H,T for 100 throws?
 ```{r sample}
@@ -81,7 +96,6 @@ head(x)
 # creates 1 long string
 # y  <- stringr::str_c(x, collapse="")		# collapse
 # head(y)
-
 knitr::knit_exit()
 ```
 

@@ -6,6 +6,7 @@ ISLR Chapter 3.6 - LAB
 library("MASS")
 library("ISLR")
 library("skimr")
+library("broom")
 ```
 
 ### Boston, predict median house (medv), 12 predictors
@@ -97,6 +98,15 @@ abline(fit, lwd=3, col="red")
 ## set  paramaters, for 2 x 2 pltos
 par(mfrow = c(2, 2))
 plot(fit)
+
+residuals(fit)
+
+plot()
+
+## residuals
+## broom
+b = broom::augment(fit)
+plot(b$lstat, b$.resid)
 
 ```
 
