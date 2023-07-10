@@ -22,6 +22,15 @@ This is DEEPER version of 0088_
 0088 is more streamlined.
 Rscripts/jim Tools - is intended for daily produciton
 
+
+Functions:
+    -   update
+    -   upgrade
+    -   installed.packages
+    -   find.package
+
+8JULY2023   -   ran, step 2:   warns about Matrix (yes- in to places)  (R v 4.3.1)
+
 TODO:  
     *    W-I-P
     *    anything NOT necessary in 0088; Doc here!
@@ -34,6 +43,15 @@ SEE ALSO:  ~/code/zsh_scripts_project/071_run_R_to_update_packages.sh
 SEE ALSO:  0512_system_tools.R_
 https://stackoverflow.com/questions/4090169/elegant-way-to-check-for-missing-packages-and-install-them
 
+
+R version
+```{r}
+version
+
+#   loaded now
+sessionInfo()
+```
+
 ### =========================
 ###   UPDATE  - 2 step process?
 ### =========================
@@ -41,13 +59,17 @@ https://stackoverflow.com/questions/4090169/elegant-way-to-check-for-missing-pac
 Ask:  if directory is not writable prompt user to OK ~/R/x86_64-pc-linux-gnu-library/4.3/
 
 *   Use checkBuilt= T to force
-NOTE:    if dir not writeable, R asks to use personal directory (independent of value for `ask`)
+# -----------------------------------------------------------------
+NOTE:    if dir not writeable: 
+R asks to use personal directory (independent of value for `ask`)
+# -----------------------------------------------------------------
 instlib =  avoids the warning
 ask = refers to each individual update
 checkBuilt=T    turns a package into `old` if compiled under older R version
+# -----------------------------------------------------------------
 ```{r update_old}
 update.packages(ask = F,    ## TRUE means asks for each pkg
-                oldPkgs = old.packages(),
+                oldPkgs = old.packages(),         # ONLY these packages updated
                 instlib = .libPaths()[[1]],       # avoids WARNING that R_HOME not writable
                 checkBuilt=T)
 ```
@@ -173,6 +195,7 @@ ip
 ##	Look !  MASS installed in two locations
 ip |> dplyr::filter(Package==("MASS")) 
 ip |> dplyr::filter(Package==("KernSmooth")) 
+ip |> dplyr::filter(Package==("Matrix")) 
 
 ##	only 
 ip |> dplyr::filter(Package==("dplyr") )
@@ -192,6 +215,7 @@ m
      
      findPkgAll("MASS")
      findPkgAll("knitr")
+     findPkgAll("Matrix")
 ```
 
 #   Bug in find.package?

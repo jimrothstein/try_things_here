@@ -1,0 +1,45 @@
+
+https://archive.ics.uci.edu/dataset/186/wine+quality
+
+----------------------------------------------------------------------
+PURPOSE:   Given a df, select a random sample of rows (for train/test)
+REF:   
+https://archive.ics.uci.edu/dataset/186/wine+quality
+Gagolewski:  KNN
+https://lmlcr.gagolewski.com/classification-with-k-nearest-neighbours.html#k-nearest-neighbour-classifier
+----------------------------------------------------------------------
+
+### Note:  separator is ";"
+```{r}
+wines  <- read.csv("data/winequality-white.csv", comment.char="#", sep=";")
+dim(wines)
+(n <- nrow(wines)) # number of samples
+
+wines  <- as.tibble(wines)
+head(wines)
+```
+
+### Random indices
+```{r}
+set.seed(123) # reproducibility matters
+
+#   interpetes as 1:n, permute the indices in random order
+random_indices <- sample(n)
+length(random_indices) # [1] 4898
+
+head(random_indices) # preview
+```
+
+### For training, only first 10 columns; take 60% of rows (random)
+```{r}
+X  <-  wines[, 1:10]
+
+#   60% of rows
+X_train  <- X[floor(random_indices*0.6),]      # lowest int 
+dim(X_train)
+```
+
+
+
+
+
