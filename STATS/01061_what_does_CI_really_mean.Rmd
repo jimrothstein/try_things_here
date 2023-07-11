@@ -8,21 +8,29 @@ output:
         toc_float: true
 font_size: 10
 ---
-
+COIN FLIPS
 https://askgoodquestions.blog/2019/10/07/14-how-confident-are-you-part-1/
+TODO:
+-   overestimating se ?
+-   better line segments
+-   Large B,  use histogram to depict # do not containe TRUE p
+
+## What does 95% confident actually mean??
+
+Return # heads in sample of 75, fair coin: 
+`rbinom (n=1, size = 75, prob= 0.5)`:  ren string of yes/no, 1,0  (size # trials)
+
+From this ONE sample, estimate the number of heads and expected 95% CI (2 st)
+
+Repeat B times (large number), calc 2 standard deviations each time, and plot expect upper and lower.
+Compare this Theory
+
+For counts:  mean should be p*n, standard dev squrt(n*p*q)
+For proportion:   p, sqrt(p*q/n) 
+$$   $$
+
 ```{r BEGIN}
 set.seed(1492)
-
-## What does CI (Confidence Interval)  mean?
-#  ============================================
-## Suppose want to find percentage of students (many) with tatoos
-##
-## How ?   SAMPLE
-p = 0.4  # (usually do not know)
-n = 75   # students, sample size
-## FACT
-## se_bar = sqrt( p_bar * (1 - p_bar)/n)
-##
 
 ## Take a Sample  (ie string of yes/no, 1,0)
 r  <- sample(x = 0:1,
@@ -32,62 +40,61 @@ r  <- sample(x = 0:1,
 r
 sum(r) #31
 (p_bar = sum(r)/n) # [1] 0.4
+```
 
-#####   OR 
-# ===========================================
-## What does 95% confident actually mean??
 
-## rbinom (n=1, size = 75, prob= 0.4):  ren string of yes/no, 1,0  (size # trials)
+rbinom may be easier
+```{r}
 
-## To me:  n=1 means 1 SAMPLE, 
-## size=throws in 1 SAMPLE, 
-## return is # successes in 1 SAMPLE
-##
-## n =2 means, return will be 2 values, one for each sample
-##
-###  FUNCTION
-###
- N=75
 t  <- tibble::tibble()
+prob = 0.5
+n = 100
+B = 10000
+n*prob # [1] 50
+sqrt(prob*(1-prob)/n) # [1] 0.05
+2*sqrt(prob*(1-prob)/n) # [1] 0.10   (2 sd)
+.05*B   # 50
 
-##  Theory
-##  E[# heads]  = n * p
-##  VAR[# heads] = n * p *q
-prob = 0.4
-n = 75
-n*prob # [1] 30
-n*prob*(1-prob) # [1] 18
-
-one_sample  <- function(DUMMY = null) {  # 1 sample
-
-    # true value
-    prob = 0.4
-
-    # p_bar is percentage heads 
-    p_bar  <- rbinom(n=1, size=75, prob = prob)/N
+one_sample  <- function(DUMMY = NULL) {  # 1 sample
+    # p_hat is percentage heads 
+    p_hat  <- rbinom(n=1, size=n,  prob = prob)/n
 
     ## And the range, for any single p_bar, standard error
-    se_bar = sqrt( p_bar * (1 - p_bar)/N)
+    se_p_hat = sqrt( p_hat * (1 - p_hat)/n)
     ## CI
-    L  <- p_bar - 1.96*se_bar
-    U  <- p_bar + 1.96*se_bar
+    L  <- p_hat - 1.96*se_p_hat
+    U  <- p_hat + 1.96*se_p_hat
     contains_TRUE =  (L < prob)   && ( prob < U )
-    new  <- tibble::tibble(p_bar = p_bar, L=L, U=U, contains_TRUE = contains_TRUE)
+    new  <- tibble::tibble(p_hat = p_hat, L=L, U=U, contains_TRUE = contains_TRUE)
     t <<- rbind(t, new)
-    invisible()
+    invisible(t)
 }
+
+t  <- tibble::tibble()
+x = one_sample()
+x
+
+t  <- tibble::tibble()
+z = lapply(0:99, one_sample)
+nrow(t[!t$contains_TRUE,])
+
+
+
+B = 10^5
 #   Run experiment many, many times (expected value)
-lapply(0:99, one_sample)
+t  <- tibble::tibble()
+z = lapply(0:B, one_sample)
+nrow(t[!t$contains_TRUE,])
 
 # view
 t
 t[order(t$L), ]
-hist(t$p_bar)
-
 print(t, n=100)
+nrow(t[!t$contains_TRUE,])
 
-
-nrow(z[!z$contains_TRUE,])
+if (F) {
+hist(t$p_hat)
+}
 ```
 
 ## Plot sample estimate with error bars
@@ -100,7 +107,7 @@ names(t)
 head(t)
 ggplot(t, aes(x = L,xend = U,y = n,   , yend =n    )  ) +
   geom_segment(arrow = arrow(length=unit(0.10,"cm"), ends="first", type = "closed")) +
-  geom_line(x = .4)
+  geom_line(x = .5)
 ```
 ```{r}
 #   :w
@@ -134,7 +141,7 @@ png(filename = paste0("~/Downloads/print_and_delete/" , file,".png"),
          type = c("cairo", "cairo-png", "Xlib", "quartz")
 )
 
- hist(x)
+ hist(t$p_hat)
 # boxplot(x, col="green", names=c("UrOx"))
 
 stripchart(x = x, 
