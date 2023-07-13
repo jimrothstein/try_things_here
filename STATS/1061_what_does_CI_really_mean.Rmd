@@ -45,55 +45,53 @@ sum(r) #31
 
 rbinom may be easier
 ```{r}
-
 t  <- tibble::tibble()
 prob = 0.5
-n = 100
-B = 10000
+n = 1000
+B = 10^4
 n*prob # [1] 50
 sqrt(prob*(1-prob)/n) # [1] 0.05
 2*sqrt(prob*(1-prob)/n) # [1] 0.10   (2 sd)
 .05*B   # 50
 
+old  <- options(digits = 4)
 one_sample  <- function(DUMMY = NULL) {  # 1 sample
     # p_hat is percentage heads 
-    p_hat  <- rbinom(n=1, size=n,  prob = prob)/n
+    p_hat  <- rbinom(1, size=n,  prob = prob)/n
 
     ## And the range, for any single p_bar, standard error
-    se_p_hat = sqrt( p_hat * (1 - p_hat)/n)
-    ## CI
+    se_p_hat = sqrt( (p_hat * (1 - p_hat))/n)
+    ## CI,   For 95% use = 1.96, OR
     L  <- p_hat - 1.96*se_p_hat
     U  <- p_hat + 1.96*se_p_hat
-    contains_TRUE =  (L < prob)   && ( prob < U )
+    contains_TRUE =  (L < prob)   & ( prob < U )
     new  <- tibble::tibble(p_hat = p_hat, L=L, U=U, contains_TRUE = contains_TRUE)
     t <<- rbind(t, new)
     invisible(t)
 }
 
-t  <- tibble::tibble()
-x = one_sample()
-x
 
-t  <- tibble::tibble()
-z = lapply(0:99, one_sample)
-nrow(t[!t$contains_TRUE,])
-
-
-
-B = 10^5
 #   Run experiment many, many times (expected value)
+
+for (i in 1:5) {
 t  <- tibble::tibble()
-z = lapply(0:B, one_sample)
-nrow(t[!t$contains_TRUE,])
+z = lapply(1:B, one_sample)
+cat(nrow(t[!t$contains_TRUE,]), "\n")          # expect 5 out 100 outside 95%CI 
+}
+
+nrow(t[t$p_hat > 0.50, ])
+nrow(t[t$p_hat < 0.50, ])
+nrow(t[t$p_hat ==  0.50, ])
 
 # view
 t
 t[order(t$L), ]
-print(t, n=100)
 nrow(t[!t$contains_TRUE,])
 
 if (F) {
 hist(t$p_hat)
+hist(t$L)
+hist(t$U)
 }
 ```
 
@@ -132,6 +130,28 @@ ggplot(df2, aes(x = 1, y = y, xend = 2, yend = y, label = paste(lineend, linejoi
 
 
 ## plots
+
+## Error Bars
+```{r}
+library(ggplot2)
+
+# Define the top and bottom of the errorbars
+p <- ggplot(t[order(t$U), ], aes(p_hat, 1:nrow(t)))
+p
+
+p +
+  geom_point() +
+  geom_errorbarh(aes(xmax = U , xmin = L , height = .1))
+
+
+p +
+  geom_point() +
+  geom_errorbarh(aes(xmax = resp + se, xmin = resp - se, height = .1))
+
+```
+
+
+
 ```{r plot}
 
 file  <- "out"
