@@ -1,21 +1,93 @@
 ---
-title:  "`r knitr::current_input()`"
-date: "`r lubridate::today()`"
-output:
-    html_document:
-        toc: true 
-        toc_depth: 3
-        toc_float: true
-font_size: 10
+title: "030_quarto_katex_html_references.qmd"
+format: 
+  html:
+    toc: true
+    html-math-method: katex
+editor: source
+editor_options: 
+  chunk_output_type: console
 ---
-COIN FLIPS
+
+
+```
+(this is fenced)
+```
+
+::: callout-note
+This is a **play** file.
+Note that there are five types of callouts, including: `note`,
+`warning`, `important`, `tip`, and `caution`.
+:::
+
+## What does 95% confident actually mean??
+
+Take n random numbers, between ....., take average, and st dev, 95% CI
+Repeat this many times (B).
+Observe 5% of averages fall outside 95% CI?
+
+
 https://askgoodquestions.blog/2019/10/07/14-how-confident-are-you-part-1/
 TODO:
 -   overestimating se ?
 -   better line segments
 -   Large B,  use histogram to depict # do not containe TRUE p
 
-## What does 95% confident actually mean??
+Fake data, mean=0, sd = 1, with replacement, n points
+m = 0
+
+```{r}
+# true mean
+m = 0
+# true sd
+sigma= 1
+
+n=100
+B=10^4
+
+# true 95 % CI
+m + 1.96*1/sqrt(n)
+m - 1.96*1/sqrt(n)
+qnorm(c(0.025, .975 ))
+
+
+one_sample = function(DUMMY = NULL) {
+    sample = rnorm(n=n,mean= m, sd=sigma )
+    #hist(sample)
+
+    avg = mean(sample)
+
+    sd = sd(sample)
+    L = avg - 1.96*sd/sqrt(n)
+    U = avg + 1.96*sd/sqrt(n)
+
+    contains_TRUE =  (L < m)   & ( m < U )
+    new  <- tibble::tibble(avg=avg, L=L, U=U, contains_TRUE = contains_TRUE)
+    t <<- rbind(t, new)
+    invisible(t)
+}
+
+t  <- tibble::tibble()
+z= lapply(1:B, one_sample)
+
+#t[order(t$L), ]
+nrow(t[!t$contains_TRUE,])
+
+for (i in 1:20) {
+t  <- tibble::tibble()
+z = lapply(1:B, one_sample)
+cat(nrow(t[!t$contains_TRUE,]), "\n")          # expect 5 out 100 outside 95%CI 
+}
+
+# expect then (as estimage), our population is :
+```
+
+Theory: True population mean lies in interval:  (95% confidence)
+$$ \bar{x} \pm 1.96\frac{\sigma}{n^\frac{1}{2}}$$
+$$ \bar{x} \pm 1.96\frac{\sigma}{\sqrt{n}}$$
+$$ \bar{x} \pm 1.96\frac{s}{\sqrt{n}}$$
+
+$$ a \pm b$$
 
 Return # heads in sample of 75, fair coin: 
 `rbinom (n=1, size = 75, prob= 0.5)`:  ren string of yes/no, 1,0  (size # trials)
@@ -30,22 +102,8 @@ For proportion:   p, sqrt(p*q/n)
 $$   $$
 
 
-```{r BEGIN}
-set.seed(1492)
 
-## Take a Sample  (ie string of yes/no, 1,0)
-r  <- sample(x = 0:1,
-             size = 75,
-             replace = TRUE, 
-             prob = c(0.6, 0.4))
-r
-sum(r) #31
-(p_bar = sum(r)/n) # [1] 0.4
-```
-
-
-rbinom may be easier
-```{r}
+```{r include=F, eval=F}
 t  <- tibble::tibble()
 prob = 0.5
 n = 1000
@@ -96,8 +154,10 @@ hist(t$U)
 }
 ```
 
+
 ## Plot sample estimate with error bars
-```{r}
+
+```{r include=F, eval=F}
 library(ggplot2)
 head(t)
 (t = t[order(-t$U), ])
@@ -108,9 +168,9 @@ ggplot(t, aes(x = L,xend = U,y = n,   , yend =n    )  ) +
   geom_segment(arrow = arrow(length=unit(0.10,"cm"), ends="first", type = "closed")) +
   geom_line(x = .5)
 ```
-```{r}
-#   :w
-https://ggplot2.tidyverse.org/reference/geom_segment.html
+
+```{r eval=F, include=F}
+#https://ggplot2.tidyverse.org/reference/geom_segment.html
 df2 <- expand.grid(
   lineend = c('round', 'butt', 'square'),
   linejoin = c('round', 'mitre', 'bevel'),
@@ -120,20 +180,21 @@ df2 <- expand.grid(
 df2 <- data.frame(df2, y = 1:9)
 df2
 
-ggplot(df2, aes(x = 1, y = y, xend = 2, yend = y, label = paste(lineend, linejoin))) +
-  geom_segment(
+#ggplot(df2, aes(x = 1, y = y, xend = 2, yend = y, label = paste(lineend, linejoin))) +
+#  geom_segment(
 #     lineend = df2$lineend, linejoin = df2$linejoin,
-     size = 3, arrow = arrow(length = unit(0.3, "inches"))
-  ) +
-#  geom_text(hjust = 'outside', nudge_x = -0.2) +
-  xlim(0.5, 2)
+#     size = 3, arrow = arrow(length = unit(0.3, "inches"))
+#  ) +
+#  geom_text(hjust = 'outside', nudge_x = -0.2) + xlim(0.5, 2)
 ```
+
 
 
 ## plots
 
 ## Error Bars
-```{r}
+
+```{r include=F, eval=F}
 library(ggplot2)
 
 # Define the top and bottom of the errorbars
@@ -150,34 +211,4 @@ p +
   geom_errorbarh(aes(xmax = resp + se, xmin = resp - se, height = .1))
 
 ```
-
-
-
-```{r plot}
-
-file  <- "out"
-png(filename = paste0("~/Downloads/print_and_delete/" , file,".png"),
-         width = 480, height = 480, units = "px", pointsize = 12,
-          bg = "white",  res = NA,
-         type = c("cairo", "cairo-png", "Xlib", "quartz")
-)
-
- hist(t$p_hat)
-# boxplot(x, col="green", names=c("UrOx"))
-
-stripchart(x = x, 
-           ylim=c(0, 225),
-           pch = 1, 
-           cex = 0.5,
-           frame = TRUE, 
-           vertical = TRUE,
-           main = "24-hour Ur Ox")
-
-abline(h = 35, col=2)
-
-# plot(x, fake, ylim = c(-5, 5), sub = "t-value = 21.5", type = "p")
-# abline(h = fake_mean, col=2)
-dev.off()
-```
-
 
