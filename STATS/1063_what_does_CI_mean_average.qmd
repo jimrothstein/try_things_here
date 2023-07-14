@@ -33,6 +33,23 @@ TODO:
 -   better line segments
 -   Large B,  use histogram to depict # do not containe TRUE p
 
+
+
+Theory: width of CI vs n
+sigma = 1, 
+95%,  1.96
+x
+```{r}
+n=100
+n = c(10^2, 10^3, 10^4, 10^5, 10^6)
+1.96*1/(sqrt(n))
+
+# width of 95% CI
+curve(2*1.96/sqrt(x), from=10^2, to=10^5, xlab="sample size", ylab = "width 95%CI", col="blue")
+
+
+```
+
 Fake data, mean=0, sd = 1, with replacement, n points
 m = 0
 ```{r}
