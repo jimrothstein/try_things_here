@@ -1,4 +1,4 @@
--hide--
+---
 title: " update_packages.qmd "  
 author: "JR"  
 date: "5/22/2021"  
@@ -10,6 +10,8 @@ format:
         toc_depth: 3
         toc_float: true
         embed-resources:  true
+        code-block-bg: true
+        code-block-border-left: "#31BAE9"       
         indent: true
 execute:
     error: true 
@@ -18,6 +20,27 @@ execute:
     standalone: true
 TAGS:  RPI, rpi,Rscripts
 ---
+<style>
+
+#title-block-header {
+  margin-block-end: 1rem;
+  position: relative;
+  margin-top: -1px;
+  height: 75px;
+}
+.quarto-title-banner {
+  margin-block-end: 1rem;
+  position: relative;
+  margin-top: -30px;
+  height: 85%;
+}
+
+</style>
+
+
+The color of this word is [red]{style="color: red;"}. 
+And [this line has a yellow background]{style="background-color: yellow"}.
+
 
 This is DEEPER version of 0088_
 0088 is more streamlined.
@@ -46,7 +69,7 @@ Functions:
 8JULY2023   -   ran, step 2:   warns about Matrix (yes- in to places)  (R v 4.3.1)
 14JULY2023  -   ran, step 2:   warns 'KernSmooth', 'Matrix', 'mgcv' - all in /opt/R/4.3.1/lib/R/library will not be updated 
 
-
+    
 TODO:  
 
     *    W-I-P
@@ -65,7 +88,7 @@ https://stackoverflow.com/questions/4090169/elegant-way-to-check-for-missing-pac
 
 
 R version
-```{r}
+```{r }
 suppressMessages(library(dplyr))
 
     version
