@@ -113,7 +113,7 @@ p = tmp |> dplyr::select(c("Package", "Version", "LibPath",  "Built"))
 nrow(p)
 ```
  -------------------------
-###     Show # unique packages in each  path
+###     Show # unique packages in each  library path
  -------------------------
 
 ```{r}
@@ -138,12 +138,17 @@ p |> select("LibPath")  |> dplyr::count(LibPath)
 # [2] "/opt/R/4.3.1/lib/R/library"                 
 print(dplyr::filter(p, LibPath == "/opt/R/4.3.1/lib/R/library") , n=29)
 
+# prior to 4.3.1 where R_HOME point
 print(dplyr::filter(p, LibPath == "/usr/lib/R/library") ,
     n=29)
 
 ##  Each library path, list packages dirs 
 ## lengthy
 if ( interactive()) lapply(.libPaths(), list.dirs, recursive=FALSE)
+
+# as nested
+t  <- tibble::tibble(if ( interactive()) lapply(.libPaths(), list.dirs, recursive=FALSE))
+
 ```
 # ------------------------------------------------------------
 ###	Indentify packages located in TWO directories:  
@@ -211,6 +216,8 @@ instlib =  avoids the warning(?)
 ask = refers to each individual update
 checkBuilt=T    turns a package into `old` if compiled under older R version
 # -----------------------------------------------------------------
+
+Step #1
 ```{r update_old, eval=F}
 update.packages(ask = F,    ## TRUE means asks for each pkg
                 oldPkgs = old.packages(),         # ONLY these packages updated
