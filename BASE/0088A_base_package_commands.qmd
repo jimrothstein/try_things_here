@@ -61,8 +61,7 @@ Functions:
 
     
 TODO:  
-
-    *    W-I-P
+*    W-I-P
     *    anything NOT necessary in 0088; Doc here!
 *    FIX:  find.package to find packages in TWO locations
 *       TODO:  Update !
@@ -72,7 +71,6 @@ SEE ALSO:
 -   (update issues) https://github.com/ColinGoodall1/editUtilsR
 -   ~/code/zsh_scripts_project/071_run_R_to_update_packages.sh
 -   0512_system_tools.R_
--   https://stackoverflow.com/questions/4090169/elegant-way-to-check-for-missing-packages-and-install-them
 
 ***
 
