@@ -60,10 +60,28 @@ data.table::uniqueN(dt$Package) # [1] 257
 ```
 
 
+REF: https://medium.com/analytics-vidhya/r-data-table-joins-48f00b46ce29
 
 ### Packages in both
 ```{r}
-dt_both= dt1[dt2, nomatch=NA, on=c("Package", "Package")]  #-- fields to match
+# equi-join, Package in both
+dt1[dt2, on=.(Package == Package)][, 1]
+
+# !=  is NOT allowed
+dt1[dt2, on=.(Package != Package)][, 1]
+
+# anti-join, all packages in dt_user, not in dt_opt
+dt1[!dt2, on = .(Package)][, 1] # 228
+
+# anti , packages in dt_opt, not in dt_user
+dt2[!dt1, on = .(Package)][, 1]
+
+# check
+dt1[Package=="base"]
+dt1[Package=="boot"]
+dt1[Package=="compiler"]
+
+dt_both= dt1[dt2, nomatch=NULL, on=.(Package==Package)]  #-- fields to match
 dim(dt_both) # [1] 29 32
 ```
 

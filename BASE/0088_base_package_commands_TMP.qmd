@@ -17,7 +17,7 @@ geometry: margin=0.5in,top=0.25in
 TAGS:  Rscripts, update
 ---
 
-# ---------------------------------------- PURPOSE -------------------------------------------
+ ---------------------------------------- PURPOSE -------------------------------------------
 -   Collect functions to manage updates, 3rd party updates, library locations, etc.
 -   Polished version? SEE  Rscripts in jimTools
 -   DEEPER PROBE?             see 0088A_
