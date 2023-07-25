@@ -1,0 +1,116 @@
+
+---
+title: "102_... HELPER.qmd"  
+author: "JR"  
+date: "5/22/2021"  
+pdf-engine: lualatex  
+format:   
+  html:  
+        code-fold: true
+        toc: true 
+        toc_depth: 3
+        toc_float: true
+        embed-resources:  true
+        code-block-bg: true
+        code-block-border-left: "#31BAE9"       
+        indent: true
+        number-sections: true
+        number-depth: 3
+        number-offset: 2
+        code-link: true             # hyperlink R functions
+        html-math-method: katex
+        css:  styles.css
+execute:
+    error: true 
+    warning: true
+    collapse: true 
+    standalone: true
+output-dir: docs            ## NO indent, also _quarto.yml for entier project
+---
+
+### all installed
+```{r}
+library(data.table)
+installed = installed.packages()
+dt  <- data.table::as.data.table(installed)
+setkey(dt, "Package", "LibPath")
+key(dt) # [1] "Package"
+
+head(dt)[1:3,1:3 ]
+dim(installed) # [1] 266  16
+```
+
+### installed in user dir
+```{r}
+.libPaths()
+dt1 = dt[LibPath == .libPaths()[[1]]]
+key(dt1)
+dim(dt1) # [1] 237  16
+
+```
+### installed in system dir
+```{r}
+dt2 = dt[LibPath == .libPaths()[[2]]]
+dim(dt2) # [1] 29 16
+```
+
+### unique packages, ~ 9 duplicates
+```{r}
+data.table::uniqueN(dt$Package) # [1] 257
+```
+
+
+
+### Packages in both
+```{r}
+dt_both= dt1[dt2, nomatch=NA, on=c("Package", "Package")]  #-- fields to match
+dim(dt_both) # [1] 29 32
+```
+
+### Packages in one and not the other
+```{r}
+# in opt/  ONLY
+dt_opt  <- dt2[dt1, nomatch=NULL, on = c("Package", "Package")]
+dim(dt_opt) # [1]  9 32
+
+# check
+dt_opt  <- dt2[dt1, nomatch=NULL]  # and all keys
+dim(dt_opt) # [1]  0 30
+
+# in R-x86/
+dt_user  <- dt1[dt2, nomatch=NA,  on = c("Package", "Package")]
+dim(dt_user) # [1] 29 32
+
+# Should be ALL packages, but NA for all
+z = dt_user[dt_opt, nomatch=NULL, on = c("Package", "Package") ]
+dim(z)
+head(z)[, 1:3]
+```
+```{r}
+str(dt)
+# Classes ‘data.table’ and 'data.frame':	266 obs. of  16 variables:
+#  $ Package              : chr  "AsioHeaders" "BH" "DiceDesign" "GPfit" ...
+#  $ LibPath              : chr  "/home/jim/R/x86_64-pc-linux-gnu-library/4.3" "/home/jim/R/x86_64-pc-linux-gnu-library/4.3" "/home/jim/R/x86_64-pc-linux-gnu-library/4.3" "/home/jim/R/x86_64-pc-linux-gnu-library/4.3" ...
+#  $ Version              : chr  "1.22.1-2" "1.81.0-1" "1.9" "1.0-8" ...
+#  $ Priority             : chr  NA NA NA NA ...
+#  $ Depends              : chr  NA NA "R (>= 2.10)" NA ...
+#  $ Imports              : chr  NA NA NA "lhs (>= 0.5), lattice (>= 0.18-8)" ...
+#  $ LinkingTo            : chr  NA NA NA NA ...
+#  $ Suggests             : chr  NA NA "rgl, randtoolbox, lattice" "testthat" ...
+#  $ Enhances             : chr  NA NA NA NA ...
+#  $ License              : chr  "BSL-1.0" "BSL-1.0" "GPL-3" "GPL-2" ...
+#  $ License_is_FOSS      : chr  NA NA NA NA ...
+#  $ License_restricts_use: chr  NA NA NA NA ...
+#  $ OS_type              : chr  NA NA NA NA ...
+#  $ MD5sum               : chr  NA NA NA NA ...
+#  $ NeedsCompilation     : chr  "no" "no" "yes" "no" ...
+#  $ Built                : chr  "4.3.1" "4.3.0" "4.3.1" "4.3.1" ...
+#  - attr(*, ".internal.selfref")=<externalptr> 
+#  - attr(*, "sorted")= chr "Package"
+#  - attr(*, "index")= int(0) 
+#   ..- attr(*, "__LibPath")= int [1:266] 1 2 3 4 5 6 7 9 11 13 ...
+# NULL
+```
+
+
+

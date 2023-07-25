@@ -1,0 +1,32 @@
+REF:  http://www.di.fc.ul.pt/~jpn/r/GraphicalTools/Venn.html
+```{r}
+install.packages("VennDiagram")
+library(VennDiagram)
+grid.newpage() # make new page for plot, venn diagrams add to current plot
+venn.plot <- draw.single.venn(area      = 5,           # size of set
+                              category  = "\n\nClass XYZ",
+                              cat.cex   = 3,
+                              cat.pos   = 0,
+                              cat.dist  = -0.20,
+                              cat.col   = "white",
+                              lwd       = 5,           # width of the circle's circumference 
+                              lty       = "blank",     # type of circle's circumference
+                              cex       = 2,           # size of the area label
+                              label.col = "orange",
+                              fill      = "red",
+                              alpha     = 0.15         # transparecy
+                             )
+```
+
+```{r}
+grid.newpage()
+# switch off scaling
+venn.plot <- draw.pairwise.venn(area1      = 100,
+                                area2      = 70,
+                                cross.area = 30,
+                                category   = c("/opt", "R_x86"),
+                                fill            = c('red', 'blue'),
+                                #cat.col         = c('red', 'blue'), 
+                                scaled     = FALSE)
+
+```

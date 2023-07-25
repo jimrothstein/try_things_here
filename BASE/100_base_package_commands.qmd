@@ -77,7 +77,7 @@ SEE ALSO:
 ###     Setup
 ```{r}
 knitr::opts_chunk$set(
-  echo = T, include=T, eval=T)
+  echo = T, include=T, eval=F)
 ```
 
 
@@ -126,6 +126,23 @@ if ( interactive()) lapply(.libPaths(), list.dirs, recursive=FALSE)
 t  <- tibble::tibble(if ( interactive()) lapply(.libPaths(), list.dirs, recursive=FALSE))
 ```
 
+***
+
+### A Diagram
+```{r}
+#| eval = TRUE
+library(VennDiagram)
+grid.newpage()
+# switch off scaling
+venn.plot <- draw.pairwise.venn(area1      = 100,
+                                area2      = 70,
+                                cross.area = 30,
+                                category   = c("/opt", "R_x86"),
+                                fill            = c('red', 'blue'),
+                                #cat.col         = c('red', 'blue'), 
+                                scaled     = FALSE)
+
+```
 ***
 
 ###  The Problem:  Some R packages located in TWO directories:  
