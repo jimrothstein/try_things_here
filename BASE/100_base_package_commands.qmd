@@ -238,7 +238,7 @@ instPkgs = (default) all installed packages (ie check all ?)
 ```{r}
 update.packages(ask = F,    ## TRUE means asks for each pkg
                 oldPkgs = old3,         # ONLY these packages updated
-                instlib = .libPaths()[[1]],       # avoids WARNING that R_HOME not writable
+                instlib = .libPaths()[[1]],       # gives WARNING that R_HOME not writable
                 checkBuilt=T)
 
 
@@ -263,6 +263,7 @@ update.packages(ask = F,    ## TRUE means asks for each pkg
 ### Step #2
 ```{r upgrade2, eval=F}
 {
+  # oldPkgs = NULL is default
 begin  <- Sys.time()
     update.packages(ask = FALSE ,  instlib= .libPaths()[[1]], checkBuild=TRUE)
     end  <- Sys.time()

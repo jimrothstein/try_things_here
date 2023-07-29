@@ -27,7 +27,7 @@ execute:
 output-dir: docs            ## NO indent, also _quarto.yml for entier project
 ---
 
-### all installed
+### all installed , 266 (with dup)
 ```{r}
 library(data.table)
 installed = installed.packages()
@@ -63,24 +63,25 @@ data.table::uniqueN(dt_sys$Package) # [1] 29
 
 REF: https://medium.com/analytics-vidhya/r-data-table-joins-48f00b46ce29
 
-### Packages in both
+### Packages in both, 9
 ```{r}
+if (F ){   # NO !
 # equi-join, Package in both , 29  
-dt_user[dt_sys, on=.(Package == Package)][, 1]
-dt_user[dt_sys, on=.(Package == Package), nomatch=NA][, 1] # 29
-
-# inner_join
-dt_user[dt_sys, on=.(Package == Package), nomatch=NULL][, 1] # 9
-dt_sys[dt_user, on=.(Package == Package), nomatch=NULL][, 1] # 9
+  dt_user[dt_sys, on=.(Package == Package)][, 1]
+  dt_user[dt_sys, on=.(Package == Package), nomatch=NA][, 1] # 29
+}
+# use inner_join
+dt_user[dt_sys, on=.(Package == Package), nomatch=NULL][, c(1,2)] # 9
+dt_sys[dt_user, on=.(Package == Package), nomatch=NULL][, c(1,2)] # 9
 
 # !=  is NOT allowed
 if false dt1[dt2, on=.(Package != Package)][, 1]
 
 # anti-join, all packages in dt_user, not in dt_sys
-dt_user[!dt_sys, on = .(Package)][, 1] # 228
+dt_user[!dt_sys, on = .(Package)][, c(1,2)] # 228
 
 # anti , packages in dt_sys, not in dt_user
-dt_sys[!dt_user, on = .(Package)][, 1] # 20
+dt_sys[!dt_user, on = .(Package)][, c(1,2)] # 20
 
 # check
 dt_user[Package=="base"] ; 
@@ -88,30 +89,10 @@ dt_user[Package=="base"] ;
 dt_user[Package=="boot"]
 dt_user[Package=="compiler"]
 dt_user[Package=="class"]  # y
-
-dt_both= dt1[dt2, nomatch=NULL, on=.(Package==Package)]  #-- fields to match
-dim(dt_both) # [1] 29 32
 ```
 
-### Packages in one and not the other
-```{r}
-# in opt/  ONLY
-dt_opt  <- dt2[dt1, nomatch=NULL, on = c("Package", "Package")]
-dim(dt_opt) # [1]  9 32
+Of 29 packaes in dt_sys, 9 are ALSO in dt_user (20 are not)
 
-# check
-dt_opt  <- dt2[dt1, nomatch=NULL]  # and all keys
-dim(dt_opt) # [1]  0 30
-
-# in R-x86/
-dt_user  <- dt1[dt2, nomatch=NA,  on = c("Package", "Package")]
-dim(dt_user) # [1] 29 32
-
-# Should be ALL packages, but NA for all
-z = dt_user[dt_opt, nomatch=NULL, on = c("Package", "Package") ]
-dim(z)
-head(z)[, 1:3]
-```
 ```{r}
 str(dt)
 # Classes ‘data.table’ and 'data.frame':	266 obs. of  16 variables:
