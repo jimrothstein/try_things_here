@@ -70,7 +70,7 @@ if (TRUE) {
 
 ```{r library 		}
 # print all labels
-file  <- knitr::current_input() 
+file <- knitr::current_input()
 print(knitr::all_labels())
 library(jimTools)
 ``` 
@@ -80,17 +80,16 @@ library(jimTools)
 
 # args MUST line up
 sample_function(
-                a = xxxx,
-                b = xxxx,
-                c = xxxx
-                )
+  a = xxxx,
+  b = xxxx,
+  c = xxxx
+)
 
 # OR
 verylongfunctions_indent_like_this(
   a = xxxx,
   b = xxx,
-  )
-
+)
 ```
 
 ```{r knitr::knit_exit(), include = FALSE  , eval=FALSE } 
@@ -101,29 +100,29 @@ verylongfunctions_indent_like_this(
 
 
 ```{r skeleton, include=F, eval=F}
-file="/home/jim/.config/nvim/templates/skeleton.Rmd"
+file <- "/home/jim/.config/nvim/templates/skeleton.Rmd"
 ```
 
 ```{r render, eval=FALSE, include=FALSE 	} 
 #  [For technical notes]: (~/docs/technical_notes/001_render_output.md)
 getwd()
 {
-file <- "rmd/00000_junk.Rmd"
-file  <- basename(file)
-file  <- here("rmd", file)
-file
+  file <- "rmd/00000_junk.Rmd"
+  file <- basename(file)
+  file <- here("rmd", file)
+  file
 }
 {
-output_dir  <- Sys.getenv("OUTPUT_DIR")
-output_dir
+  output_dir <- Sys.getenv("OUTPUT_DIR")
+  output_dir
 }
 
 
 rmarkdown::render(file,
-    #output_format = "pdf_document",
-    output_format = "html_document",
-    #output_format=c("html_document", "md_document"),
-    output_dir = output_dir)
-    #output_file = "out")
-
+  # output_format = "pdf_document",
+  output_format = "html_document",
+  # output_format=c("html_document", "md_document"),
+  output_dir = output_dir
+)
+# output_file = "out")
 ```

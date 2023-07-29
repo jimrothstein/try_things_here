@@ -1,4 +1,3 @@
-
 ---
 title: "102_... HELPER.qmd"  
 author: "JR"  
@@ -43,20 +42,22 @@ dim(installed) # [1] 266  16
 ### installed in user dir
 ```{r}
 .libPaths()
-dt1 = dt[LibPath == .libPaths()[[1]]]
-key(dt1)
-dim(dt1) # [1] 237  16
+dt_user = dt[LibPath == .libPaths()[[1]]]
+key(dt_user)
+dim(dt_user) # [1] 237  16
 
 ```
 ### installed in system dir
 ```{r}
-dt2 = dt[LibPath == .libPaths()[[2]]]
-dim(dt2) # [1] 29 16
+dt_sys = dt[LibPath == .libPaths()[[2]]]
+dim(dt_sys) # [1] 29 16
 ```
 
 ### unique packages, ~ 9 duplicates
 ```{r}
 data.table::uniqueN(dt$Package) # [1] 257
+data.table::uniqueN(dt_user$Package) # [1] 237
+data.table::uniqueN(dt_sys$Package) # [1] 29
 ```
 
 
@@ -64,22 +65,29 @@ REF: https://medium.com/analytics-vidhya/r-data-table-joins-48f00b46ce29
 
 ### Packages in both
 ```{r}
-# equi-join, Package in both
-dt1[dt2, on=.(Package == Package)][, 1]
+# equi-join, Package in both , 29  
+dt_user[dt_sys, on=.(Package == Package)][, 1]
+dt_user[dt_sys, on=.(Package == Package), nomatch=NA][, 1] # 29
+
+# inner_join
+dt_user[dt_sys, on=.(Package == Package), nomatch=NULL][, 1] # 9
+dt_sys[dt_user, on=.(Package == Package), nomatch=NULL][, 1] # 9
 
 # !=  is NOT allowed
-dt1[dt2, on=.(Package != Package)][, 1]
+if false dt1[dt2, on=.(Package != Package)][, 1]
 
-# anti-join, all packages in dt_user, not in dt_opt
-dt1[!dt2, on = .(Package)][, 1] # 228
+# anti-join, all packages in dt_user, not in dt_sys
+dt_user[!dt_sys, on = .(Package)][, 1] # 228
 
-# anti , packages in dt_opt, not in dt_user
-dt2[!dt1, on = .(Package)][, 1]
+# anti , packages in dt_sys, not in dt_user
+dt_sys[!dt_user, on = .(Package)][, 1] # 20
 
 # check
-dt1[Package=="base"]
-dt1[Package=="boot"]
-dt1[Package=="compiler"]
+dt_user[Package=="base"] ; 
+  dt_sys[Package=="base"]
+dt_user[Package=="boot"]
+dt_user[Package=="compiler"]
+dt_user[Package=="class"]  # y
 
 dt_both= dt1[dt2, nomatch=NULL, on=.(Package==Package)]  #-- fields to match
 dim(dt_both) # [1] 29 32
