@@ -119,7 +119,19 @@ print(dplyr::filter(p, LibPath == "/opt/R/4.3.1/lib/R/library") , n=29)
 
 # prior to 4.3.1 where R_HOME point
 # print(dplyr::filter(p, LibPath == "/usr/lib/R/library") , n=29)
-```
+
+pkg = list()
+pkg1 = vector(mode="character")
+pkg1 = dplyr::filter(p, LibPath== .libPaths()[[1]])[,1]
+pkg1
+
+pkg2 = vector(mode="character")
+pkg2= dplyr::filter(p, LibPath== .libPaths()[[2]])[,1]
+pkg2
+
+match(pkg2 ,  pkg1)
+
+``` 
 ### List Packages in `r .libPaths()[[1]]`  (lengthy)
 ```{r eval=F}
 if ( interactive()) lapply(.libPaths(), list.dirs, recursive=FALSE)
@@ -213,12 +225,12 @@ checkBuilt=T    turns a package into `old` if compiled under older R version
 lib.loc = dir to check for old packages
 instPkgs = (default) all installed packages (ie check all ?)
 
-### Step #0  - Explain OLD packages
+### Step #0  - Find OLD packages
 ```{r update_old, eval=F}
-## all paths
 .libPaths()
 
 (old1 = old.packages(checkBuilt=T))
+
 
 ## show old, all paths
 (old2 = old.packages(lib.loc = NULL))
@@ -227,8 +239,9 @@ instPkgs = (default) all installed packages (ie check all ?)
 (old = old.packages(lib.loc = .libPaths()[[1]]))
 (old3 = old.packages(lib.loc = .libPaths()[[1]],  checkBuilt=T))
 
-## show old in original /opt/R/4.3.1/
+## show old in original /opt/R/4.3.1/  (almost always finds pkg, but has this pkg already been updated and is now in [[1]])
 (old4 = old.packages(lib.loc = .libPaths()[[2]], checkBuilt=T))
+
 
 ## shows old in both paths
 (old = old.packages(lib.loc = c(.libPaths()[[1]], .libPaths()[[2]])))
@@ -237,11 +250,20 @@ instPkgs = (default) all installed packages (ie check all ?)
 
 ### Step # 1 , update OLD in ~/R/4.3.1/...
 ```{r}
-update.packages(ask = F,    ## TRUE means asks for each pkg
+# `old` and in /opt directory   , these will ALWAYS want to update.
+#  Before doing so, check if already updated and reside in [[1]]
+update.packages(lib.loc = .libPaths()[[2]], 
+  ask = F,    ## TRUE means asks for each pkg
                 oldPkgs = old3,         # ONLY these packages updated
                 instlib = .libPaths()[[1]],       # gives WARNING that R_HOME not writable
                 checkBuilt=T)
 
+# limit to `old` and in User dir  (no warnings, good)
+update.packages( lib.loc= .libPaths()[[1]],
+  ask = F,    ## TRUE means asks for each pkg
+                oldPkgs = old3,         # ONLY these packages updated
+                instlib = .libPaths()[[1]],       # gives WARNING that R_HOME not writable
+                checkBuilt=T)
 
 ## Do old packages in /opt/R/4.3.1  already have newer versions in ~/R/4.3.1/...
 ## If so, why recompile all over again?
