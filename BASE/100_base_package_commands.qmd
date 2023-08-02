@@ -15,7 +15,7 @@ format:
         indent: true
         number-sections: true
         number-depth: 3
-        number-offset: 2
+        number-offset: 1
         code-link: true             # hyperlink R functions
         html-math-method: katex
         css:  styles.css
