@@ -27,6 +27,34 @@ execute:
 output-dir: docs            ## NO indent, also _quarto.yml for entier project
 ---
 
+***
+This is [DEEPER]{style="color: red;"} version of 0088_  
+[0088 is more streamlined.]{style="background-color: yellow"}.  
+Rscripts/jim Tools - is intended for daily produciton
+
+***
+
+### PURPOSE:    Update R packages
+
+Outline:  
+
+    -   Check R version, sessionInfo
+    -   Check current R library locations, 
+    -   Review packages each library
+    -   Identify packages in more than ONE directory
+    -   (interactive only) update `old` packages (compiled with older R versions)
+    -   (interactive only) update any remaining packages
+    -   list Env variables
+    
+Functions:  
+
+    -   update
+    -   upgrade
+    -   installed.packages
+    -   find.package
+    -   knitr functions:  <https://cran.r-project.org/web//packages/knitr/knitr.pdf>
+
+
 ### all installed , 266 (with dup)
 ```{r}
 library(data.table)
@@ -62,6 +90,10 @@ data.table::uniqueN(dt_sys$Package) # [1] 29
 
 
 REF: https://medium.com/analytics-vidhya/r-data-table-joins-48f00b46ce29
+Notation:
+  on=.(x,y)
+  on=.(x < 5, y> y)  non-equi join
+  on=.(...), z := ...   adds column (in reference, no copy)
 
 ### Packages in both, 9
 ```{r}
@@ -82,6 +114,9 @@ dt_user[!dt_sys, on = .(Package)][, c(1,2)] # 228
 
 # anti , packages in dt_sys, not in dt_user
 dt_sys[!dt_user, on = .(Package)][, c(1,2)] # 20
+
+
+# A[B, on=.(id), which=T]  returns index only
 
 # check
 dt_user[Package=="base"] ; 

@@ -1,5 +1,5 @@
 ---
-title: " update_packages.qmd "  
+title: " 100_base_package_commands.qmd "  
 author: "JR"  
 date: "5/22/2021"  
 pdf-engine: lualatex  
@@ -28,8 +28,8 @@ output-dir: docs            ## NO indent, also _quarto.yml for entier project
 ---
 
 ***
-This is [DEEPER]{style="color: red;"} version of 0088_  
-[0088 is more streamlined.]{style="background-color: yellow"}.  
+This is [DEEPER]{style="color: red;"} version.  
+[102_... HELPER.qmd is more streamlined.]{style="background-color: yellow"}.  
 Rscripts/jim Tools - is intended for daily produciton
 
 ***
@@ -40,11 +40,18 @@ Outline:
 
     -   Check R version, sessionInfo
     -   Check current R library locations, 
-    -   Review packages each library
-    -   Identify packages in more than ONE directory
+    -   Review packages installed; and each library
+    -   The problem and Diagram
+    -   Identify packages in more than ONE directory (2 ways)
+    -   Explain `OLD` packages
     -   (interactive only) update `old` packages (compiled with older R versions)
     -   (interactive only) update any remaining packages
     -   list Env variables
+    -   Check package versions (move to ?)
+    -   Check package dependencies (move to?)
+    -   EXIT
+    -   LEGACY: begins:  Loaded, not attached
+    -   JennyBC
     
 Functions:  
 
@@ -54,12 +61,6 @@ Functions:
     -   find.package
     -   knitr functions:  <https://cran.r-project.org/web//packages/knitr/knitr.pdf>
 
-
-8JULY2023   -   ran, step 2:   warns about Matrix (yes- in to places)  (R v 4.3.1) \
-14JULY2023  -   ran, step 2:   warns 'KernSmooth', 'Matrix', 'mgcv' - all in /opt/R/4.3.1/lib/R/library \ 
-    will not be updated 
-
-    
 TODO:  
 *    W-I-P
     *    anything NOT necessary in 0088; Doc here!
@@ -80,8 +81,7 @@ knitr::opts_chunk$set(
   echo = T, include=T, eval=F)
 ```
 
-
-### R version
+### R version/sessionInfo
 ```{r }
 suppressMessages(library(dplyr))
     version
@@ -92,17 +92,18 @@ getOption("repos")  # cran.rstudio.com
 }
 ```
 
+###     .libPaths(), # unique pkgs in each path,  and package dir under each path
+```{r}
+
+p |> select("LibPath")  |> dplyr::count(LibPath) 
+```
+***
+
 ### Gather Currently Installed Packages
 ```{r}
 tmp = as_tibble(installed.packages())
 p = tmp |> dplyr::select(c("Package", "Version", "LibPath",  "Built"))
 nrow(p)
-```
-
-###     .libPaths(), # unique pkgs in each path,  and package dir under each path
-```{r}
-
-p |> select("LibPath")  |> dplyr::count(LibPath) 
 ```
 
 ***
@@ -212,7 +213,7 @@ checkBuilt=T    turns a package into `old` if compiled under older R version
 lib.loc = dir to check for old packages
 instPkgs = (default) all installed packages (ie check all ?)
 
-### Step #0  - OLD packages
+### Step #0  - Explain OLD packages
 ```{r update_old, eval=F}
 ## all paths
 .libPaths()
@@ -274,7 +275,7 @@ begin  <- Sys.time()
 
 ***
 
-###  ENV variables
+###  ENV variables (keep)
 ***
 *  See: https://stat.ethz.ch/R-manual/R-devel/library/base/html/EnvVar.html
 ```{r, collapse=TRUE}
@@ -301,6 +302,7 @@ R.version.string     # [1] "R version 4.3.0 (2023-04-21)"
 ***
 
 ### Check Dependncies
+
 TODO:   utils::depends(pkg =  c(), dependencies=c ())    
 
 ```{r, eval=F}
@@ -322,13 +324,14 @@ t  <- tibble(pkg=l$tibble)
 t
 ##### 010-for <pkg>, find packages dependent upon it
 ```
+
 ***
 
+
 ```{r, eval=T}
-knitr::knit_exit()
+if (F) knitr::knit_exit()
 
 ```
-
 
 # ---------------------------------------------
 ### Remove Package
@@ -344,14 +347,17 @@ if (FALSE) remove.packages("cellranger")
 ### Loads,  but does not attach; TRUE if able to load.
 ```{r, eval=F}
 check_suggests <- function(package) {
-  if (!requireNamespace(package, quietly = TRUE)) {
+  if (!requireNamespace(package, quietly = TRUE)) {}
     #stop("Suggested package   
+      ```
+```
 
+***
 
+### Show duplicates (is already done?)
 ```{r,   eval=F}
 ip = as_tibble(installed.packages(lib.loc=NULL))   # NULL, searches all paths
 ip = ip |> dplyr::select("Package","LibPath", "Version", "Built") 
-ip
 ##	Look !  MASS installed in two locations
 ip |> dplyr::filter(Package==("MASS")) 
 ip |> dplyr::filter(Package==("KernSmooth")) 
@@ -375,187 +381,13 @@ ip |> dplyr::filter(Package==("dplyr") )
      findPkgAll("KernSmooth")
 ```
 
-###   Bug in find.package?  Should be 2 directoris, finds only 1
-```{r, eval=F}
-#   MASS is in 2 directories
-#   But .. 
-    find.package("MASS")
-    find.package("MASS", lib.loc=NULL)
 
-    # must use verbose=T, to get 
-    find.package("MASS", verbose=T)
-    find.package("KernSmooth", verbose=T, lib.loc=NULL)
-
-# Warning message:                       # 
-# In find.package("MASS", verbose = T) :
-#   package ‘MASS’ found more than once, using the first from
-#   “/home/jim/R/x86_64-pc-linux-gnu-library/4.3/MASS”,
-#   “/usr/lib/R/library/MASS”
-```
-
-###   UPDATE  - 2 step process?
-Ask:  if directory is not writable prompt user to OK ~/R/x86_64-pc-linux-gnu-library/4.3/
-
-NOTE:    if dir not writeable: 
-R asks to use personal directory (independent of value for `ask`)
-instlib =  avoids the warning(?)
-ask = refers to each individual update
-checkBuilt=T    turns a package into `old` if compiled under older R version
+003 view all installed R packages? ----
+ at cmd line  which needed?
+ apt-get cache search "^r-*" | sort
 
 
-     old.packages(lib.loc = NULL, repos = getOption("repos"),
-                  contriburl = contrib.url(repos, type),
-                  instPkgs = installed.packages(lib.loc = lib.loc, ...),
-                  method, available = NULL, checkBuilt = FALSE, ...,
-                  type = getOption("pkgType"))
-lib.loc = dir to check for old packages
-instPkgs = (default) all installed packages (ie check all ?)
-
-### Step #0  - OLD packages
-```{r update_old2, eval=F}
-## all paths
-.libPaths()
-
-(old1 = old.packages(checkBuilt=T))
-
-## show old, all paths
-(old2 = old.packages(lib.loc = NULL))
-
-## show old in  ~/R/x86 ....
-(old = old.packages(lib.loc = .libPaths()[[1]]))
-(old3 = old.packages(lib.loc = .libPaths()[[1]],  checkBuilt=T))
-
-## show old in original /opt/R/4.3.1/
-(old4 = old.packages(lib.loc = .libPaths()[[2]], checkBuilt=T))
-
-## shows old in both paths
-(old = old.packages(lib.loc = c(.libPaths()[[1]], .libPaths()[[2]])))
-```
-
-### Step # 1 , update OLD in ~/R/4.3.1/...
-```{r}
-update.packages(ask = F,    ## TRUE means asks for each pkg
-                oldPkgs = old3,         # ONLY these packages updated
-                instlib = .libPaths()[[1]],       # avoids WARNING that R_HOME not writable
-                checkBuilt=T)
-
-
-## Do old packages in /opt/R/4.3.1  already have newer versions in ~/R/4.3.1/...
-## If so, why recompile all over again?
-
-## TODO:
-## each compare with find.package, OR run join against pkgs in ~/R/x86...
-
-# (testing)  All `old` packages in \opt are already in new directory
-# triggers a WARNING
-
-old4 = NULL
-update.packages(ask = F,    ## TRUE means asks for each pkg
-                oldPkgs = old4,         # ONLY these packages updated
-                instlib = .libPaths()[[1]],       # avoids WARNING that R_HOME not writable
-                checkBuilt=T)
-
-```
-
-### Step #2
-```{r upgrade, eval=F}
-{
-begin  <- Sys.time()
-    update.packages(ask = FALSE ,  instlib= .libPaths()[[1]], checkBuild=TRUE)
-    end  <- Sys.time()
-    diff  <- end - begin
-    diff
-}
-```
-***
-
------------------------------------------------------
-
-***
-###  ENV variables
-***
-*  See: https://stat.ethz.ch/R-manual/R-devel/library/base/html/EnvVar.html
-```{r, collapse=TRUE}
-(r_home <-R.home(component="home")) # [1] /opt/R/4.3.1/lib/R
-Sys.getenv("R_HOME") 			# /usr/lib/R ; where R installed
-Sys.getenv("R_LIBS_USER") # # [1] "/home/jim/R/x86_64-pc-linux-gnu-library/4.3"
-Sys.getenv("R_HIST_SIZE") # [1] ""
-Sys.getenv("R_BROWSER")  # [1] "xdg-open"
-# ---------------------------------------------
-length(Sys.getenv()) # 132
-
-# too lengthy
-if  (FALSE) Sys.getenv()		
-```
-
-### Check Package Versions
-```{r}
-packageVersion("rmarkdown") # 3.5.1
-packageVersion("MASS")      # 7.3.60
-packageVersion("class")      # 7.3.22:
-R.version.string     # [1] "R version 4.3.0 (2023-04-21)"
-```
-
-### Check Dependncies
-TODO:   utils::depends(pkg =  c(), dependencies=c ())    
-
-```{r, eval=F}
-# For each installed pkg, find its dependencies
-#### return list of character vectors, ~15,293 
-	
-l <- tools::package_dependencies(
-							"tibble",
-							db=installed.packages(),
-							reverse=TRUE	)
-l
-
-# And "tibble" is dependenat upon:
-l <- tools::package_dependencies("tibble", reverse=FALSE)
-str(l) # named list, 1 elemnt named tibble,  a chr[12]
-l
-
-t  <- tibble(pkg=l$tibble)
-t
-##### 010-for <pkg>, find packages dependent upon it
-```
-```{r, eval=T}
-knitr::knit_exit()
-
-```
-
-
-# ---------------------------------------------
-### Remove Package
-# ---------------------------------------------
-```{r}
-if (FALSE) remove.packages("cellranger")
-```
-
-
-# ---------------------------------------------
-### LEGACY
-# ---------------------------------------------
-### Loads,  but does not attach; TRUE if able to load.
-```{r, eval=F}
-check_suggests <- function(package) {
-  if (!requireNamespace(package, quietly = TRUE)) {
-    #stop("Suggested package '{package}' not present.")
-    stop("Not found")
-  }
-}
-check_suggests("tibble")
-check_suggests("joke")
-check_suggests("glue")
-check_suggests("ggplot2")
-```
-
-
-# ----  003 view all installed R packages? ----
-# at cmd line  which needed?
-# apt-get cache search "^r-*" | sort
-
-
-#### 4-.libPaths(), list all paths, purpose, name
+### 4-.libPaths(), list all paths, purpose, name
 ```{r}
 .libPaths()
 # fix:
@@ -584,9 +416,8 @@ if (FALSE)
 getOption("repos")  # cran.rstudio.com
 ```
 
-# -----------------------------jennyBC ------------------------------------------------------------------
-##### 013_jennyBC
-####  from https://github.com/smithjd/explore-libraries/blob/master/01_explore-libraries_jenny.R
+013_jennyBC
+###  from https://github.com/smithjd/explore-libraries/blob/master/01_explore-libraries_jenny.R
 ```{r}
 
 ipt <- installed.packages() %>%
