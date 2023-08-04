@@ -7,8 +7,9 @@ format:
   html:  
         code-fold: true
         toc: true 
-        toc_depth: 3
-        toc_float: true
+        #toc_depth: 3
+        toc_location: body 
+        #toc_float: true
         embed-resources:  true
         code-block-bg: true
         code-block-border-left: "#31BAE9"       
@@ -92,14 +93,14 @@ getOption("repos")  # cran.rstudio.com
 }
 ```
 
-###     .libPaths(), # unique pkgs in each path,  and package dir under each path
+###     Show # unique pkgs in each path
 ```{r}
 
 p |> select("LibPath")  |> dplyr::count(LibPath) 
 ```
 ***
 
-### Gather Currently Installed Packages
+### Currently Installed Packages
 ```{r}
 tmp = as_tibble(installed.packages())
 p = tmp |> dplyr::select(c("Package", "Version", "LibPath",  "Built"))
@@ -114,6 +115,7 @@ This directory is NOT upgradeable and could cause update problems.
 ::: {.aside}
 sudo can, but this is not wise practice.
 :::
+
 ```{r eval=T}
 print(dplyr::filter(p, LibPath == "/opt/R/4.3.1/lib/R/library") , n=29)
 
@@ -130,8 +132,8 @@ pkg2= dplyr::filter(p, LibPath== .libPaths()[[2]])[,1]
 pkg2
 
 match(pkg2 ,  pkg1)
-
 ``` 
+
 ### List Packages in `r .libPaths()[[1]]`  (lengthy)
 ```{r eval=F}
 if ( interactive()) lapply(.libPaths(), list.dirs, recursive=FALSE)
@@ -141,7 +143,10 @@ t  <- tibble::tibble(if ( interactive()) lapply(.libPaths(), list.dirs, recursiv
 
 ***
 
-### A Diagram
+### A Diagram:  Expect
+
+### Diagram: Actual
+
 ```{r}
 #| eval = TRUE
 library(VennDiagram)
@@ -159,6 +164,7 @@ venn.plot <- draw.pairwise.venn(area1      = 100,
 ***
 
 ###  The Problem:  Some R packages located in TWO directories:  
+
 Attempting to upgrade an R pkg in read-only `r .libPaths()[[2]]` will trigger WARNING.
 
 Specifically, there are two cases, which must be handled separately during upgrade.
@@ -208,6 +214,7 @@ ip |> dplyr::filter(Package==("Matrix"))
 ***
 
 ###   UPDATE  - 2 step process?
+
 Ask:  if directory is not writable prompt user to OK ~/R/x86_64-pc-linux-gnu-library/4.3/
 
 NOTE:    if dir not writeable: 
@@ -226,6 +233,7 @@ lib.loc = dir to check for old packages
 instPkgs = (default) all installed packages (ie check all ?)
 
 ### Step #0  - Find OLD packages
+
 ```{r update_old, eval=F}
 .libPaths()
 
@@ -249,6 +257,7 @@ instPkgs = (default) all installed packages (ie check all ?)
 ***
 
 ### Step # 1 , update OLD in ~/R/4.3.1/...
+
 ```{r}
 # `old` and in /opt directory   , these will ALWAYS want to update.
 #  Before doing so, check if already updated and reside in [[1]]

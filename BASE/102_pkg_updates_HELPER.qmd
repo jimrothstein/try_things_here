@@ -28,7 +28,7 @@ output-dir: docs            ## NO indent, also _quarto.yml for entier project
 ---
 
 ***
-This is [DEEPER]{style="color: red;"} version of 0088_  
+This is [DEEPER]{style="color: red;"} HELPER version of 0088_  
 [0088 is more streamlined.]{style="background-color: yellow"}.  
 Rscripts/jim Tools - is intended for daily produciton
 
@@ -60,12 +60,30 @@ Functions:
 library(data.table)
 installed = installed.packages()
 dt  <- data.table::as.data.table(installed)
-setkey(dt, "Package", "LibPath")
+str(dt)
+setkey(dt, "Package", "LibPath", "Version")
 key(dt) # [1] "Package"
 
 head(dt)[1:3,1:3 ]
 dim(installed) # [1] 266  16
 ```
+
+
+```{r}
+uniqueN(dt$Priority)
+#dt[,.(Package, LibPath, Version),  by=Priority]
+dt[,.N,  by=Priority]
+dt[!is.na(Priority),.N,  by=Priority]
+
+```
+
+
+```{r}
+dt[, .N, by=Built]
+dt[, .N, by=LibPath]
+dt[, .N , by=LibPath]
+```
+
 
 ### installed in user dir
 ```{r}
@@ -88,6 +106,8 @@ data.table::uniqueN(dt_user$Package) # [1] 237
 data.table::uniqueN(dt_sys$Package) # [1] 29
 ```
 
+### Packages by Priority
+
 
 REF: https://medium.com/analytics-vidhya/r-data-table-joins-48f00b46ce29
 Notation:
@@ -95,25 +115,20 @@ Notation:
   on=.(x < 5, y> y)  non-equi join
   on=.(...), z := ...   adds column (in reference, no copy)
 
-### Packages in both, 9
+### List packages in both directories, 9
 ```{r}
-if (F ){   # NO !
-# equi-join, Package in both , 29  
-  dt_user[dt_sys, on=.(Package == Package)][, 1]
-  dt_user[dt_sys, on=.(Package == Package), nomatch=NA][, 1] # 29
-}
 # use inner_join
-dt_user[dt_sys, on=.(Package == Package), nomatch=NULL][, c(1,2)] # 9
-dt_sys[dt_user, on=.(Package == Package), nomatch=NULL][, c(1,2)] # 9
+dt_user[dt_sys, on=.(Package == Package), nomatch=NULL][, c(1,3)] # 9
+dt_sys[dt_user, on=.(Package == Package), nomatch=NULL][, c(1,3)] # 9
 
 # !=  is NOT allowed
 if false dt1[dt2, on=.(Package != Package)][, 1]
 
-# anti-join, all packages in dt_user, not in dt_sys
-dt_user[!dt_sys, on = .(Package)][, c(1,2)] # 228
+# anti-join, list all packages in dt_user, not in dt_sys
+dt_user[!dt_sys, on = .(Package)][, c(1:3)] # 228
 
 # anti , packages in dt_sys, not in dt_user
-dt_sys[!dt_user, on = .(Package)][, c(1,2)] # 20
+dt_sys[!dt_user, on = .(Package)][, 1:3] # 20
 
 
 # A[B, on=.(id), which=T]  returns index only
