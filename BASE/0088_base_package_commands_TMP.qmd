@@ -1,5 +1,5 @@
 --
-title: "`r knitr::current_input()`"
+tifle: "`r knitr::current_input()`"
 date: "`r paste('last updated', 
     format(lubridate::now(), ' %d %B %Y'))`"
 output:   
