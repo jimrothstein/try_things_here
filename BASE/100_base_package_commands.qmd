@@ -99,15 +99,6 @@ getOption("repos")  # cran.rstudio.com
 <!-- }}} -->
 
 ***
-### Currently Installed Packages
-<!-- {{{ -->
-```{r, include=F}
-tmp = tibble::as_tibble(installed.packages())
-p = tmp |> dplyr::select(c("Package", "Version", "LibPath",  "Built"))
-nrow(p)
-```
-<!-- }}} -->
-
 ### Currently Installed Packages data.table version# 
 <!-- {{{ -->
 ```{r}
@@ -117,11 +108,6 @@ dt[, .N]
 dt[, .N, by=LibPath]
 ```<!-- }}} -->
 ***
-
-###    Each distinct library, number of packages<!-- {{{ -->
-```{r, eval=F, include=F}
-p |> select("LibPath")  |> dplyr::count(LibPath) 
-```<!-- }}} -->
 
 ### Each distinct library, show number of packages<!-- {{{ -->
 ```{r}
@@ -135,20 +121,6 @@ dt[, .(.N, Package, LibPath, Version, Built), by=Package][N>1]
 ```<!-- }}} -->
 
 ***
-### List Packages in /opt/R/4.3.1/lib/R/library. (non-data.table) 
-<!-- {{{ -->
-
-This directory is NOT upgradeable and could cause update problems.
-
-
-```{r,  eval=T}
-
-dt[LibPath == .libPaths()[[2]], .(Package, LibPath)]
-
-# prior to 4.3.1 where R_HOME point
-```  
-<!-- }}} -->
-
 ### List Packages in user library 
 <!-- {{{ -->
 ```{r}
@@ -157,17 +129,28 @@ dt[LibPath == .libPaths()[[1]], .(Package)  ][1:3,]
 <!-- }}} -->
 
 
-### List Packages in 
+### List Packages in /opt/R/4.3.1/lib/R/library. (non-data.table) 
+<!-- {{{ -->
+This directory is NOT upgradeable and could cause update problems.
+```{r,  eval=T}
+dt[LibPath == .libPaths()[[2]], .(Package, LibPath)]
+
+# prior to 4.3.1 where R_HOME point
+```  
+<!--}}} -->
+
+### List ALL Packages (interactive ONLY)in 
+<!-- {{{ -->
 `r .libPaths()[[1]]`  (lengthy)
 ```{r eval=F}
 if ( interactive()) lapply(.libPaths(), list.dirs, recursive=FALSE)
 # as nested
 t  <- tibble::tibble(if ( interactive()) lapply(.libPaths(), list.dirs, recursive=FALSE))
 ```
+<!-- }}} -->
+
 ***
 ### A Diagram:  Expect
-
-
 ### Diagram: Actual
 <!-- {{{ -->
 ```{r}
@@ -185,67 +168,12 @@ venn.plot <- draw.pairwise.venn(area1      = 100,
 
 ```
 <!-- }}} -->
-
-
-***
-
-###  The Problem:  Some R packages located in TWO directories:  
-<!-- {{{ -->
-Attempting to upgrade an R pkg in read-only `r .libPaths()[[2]]` will trigger WARNING.
-
-Specifically, there are two cases, which must be handled separately during upgrade.
-Some of R pkgs in  `r .libPaths()[[2]]` have been upgraded and installed in writeable directory `r .libPaths()[[2]]`
-But some of R pkgs in `r .libPaths()[[2]]` have not been upgraded and reside only in this (non-writable )directory.   
-
-```{r,   eval=F}
-ip = as_tibble(installed.packages(lib.loc=NULL))   # NULL, searches all paths
-ip = ip |> dplyr::select("Package","LibPath", "Version", "Built") 
-if (interactive()) ip
-##	Look !  MASS installed in two locations
-#ip |> dplyr::filter(Package==("MASS")) 
-ip |> dplyr::filter(Package==("KernSmooth")) 
-ip |> dplyr::filter(Package==("Matrix")) 
-##	only one, as expected
-#ip |> dplyr::filter(Package==("dplyr") )
-```
-<!-- }}} -->
-***
-
-###   2nd way to find directories for ONE pkg  
-<!-- {{{ -->
-```{r, eval=F}
-#    SEE ?find.pacakge()
-     findPkgAll <- function(pkg)
-       unlist(lapply(.libPaths(), function(lib)
-                find.package(pkg, lib, quiet=TRUE, verbose=FALSE)))
-     
-     findPkgAll("MASS")
-     findPkgAll("knitr")
-     findPkgAll("Matrix")
-     findPkgAll("mgcv")
-     findPkgAll("KernSmooth")
-```
-<!-- }}} -->
 ***
 
 
-###   Bug in base::find.package?  Should be 2 directoris, finds only 1
-```{r, eval=F}<!-- {{{ -->
-#   MASS is in 2 directories
-#   But .. 
-    find.package("MASS")
-    find.package("MASS", lib.loc=NULL)
-
-    # must use verbose=T, to get WARNING
-    find.package("MASS", verbose=T)
-    find.package("KernSmooth", verbose=T, lib.loc=NULL)
-
-```<!-- }}} -->
-
-***
-
-###   UPDATE  - 2 step process?
-Ask:  if directory is not writable prompt user to OK ~/R/x86_64-pc-linux-gnu-library/4.3/
+##   UPDATE  - multi- step process?
+###  UPDATE  - Intro
+Ask:  if directory is not writable prompt user to OK ~/R/x86_64-pc-linux-gnu-library/4.3/<!-- {{{ -->
 
 NOTE:    if dir not writeable: 
 R asks to use personal directory (independent of value for `ask`)
@@ -260,7 +188,7 @@ checkBuilt=T    turns a package into `old` if compiled under older R version
                   method, available = NULL, checkBuilt = FALSE, ...,
                   type = getOption("pkgType"))
 lib.loc = dir to check for old packages
-instPkgs = (default) all installed packages (ie check all ?)
+instPkgs = (default) all installed packages (ie check all ?)<!-- }}} -->
 
 ***
 ### Step #0  - Find OLD packages
@@ -275,7 +203,6 @@ instPkgs = (default) all installed packages (ie check all ?)
 #(old2 = old.packages(lib.loc = NULL))
 
 ## show old in  ~/R/x86 ....
-#(old = old.packages(lib.loc = .libPaths()[[1]]))
 (old3 = old.packages(lib.loc = .libPaths()[[1]],  checkBuilt=T))
 
 ## show old in original /opt/R/4.3.1/  (almost always finds pkg, but has this pkg already been updated and is now in [[1]])
@@ -287,9 +214,20 @@ instPkgs = (default) all installed packages (ie check all ?)
 ```
 ***
 
-### Step # 1 , update OLD in ~/R/4.3.1/...
+### CASE # 1 , update OLD in ~/R/4.3.1/...
+<!-- {{{ -->
+```{r}
+# limit to `old` and in User dir  (no warnings, good)
+update.packages( lib.loc= .libPaths()[[1]],
+  ask = F,    ## TRUE means asks for each pkg
+                oldPkgs = old3,         # ONLY these packages updated
+                instlib = .libPaths()[[1]],       # gives WARNING that R_HOME not writable
+                checkBuilt=T)
+
+```<!-- }}} -->
 
 ### DO NOT Update packages in sys (yet)
+<!-- {{{ -->
 ```{r, eval=F}
 #      DO NOT RUN !
 #
@@ -301,22 +239,12 @@ update.packages(lib.loc = .libPaths()[[2]],
                 oldPkgs = old3,         # ONLY these packages updated
                 instlib = .libPaths()[[1]],       # gives WARNING that R_HOME not writable
                 checkBuilt=T)
-```
+```<!-- }}} -->
 
-### Update only packages in  user dir
+### STOP  - need join
+### CASE #2 ,  update OLD in area of overlap (ie BOTH user/opt)
+# {{{
 ```{r}
-# limit to `old` and in User dir  (no warnings, good)
-update.packages( lib.loc= .libPaths()[[1]],
-  ask = F,    ## TRUE means asks for each pkg
-                oldPkgs = old3,         # ONLY these packages updated
-                instlib = .libPaths()[[1]],       # gives WARNING that R_HOME not writable
-                checkBuilt=T)
-
-```
-
-```{r}
-
-
 ## Do old packages in /opt/R/4.3.1  already have newer versions in ~/R/4.3.1/...
 ## If so, why recompile all over again?
 
@@ -332,7 +260,7 @@ update.packages(ask = F,    ## TRUE means asks for each pkg
                 instlib = .libPaths()[[1]],       # avoids WARNING that R_HOME not writable
                 checkBuilt=T)
 
-```
+```# }}}
 ***
 
 ### Step #2
@@ -399,6 +327,7 @@ t  <- tibble(pkg=l$tibble)
 ##### 010-for <pkg>, find packages dependent upon it
 ```
 ***
+
 
 ```{r, eval=T, include=F}
 if (F) knitr::knit_exit()
@@ -482,6 +411,7 @@ if (FALSE)
 getOption("repos")  # cran.rstudio.com
 ```
 
+
 013_jennyBC
 ###  from https://github.com/smithjd/explore-libraries/blob/master/01_explore-libraries_jenny.R
 ```{r, eval=F}
@@ -517,5 +447,75 @@ ipt %>% filter(Package=="BH")
 
 # uninstall(BH)
 ```
+### LEGACY (mostly dplyr)
+
+### Currently Installed Packages
+<!-- {{{ -->
+```{r, include=F}
+tmp = tibble::as_tibble(installed.packages())
+p = tmp |> dplyr::select(c("Package", "Version", "LibPath",  "Built"))
+nrow(p)
+```
+<!-- }}} -->
+
+###    Each distinct library, number of packages
+<!-- {{{ -->
+```{r, eval=F, include=F}
+p |> select("LibPath")  |> dplyr::count(LibPath) 
+```<!-- }}} -->
 
 
+
+###  The Problem:  Some R packages located in TWO directories:  
+<!-- {{{ -->
+Attempting to upgrade an R pkg in read-only `r .libPaths()[[2]]` will trigger WARNING.
+
+Specifically, there are two cases, which must be handled separately during upgrade.
+Some of R pkgs in  `r .libPaths()[[2]]` have been upgraded and installed in writeable directory `r .libPaths()[[2]]`
+But some of R pkgs in `r .libPaths()[[2]]` have not been upgraded and reside only in this (non-writable )directory.   
+
+```{r,   eval=F}
+ip = as_tibble(installed.packages(lib.loc=NULL))   # NULL, searches all paths
+ip = ip |> dplyr::select("Package","LibPath", "Version", "Built") 
+if (interactive()) ip
+##	Look !  MASS installed in two locations
+#ip |> dplyr::filter(Package==("MASS")) 
+ip |> dplyr::filter(Package==("KernSmooth")) 
+ip |> dplyr::filter(Package==("Matrix")) 
+##	only one, as expected
+#ip |> dplyr::filter(Package==("dplyr") )
+```
+<!-- }}} -->
+***
+
+###   2nd way to find directories for ONE pkg  
+<!-- {{{ -->
+```{r, eval=F}
+#    SEE ?find.pacakge()
+     findPkgAll <- function(pkg)
+       unlist(lapply(.libPaths(), function(lib)
+                find.package(pkg, lib, quiet=TRUE, verbose=FALSE)))
+     
+     findPkgAll("MASS")
+     findPkgAll("knitr")
+     findPkgAll("Matrix")
+     findPkgAll("mgcv")
+     findPkgAll("KernSmooth")
+```
+<!-- }}} -->
+***
+
+###   Bug in base::find.package?  Should be 2 directoris, finds only 1
+```{r, eval=F}<!-- {{{ -->
+#   MASS is in 2 directories
+#   But .. 
+    find.package("MASS")
+    find.package("MASS", lib.loc=NULL)
+
+    # must use verbose=T, to get WARNING
+    find.package("MASS", verbose=T)
+    find.package("KernSmooth", verbose=T, lib.loc=NULL)
+
+```<!-- }}} -->
+
+***
