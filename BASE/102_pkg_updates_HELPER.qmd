@@ -65,7 +65,7 @@ setkey(dt, "Package", "LibPath")
 key(dt) # [1] "Package"
 
 head(dt)[1:3,1:3 ]
-dim(installed) # [1] 266  16
+dim(installed) # [1] 264  16
 ```<!-- }}} -->
 
 ### installed in user dir
@@ -74,11 +74,10 @@ dim(installed) # [1] 266  16
 .libPaths()
 dt_user = dt[LibPath == .libPaths()[[1]]]
 key(dt_user)
-dim(dt_user) # [1] 237  16
-
+dim(dt_user) # [1] 235  16
 ```<!-- }}} -->
 
-### installed in system dir
+### installed in system dir  ("standard library")
 <!-- {{{ -->
 ```{r}
 dt_sys = dt[LibPath == .libPaths()[[2]]]
@@ -88,8 +87,8 @@ dim(dt_sys) # [1] 29 16
 ### unique packages, ~ 9 duplicates
 <!-- {{{ -->
 ```{r}
-data.table::uniqueN(dt$Package) # [1] 257
-data.table::uniqueN(dt_user$Package) # [1] 237
+data.table::uniqueN(dt$Package) # [1] 255
+data.table::uniqueN(dt_user$Package) # [1] 235
 data.table::uniqueN(dt_sys$Package) # [1] 29
 ```<!-- }}} -->
 
@@ -101,26 +100,22 @@ Notation:
   on=.(...), z := ...   adds column (in reference, no copy)
 
 
-### Packages in both, 9
+### Packages in 3 regions, sys_only, user_only, both
 <!-- {{{ -->
 ```{r}
-if (F ){   # NO !
-# equi-join, Package in both , 29  
-  dt_user[dt_sys, on=.(Package == Package)][, 1]
-  dt_user[dt_sys, on=.(Package == Package), nomatch=NA][, 1] # 29
-}
-# use inner_join
-dt_user[dt_sys, on=.(Package == Package), nomatch=NULL][, c(1,2)] # 9
+# use inner_join (ie BOTH)
+dt_both = dt_user[dt_sys, on=.(Package == Package), nomatch=NULL][, c(1,2)] # 9
+dt_both
 dt_sys[dt_user, on=.(Package == Package), nomatch=NULL][, c(1,2)] # 9
 
 # !=  is NOT allowed
-if false dt1[dt2, on=.(Package != Package)][, 1]
+if (F) dt1[dt2, on=.(Package != Package)][, 1]
 
 # anti-join, all packages in dt_user, not in dt_sys
-dt_user[!dt_sys, on = .(Package)][, c(1,2)] # 228
+dt_user_only = dt_user[!dt_sys, on = .(Package)][, c(1,2)] # 226
 
 # anti , packages in dt_sys, not in dt_user
-dt_sys[!dt_user, on = .(Package)][, c(1,2)] # 20
+dt_sys_only = dt_sys[!dt_user, on = .(Package)][, c(1,2)] # 20
 
 
 # A[B, on=.(id), which=T]  returns index only
@@ -134,33 +129,92 @@ dt_user[Package=="class"]  # y
 ```
 <!-- }}} -->
 
+### Summary, 3 distinct sets of packages, VERIFY add to total unique
+```{r}
+dt_user_only
+dt_sys_only
+dt_both
+
+```
+
+
 Of 29 packaes in dt_sys, 9 are ALSO in dt_user (20 are not)
 <!-- {{{ -->
 ```{r}
-str(dt)
-# Classes ‘data.table’ and 'data.frame':	266 obs. of  16 variables:
-#  $ Package              : chr  "AsioHeaders" "BH" "DiceDesign" "GPfit" ...
-#  $ LibPath              : chr  "/home/jim/R/x86_64-pc-linux-gnu-library/4.3" "/home/jim/R/x86_64-pc-linux-gnu-library/4.3" "/home/jim/R/x86_64-pc-linux-gnu-library/4.3" "/home/jim/R/x86_64-pc-linux-gnu-library/4.3" ...
-#  $ Version              : chr  "1.22.1-2" "1.81.0-1" "1.9" "1.0-8" ...
-#  $ Priority             : chr  NA NA NA NA ...
-#  $ Depends              : chr  NA NA "R (>= 2.10)" NA ...
-#  $ Imports              : chr  NA NA NA "lhs (>= 0.5), lattice (>= 0.18-8)" ...
-#  $ LinkingTo            : chr  NA NA NA NA ...
-#  $ Suggests             : chr  NA NA "rgl, randtoolbox, lattice" "testthat" ...
-#  $ Enhances             : chr  NA NA NA NA ...
-#  $ License              : chr  "BSL-1.0" "BSL-1.0" "GPL-3" "GPL-2" ...
-#  $ License_is_FOSS      : chr  NA NA NA NA ...
-#  $ License_restricts_use: chr  NA NA NA NA ...
-#  $ OS_type              : chr  NA NA NA NA ...
-#  $ MD5sum               : chr  NA NA NA NA ...
-#  $ NeedsCompilation     : chr  "no" "no" "yes" "no" ...
-#  $ Built                : chr  "4.3.1" "4.3.0" "4.3.1" "4.3.1" ...
-#  - attr(*, ".internal.selfref")=<externalptr> 
-#  - attr(*, "sorted")= chr "Package"
-#  - attr(*, "index")= int(0) 
-#   ..- attr(*, "__LibPath")= int [1:266] 1 2 3 4 5 6 7 9 11 13 ...
-# NULL
 ```
 <!-- }}} -->
 
+
+### Update Candidates
+```{r find_old  }
+.libPaths()
+
+(old1 = old.packages(checkBuilt=T))
+# ALL
+identical(old1, old.packages(lib.loc=NULL, checkBuilt=T))  # same, all dir 
+
+# our candidaetes
+old1
+
+dt_cand = data.table(old1)
+dt_cand
+
+
+#  divide into 3 
+
+dt_cand[dt_user_only, on=.(Package),  nomatch=NULL ]
+dt_cand[dt_sys_only, on=.(Package),  nomatch=NULL ]
+
+dt_cand[dt_both, on=.(Package),  nomatch=NULL ]  # only these
+
+```
+<!-- BEGIN HERE -->
+
+### CASE # 1 , update OLD in ~/R/4.3.1/...
+<!-- {{{ -->
+```{r}
+# limit to `old` and in User dir  (no warnings, good)
+update.packages( lib.loc= .libPaths()[[1]],
+                ask = F,    ## TRUE means asks for each pkg
+                oldPkgs = old_user,         # ONLY these packages updated
+                instlib = .libPaths()[[1]],       
+                checkBuilt=T)
+
+```<!-- }}} -->
+
+### DO NOT Update packages in sys (yet)
+<!-- {{{ -->
+```{r, eval=F}
+#      DO NOT RUN !
+#
+#
+# `old` and in /opt directory   , these will ALWAYS want to update.
+#  Before doing so, check if already updated and reside in [[1]]
+update.packages(lib.loc = .libPaths()[[2]], 
+  ask = F,    ## TRUE means asks for each pkg
+                oldPkgs = old3,         # ONLY these packages updated
+                instlib = .libPaths()[[1]],       # gives WARNING that R_HOME not writable
+                checkBuilt=T)
+```<!-- }}} -->
+
+### STOP  - need join
+### CASE #2 ,  update OLD in area of overlap (ie BOTH user/opt)
+# {{{
+```{r}
+## Do old packages in /opt/R/4.3.1  already have newer versions in ~/R/4.3.1/...
+## If so, why recompile all over again?
+
+## TODO:
+## each compare with find.package, OR run join against pkgs in ~/R/x86...
+
+# (testing)  All `old` packages in \opt are already in new directory
+# triggers a WARNING
+
+update.packages(ask = F,    ## TRUE means asks for each pkg
+                oldPkgs = old_sys,         # ONLY these packages updated
+                instlib = .libPaths()[[1]],       # avoids WARNING that R_HOME not writable
+                checkBuilt=T)
+
+```# }}}
+***
 
