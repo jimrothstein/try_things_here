@@ -263,3 +263,79 @@ update.packages(ask = F,    ## TRUE means asks for each pkg
 ***
 
 
+### EXAMPLE:  Finally, subset installed
+```{r}
+x = installed.packages()
+x
+
+# matrix Subset 
+
+res  <- x[x[, "Package"] == "yaml",,  drop=F ]
+is.matrix(res)
+rownames(res)
+colnames(res)
+attributes(res)
+
+dimnames(res)
+dimnames(res)[[1]]
+dimnames(res)[[2]]
+```
+
+### Example:  simple upgrade candidate (at this time)  "gert"
+```{r}
+old.packages()
+# old.packages() returns "gert", as well as std packages in sys that may not need upgrade
+
+# "gert" package installed on in user dir
+(res  <- x[x[, "Package"] == "gert", , drop=F ])
+
+# update gert, and ONLY "gert"
+update.packages(lib.loc = .libPaths()[[1]],    ## search 
+    oldPkgs=res,     ## non-NULL, update *should* only update these packages
+    instlib = .libPaths()[[1]],               ## user, install here
+    ask = F
+)
+
+## "gert" successfully updated;   now old.packages()  does not include "gert"
+```
+
+### Example:  troubled package, "class" is candidate for upgrade (at this time)
+```{r}
+## 2 entries
+(res  <- x[x[, "Package"] == "class", , drop=F ])
+
+## from these 2 rows, choose is sys
+(res2  <- res[res[, "LibPath"] == .libPaths()[[2]], , drop=F])
+
+## this is the row  to upgrade !   user
+(res2  <- res[res[, "LibPath"] == .libPaths()[[1]], , drop=F])
+
+# about 29, standard packages  in sys
+
+(res  <- x[x[, "LibPath"] == .libPaths()[[2]], c("Package", "LibPath"), drop=F])
+
+```
+
+# check before trying upgrade
+```{r}
+is.matrix(res)
+dimnames(res2)[[1]]
+dimnames(res2)[[2]]
+attributes(res2)
+```
+
+WORKED!   update user lib, "class" package only !
+instPkgs = 
+```{r}
+update.packages(lib.loc = .libPaths()[[1]],    ## search 
+    oldPkgs=res2,     ## non-NULL, update *should* only update these packages
+    instlib = .libPaths()[[1]],               ## user, install here
+    ask = F
+)
+```
+
+
+
+
+
+
