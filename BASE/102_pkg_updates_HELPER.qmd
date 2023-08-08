@@ -84,6 +84,7 @@ dt_sys = dt[LibPath == .libPaths()[[2]]]
 dim(dt_sys) # [1] 29 16
 ```<!-- }}} -->
 
+
 ### unique packages, ~ 9 duplicates
 <!-- {{{ -->
 ```{r}
@@ -153,13 +154,56 @@ Of 29 packaes in dt_sys, 9 are ALSO in dt_user (20 are not)
 # ALL
 identical(old1, old.packages(lib.loc=NULL, checkBuilt=T))  # same, all dir 
 
+
 # our candidaetes
 old1
+row.names(old1)
+
+## first, find candidate packages not memeber of standard library
+
+
+## next, find candidates packages ARE member of standard libary AND are in user directory AND are in user directory
+x = old.packages(lib.loc = .libPaths()[[1]])
+
+x[x[, 1] == .libPaths()[[2]],,drop=F]
+
+x= old.packages(lib.loc=.libPaths()[[2]])
+x
+## subset matrix
+x[x[, 2] == .libPaths()[[1]],,drop=F]
+
+
+
+
+## 3rd, find candidates ARE members of std lib AND NOT in user directory 
+
+x = old.packages(lib.loc = .libPaths()[[2]])   # std library
+x
+
+
+dim(x)
+is.matrix(x)
+row.names(x)
+col.names(x)
+x[1, ]
+x[1,, drop=F ]
+
+y = x[x[,1] == "KernSmooth",, drop=F]
+is.matrix(y)
+y
+y = x[x[,1] == "KernSmooth",1:6]
+y
+is.matrix(y)
+x[x[,2] == .libPaths()[[2]],]
+
+
+
 
 dt_cand = data.table(old1)
 dt_cand
 
 
+# candidates 
 #  divide into 3 
 
 dt_cand[dt_user_only, on=.(Package),  nomatch=NULL ]
@@ -217,4 +261,5 @@ update.packages(ask = F,    ## TRUE means asks for each pkg
 
 ```# }}}
 ***
+
 
