@@ -5,9 +5,11 @@ author: "Norah Jones"
 format: html
 ---
 
+2023-08-10
 
 ```
-PURPOSE:		Explain how A[B] can be used to pick out values of A, according to coordinates in each row of B.  A, B matrix
+PURPOSE:		Explain how A[B] can be used to pick out values of A, 
+according to coordinates in each row of B.  A, B matrix
 
 AKA:		extract
 
@@ -35,11 +37,9 @@ A
 #' [2,]    2    6   10
 #' [3,]    3    7   11
 #' [4,]    4    8   12
-
 ```
 
-```{r}
-#| label: matrix B 
+```{r} #| label: matrix B 
 #| warning: false
 B  <- matrix(c(1,3,2,3), 2)
 B
@@ -47,6 +47,8 @@ B
 # [1,]    1    2
 # [2,]    3    3
 
+# pick out: element 1,2 from A
+# pick out: 3,3 from A
 A[B]
 # [1]  5 11
 #
@@ -59,4 +61,36 @@ A[B]
 ###value of A with those coordinates.
 ```
 
+### `Usual Base R is generate T/F`
+```{r}
+A[, ] == 5   ## NOTE!
+#       [,1]  [,2]  [,3]
+# [1,] FALSE  TRUE FALSE
+# [2,] FALSE FALSE FALSE
+# [3,] FALSE FALSE FALSE
+# [4,] FALSE FALSE FALSE
+x  <-  A[,] == 5
+
+##    WHY ? 
+A[x]
+# [1] 5
+
+##   WHY?
+
+A[,] == 5| 11    # wrong
+A[,]  == 5 | A[, ] == 11   # right
+
+A[A[,] == 5]
+A[A[,] == 5, drop=F]
+
+# return as mattrix, entire row
+A[A[, 2] == 5,, drop=F]
+
+A[A[,] == 11]
+A[A[,] == 11]
+
+A[A[,2] ==  5,, drop=F ]   # first row matches
+A[A[,2] ==  11,, drop=F ]   # no row matches
+
+```
 

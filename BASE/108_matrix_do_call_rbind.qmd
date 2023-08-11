@@ -1,0 +1,71 @@
+
+
+## PURPOSE:   convert list to df or matrix
+REF:    https://stackoverflow.com/questions/37459677/what-is-equivalent-to-do-callrbind-list
+*REF:  https://stackoverflow.com/questions/35074200/why-do-rbind-and-do-callrbind-return-different-results
+
+### matrix fill by column (default)
+```{r}
+n = c(2, 3, 5,4) 
+n1 = c(2, 7, 4,6) 
+n2 = c(NA, NA, NA,NA) 
+
+(x = list(n, n1, n2))
+
+
+
+dat <- do.call("rbind", x)
+#      [,1] [,2] [,3] [,4]
+# [1,]    2    3    5    4
+# [2,]    2    7    4    6
+# [3,]   NA   NA   NA   NA
+
+# 1 row, 3 elemnts, each has 4 entries !
+# rbind NESTS
+dat2  <- rbind(x)
+#   [,1]      [,2]      [,3]     
+# x numeric,4 numeric,4 logical,4
+class(dat2)
+# [1] "matrix" "array" 
+
+dat2[1,1]
+dat2[1,2]
+dat2[1,3]
+
+identical(dat, dat2)
+
+t(dat2)
+identical(dat, t(dat2))
+# [1] FALSE
+```
+
+
+### Other attempts
+
+### unlist to atomic, then put in df or matrix
+```{r}
+unlist(x, recursive=F)
+
+unlist(x)
+
+```
+```{r}
+(l <- list(a=data.frame(x=1, y=2), b=data.frame(x=2, y=3)))
+
+# compare
+do.call(rbind, l)
+rbind(l)
+
+unname(l)
+unlist(l, use.names=T) 
+rbind(unname(l))
+
+# solution
+rbind(a=l[["a"]], b = l[["b"]])
+rbind(l$a, l$b)
+
+# not 
+rbind(l)
+```
+
+

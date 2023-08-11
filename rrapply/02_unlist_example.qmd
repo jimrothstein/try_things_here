@@ -1,0 +1,60 @@
+
+```{r}
+
+
+tl <- list(list_1 = list(list_1_1 = data.frame(x = c(1, 2, 3), y = c('A', 'A', 'B')),
+
+                         list_1_2 = data.frame(x = c(1, 2, 3), y = c('A', 'A', 'B'))),
+           list_2 = list(list_2_1 = data.frame(x = c(10, 45, 47), y = c('B', 'B', 'C')),
+                         list_2_2 = data.frame(x = c(7, 99, 78), y = c('B', 'B', 'C'))),
+           list_3 = list(list_1_1 = data.frame(x = c(1, 2, 3), y = c('A', 'A', 'B')),
+                         list_1_2 = data.frame(x = c(1, 2, 3), y = c('A', 'A', 'B'))))
+```
+
+
+### Examine
+```{r}
+z  <- tl
+rbind(unlist(tl))
+dput(tl)
+
+dput(unlist(tl, recursive=F))
+dput(unlist(tl, recursive=F, use.names=F))  # makes clear
+```
+
+
+### collapse into 1 df
+```{r}
+
+z  <- unlist(tl, recursive=F)   # single list of 6 df
+str(z)
+
+unlist(tl, recursive=F) |>
+  dplyr::bind_rows()
+
+unlist(tl, recursive=F, use.names=F) |>
+  rbind()
+```
+
+
+###  Wow!  not sure how it works
+```{r}
+# matrix, each element is list of 2 df
+(A  = rbind(tl))
+(B  = do.call(rbind,  tl))
+identical(A, B) # [1] FALSE
+
+A[1, 2]
+B[1,2]
+B[2,2]
+#
+# FAILS
+(z = do.call(rbind, tl))
+z[1,1]
+z[1,2]
+(x = rbind(z[1,1], z[1,2]))
+
+# works, why?
+do.call(rbind, do.call(rbind, tl))
+```
+
