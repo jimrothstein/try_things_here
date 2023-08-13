@@ -159,45 +159,67 @@ identical(old1, old.packages(lib.loc=NULL, checkBuilt=T))  # same, all dir
 old1
 row.names(old1)
 
-## first, find candidate packages not memeber of standard library
+## first, find candidate packages; NOT   member of standard library
 
-
-## next, find candidates packages ARE member of standard libary AND are in user directory AND are in user directory
 x = old.packages(lib.loc = .libPaths()[[1]])
+(x[x[, 1] == .libPaths()[[2]],,drop=F])
 
-x[x[, 1] == .libPaths()[[2]],,drop=F]
+## if not true, update
+is.null(x)
+update.packages(lib.loc = .libPaths()[[1]],    ## search 
+    oldPkgs=x, 
+    instlib = .libPaths()[[1]],               ## user, install here
+    ask = F
+)
 
+
+## Double check:  find candidates in standard lib AND in user
 x= old.packages(lib.loc=.libPaths()[[2]])
 x
 ## subset matrix
-x[x[, 2] == .libPaths()[[1]],,drop=F]
+(x[x[, 2] == .libPaths()[[1]],,drop=F])
+```
 
-
-
-
+### Candidates in std lib, but NOT in user lib
+```{r}
 ## 3rd, find candidates ARE members of std lib AND NOT in user directory 
+Z = installed.packages()[, 1:2]
+(x = old.packages(lib.loc = .libPaths()[[2]]))   # std library
 
-x = old.packages(lib.loc = .libPaths()[[2]])   # std library
-x
+## TEST, which candidates are in found in user?
+x[, 2] 
+x[, 1]   # candidate packages in stdlib
+x[, 2] == .libPaths()[[1]]  # candidate pkgs also in user
 
+x[, 2] == Z[, 2]
+x[x[, 2] ==  Z[, 2]  ]
 
+x[x[,2] == .libPaths()[[1]],]
+
+x[, 1:2]
+
+## if none, upgrade
+update.packages(lib.loc = .libPaths()[[2]],    ## search 
+    oldPkgs = x,       
+    instlib = .libPaths()[[1]],               ## user, install here
+    ask = F
+)
+```
+
+### Finally, candidaetes in user, AND also in std lib
+```{r}
+(x = old.packages(lib.loc = .libPaths()[[2]]))   # std library
 dim(x)
-is.matrix(x)
-row.names(x)
-col.names(x)
-x[1, ]
-x[1,, drop=F ]
+x[ , 2]
+x[,2] == .libPaths()[[2]]
+x[,2] == .libPaths()[[1]]
+x[,2] == installed.packages()[, 2] 
+#x[x[, 2] == .libPaths()[1],, DROP=F]  # in user
 
-y = x[x[,1] == "KernSmooth",, drop=F]
-is.matrix(y)
-y
-y = x[x[,1] == "KernSmooth",1:6]
-y
-is.matrix(y)
-x[x[,2] == .libPaths()[[2]],]
+x[x[,2] == installed.packages()[, 2] ]
+# if any packages, update
 
-
-
+```
 
 dt_cand = data.table(old1)
 dt_cand
