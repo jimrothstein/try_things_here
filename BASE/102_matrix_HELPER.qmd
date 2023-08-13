@@ -1,0 +1,110 @@
+
+```
+### Scratch
+```{r}
+x=c(1,2,3)
+x[[1]] == 1
+x[c(T,T,F)]
+x[x[] == 1]
+x[x[] == 1 | 
+  x[] == 3]
+
+
+z = old.packages()
+z[, 1:2]
+
+colnames(z)
+rownames(z)
+
+z["Matrix", ]
+z["Matrix", 1:2]
+z[c("Matrix" ,  "mgcv"), 1:2]
+z[c("Matrix" ,  "mgcv", "nlme"), 1:2]
+
+if (F) z[c("Matrix" ,  "mgcv", "ZZZ" ), 1:2] # fails 
+if (F) z[list("Matrix"), 1:2]          #  fails 
+if (F) z["Matrix" | "mgcv", 1:2]              # fails 
+
+z[z[, "Package"] == "Matrix"]
+z[z[, "Package"] == "Matrix"][[2]]
+z[z[, "Package"] == "Matrix"][1:2]
+
+z[, "Package"] %in% rownames(z)
+z[, "Package"] %in% c("Matrix")
+z[, "Package"] %in% c("Matrix", "mgcv")
+
+# packages
+z[z[, "Package"] %in% c("Matrix", "mgcv"), 1:2, drop=F]
+
+z[z[, "LibPath"] == .libPaths()[[2]],1:2] 
+z[z[, "LibPath"] == .libPaths()[[1]], 1, drop=F] 
+```
+
+### Examine candidate packages against what is currently installed.
+```{r}
+
+## Candidate
+(cand_packages = z[, 1])
+is.matrix(cand_packages)
+is.character(cand_packages)
+
+# check all installed 
+ins = installed.packages()
+
+# check candidate packages to see installed
+ins[ins[, "Package"] %in% cand_packages, 1:2, drop=F]
+
+# CASES: compare candidate to installed
+# Any candidates in [1] and NOT in [2] .. upgrade
+# Any candidates NOT in [1], but in [2], .. upgrade
+# Any candidates in BOTH [1] and [2]  ... upgrade only [1]
+
+z[, "LibPath"] == .libPaths()[[1]]  |
+z[, "LibPath"] == .libPaths()[[2]],1:2,drop=F]
+
+# candidates installed in both [1] and [2]
+# "Matrix" in [2] and also [1], prior upgrade
+z[
+z[, "LibPath"] == .libPaths()[[1]]  &
+z[, "LibPath"] == .libPaths()[[2]],1:2,drop=F]
+
+
+# candidates installed in either [1] , not [2]
+z[
+z[, "LibPath"] == .libPaths()[[1]]  |
+!z[, "LibPath"] == .libPaths()[[2]],1:2,drop=F]
+
+# candidates installed in [2], but not [1]  (updade)
+(u = z[
+!z[, "LibPath"] == .libPaths()[[1]]  |
+z[, "LibPath"] == .libPaths()[[2]],1:2,drop=F])
+
+# in [2], but not in [1] update
+update.packages(lib.loc = .libPaths()[[2]], 
+                ask = F,    ## TRUE means asks for each pkg
+                oldPkgs = u,         # ONLY these packages updated
+                instlib = .libPaths()[[1]],       # gives WARNING that R_HOME not writable
+                checkBuilt=T)
+
+# check
+
+
+is.matrix(
+z[z[, "LibPath"] == .libPaths()[[2]],1:2, drop=F] 
+  )
+is.matrix(
+z[z[, "LibPath"] == .libPaths()[[2]],1:2 ]
+)
+
+
+```
+### installed.packages
+```{r}
+
+e = installed.packages()
+is.matrix(e)
+
+## Check any of these packages installed more than once?
+e[e[, "Package"] %in% c("Matrix", "KernSmooth", "mgcv", "nlme", "spatial"),1:2, drop=F]
+```
+
