@@ -1,3 +1,78 @@
+
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+        mathjax: default
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+fontsize: 11pt   
+geometry: margin=0.4in,top=0.25in   
+---
+
+2023-08-13
+
+TODO:
+  *   move basic matrix useage/properties to this file
+
+##  PURPOSE:   Basic Matrix properties
+
+
+###  Matrix can be make from int[] and dim !
+  *  Adds class automagically
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = TRUE
+) # easier to read
+```
+
+
+```{r library 		}
+# print all labels
+file <- knitr::current_input()
+print(knitr::all_labels())
+``` 
+
+### matrix is a vector? yes
+```{r setup}
+A <- matrix(c(1, 0, 0, 1), nrow = 2)
+A
+is.matrix(A)
+is.array(A)
+
+class(A)
+dput(A)
+attributes(A)
+```
+
+#### Roll my own matrix?
+
+```{r}
+v <- c(1, 0, 0, 1)
+is.matrix(v)
+
+
+# make one change
+dim(v) <- c(2L, 2L)
+v
+is.matrix(v)
+attributes(v)
+class(v)
+```
+
+
+
 ```{r}
 library(data.table)
 ```
@@ -5,6 +80,7 @@ library(data.table)
 ### `not inside R chunk` (interactive)
 return for `r installed.packages()`
 
+### Study matrix properties, using installed.packages() as example
 
 ```{r}
 x = installed.packages()
@@ -190,7 +266,45 @@ str(A)
 m <- A[A[,2] %% 2 == 0,]
 attributes(m)
 str(m)
+```
+
+### `[`, subset useage, with matrix & old.packages() as example
+```{r}
+x=c(1,2,3)
+x[[1]] == 1
+x[c(T,T,F)]
+x[x[] == 1]
+x[x[] == 1 | 
+  x[] == 3]
 
 
+z = old.packages()
+z[, 1:2]
+
+colnames(z)
+rownames(z)
+
+z["Matrix", ]
+z["Matrix", 1:2]
+z[c("Matrix" ,  "mgcv"), 1:2]
+z[c("Matrix" ,  "mgcv", "nlme"), 1:2]
+
+if (F) z[c("Matrix" ,  "mgcv", "ZZZ" ), 1:2] # fails 
+if (F) z[list("Matrix"), 1:2]          #  fails 
+if (F) z["Matrix" | "mgcv", 1:2]              # fails 
+
+z[z[, "Package"] == "Matrix"]
+z[z[, "Package"] == "Matrix"][[2]]
+z[z[, "Package"] == "Matrix"][1:2]
+
+z[, "Package"] %in% rownames(z)
+z[, "Package"] %in% c("Matrix")
+z[, "Package"] %in% c("Matrix", "mgcv")
+
+# packages
+z[z[, "Package"] %in% c("Matrix", "mgcv"), 1:2, drop=F]
+
+z[z[, "LibPath"] == .libPaths()[[2]],1:2] 
+z[z[, "LibPath"] == .libPaths()[[1]], 1, drop=F] 
 ```
 

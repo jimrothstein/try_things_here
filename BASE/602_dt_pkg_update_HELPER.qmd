@@ -1,0 +1,163 @@
+---
+title: "102_... HELPER.qmd"  
+author: "JR"  
+date: "5/22/2021"  
+pdf-engine: lualatex  
+format:   
+  html:  
+        code-fold: true
+        toc: true 
+        toc_depth: 3
+        toc_float: true
+        embed-resources:  true
+        code-block-bg: true
+        code-block-border-left: "#31BAE9"       
+        indent: true
+        number-sections: true
+        number-depth: 3
+        number-offset: 2
+        code-link: true             # hyperlink R functions
+        html-math-method: katex
+        css:  styles.css
+execute:
+    error: true 
+    warning: true
+    collapse: true 
+    standalone: true
+output-dir: docs            ## NO indent, also _quarto.yml for entier project
+---
+
+### PURPOSE:    HELPER:  using dt to update  packages  
+
+Outline:  
+
+    -   Check R version, sessionInfo
+    -   Check current R library locations, 
+    -   Review packages each library
+    -   Identify packages in more than ONE directory
+    -   (interactive only) update `old` packages (compiled with older R versions)
+    -   (interactive only) update any remaining packages
+    -   list Env variables
+    
+Functions:  
+
+    -   update
+    -   upgrade
+    -   installed.packages
+    -   find.package
+    -   knitr functions:  <https://cran.r-project.org/web//packages/knitr/knitr.pdf>
+
+
+### all installed , 266 (with dup)
+<!-- {{{ -->
+```{r}
+library(data.table)
+installed = installed.packages()
+dt  <- data.table::as.data.table(installed)
+setkey(dt, "Package", "LibPath")
+key(dt) # [1] "Package"
+
+head(dt)[1:3,1:3 ]
+dim(installed) # [1] 264  16
+```<!-- }}} -->
+
+### installed in user dir
+<!-- {{{ -->
+```{r}
+.libPaths()
+dt_user = dt[LibPath == .libPaths()[[1]]]
+key(dt_user)
+dim(dt_user) # [1] 235  16
+```<!-- }}} -->
+
+### installed in system dir  ("standard library")
+<!-- {{{ -->
+```{r}
+dt_sys = dt[LibPath == .libPaths()[[2]]]
+dim(dt_sys) # [1] 29 16
+```<!-- }}} -->
+
+
+### unique packages, ~ 9 duplicates
+<!-- {{{ -->
+```{r}
+data.table::uniqueN(dt$Package) # [1] 255
+data.table::uniqueN(dt_user$Package) # [1] 235
+data.table::uniqueN(dt_sys$Package) # [1] 29
+```<!-- }}} -->
+
+
+REF: https://medium.com/analytics-vidhya/r-data-table-joins-48f00b46ce29
+Notation:
+  on=.(x,y)
+  on=.(x < 5, y> y)  non-equi join
+  on=.(...), z := ...   adds column (in reference, no copy)
+
+
+### Packages in 3 regions, sys_only, user_only, both
+<!-- {{{ -->
+```{r}
+# use inner_join (ie BOTH)
+dt_both = dt_user[dt_sys, on=.(Package == Package), nomatch=NULL][, c(1,2)] # 9
+dt_both
+dt_sys[dt_user, on=.(Package == Package), nomatch=NULL][, c(1,2)] # 9
+
+# !=  is NOT allowed
+if (F) dt1[dt2, on=.(Package != Package)][, 1]
+
+# anti-join, all packages in dt_user, not in dt_sys
+dt_user_only = dt_user[!dt_sys, on = .(Package)][, c(1,2)] # 226
+
+# anti , packages in dt_sys, not in dt_user
+dt_sys_only = dt_sys[!dt_user, on = .(Package)][, c(1,2)] # 20
+
+
+# A[B, on=.(id), which=T]  returns index only
+
+# check
+dt_user[Package=="base"] ; 
+  dt_sys[Package=="base"]
+dt_user[Package=="boot"]
+dt_user[Package=="compiler"]
+dt_user[Package=="class"]  # y
+```
+<!-- }}} -->
+
+### Summary, 3 distinct sets of packages, VERIFY add to total unique
+```{r}
+dt_user_only
+dt_sys_only
+dt_both
+
+```
+
+### dt, with packageStatus
+```{r}
+
+z = packageStatus()
+
+dim(z$inst)  # installed packages
+is.matrix(z$inst) # [1] FALSE
+is.data.frame(z$inst) # [1] TRUE
+
+
+df = z$inst
+dim(df) # [1] 264  17
+names(df)
+
+library(data.table)
+dt = as.data.table(df)
+dt
+
+cols = c("Package", "Status", "LibPath")
+dt[Status != "ok", ..cols]
+#       Package      Status                                     LibPath
+# 1:       gert     upgrade /home/jim/R/x86_64-pc-linux-gnu-library/4.3
+# 2:   highlite unavailable /home/jim/R/x86_64-pc-linux-gnu-library/4.3
+# 3:    nvimcom unavailable /home/jim/R/x86_64-pc-linux-gnu-library/4.3
+# 4: KernSmooth     upgrade                  /opt/R/4.3.1/lib/R/library
+# 5:     Matrix     upgrade                  /opt/R/4.3.1/lib/R/library
+# 6:       mgcv     upgrade                  /opt/R/4.3.1/lib/R/library
+# 7:    spatial     upgrade                  /opt/R/4.3.1/lib/R/library
+```
+

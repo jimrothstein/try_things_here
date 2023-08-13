@@ -1,45 +1,6 @@
 
-```
-### Scratch
-```{r}
-x=c(1,2,3)
-x[[1]] == 1
-x[c(T,T,F)]
-x[x[] == 1]
-x[x[] == 1 | 
-  x[] == 3]
 
-
-z = old.packages()
-z[, 1:2]
-
-colnames(z)
-rownames(z)
-
-z["Matrix", ]
-z["Matrix", 1:2]
-z[c("Matrix" ,  "mgcv"), 1:2]
-z[c("Matrix" ,  "mgcv", "nlme"), 1:2]
-
-if (F) z[c("Matrix" ,  "mgcv", "ZZZ" ), 1:2] # fails 
-if (F) z[list("Matrix"), 1:2]          #  fails 
-if (F) z["Matrix" | "mgcv", 1:2]              # fails 
-
-z[z[, "Package"] == "Matrix"]
-z[z[, "Package"] == "Matrix"][[2]]
-z[z[, "Package"] == "Matrix"][1:2]
-
-z[, "Package"] %in% rownames(z)
-z[, "Package"] %in% c("Matrix")
-z[, "Package"] %in% c("Matrix", "mgcv")
-
-# packages
-z[z[, "Package"] %in% c("Matrix", "mgcv"), 1:2, drop=F]
-
-z[z[, "LibPath"] == .libPaths()[[2]],1:2] 
-z[z[, "LibPath"] == .libPaths()[[1]], 1, drop=F] 
-```
-
+HELPER:   update packages, using matrix tools (and not dt)
 ### Examine candidate packages against what is currently installed.
 ```{r}
 
@@ -107,4 +68,58 @@ is.matrix(e)
 ## Check any of these packages installed more than once?
 e[e[, "Package"] %in% c("Matrix", "KernSmooth", "mgcv", "nlme", "spatial"),1:2, drop=F]
 ```
+
+
+
+<!-- BEGIN HERE:  subset matrices, based on condition -->
+
+
+
+
+### EXAMPLE:  Finally, subset installed
+```{r}
+x = installed.packages()
+x
+
+# matrix Subset 
+
+res  <- x[x[, "Package"] == "yaml",,  drop=F ]
+is.matrix(res)
+rownames(res)
+colnames(res)
+attributes(res)
+
+dimnames(res)
+dimnames(res)[[1]]
+dimnames(res)[[2]]
+```
+
+```{r}
+
+# "gert" package installed on in user dir
+(res  <- x[x[, "Package"] == "gert", , drop=F ])
+
+
+
+```{r}
+(res  <- x[x[, "Package"] == "class", , drop=F ])
+
+## from these 2 rows, choose is sys
+(res2  <- res[res[, "LibPath"] == .libPaths()[[2]], , drop=F])
+
+## this is the row  to upgrade !   user
+(res2  <- res[res[, "LibPath"] == .libPaths()[[1]], , drop=F])
+
+# about 29, standard packages  in sys
+
+(res  <- x[x[, "LibPath"] == .libPaths()[[2]], c("Package", "LibPath"), drop=F])
+
+```
+
+
+
+
+
+
+
 
