@@ -59,7 +59,33 @@ key(dt) # [1] "Package"
 
 head(dt)[1:3,1:3 ]
 dim(installed) # [1] 264  16
-```<!-- }}} -->
+```
+<!-- }}} -->
+
+###
+```{r}
+# shorter version
+dt  <- data.table::as.data.table(installed)
+dt = dt[, .(Package, LibPath, Version)]
+dt[, .N, by=.(LibPath)]
+
+# assign "user" or "sys"
+x=1
+ifelse(x== 1, 1, 0)
+dt1 = dt[, .(Package, LibPath, new = ifelse(LibPath == .libPaths()[[1]], "user", "sys" ))]
+dt1
+
+```
+
+### widen
+```{r}
+dt[ LibPath==.libPaths()[[2]], ][, 1:3]
+dt[ LibPath==.libPaths()[[2]],.(sys = "sys") ][, 1:3]
+dt[, 1:2]
+dt1  <- dcast(dt, Package~LibPath)
+dt1[,]
+```
+
 
 ### installed in user dir
 <!-- {{{ -->
@@ -230,5 +256,62 @@ dt_status[Status != "ok", ..cols]
 ```{r}
 #   compare dt_old, dt_inst
 
+```
+PRACTICE
+```{r}
+s1 <- "family_id age_mother dob_child1 dob_child2 dob_child3
+1         30 1998-11-26 2000-01-29         NA
+2         27 1996-06-22         NA         NA
+3         26 2002-07-11 2004-04-05 2007-09-02
+4         32 2004-10-10 2009-08-27 2012-07-21
+5         29 2000-12-05 2005-02-28         NA"
+
+DT <- fread(s1)
+DT
+#    family_id age_mother dob_child1 dob_child2 dob_child3
+#        <int>      <int>     <IDat>     <IDat>     <IDat>
+# 1:         1         30 1998-11-26 2000-01-29       <NA>
+# 2:         2         27 1996-06-22       <NA>       <NA>
+# 3:         3         26 2002-07-11 2004-04-05 2007-09-02
+# 4:         4         32 2004-10-10 2009-08-27 2012-07-21
+# 5:         5         29 2000-12-05 2005-02-28       <NA>
+## dob stands for date of birth.
+
+str(DT)
+# Classes 'data.table' and 'data.frame':    5 obs. of  5 variables:
+#  $ family_id : int  1 2 3 4 5
+#  $ age_mother: int  30 27 26 32 29
+#  $ dob_child1: IDate, format: "1998-11-26" "1996-06-22" "2002-07-11" ...
+#  $ dob_child2: IDate, format: "2000-01-29" NA "2004-04-05" ...
+#  $ dob_child3: IDate, format: NA NA "2007-09-02" ...
+#  - attr(*, ".internal.selfref")=<externalptr>
+```
+### melt: wide to long 
+```{r}
+DT.m1 = melt(DT, id.vars = c("family_id", "age_mother"),
+                measure.vars = c("dob_child1", "dob_child2", "dob_child3"))
+DT.m1
+```
+
+### dcast: long to wide
+```{r}
+dcast(DT.m1, family_id + age_mother ~ child, value.var = "dob")
+```
+
+```{r}
+test = data.table(pkg=c("x", "y", "z"),
+                  dir1 = c(T,T,F),
+                  dir2 = c(T,F,T)
+)
+test
+
+
+# melt
+test = melt(test, id.vars="pkg", measure.var = c("dir1", "dir2"))
+test
+
+# widen to orginal
+dcast(test, pkg ~ variable, value.var = "value")
+)
 ```
 
