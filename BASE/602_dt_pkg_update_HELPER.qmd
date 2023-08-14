@@ -1,5 +1,5 @@
 ---
-title: "102_... HELPER.qmd"  
+title: "602_... HELPER.qmd"  
 author: "JR"  
 date: "5/22/2021"  
 pdf-engine: lualatex  
@@ -131,26 +131,91 @@ dt_both
 
 ```
 
-### dt, with packageStatus
+### dt, old.packages
 ```{r}
+dt_old  <- old.packages(checkBuilt=F)
+head(dt_old)
+dt_old  <- as.data.table(dt_old)
+```
+### dt, install.packages
+```{r}
+z  <- installed.packages()
+is.matrix(z)
+dim(z) # [1] 265  16
+attributes(z)
 
+str(z)
+## after done, must look like same to R:
+dimnames(z)
+
+
+#
+dt_inst  <- as.data.table(z)
+dt_inst[1:3, 1:2 ]
+names(dt_inst)
+```
+### compare dt_old and dt_inst
+```{r}
+# where are candidate now installed?
+dt_inst[dt_old, on = .(Package)][,  1:2]
+dt_inst[dt_old, on = .(Package = Package, LibPath = LibPath)][,  1:2]
+
+# Candidates not installed in [1] but are installed in [2]  -- upgrade
+dt_inst[dt_old, on = .(Package = Package, LibPath = LibPath)][LibPath != .libPaths()[1]][,  1:2]
+
+# Any candidates installed in .libPaths()[[1]]  and not [[2]]
+dt_inst[dt_old, on = .(Package = Package, LibPath = LibPath)][LibPath != .libPaths()[2]][,  1:2]
+
+
+
+dt_inst[dt_old, on = .(Package, LibPath)] [, 1:2]
+dt_inst[dt_old, on = .(Package, LibPath)][LibPath  == .libPaths()[[1]]] [,1:2]
+dt_inst[dt_old[, LibPath == .libPaths[[1]]], on = .(Package, LibPath)]
+
+dt_inst[dt_old, on = .(Package)][LibPath  == .libPaths()[[1]] & LibPath  != .libPaths()[[2]], ] [,1:2]
+
+
+# Any Candidates in BOTH
+dt_inst[dt_old, on = .(Package, LibPath)]
+[LibPath  == .libPaths()[[1]] & LibPath  == .libPaths()[[2]], ] [,1:2]
+
+dt_inst[dt_old, on = .(Package, LibPath)][LibPath  == .libPaths()[[1]] & LibPath  == .libPaths()[[2]], ] [,1:2]
+dt_inst[dt_old, on = .(Package, LibPath)][LibPath  == .libPaths()[[1]] & LibPath  != .libPaths()[[2]], ] [,1:2]
+dt_inst[dt_old, on = .(Package, LibPath)][LibPath  == .libPaths()[[1]] & LibPath  == .libPaths()[[2]], ] [,1:2]
+dt_inst[dt_old, on = .(Package, LibPath)][LibPath  == .libPaths()[[1]] & LibPath  == .libPaths()[[2]], ] [,1:2]
+x1 = dt_inst[dt_old, on = .(Package)]
+x1[, 1:2]
+
+x1[LibPath  == .libPaths()[[1]] & LibPath  == .libPaths()[[2]], ] [,1:2]
+# Empty data.table (0 rows and 2 cols): Package,LibPath
+
+
+dt_inst[dt_old, on = .(Package)][LibPath == .libPaths()[[2]]][, 1:2]
+
+
+```
+
+
+
+### dt, with packageStatus, an unusual structure
+```{r}
 z = packageStatus()
+attributes(z)
 
 dim(z$inst)  # installed packages
 is.matrix(z$inst) # [1] FALSE
 is.data.frame(z$inst) # [1] TRUE
 
-
+# names
 df = z$inst
 dim(df) # [1] 264  17
 names(df)
 
-library(data.table)
-dt = as.data.table(df)
-dt
+dt_status = as.data.table(df)
+dt_status
 
 cols = c("Package", "Status", "LibPath")
-dt[Status != "ok", ..cols]
+dt_status[Status != "ok", ..cols]
 #       Package      Status                                     LibPath
 # 1:       gert     upgrade /home/jim/R/x86_64-pc-linux-gnu-library/4.3
 # 2:   highlite unavailable /home/jim/R/x86_64-pc-linux-gnu-library/4.3
@@ -159,5 +224,11 @@ dt[Status != "ok", ..cols]
 # 5:     Matrix     upgrade                  /opt/R/4.3.1/lib/R/library
 # 6:       mgcv     upgrade                  /opt/R/4.3.1/lib/R/library
 # 7:    spatial     upgrade                  /opt/R/4.3.1/lib/R/library
+```
+
+### Which pkgs/LibPath really must upgrade?  
+```{r}
+#   compare dt_old, dt_inst
+
 ```
 
