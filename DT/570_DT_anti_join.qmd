@@ -1,0 +1,75 @@
+
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+fontsize: 11pt   
+geometry: margin=0.5in,top=0.25in   
+TAGS:  data.table,purrr,structure,dput,normalize,starwars
+---
+
+PURPOSE:  non-joins (vs. `anti-join`) very confused
+
+```{r}
+  
+
+library(data.table)
+
+dt1 <- data.table(A1=letters[1:10], B1=sample(1:5,10, replace=TRUE))
+dt2 <- data.table(A2=letters[c(1:5, 11:15)], B2=sample(1:5,10, replace=TRUE))
+
+setkey(dt1, A1)
+setkey(dt2, A2)
+dt1
+#     A1 B1
+#  1:  a  4
+#  2:  b  1
+#  3:  c  3
+#  4:  d  1
+#  5:  e  3
+#  6:  f  4
+#  7:  g  3
+#  8:  h  5
+#  9:  i  1
+# 10:  j  3
+
+dt2
+#     A2 B2
+#  1:  a  3
+#  2:  b  5
+#  3:  c  2
+#  4:  d  4
+#  5:  e  3
+#  6:  k  4
+#  7:  l  4
+#  8:  m  5
+#  9:  n  4
+# 10:  o  5
+
+```
+```{r}
+
+`A new "!" prefix on i signals 'not-join' (a.k.a. 'not-where'), #1384.
+  DT[-DT["a", which=TRUE, nomatch=0]]   # old not-join idiom, still works
+  DT[!"a"]                              # same result, now preferred.
+  DT[!J(6),...]                         # !J == not-join
+  DT[!2:3,...]                          # ! on all types of i
+  DT[colA!=6L | colB!=23L,...]          # multiple vector scanning approach
+  DT[!J(6L,23L)]                        # same result, faster binary search
+'!' has been used rather than '-' :
+  * to match the 'not-join' and 'not-where' nomenclature
+  * with '-', DT[-0] would return DT rather than DT[0] and not be backwards
+    compatibile. With '!', DT[!0] returns DT both before (since !0 is TRUE in
+    base R) and after this new feature.
+  * to leave DT[+...] and DT[-...] available for future use``
+```
