@@ -6,6 +6,9 @@
 ##
 ## FINAL:  id.vars, variable.name, variable.value
 ##-------------------------------------------------
+```{r}
+  
+
 set.seed(45)
 library(data.table)
 DT <- data.table(
@@ -28,4 +31,6 @@ melt(DT, id.vars = 1:2, measure.vars = 3:4,
 
 
 ##  To Run in interactive R, source("142_melt.R"), then print(DT)
+
+```
 
