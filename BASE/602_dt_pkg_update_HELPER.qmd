@@ -1,34 +1,10 @@
----
-title: "602_... HELPER.qmd"  
-author: "JR"  
-date: "5/22/2021"  
-pdf-engine: lualatex  
-format:   
-  html:  
-        code-fold: true
-        toc: true 
-        toc_depth: 3
-        toc_float: true
-        embed-resources:  true
-        code-block-bg: true
-        code-block-border-left: "#31BAE9"       
-        indent: true
-        number-sections: true
-        number-depth: 3
-        number-offset: 2
-        code-link: true             # hyperlink R functions
-        html-math-method: katex
-        css:  styles.css
-execute:
-    error: true 
-    warning: true
-    collapse: true 
-    standalone: true
-output-dir: docs            ## NO indent, also _quarto.yml for entier project
----
+<!--
+ 
+NO LONGER NEED yaml header,  see _quarto.yml
+-->
 
 ### PURPOSE:    HELPER:  using dt to update  packages  
-
+<!-- {{{ -->
 Outline:  
 
     -   Check R version, sessionInfo
@@ -46,9 +22,10 @@ Functions:
     -   installed.packages
     -   find.package
     -   knitr functions:  <https://cran.r-project.org/web//packages/knitr/knitr.pdf>
-
+<!-- }}} -->
 
 ### all installed , 266 (with dup)
+
 <!-- {{{ -->
 ```{r}
 library(data.table)
@@ -162,7 +139,50 @@ dt_both
 dt_old  <- old.packages(checkBuilt=F)
 head(dt_old)
 dt_old  <- as.data.table(dt_old)
+
+(lib1 = .libPaths()[[1]])
+lib2 = .libPaths()[[2]]
+
 ```
+
+### from old.packages, subset into y1, y2 (candidates, packages & dir=1,2)
+```{r}
+y1  <- dt_old[LibPath == lib1,]
+head(y1)
+
+y2  <- dt_old[LibPath == lib2,]
+y2
+
+# Check, distinct (no common Package-LibPath ?)
+y1[y2, on = .(Package, LibPath),nomatch= NULL ] # inner, nomatch = no row
+
+# Check, but some Packages in both?
+y1[y2, on = .(Package), nomatch=NULL]
+```
+
+### Candidates, y1, not y2; can update (CASE I)
+```{r}
+y1[!y2, on = .(Package)]
+```
+
+### Candidates, not y1, in y2; std.lib candidates never updated prior (CASE II)
+```{r}
+y2[!y1, on = .(Package)]
+
+# Check
+y1[Package == "KernSmooth"]
+y1[Package == "mgcv"]
+y1[Package == "nlme"]
+y1[Package ==  "spatial"]
+```
+
+### Candidates, y1, y2  std.lib, only update the one in lib1 (CASE III)
+```{r}
+x  <- y1[y2, on = .(Package), nomatch=NULL]
+x[, .(Package,  LibPath, i.LibPath)]
+
+```
+
 ### dt, install.packages
 ```{r}
 z  <- installed.packages()
