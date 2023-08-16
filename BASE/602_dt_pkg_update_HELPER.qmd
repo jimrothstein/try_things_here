@@ -150,6 +150,14 @@ dt_old = dt_old[, .(Package, LibPath, Installed, ReposVer)]
 dt_old
 setkey(dt_old,Package, LibPath )
 key(dt_old)
+dt_old
+
+# wrong
+dt_old[LibPath == lib1,  .(LibPath = lapply(LibPath, function(e) e = "user"))]
+
+# add new col
+dt_old[LibPath == .libPaths()[[2]], sys := "sys"]
+dt_old
 
 # CHANGE col names !
 dcast(dt_old, Package ~ LibPath, value.var = "LibPath")

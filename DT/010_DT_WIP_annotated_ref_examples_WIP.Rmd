@@ -238,6 +238,10 @@ dt[, .(sum = sum(v)), by = x]  # summarizes, with new variable
 dt
 dt[,.(z = v)]   # not permanent, only prints ONE col
 
+#### setnames() to rename cols (in memory)
+dt_rename  <- create_dt() 
+dt_rename  <- setnames(dt_rename, c("x", "y"), c("A", "B" ))
+dt_rename
 
 ## return ALL columns, rename just one
 dt1 <-  dt[,.(x,y,z = v)]
@@ -682,6 +686,8 @@ dt
 # 3lines for each grouping
 dt[,.SD, by=x]
 
+dt[,lapply(.SD, length), by=x]
+
 # here limit to 2 lines, for each grouping
 dt[,head(.SD, 2), by =x]
 
@@ -692,7 +698,7 @@ dt[,print(.SD), by =x]
 dt[, .(val = y), by =x]
 
 ```{r list_column}
-# THINK
+# THINK   (concatinates)
 dt[, .(val = c(y,v)), by=x]
 
 # THINK
@@ -1249,3 +1255,18 @@ rmarkdown::render(input= file,
 #   *  if .gitignore balks,  then add !out/**   to close .github
 
 ```
+dt  <- data.table(mtcars)
+##  
+##  Generate arbitrary number of duplicate rows based upon value in col 
+##
+
+dt[
+   ,  list(1:5)
+   ,  by = "cyl"]
+
+
+
+
+dt[
+   ,  list(seq_len(cyl))
+   ,  by = "cyl"]
