@@ -256,8 +256,14 @@ dt[,.(y,z = v)][]
 ```
 #### create 1 new col, drop another (as temp)
 ```{r new_remove}
-dt  <- create_dt()
-dt
+dt_test  <- create_dt()
+dt_test
+
+# add 3 new columns, populated with NA
+
+
+
+
 dt[, .(new = y + v, x = NULL)]
 ```
 
@@ -279,6 +285,8 @@ dt[, .(x,y,v, colA=x, colB=y, colC=v)]
 line  <- NULL
 trace(what=quote(simple_dt), browser())
 untrace(what=simple_dt)
+
+# create 10 lines
 simple_dt  <- function() {
     line  <- "TAG:    a,b,c,d,e"
     line  <- rep(line, 10)
@@ -309,7 +317,10 @@ dt
 ```{r multiple_new}
 dt  <- create_dt()
 
+# in place, 2 new columns, populated
 dt[, c("newA", "newB") := .(x,y)][]
+
+# create 2 more populated columns, in-place
 dt[, `:=` (colA =  x, colB = y)][]
 dt
 
@@ -327,6 +338,7 @@ dt = create_dt()
 
 # Form 1, Add new col
 dt[, c("new") := y+1 ]
+
 dt
 
 # Update col

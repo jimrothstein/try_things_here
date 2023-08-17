@@ -135,10 +135,12 @@ dt_both
 
 ```
 
-### dt, old.packages
+### dt, old.packages (long to wid)
+
 ```{r}
 dt_old  <- old.packages(checkBuilt=F)
 head(dt_old)
+dt_old  <- setDT(dt_old)  # faster, but dt_old is matrix!, not df
 dt_old  <- as.data.table(dt_old)
 
 (lib1 = .libPaths()[[1]])
@@ -153,25 +155,70 @@ key(dt_old)
 dt_old
 
 # wrong
-dt_old[LibPath == lib1,  .(LibPath = lapply(LibPath, function(e) e = "user"))]
+# dt_old[LibPath == lib1,  .(LibPath = lapply(LibPath, function(e) e = "user"))]
 
 # add new col
+dt_old[LibPath == .libPaths()[[1]], user := "user"]
 dt_old[LibPath == .libPaths()[[2]], sys := "sys"]
+
 dt_old
 
-# CHANGE col names !
+# drop clunky
+dt_old[, c("LibPath") := NULL]
+dt_old
+```
+
+###  WORKING !!
+### instPkgs = ?
+```{r}
+U1 = old.packages( instPkgs = installed.packages(lib.loc = .libPaths()[[1]]))
+U2 = old.packages( instPkgs = installed.packages(lib.loc = .libPaths()[[2]]))
+U1
+U2
+is.matrix(U2)
+I1 = installed.packages(lib.loc = .libPaths()[[1]])
+I1
+I2 = installed.packages(lib.loc = .libPaths()[[2]])
+I2
+is.matrix(instPkgs)
+
+update.packages(old = U1 )
+# --------------------------
+# 
+# check !   For those pkgs in candidates in `sys` and already installed in `user`  =>  DO NOT Upgrade
+
+# if zero rows, then none of the candidates from lib2 have been previously updated and installed in lib1
+U2
+dim(U2[U2[, "Package"] %in% rownames(I1),, drop=F])
+
+if( F) 
+update.packages(old = U2, instlib = .libPaths()[[1]]
+)
+# practice
+U2[U2[, "Package"] %in% rownames(U2),, drop=F]
+
+```
+
+
+
+```{r}
+dt_old  <- old.packages(checkBuilt=F)
+head(dt_old)
+dt_old  <- setDT(dt_old)  # faster, but dt_old is matrix!, not df
+dt_old  <- as.data.table(dt_old)
+
+(lib1 = .libPaths()[[1]])
+lib2 = .libPaths()[[2]]
+
+dt_old
+# shorten
+dt_old = dt_old[, .(Package, LibPath, Installed, ReposVer)]
+dt_old
+
+# ugly but works
 dcast(dt_old, Package ~ LibPath, value.var = "LibPath")
 ```
 
-```{r}
-
-
-```
-
-# long to wide
-dcast(dt_old, Package ~ LibPath, value.var = "LibPath" )
-
-```
 
 ### from old.packages, subset into y1, y2 (candidates, packages & dir=1,2)
 ```{r}

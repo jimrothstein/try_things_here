@@ -224,7 +224,41 @@ names(l)
 names(l)  <- c("First", "Second", "Third")
 l
 names(l)
+
 ```
+### partial matching (in list)  aardvark
+# {{{
+```{r}
+x  <- list(aardwark = 1:5)
+
+x$aardwark
+identical(x$aardwark, x$a) # [1] TRUE
+
+x[["aardwark"]] # [1] 1 2 3 4 5
+x[["a"]] # NULL
+x[["a", exact=F]] # # [1] 1 2 3 4 5
+
+# grab 1st element, then 3rd element of that
+x[[c(1,3)]] # [1] 3
+
+# subset ie return new list
+y=list("a", "b", "c")
+y[c(1,3)]
+# [[1]]
+# [1] "a"
+# 
+# [[2]]
+# [1] "c"
+# 
+# dput puts into simpler notation
+dput(y[c(1,3)])
+# list("a", "c")
+
+# subset, but there is no element 3
+dput(x[c(1,3)]) # structure(list(1:5, NULL), names = c("aardwark", NA))
+
+```# }}}
+
 
 #### lists with NULL
   *  special type
