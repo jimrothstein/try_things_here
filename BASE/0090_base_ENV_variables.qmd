@@ -10,7 +10,7 @@ v  <- c("R_LIBS",                      # unset(default)
         "R_HOME"
 )
 
-lapply(v, Sys.getenv)
+read.delim
 
 
 ```
