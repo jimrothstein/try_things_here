@@ -1,6 +1,67 @@
+### /home/jim/code/try_things_here/BASE/604_matrix_pkg_update_HELPER.qmd
 
-
+PURPOSE:
 HELPER:   update packages, using matrix tools (and not dt)
+
+
+TODO:
+  *   Show I1,I2 not unique, have overlap
+  *   Show U1, U2 subsets of I
+  *   fix comments
+  *   LEGACY:   pick out useful
+
+### currently installed, in each of two libraries
+```{r}
+I1 = installed.packages(lib.loc = .libPaths()[[1]])
+I1
+I2 = installed.packages(lib.loc = .libPaths()[[2]])
+I2
+
+is.matrix(I1)
+is.matrix(I2)
+```
+
+### `old` in each of two libraries I have (user/sys) 
+```{r}
+U1 = old.packages( instPkgs = installed.packages(lib.loc = .libPaths()[[1]]))
+U2 = old.packages( instPkgs = installed.packages(lib.loc = .libPaths()[[2]]))
+U1
+U2
+is.matrix(U2)
+```
+
+### Update candidates in `user`
+```{r}
+update.packages(ask=F, old = U1 )
+```
+
+### Candidates U2 in sys:
+# --------------------------
+# Case I 
+# For those pkgs in candidates in `sys` and already installed in `user`  =>  
+DO NOT Upgrade
+
+```{r}
+dim(U2[U2[, "Package"] %in% rownames(I1),, drop=F])
+
+if( F) 
+update.packages(old = U2, instlib = .libPaths()[[1]]
+)
+```
+
+# Case II 
+# For those pkgs in candidates in `sys` but installed in `user: (ie never were upgraded)
+Upgrade 
+```{r}
+U2[U2[, "Package"] %in% rownames(U2),, drop=F]
+
+# if zero rows, then none of the candidates from lib2 have been previously updated and installed in lib1
+U2
+```
+
+# --------------
+#       LEGACY  - extract useful only
+# --------------
 ### Examine candidate packages against what is currently installed.
 ```{r}
 

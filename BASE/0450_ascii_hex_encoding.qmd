@@ -1,3 +1,9 @@
+# /home/jim/code/try_things_here/BASE/0450_ascii_hex_encoding.qmd
+# PURPOSE:  R provides functions to display char in HEX, ascii, dec, base8, base64 etc
+
+#  2023-08-19
+# SEE ALSO:   Rmpfr::, !so[r] 34678241, sprintf 
+
 library(data.table)
 
 dec  <- c(32:165)

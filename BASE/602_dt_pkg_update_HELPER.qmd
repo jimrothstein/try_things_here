@@ -168,36 +168,6 @@ dt_old[, c("LibPath") := NULL]
 dt_old
 ```
 
-###  WORKING !!
-### instPkgs = ?
-```{r}
-U1 = old.packages( instPkgs = installed.packages(lib.loc = .libPaths()[[1]]))
-U2 = old.packages( instPkgs = installed.packages(lib.loc = .libPaths()[[2]]))
-U1
-U2
-is.matrix(U2)
-I1 = installed.packages(lib.loc = .libPaths()[[1]])
-I1
-I2 = installed.packages(lib.loc = .libPaths()[[2]])
-I2
-is.matrix(instPkgs)
-
-update.packages(old = U1 )
-# --------------------------
-# 
-# check !   For those pkgs in candidates in `sys` and already installed in `user`  =>  DO NOT Upgrade
-
-# if zero rows, then none of the candidates from lib2 have been previously updated and installed in lib1
-U2
-dim(U2[U2[, "Package"] %in% rownames(I1),, drop=F])
-
-if( F) 
-update.packages(old = U2, instlib = .libPaths()[[1]]
-)
-# practice
-U2[U2[, "Package"] %in% rownames(U2),, drop=F]
-
-```
 
 
 
