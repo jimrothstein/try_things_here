@@ -31,3 +31,4 @@ tryCatch (
   finally  <- function() print("did we handle the error?")
 )
 
+

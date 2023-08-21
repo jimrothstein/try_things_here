@@ -4,7 +4,7 @@
 v  <- c("R_LIBS",                      # unset(default)
         "R_LIBS_STATE",
         "R_LIBS_USER",
-"R_ENVIRON",                    # default: R_HOME/etc/Renviron.site
+        "R_ENVIRON",                    # default: R_HOME/etc/Renviron.site
         "R_ENVIRON_USER",
         "R_PROFILE",
         "R_HOME"
