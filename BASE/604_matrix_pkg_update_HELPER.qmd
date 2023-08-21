@@ -5,37 +5,60 @@ HELPER:   update packages, using matrix tools (and not dt)
 
 
 TODO:
-  *   Show I1,I2 not unique, have overlap
-  *   Show U1, U2 subsets of I
   *   fix comments
   *   LEGACY:   pick out useful
 
+When I update my R packages, I find I have a little twist. I have two libraries;  one for   *standard packages* and one for *user packages* that I installed.  To my suprise,  a few *standard packages* are in both !
+
+(In my case, the directory for *stdlib* is read-only.   When I upgrade, R asks if I want to use user direcotry.   There are many workarounds for this.  RStudio seems to handle the updates fine.  I could change the permissions on the *stdlib* directory, but I do not want to.)
+
+The work-around here is exercise in  comparing two sets of packages before upgrading.
+
+First, 
 ### currently installed, in each of two libraries
 ```{r}
 I1 = installed.packages(lib.loc = .libPaths()[[1]])
 I1
 I2 = installed.packages(lib.loc = .libPaths()[[2]])
 I2
+```
 
+### Important to note these are matrix objects and not data.frame
+```{r}
 is.matrix(I1)
 is.matrix(I2)
+
+# expect no package overlap, but ...
+P2 = I2[,1:2] ; packages installed sys
+
+I1[I1[, "Package"] %in% P2[,1],1:2, drop=F]
+
+# check
+"class" %in% I1[, 1] && "class" %in% I2[, 1]
 ```
 
 ### `old` in each of two libraries I have (user/sys) 
+The function `old.packages` find the candidates for upgrades.   I say candidates because some may be duplicates.
 ```{r}
 U1 = old.packages( instPkgs = installed.packages(lib.loc = .libPaths()[[1]]))
 U2 = old.packages( instPkgs = installed.packages(lib.loc = .libPaths()[[2]]))
 U1
 U2
 is.matrix(U2)
+
+
+## check:  update candidates should already be installed: 
+## all U1,2 elements of I1,2? (or NULL)
+U1[, 1] %in% I1[, 1]
+U2[, 1] %in% I2[, 1]
 ```
 
-### Update candidates in `user`
+### Update candidates in `user` can be updated immediately.
 ```{r}
 update.packages(ask=F, old = U1 )
 ```
 
-### Candidates U2 in sys:
+### Candidates U2 in sys and need to be more careful.
 # --------------------------
 # Case I 
 # For those pkgs in candidates in `sys` and already installed in `user`  =>  
