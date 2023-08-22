@@ -8,78 +8,89 @@ TODO:
   *   fix comments
   *   LEGACY:   pick out useful
 
-When I update my R packages, I find I have a little twist. I have two libraries;  one for   *standard packages* and one for *user packages* that I installed.  To my suprise,  a few *standard packages* are in both !
+Updating R packages should be routine task.  But my setup has a little twist.
+I have two libraries: `r .libPaths()` one for standard packages ("sys") and another directory for user-installed packages ("user").  
+The twist is that the "sys" library is read-only. When R  tries to update a package in this directory, which it can't, R asks to use user directory, which I approve.
 
-(In my case, the directory for *stdlib* is read-only.   When I upgrade, R asks if I want to use user direcotry.   There are many workarounds for this.  RStudio seems to handle the updates fine.  I could change the permissions on the *stdlib* directory, but I do not want to.)
+The result, however, is that a package in sys can also be present in user, but a newer version.
 
-The work-around here is exercise in  comparing two sets of packages before upgrading.
+(There are many workarounds for this.  RStudio seems to handle the updates fine.  I could change the permissions on the *stdlib* directory, but I do not want to.)
+
+The work-around is probably over the top, but I good  exercise in  comparing two sets of packages before upgrading.
+
+Notation:
+  *   lib_sys refers to .libPaths()[2] for stdlib
+  *   lib_user refers to .libPaths()[1] for user
 
 First, 
 ### currently installed, in each of two libraries
 ```{r}
-I1 = installed.packages(lib.loc = .libPaths()[[1]])
-I1
-I2 = installed.packages(lib.loc = .libPaths()[[2]])
-I2
+lib_user = installed.packages(lib.loc = .libPaths()[[1]])
+head(lib_user[, 1:3])
+lib_sys = installed.packages(lib.loc = .libPaths()[[2]])
+head(lib_sys[, 1:3])
 ```
 
-### Important to note these are matrix objects and not data.frame
+### Note these are matrix objects and not data.frame
 ```{r}
-is.matrix(I1)
-is.matrix(I2)
+is.matrix(lib_user)
+is.matrix(lib_sys)
 
 # expect no package overlap, but ...
-P2 = I2[,1:2] ; packages installed sys
 
-I1[I1[, "Package"] %in% P2[,1],1:2, drop=F]
+lib_user[lib_user[, "Package"] %in% lib_sys[,1],1:2, drop=F]
 
 # check
-"class" %in% I1[, 1] && "class" %in% I2[, 1]
+"class" %in% lib_user[, 1] && "class" %in% lib_sys[, 1]
 ```
 
 ### `old` in each of two libraries I have (user/sys) 
 The function `old.packages` find the candidates for upgrades.   I say candidates because some may be duplicates.
 ```{r}
-U1 = old.packages( instPkgs = installed.packages(lib.loc = .libPaths()[[1]]))
-U2 = old.packages( instPkgs = installed.packages(lib.loc = .libPaths()[[2]]))
-U1
-U2
-is.matrix(U2)
+cand_user = old.packages( instPkgs = installed.packages(lib.loc = .libPaths()[[1]]))
+cand_sys = old.packages( instPkgs = installed.packages(lib.loc = .libPaths()[[2]]))
+cand_user
+cand_sys
+is.matrix(cand_sys)
 
 
 ## check:  update candidates should already be installed: 
-## all U1,2 elements of I1,2? (or NULL)
-U1[, 1] %in% I1[, 1]
-U2[, 1] %in% I2[, 1]
+## all cand_user,2 elements of lib_user,2? (or NULL)
+cand_user[, 1] %in% lib_user[, 1]
+cand_sys[, 1] %in% lib_sys[, 1]
 ```
 
 ### Update candidates in `user` can be updated immediately.
 ```{r}
-update.packages(ask=F, old = U1 )
+!is.null(cand_user[,1])
+if (!is.null(cand_user[, 1])){
+update.packages(ask=F, old = cand_user )
+}
 ```
 
-### Candidates U2 in sys and need to be more careful.
-# --------------------------
-# Case I 
-# For those pkgs in candidates in `sys` and already installed in `user`  =>  
+### Candidates cand_sys in sys and need to be more careful.
+Case I 
+For those pkgs in candidates in `sys` and already installed in `user`  =>  
 DO NOT Upgrade
 
 ```{r}
-dim(U2[U2[, "Package"] %in% rownames(I1),, drop=F])
+dim(cand_sys[cand_sys[, "Package"] %in% rownames(lib_user),, drop=F])
 
 if( F) 
-update.packages(old = U2, instlib = .libPaths()[[1]]
+update.packages(old = cand_sys, instlib = .libPaths()[[1]]
 )
 ```
 
-# Case II 
-# For those pkgs in candidates in `sys` but installed in `user: (ie never were upgraded)
+Case II 
+For those pkgs in candidates in `sys` but not installed in `user: (ie never were upgraded)
 Upgrade 
+
 ```{r}
-U2[U2[, "Package"] %in% rownames(U2),, drop=F]
+cand_sys[!cand_sys[, "Package"] %in% rownames(cand_sys),, drop=F]
 
 # if zero rows, then none of the candidates from lib2 have been previously updated and installed in lib1
-U2
+head(cand_sys[, 1:3])
+knitr::knit_exit()
 ```
 
 # --------------
