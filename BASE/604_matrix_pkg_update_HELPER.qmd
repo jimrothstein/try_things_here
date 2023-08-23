@@ -85,9 +85,13 @@ Case II
 For those pkgs in candidates in `sys` but not installed in `user: (ie never were upgraded)
 Upgrade 
 
+Any update candidates from sys that never upgraded to user? (0 means no)
 ```{r}
-cand_sys[!cand_sys[, "Package"] %in% rownames(cand_sys),, drop=F]
+nrow(cand_sys[!cand_sys[, "Package"] %in% rownames(lib_user),, drop=F])
 
+
+#check
+"KernSmooth" %in% lib_user[,"Package"]
 # if zero rows, then none of the candidates from lib2 have been previously updated and installed in lib1
 head(cand_sys[, 1:3])
 knitr::knit_exit()
