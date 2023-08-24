@@ -8,27 +8,45 @@ TODO:
   *   fix comments
   *   LEGACY:   pick out useful
 
-Updating R packages should be routine task.  But my setup has a little twist.
-I have two libraries: `r .libPaths()` one for standard packages ("sys") and another directory for user-installed packages ("user").  
-The twist is that the "sys" library is read-only. When R  tries to update a package in this directory, which it can't, R asks to use user directory, which I approve.
+Updating R packages should be routine task, but my setup has a little twist:  the directory stdlib files is read-only.
 
-The result, however, is that a package in sys can also be present in user, but a newer version.
+In this post, I show how I use old.packages() to work around this problem.
+`old.packages` finds packages that a newer version and returns a matrix with
+the packages, along with its directory, version, etc,
 
-(There are many workarounds for this.  RStudio seems to handle the updates fine.  I could change the permissions on the *stdlib* directory, but I do not want to.)
+(There are many workarounds for a read-only library.  RStudio seems to handle
+the updates fine.  Of course, I could change the linux permissions on the
+*stdlib* directory, but I do not want to.)
+
+This post uses matrix returned by old.packages(); in the next post I will show
+the same using data.table version.   data.table simplifies the logic but also
+requires conversion between matrix and data.table.
+
+Terminology:
+I have two libraries: `r .libPaths()` one for standard & recommended packages, which I call "sys",  and another directory for user-installed packages, which I call "user".  
+
+"R comes with a single library, R_HOME/library which is the value of the R object ‘.Library’ containing the standard and recommended packages."
+https://cran.r-project.org/doc/manuals/r-patched/R-admin.html#Managing-libraries
+
+The twist is that the "sys" library is read-only. When R  tries to update a package in this directory, which it can't, R gives the user the option to use user directory. 
+
+The result, however, is that a package can in both libraries, ie  in  sys can also in user, but a newer version.
+
 
 The work-around is probably over the top, but I good  exercise in  comparing two sets of packages before upgrading.
 
 Notation:
-  *   lib_sys refers to .libPaths()[2] for stdlib
+  *   lib_sys refers to .libPaths()[2] for standard and recommended packages.
   *   lib_user refers to .libPaths()[1] for user
 
-First, 
+First,  gather the packages currently installed in each library.  
 ### currently installed, in each of two libraries
 ```{r}
 lib_user = installed.packages(lib.loc = .libPaths()[[1]])
 head(lib_user[, 1:3])
 lib_sys = installed.packages(lib.loc = .libPaths()[[2]])
 head(lib_sys[, 1:3])
+
 ```
 
 ### Note these are matrix objects and not data.frame
@@ -36,7 +54,8 @@ head(lib_sys[, 1:3])
 is.matrix(lib_user)
 is.matrix(lib_sys)
 
-# expect no package overlap, but ...
+# expect no package overlap, but here is problem:  lib_user contains pkgs that are also in lib_sys 
+
 
 lib_user[lib_user[, "Package"] %in% lib_sys[,1],1:2, drop=F]
 
@@ -62,15 +81,16 @@ cand_sys[, 1] %in% lib_sys[, 1]
 
 ### Update candidates in `user` can be updated immediately.
 ```{r}
-!is.null(cand_user[,1])
+## !is.null(cand_user[,1])
 if (!is.null(cand_user[, 1])){
 update.packages(ask=F, old = cand_user )
 }
 ```
 
-### Candidates cand_sys in sys and need to be more careful.
 Case I 
-For those pkgs in candidates in `sys` and already installed in `user`  =>  
+### Consider old.packages Candidates in cand_sys: 
+cand_sys packages that have versions in lib_user, no reason to update
+For candidates in cand_sys and and found installed in `user`  =>  
 DO NOT Upgrade
 
 ```{r}
@@ -87,9 +107,14 @@ Upgrade
 
 Any update candidates from sys that never upgraded to user? (0 means no)
 ```{r}
-nrow(cand_sys[!cand_sys[, "Package"] %in% rownames(lib_user),, drop=F])
+good = cand_sys[!cand_sys[, "Package"] %in% rownames(lib_user),, drop=F]
+is.matrix(good)
 
+if (nrow(good) != 0) print("good to upgrade")
 
+if( F) 
+update.packages(old = good, instlib = .libPaths()[[1]]
+)
 #check
 "KernSmooth" %in% lib_user[,"Package"]
 # if zero rows, then none of the candidates from lib2 have been previously updated and installed in lib1
