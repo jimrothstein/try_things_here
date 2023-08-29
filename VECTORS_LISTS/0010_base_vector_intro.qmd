@@ -90,8 +90,7 @@ summary(v)
 
 
 ### `c` combine values in to a vector or list
-```{r}
-c(sin,cos)     ;list, with function body
+dentical(c(sin,cos), list(sin,cos))
 c(letters[1:3])
 c(letters[1:3],   "z") # [1] "a" "b" "c" "z"
 c(list("1", "2"))                      # list 
