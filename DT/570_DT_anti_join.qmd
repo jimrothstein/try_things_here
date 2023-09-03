@@ -1,4 +1,3 @@
-
 ---
 title: "`r knitr::current_input()`"
 date: "`r paste('last updated', 
@@ -21,8 +20,6 @@ TAGS:  data.table,purrr,structure,dput,normalize,starwars
 PURPOSE:  non-joins (vs. `anti-join`) very confused
 
 ```{r}
-  
-
 library(data.table)
 
 dt1 <- data.table(A1=letters[1:10], B1=sample(1:5,10, replace=TRUE))

@@ -1,5 +1,5 @@
 ---
-title: " 100_base_package_commands.qmd "  
+title: " 600_base_package_commands.qmd "  
 author: "JR"  
 date: "5/22/2021"  
 pdf-engine: lualatex  
@@ -71,7 +71,6 @@ Functions:
 
 TODO:  <!-- {{{ -->
 *    W-I-P
-    *    anything NOT necessary in 0088; Doc here!
 *    FIX:  find.package to find packages in TWO locations
 *       TODO:  Update !}}}
 
@@ -105,7 +104,7 @@ getOption("repos")  # cran.rstudio.com
 <!-- }}} -->
 
 ***
-### Currently Installed Packages data.table version# 
+### Currently Installed Packages:  data.table version
 <!-- {{{ -->
 ```{r}
 dt = data.table(installed.packages())
@@ -283,7 +282,7 @@ begin  <- Sys.time()
 
 ***
 
-###  ENV variables (keep)
+###  R's environment variables 
 ***
 *  See: https://stat.ethz.ch/R-manual/R-devel/library/base/html/EnvVar.html
 ```{r, collapse=TRUE}

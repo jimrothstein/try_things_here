@@ -19,6 +19,111 @@ execute:
   standalone: true
 ---
 
+
+installed:  10 rows,  6 have 1, 4 have 2
+```{r}
+library(data.table)
+dt = data.table(x=(LETTERS[1:10]),
+           y= c(rep(1,6),rep( 2, 4))
+           )
+
+## and key x,y
+setkey(dt, x,y)
+dt
+
+## Of the 4 with y=2, 2 are ALSO in 1
+## add 3 rows, XYZ that are in both  
+
+    dt = rbind(dt, data.table(x = LETTERS[9:10],y= c(1,1)))
+    setkey(dt, x,y)
+    dt
+
+```
+### Summary of Installed
+```{r}
+dt
+# entries for each pkg
+    dt[, .N, by=x]
+
+# split into 
+    dt2 = dt[y == 2]
+    dt1 = dt[y == 1]
+    dt2
+#    x y
+# 1: G 2
+# 2: H 2
+# 3: I 2
+# 4: J 2
+    dt1
+#    x y
+# 1: A 1
+# 2: B 1
+# 3: C 1
+# 4: D 1
+# 5: E 1
+# 6: F 1
+# 7: I 1
+# 8: J 1
+
+```
+
+### anti-join !
+```{r}
+
+
+## pkg in 2, NOT in 1
+  dt2[!dt1, on=.(x)]
+#    x y
+# 1: G 2
+# 2: H 2
+
+## pkg in 1,  NOT in 2
+  dt1[!dt2, on=.(x)]
+#    x y
+# 1: A 1
+# 2: B 1
+# 3: C 1
+# 4: D 1
+# 5: E 1
+# 6: F 1
+
+# pkg in 1, with entry in 2 
+    dt2[dt1, on=.(x=x),  nomatch=NULL]
+
+# pkg in 2, with entry in 1
+    dt1[dt2, on=.(x=x), nomatch=NULL] 
+    dt1[dt2, on=.(x=x), nomatch=0] # same as NULL
+
+# pkg in 2, with NO entry in 1
+    dt1[dt2, on=.(x=x)] [is.na(y)]
+
+```
+##  FAKE Candidates
+```{r}
+#   all pkgs, EXCEPT "C" are candidates
+cand=data.table(x=c(LETTERS[1:2], LETTERS[4:10]))
+cand
+
+## Update 1, immediately (make unique!)
+    dt[y==1, ][cand, on=.(x=x), .(x),nomatch=NULL]
+
+## pkgs from 2, that have no pkg in 1
+    dt[!cand]
+
+
+### of these, 
+# fake cand1
+c1 = data.table(x=LETTERS[1:3], y=rep(1,3))
+c1
+
+# fake cand from dir 2, previously updated
+dt[y == 2,]
+c2 = data.table(x=LETTERS[1:3], y=rep(1,3))
+
+
+```
+
+LEGACY
 ###	PURPOSE:   Collect DT merge/join examples
 REF: https://stackoverflow.com/questions/54864132/intuition-for-data-table-join-syntax
 
@@ -26,11 +131,11 @@ Simple example:
 -dt is observations, uses an abbrev for each state
 -lookup gives full state name
 ```{r}
-    library(data.table)
+library(data.table)
 
-# observations
-    dt = data.table(abbrev = c("NJ" , "NY", 'NM', 'CA', 'TX'))
-    dt
+# data observations
+dt = data.table(abbrev = c("NJ" , "NY", 'NM', 'CA', 'TX'))
+dt
 
 lookup = data.table(long_name = c('New Jersey', 'New York', 'New Mexico',  'California', 'Florida' ),
                     abbrev = c("NJ" , "NY", 'NM', 'CA', 'FL'))
@@ -38,32 +143,28 @@ lookup = data.table(long_name = c('New Jersey', 'New York', 'New Mexico',  'Cali
 lookup
 
 #   optional, but good habit
-    setkey(dt, abbrev)
-    setkey(lookup, abbrev)
+setkey(dt, abbrev)
+setkey(lookup, abbrev)
 
-# inner join, ignore no matches
-    lookup[dt, nomatch=0]
-    lookup[dt, nomatch=NULL] # same
-
-# inner, put NA
-    lookup[dt, nomatch=NA]
+# inner join, ignore if no match
+lookup[dt, nomatch=0]
+lookup[dt, nomatch=NULL]  # same
 
 
-# Our observation, for TX is NA, FL is ignored
-    lookup[dt]
-    #     long_name abbrev
+# Our observation, for TX is missing
+lookup[dt, nomatch=NA]
+lookup[dt]   # same
+#     long_name abbrev
 # 1: California     CA
 # 2: New Jersey     NJ
 # 3: New Mexico     NM
 # 4:   New York     NY
 # 5:       <NA>     TX
 
-#   TODO, FL, TX missing  
-    dt[lookup, nomatch=0]
 
-
+dt[lookup, nomatch=0] # ignore TX,FL  
+dt[lookup] # include ALL from lookup (TX not in lookup)
 # include every row in lookup, skip TX b/c it is NOT in lookup
-    dt[lookup]
 #    abbrev  long_name
 # 1:     CA California
 # 2:     FL    Florida
@@ -126,10 +227,9 @@ B[A]
 ```{r}
 ##	Which columns?
 ##  Then which rows?
-##  NOTE:   rep("A", 3) repeats A, 3 times
 
-    DT  <-  data.table(r=rep(c("b","a","c"),each=3), s=c(1,3,6), t=1:9)
-    DT
+DT  <-  data.table(r=rep(c("b","a","c"),each=3), s=c(1,3,6), t=1:9)
+DT
 #    r s t
 # 1: b 1 1
 # 2: b 3 2
@@ -506,8 +606,7 @@ if (F)
 ```
 
 ##  TODO   Another repeat?
-    ### REF:  https://gist.github.com/nacnudus/ef3b22b79164bbf9c0ebafbf558f22a0
-```{r}
+### REF:  https://gist.github.com/nacnudus/ef3b22b79164bbf9c0ebafbf558f22a0
 library(data.table)
 
 ?`[.data.table`
@@ -601,15 +700,10 @@ X
 # 2:  2 a2 b2
 
 ## select X right outer join DT on (all X rows)
-   dt[X, on = .(id = id) ]
    dt[X, on = .(id) ]
-
    dt[X, .(id, b), on = .(id)]
 
 
 ## select dt right outerjoin X (all dt rows)
    X[dt, on = .(id) ]
    X[dt, .(id, a),on = .(id) ]
-
-```
-
