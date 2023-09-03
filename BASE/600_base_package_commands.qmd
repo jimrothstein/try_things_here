@@ -1,3 +1,4 @@
+<!--
 ---
 title: " 600_base_package_commands.qmd "  
 author: "JR"  
@@ -27,6 +28,8 @@ execute:
     standalone: true
 output-dir: docs            ## NO indent, also _quarto.yml for entier project
 ---
+
+-->
 
 DO NOT DELETE 
 
