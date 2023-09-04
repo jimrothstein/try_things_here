@@ -1,0 +1,38 @@
+REF: <https://shainarace.github.io/LinearAlgebra/lsapp.html>
+
+    ### cars:  EDA (dist ~ speed)
+    
+```{r}
+library(datasets)
+head(cars)
+
+summary(cars)
+plot(cars)
+```
+
+    ### set design matrix (X*B = Y)
+
+```{r}
+X = model.matrix(dist ~ speed, data=cars)
+y = cars$dist
+
+X[1:10,]
+```
+
+
+    ### solve normal equations, t(X)*X*B = t(X)*y    
+```{r}
+use:   solve(A,y)
+(beta=solve(t(X) %*% X ,t(X)%*%y))
+
+plot(cars)
+abline(beta[1],beta[2],col='blue')
+```
+
+    ### residues and errrors
+```{r}
+
+```
+
+
+
