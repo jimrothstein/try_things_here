@@ -1,0 +1,426 @@
+<!--
+  NO LONGER NEED yaml header,  see _quarto.yml
+-->
+
+### PURPOSE:    HELPER:  using dt to update  packages  
+<!-- {{{ -->
+Outline:  
+
+    -   Check R version, sessionInfo
+    -   Check current R library locations, 
+    -   Review packages each library
+    -   Identify packages in more than ONE directory
+    -   (interactive only) update `old` packages (compiled with older R versions)
+    -   (interactive only) update any remaining packages
+    -   list Env variables
+    
+Functions:  
+
+    -   update
+    -   upgrade
+    -   installed.packages
+    -   find.package
+    -   knitr functions:  <https://cran.r-project.org/web//packages/knitr/knitr.pdf>
+<!-- }}} -->
+
+### currently installed pkgs , 266 (with dup)
+<!-- {{{ -->
+```{r}
+library(data.table)
+dt = as.data.table(installed.packages())
+head(dt)[1:3,1:3 ]
+dim(installed) # [1] 264  16
+```
+
+### candidates
+```{r}
+cand = as.data.table(old.packages())
+
+```
+### update immediately
+```{r}
+cand[LibPath == .libPaths()[[1]],.(Package, LibPath)]
+```
+
+### .libPaths()[[2]]
+```{r}
+# of all candidates in 2, which have NO installed in 1?
+cand[dt, on=.(
+
+#   which already ahve in 1?( inner join)
+cand[LibPath == .libPaths()[[2]], .(Package, LibPath)]
+
+# any of candidates have NO match in 1?
+cand[!dt[LibPath == .libPaths()[[1]]], on = .(Package)]
+
+# any of these ALSO in 1?
+dt[cand[LibPath == .libPaths()[[2]]], on = .(Package), nomatch=NULL][, .(Package, LibPath)]
+
+# restrict to display [1]
+dt[LibPath == .libPaths()[[1]],][cand[LibPath == .libPaths()[[2]]], on = .(Package), nomatch=NULL][, .(Package, LibPath)]
+
+```
+
+###### LeGACY
+
+
+<!-- }}} -->
+
+### rename LibPath to simpler names
+<!-- {{{ -->
+
+```{r}
+dt = dt[, .(Package, LibPath, Version)]
+dt[, .N]
+dt[, .N, by=.(LibPath)]
+ 
+setkey(dt, "Package", "LibPath")
+key(dt) # [1] "Package"
+
+# assign "user" or "sys"
+x=1
+ifelse(x== 1, 1, 0)
+dt1 = dt[, .(Package, LibPath, new = ifelse(LibPath == .libPaths()[[1]], "user", "sys" ))]
+dt1
+```
+<!-- }}} -->
+
+### widen (omit)
+<!-- {{{ -->
+```{r include=F, eval=F}
+dt[ LibPath==.libPaths()[[2]], ][, 1:3]
+dt[ LibPath==.libPaths()[[2]],.(sys = "sys") ][, 1:3]
+dt[, 1:2]
+dt1  <- dcast(dt, Package~LibPath)
+dt1[,]
+```
+<!-- }}} -->
+
+### installed in user dir
+<!-- {{{ -->
+```{r}
+.libPaths()
+dt_user = dt[LibPath == .libPaths()[[1]]]
+key(dt_user)
+dim(dt_user) # [1] 235  16
+```<!-- }}} -->
+
+### installed in system dir  ("standard library")
+<!-- {{{ -->
+```{r}
+dt_sys = dt[LibPath == .libPaths()[[2]]]
+dim(dt_sys) # [1] 29 16
+```<!-- }}} -->
+
+
+### unique packages, ~ 9 duplicates
+<!-- {{{ -->
+```{r}
+data.table::uniqueN(dt$Package) # [1] 255
+data.table::uniqueN(dt_user$Package) # [1] 235
+data.table::uniqueN(dt_sys$Package) # [1] 29
+```<!-- }}} -->
+
+
+REF: https://medium.com/analytics-vidhya/r-data-table-joins-48f00b46ce29
+Notation:
+  on=.(x,y)
+  on=.(x < 5, y> y)  non-equi join
+  on=.(...), z := ...   adds column (in reference, no copy)
+
+
+### Packages in 3 regions, sys_only, user_only, both
+<!-- {{{ -->
+```{r}
+# use inner_join (ie BOTH)
+dt_both = dt_user[dt_sys, on=.(Package == Package), nomatch=NULL][, c(1,2)] # 9
+dt_both
+dt_sys[dt_user, on=.(Package == Package), nomatch=NULL][, c(1,2)] # 9
+
+# !=  is NOT allowed
+if (F) dt1[dt2, on=.(Package != Package)][, 1]
+
+# anti-join, all packages in dt_user, not in dt_sys
+  dt_user_only = dt_user[!dt_sys, on = .(Package)][, c(1,2)] # 226
+
+# anti , packages in dt_sys, not in dt_user
+  dt_sys_only = dt_sys[!dt_user, on = .(Package)][, c(1,2)] # 20
+
+
+# A[B, on=.(id), which=T]  returns index only
+
+# check
+dt_user[Package=="base"] ; 
+  dt_sys[Package=="base"]
+dt_user[Package=="boot"]
+dt_user[Package=="compiler"]
+dt_user[Package=="class"]  # y
+```
+<!-- }}} -->
+
+### Summary, 3 distinct sets of packages, VERIFY add to total unique
+```{r}
+dt_user_only
+dt_sys_only
+dt_both
+
+```
+
+### dt, old.packages (long to wid)
+
+```{r}
+dt_old  <- old.packages(checkBuilt=F)
+head(dt_old)
+dt_old  <- setDT(dt_old)  # faster, but dt_old is matrix!, not df
+dt_old  <- as.data.table(dt_old)
+
+(lib1 = .libPaths()[[1]])
+lib2 = .libPaths()[[2]]
+
+dt_old
+# shorten
+dt_old = dt_old[, .(Package, LibPath, Installed, ReposVer)]
+dt_old
+setkey(dt_old,Package, LibPath )
+key(dt_old)
+dt_old
+
+# wrong
+# dt_old[LibPath == lib1,  .(LibPath = lapply(LibPath, function(e) e = "user"))]
+
+# add new col
+dt_old[LibPath == .libPaths()[[1]], user := "user"]
+dt_old[LibPath == .libPaths()[[2]], sys := "sys"]
+
+dt_old
+
+# drop clunky
+dt_old[, c("LibPath") := NULL]
+dt_old
+```
+
+
+
+
+```{r}
+dt_old  <- old.packages(checkBuilt=F)
+head(dt_old)
+dt_old  <- setDT(dt_old)  # faster, but dt_old is matrix!, not df
+dt_old  <- as.data.table(dt_old)
+
+(lib1 = .libPaths()[[1]])
+lib2 = .libPaths()[[2]]
+
+dt_old
+# shorten
+dt_old = dt_old[, .(Package, LibPath, Installed, ReposVer)]
+dt_old
+
+# ugly but works
+dcast(dt_old, Package ~ LibPath, value.var = "LibPath")
+```
+
+
+### from old.packages, subset into y1, y2 (candidates, packages & dir=1,2)
+```{r}
+y1  <- dt_old[LibPath == lib1,]
+head(y1)
+
+y2  <- dt_old[LibPath == lib2,]
+y2
+
+# Check, distinct (no common Package-LibPath ?)
+y1[y2, on = .(Package, LibPath),nomatch= NULL ] # inner, nomatch = no row
+
+# Check, but some Packages in both?
+y1[y2, on = .(Package), nomatch=NULL]
+```
+
+### Candidates, y1, not y2; can update (CASE I)
+```{r}
+y1[!y2, on = .(Package)]
+```
+
+### Candidates, not y1, in y2; std.lib candidates never updated prior (CASE II)
+```{r}
+y2[!y1, on = .(Package)]
+
+# Check
+y1[Package == "KernSmooth"]
+y1[Package == "mgcv"]
+y1[Package == "nlme"]
+y1[Package ==  "spatial"]
+```
+
+### Candidates, y1, y2  std.lib, only update the one in lib1 (CASE III)
+```{r}
+x  <- y1[y2, on = .(Package), nomatch=NULL]
+x[, .(Package,  LibPath, i.LibPath)]
+
+```
+
+### dt, install.packages
+```{r}
+z  <- installed.packages()
+is.matrix(z)
+dim(z) # [1] 265  16
+attributes(z)
+
+str(z)
+## after done, must look like same to R:
+dimnames(z)
+
+
+#
+dt_inst  <- as.data.table(z)
+dt_inst[1:3, 1:2 ]
+names(dt_inst)
+```
+### compare dt_old and dt_inst
+```{r}
+# where are candidate now installed?
+dt_inst[dt_old, on = .(Package)][,  1:2]
+dt_inst[dt_old, on = .(Package = Package, LibPath = LibPath)][,  1:2]
+
+# Candidates not installed in [1] but are installed in [2]  -- upgrade
+dt_inst[dt_old, on = .(Package = Package, LibPath = LibPath)][LibPath != .libPaths()[1]][,  1:2]
+
+# Any candidates installed in .libPaths()[[1]]  and not [[2]]
+dt_inst[dt_old, on = .(Package = Package, LibPath = LibPath)][LibPath != .libPaths()[2]][,  1:2]
+
+
+
+dt_inst[dt_old, on = .(Package, LibPath)] [, 1:2]
+dt_inst[dt_old, on = .(Package, LibPath)][LibPath  == .libPaths()[[1]]] [,1:2]
+dt_inst[dt_old[, LibPath == .libPaths[[1]]], on = .(Package, LibPath)]
+
+dt_inst[dt_old, on = .(Package)][LibPath  == .libPaths()[[1]] & LibPath  != .libPaths()[[2]], ] [,1:2]
+
+
+# Any Candidates in BOTH
+dt_inst[dt_old, on = .(Package, LibPath)]
+[LibPath  == .libPaths()[[1]] & LibPath  == .libPaths()[[2]], ] [,1:2]
+
+dt_inst[dt_old, on = .(Package, LibPath)][LibPath  == .libPaths()[[1]] & LibPath  == .libPaths()[[2]], ] [,1:2]
+dt_inst[dt_old, on = .(Package, LibPath)][LibPath  == .libPaths()[[1]] & LibPath  != .libPaths()[[2]], ] [,1:2]
+dt_inst[dt_old, on = .(Package, LibPath)][LibPath  == .libPaths()[[1]] & LibPath  == .libPaths()[[2]], ] [,1:2]
+dt_inst[dt_old, on = .(Package, LibPath)][LibPath  == .libPaths()[[1]] & LibPath  == .libPaths()[[2]], ] [,1:2]
+x1 = dt_inst[dt_old, on = .(Package)]
+x1[, 1:2]
+
+x1[LibPath  == .libPaths()[[1]] & LibPath  == .libPaths()[[2]], ] [,1:2]
+# Empty data.table (0 rows and 2 cols): Package,LibPath
+
+
+dt_inst[dt_old, on = .(Package)][LibPath == .libPaths()[[2]]][, 1:2]
+
+
+```
+
+
+
+### dt, with packageStatus, an unusual structure
+```{r}
+z = packageStatus()
+attributes(z)
+
+dim(z$inst)  # installed packages
+is.matrix(z$inst) # [1] FALSE
+is.data.frame(z$inst) # [1] TRUE
+
+# names
+df = z$inst
+dim(df) # [1] 264  17
+names(df)
+
+dt_status = as.data.table(df)
+dt_status
+
+cols = c("Package", "Status", "LibPath")
+dt_status[Status != "ok", ..cols]
+#       Package      Status                                     LibPath
+# 1:       gert     upgrade /home/jim/R/x86_64-pc-linux-gnu-library/4.3
+# 2:   highlite unavailable /home/jim/R/x86_64-pc-linux-gnu-library/4.3
+# 3:    nvimcom unavailable /home/jim/R/x86_64-pc-linux-gnu-library/4.3
+# 4: KernSmooth     upgrade                  /opt/R/4.3.1/lib/R/library
+# 5:     Matrix     upgrade                  /opt/R/4.3.1/lib/R/library
+# 6:       mgcv     upgrade                  /opt/R/4.3.1/lib/R/library
+# 7:    spatial     upgrade                  /opt/R/4.3.1/lib/R/library
+```
+
+### Which pkgs/LibPath really must upgrade?  
+```{r}
+#   compare dt_old, dt_inst
+
+```
+PRACTICE
+
+### read string to dt
+<!-- {{{ -->
+
+```{r}
+s1 <- "family_id age_mother dob_child1 dob_child2 dob_child3
+1         30 1998-11-26 2000-01-29         NA
+2         27 1996-06-22         NA         NA
+3         26 2002-07-11 2004-04-05 2007-09-02
+4         32 2004-10-10 2009-08-27 2012-07-21
+5         29 2000-12-05 2005-02-28         NA"
+
+DT <- fread(s1)
+DT
+#    family_id age_mother dob_child1 dob_child2 dob_child3
+#        <int>      <int>     <IDat>     <IDat>     <IDat>
+# 1:         1         30 1998-11-26 2000-01-29       <NA>
+# 2:         2         27 1996-06-22       <NA>       <NA>
+# 3:         3         26 2002-07-11 2004-04-05 2007-09-02
+# 4:         4         32 2004-10-10 2009-08-27 2012-07-21
+# 5:         5         29 2000-12-05 2005-02-28       <NA>
+## dob stands for date of birth.
+
+str(DT)
+# Classes 'data.table' and 'data.frame':    5 obs. of  5 variables:
+#  $ family_id : int  1 2 3 4 5
+#  $ age_mother: int  30 27 26 32 29
+#  $ dob_child1: IDate, format: "1998-11-26" "1996-06-22" "2002-07-11" ...
+#  $ dob_child2: IDate, format: "2000-01-29" NA "2004-04-05" ...
+#  $ dob_child3: IDate, format: NA NA "2007-09-02" ...
+#  - attr(*, ".internal.selfref")=<externalptr>
+```<!-- }}} -->
+
+### melt: wide to long 
+```{r}
+DT.m1 = melt(DT, id.vars = c("family_id", "age_mother"),
+                measure.vars = c("dob_child1", "dob_child2", "dob_child3"))
+DT.m1
+
+DT.m2 = melt(DT, id.vars = 1:2,
+        measure.vars = 3:5,
+        variable.name = "variable",
+        variable.value = "value")
+DT.m2
+
+identical(DT.m1, DT.m2) # [1] TRUE
+```
+
+### dcast: long to wide
+```{r}
+dcast(DT.m1, family_id + age_mother ~ variable, value.var = "value")
+```
+
+```{r}
+test = data.table(pkg=c("x", "y", "z"),
+                  dir1 = c(T,T,F),
+                  dir2 = c(T,F,T)
+)
+test
+
+
+# melt
+test = melt(test, id.vars="pkg", measure.var = c("dir1", "dir2"))
+test
+
+# widen to orginal
+dcast(test, pkg ~ variable, value.var = "value")
+)
+```
+

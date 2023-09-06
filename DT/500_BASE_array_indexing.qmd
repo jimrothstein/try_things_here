@@ -127,6 +127,34 @@ m[y]
 
 ```
 
+### subset array 3x3
+```{r}
+
+( a = array(1:27, dim=c(3,3,3) ))
+
+# consider as 3 slices (in z-direction) of 3x3 matrix
+
+# 
+a[,,1]     # first layer
+is.array(a[,,1])
+
+
+#
+(df = matrix(data = rep(c(1,2,3),3), nrow=3))
+df
+
+# predict  (picks c(1,1,1), then c(2,2,2), c(3,3,3))
+a[df]
+# [1]  1 14 27
+
+
+# df, a can be subset or extracted in usual way
+df[ , 1]
+
+a[df[ , 1]]
+a[df[2, 2]]   # 2nd element of a
+
+```
 
 
 
