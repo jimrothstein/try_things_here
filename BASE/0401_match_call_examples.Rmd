@@ -26,22 +26,17 @@ library(jimTools)
 #### Call: Unevaluted function, where args ARE evaluated. Function is NOT a
 call.
 ```{r intro_call}
-f  <- function(x) {
-    x^2}
+    f  <- function(x) {
+	x^2}
 
-# create a call
-cl  <- call("f", 3)
+    # create a call
+    (cl  <- call("f", 3))
+    # f(3)
 
-# display f as unevaluated f(3)
-cl
-
-##  Test for call.
-    is.call(f)
-    is.call("f")
-    is.call(cl)
-##  To evaluate a call.
-    eval(cl)
-# [1] 9
+    ##  Test for call.
+	sapply(list(f, "f", cl), is.call) # [1] FALSE FALSE  TRUE
+    ##  To evaluate a call.
+	eval(cl) # [1] 9
 ```
 
 ### do.call use case  
@@ -191,13 +186,3 @@ letters
 ```
 
 
-\newpage
-
-```{r render, eval=FALSE	} 
-file <- "" 
-file  <- basename(file) 
-dir <-"rmd"
-
-jimTools::ren_pdf(file,dir)
-jimTools::ren_github(file, dir)
-```

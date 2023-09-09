@@ -37,6 +37,11 @@ library(data.table)
 #
 
 (dt= rbind(dt, data.table(x=c("E","H"), y=c(1,1))))
+setorder(dt)
+```
+
+### toy example:   installed
+```{r}
 dput(dt)
 # structure(list(x = c("A", "B", "C", "D", "E", "F", "G", "H", 
 # "E", "H"), y = c(1, 1, 1, 1, 2, 2, 2, 2, 1, 1)), row.names = c(NA, 
@@ -58,29 +63,16 @@ dput(dt)
 ### Summary of Installed
 # {{{
 ```{r}
-dt
+install  <- dt
 # entries for each pkg
     dt[, .N, by=x]
 
 # split into 
-    dt2 = dt[y == 2]
-    dt1 = dt[y == 1]
-    dt2
-#    x y
-# 1: G 2
-# 2: H 2
-# 3: I 2
-# 4: J 2
-    dt1
-#    x y
-# 1: A 1
-# 2: B 1
-# 3: C 1
-# 4: D 1
-# 5: E 1
-# 6: F 1
-# 7: I 1
-# 8: J 1
+
+    install1 = dt[y == 1]
+    install2 = dt[y == 2]
+install1
+install2
 
 ```# }}}
 
@@ -88,30 +80,31 @@ dt
 # {{{
 ```{r}
 ## pkg in 2, NOT in 1
-  dt2[!dt1, on=.(x)]
+  install2[!install1, on=.(x)]
 #    x y
-# 1: G 2
-# 2: H 2
+# 1: F 2
+# 2: G 2
 
 ## pkg in 1,  NOT in 2
-  dt1[!dt2, on=.(x)]
+  install1[!install2, on=.(x)]
 #    x y
 # 1: A 1
 # 2: B 1
 # 3: C 1
 # 4: D 1
-# 5: E 1
-# 6: F 1
 
-# pkg in 1, with entry in 2 
-    dt2[dt1, on=.(x=x),  nomatch=NULL]
+## Other
+# pkg in 1, with entry in 2  (inner join)
+    install2[install1, on=.(x=x),  nomatch=NULL]
 
 # pkg in 2, with entry in 1
-    dt1[dt2, on=.(x=x), nomatch=NULL] 
-    dt1[dt2, on=.(x=x), nomatch=0] # same as NULL
+    install1[install2, on=.(x=x), nomatch=NULL] 
+    install1[install2, on=.(x=x), nomatch=0] # same as NULL
 
 # pkg in 2, with NO entry in 1
-    dt1[dt2, on=.(x=x)] [is.na(y)]
+    install1[install2, on=.(x=x)] [is.na(y)]
+    install1[install2, on=.(x=x)] 
+    install2[!install1, on=.(x=x)]
 
 ```# }}}
 

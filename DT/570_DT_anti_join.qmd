@@ -1,45 +1,35 @@
----
-title: "`r knitr::current_input()`"
-date: "`r paste('last updated', 
-    format(lubridate::now(), ' %d %B %Y'))`"
-output:   
-  html_document:  
-        code_folding: show
-        toc: true 
-        toc_depth: 2
-        toc_float: true
-  pdf_document:   
-    latex_engine: xelatex  
-    toc: true
-    toc_depth:  2   
-fontsize: 11pt   
-geometry: margin=0.5in,top=0.25in   
-TAGS:  data.table,purrr,structure,dput,normalize,starwars
----
 
-PURPOSE:  non-joins (vs. `anti-join`)
-NOTE:  Example taken from updating R packages, where .libPaths()[[2]] is read-only
+  NOTE:  Example taken from updating R packages, where .libPaths()[[2]] is read-only
 
-TODO:
-- setorder
-- 
-### Create toy example
-installed:  
+###  Create toy example
+When I update my R packgaes, I have a twist because my site directory is
+read-only.  In a separate post, I will show how I navigate this without opening the permissions. 
+This toy example illustrates how I use anti-join to accomplish this.
+
+
+The toy example simplifies what `installed.packages()` and `old.packages()`
+
+- inst1 
+- inst2
+- cand
+
+<!--
+###  Prepare toy example of what `installed.packages` reports:
+-->
 
 ```{r}
+#| include: false
+#| eval: false
+
 library(data.table)
 (dt = data.table(x=(LETTERS[1:4]),
-           y= c(rep(1,4))
-           ))
+       y= c(rep(1,4))
+       ))
 #   add 4 packages in 2
-    (dt = rbind(dt, data.table(x = LETTERS[5:8],y= c(rep(2,4))) ))
-#
-
+(dt = rbind(dt, data.table(x = LETTERS[5:8],y= c(rep(2,4))) ))
 (dt= rbind(dt, data.table(x=c("E","H"), y=c(1,1))))
+setorder(dt)
 dput(dt)
-# structure(list(x = c("A", "B", "C", "D", "E", "F", "G", "H", 
-# "E", "H"), y = c(1, 1, 1, 1, 2, 2, 2, 2, 1, 1)), row.names = c(NA, 
-# -10L), class = c("data.table", "data.frame"), .internal.selfref = <pointer: 0x560cb46fd740>)
 #     x y
 #  1: A 1
 #  2: B 1
@@ -52,10 +42,16 @@ dput(dt)
 #  9: E 1
 # 10: H 1
 ```
-```{r}
 
-### Candidates  
+
+
+<!--
+### Prepare Candidates  or old.packages for toy examples
+-->
+
 ```{r}
+#| include: false
+#| eval: true
 s = "x, y
 A, 1
 B, 1
@@ -64,24 +60,87 @@ F, 2
 E, 2
 H, 2"
 cand = data.table::fread(s)
-
-### Match candidaes and installed
-cand[y== 1,]
-
-### not all of these are true upgrades
-cand[y == 2, ]
+dput(cand)
+# structure(list(x = c("A", "B", "E", "F", "E", "H"), y = c(1L, 
+# 1L, 1L, 2L, 2L, 2L)), row.names = c(NA, -6L), class = c("data.table", 
+# "data.frame"), .internal.selfref = <pointer: 0x55578dd18740>)
+#    x y
+# 1: A 1
+# 2: B 1
+# 3: E 1
+# 4: F 2
+# 5: E 2
+# 6: H 2
 ```
+
+### installed packages for toy example:
+```{r}
+dt  <- structure(
+      list(x = c("A", "B", "C", "D", "E", "F", "G", "H", "E", "H"), 
+           y = c(1, 1, 1, 1, 2, 2, 2, 2, 1, 1)), 
+      row.names = c(NA, -10L), 
+      class = c("data.table", "data.frame")
+      )
+setorder(dt)[]
+```
+
+### Examine install packages
 ```{r}
 
+```
+### Candidate, or old.packages(), for upgrade
+```{r}
 
-# upgrade if cand in 2, but not installed in 1
+cand  <-  structure(list(x = c("A", "B", "E", "F", "E", "H"), y = c(1L, 1L, 1L, 2L, 2L, 2L)), row.names = c(NA, -6L), class = c("data.table", "data.frame"))
+
+cand
+```
+
+### Examine candidate packages
+```{r}
+
+```
+
+
+### Match candidaes and installed
+```{r}
+#| eval: false
+#| include: false
+
+cand1 = cand[y== 1,]
+
+### not all of these are true upgrades
+cand2 = cand[y == 2, ]
+```
+### Update process
+If the candidates are in directory 1, we can update these as is.
+Case 1 
+```{r}
+cand[y==1, ] 
+
+If the candidates are in directory 2, there are a few cases.
+The time is     now.
+
+  Case 2A
+  If the candidate is also a candidate in 1 then case 1 will handle and nothing more to be done.
+  cand[y==1,][cand [y == 2, ], on = .(x), nomatch=NULL]
+
+Case 2B
+# If the candidate is not a now candidate in 1 but was previously installed in  1 (ie past upgrade)
+# false positive, ignore
+cand[y == 2] [!cand[y ==1],  on=.(x)][dt[y == 1,], on = .(x), nomatch=NULL]
+
+Case 2C
+# If candidate never install in 1, upgrade
 cand[y ==2, ][!dt[y == 1, ], on=.(x)]
 
-# ignore, if cand in 2 AND was installed in 1 (previously)
-cand[y ==2, ][dt[y == 1, ], on=.(x), nomatch=NULL]
 ```
+```{r}
+#| include: false
+knitr::knit_exit()
 ```
 
+### LEGACY
 ```{r}
 library(data.table)
 
@@ -120,16 +179,16 @@ dt2
 ```{r}
 
 `A new "!" prefix on i signals 'not-join' (a.k.a. 'not-where'), #1384.
-  DT[-DT["a", which=TRUE, nomatch=0]]   # old not-join idiom, still works
-  DT[!"a"]                              # same result, now preferred.
-  DT[!J(6),...]                         # !J == not-join
-  DT[!2:3,...]                          # ! on all types of i
-  DT[colA!=6L | colB!=23L,...]          # multiple vector scanning approach
-  DT[!J(6L,23L)]                        # same result, faster binary search
+DT[-DT["a", which=TRUE, nomatch=0]]   # old not-join idiom, still works
+DT[!"a"]                              # same result, now preferred.
+DT[!J(6),...]                         # !J == not-join
+DT[!2:3,...]                          # ! on all types of i
+DT[colA!=6L | colB!=23L,...]          # multiple vector scanning approach
+DT[!J(6L,23L)]                        # same result, faster binary search
 '!' has been used rather than '-' :
-  * to match the 'not-join' and 'not-where' nomenclature
-  * with '-', DT[-0] would return DT rather than DT[0] and not be backwards
-    compatibile. With '!', DT[!0] returns DT both before (since !0 is TRUE in
-    base R) and after this new feature.
-  * to leave DT[+...] and DT[-...] available for future use``
+* to match the 'not-join' and 'not-where' nomenclature
+* with '-', DT[-0] would return DT rather than DT[0] and not be backwards
+compatibile. With '!', DT[!0] returns DT both before (since !0 is TRUE in
+base R) and after this new feature.
+* to leave DT[+...] and DT[-...] available for future use``
 ```

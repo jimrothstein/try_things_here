@@ -2,18 +2,19 @@
 ---
 
 PURPOSE:    more examples of do.call()
+REF: https://www.r-bloggers.com/2023/05/the-do-call-function-in-r-unlocking-efficiency-and-flexibility/
+
 TODO
 2023-06-02
 -   more do.call examples (from r-bloggers this REF)
 -   show how do.call can be constructed, manipulated  (or better with  call object)
 
-REF: https://www.r-bloggers.com/2023/05/the-do-call-function-in-r-unlocking-efficiency-and-flexibility/
 ### match.call , in real life
   *  use case:
   *  do.call(what, args), where `what` is function, args is list
   *  here:  match.call()[-1] drops 1st element (function) 
 
-##  match.call() returns call (only allowed inside function)
+##  match.call() returns call (this form, no args and inside f, refers uses f itself)
 ```{r begin}
 f <- function(x, y, z) {
     z = as.list(match.call())
