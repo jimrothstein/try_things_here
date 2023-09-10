@@ -1,35 +1,42 @@
-
   NOTE:  Example taken from updating R packages, where .libPaths()[[2]] is read-only
+<!-- TODO
+- quarto, double column for simple vertical lists, tibbles, etc/
+
+-->
 
 ###  Create toy example
-When I update my R packgaes, I have a twist because my site directory is
-read-only.  In a separate post, I will show how I navigate this without opening the permissions. 
+
+When I update my R packgaes, I have a twist because my site directory is<!-- {{{ -->
+read-only.  
+
+In a separate post, I will show how I navigate this without opening the permissions. 
+
 This toy example illustrates how I use anti-join to accomplish this.
 
 
 The toy example simplifies what `installed.packages()` and `old.packages()`
 
-- inst1 
-- inst2
-- cand
+- inst;  currently installed packages,using installed.packages
+- cand;  packages R thinks are old, from old.packages
+<!-- }}} -->
 
 <!--
 ###  Prepare toy example of what `installed.packages` reports:
 -->
-
+<!-- {{{ -->
 ```{r}
 #| include: false
-#| eval: false
+#| eval: true
 
 library(data.table)
-(dt = data.table(x=(LETTERS[1:4]),
+(inst = data.table(x=(LETTERS[1:4]),
        y= c(rep(1,4))
        ))
 #   add 4 packages in 2
-(dt = rbind(dt, data.table(x = LETTERS[5:8],y= c(rep(2,4))) ))
-(dt= rbind(dt, data.table(x=c("E","H"), y=c(1,1))))
-setorder(dt)
-dput(dt)
+(inst = rbind(inst, data.table(x = LETTERS[5:8],y= c(rep(2,4))) ))
+(inst= rbind(inst, data.table(x=c("E","H"), y=c(1,1))))
+setorder(inst)
+dput(inst)
 #     x y
 #  1: A 1
 #  2: B 1
@@ -42,13 +49,13 @@ dput(dt)
 #  9: E 1
 # 10: H 1
 ```
-
+<!-- }}} -->
 
 
 <!--
 ### Prepare Candidates  or old.packages for toy examples
 -->
-
+<!-- {{{ -->
 ```{r}
 #| include: false
 #| eval: true
@@ -72,69 +79,119 @@ dput(cand)
 # 5: E 2
 # 6: H 2
 ```
+<!-- }}} -->
 
-### installed packages for toy example:
-```{r}
-dt  <- structure(
+### create installed packages for toy example:
+<!-- {{{ -->
+```{r, create_inst}
+inst  <- structure(
       list(x = c("A", "B", "C", "D", "E", "F", "G", "H", "E", "H"), 
            y = c(1, 1, 1, 1, 2, 2, 2, 2, 1, 1)), 
       row.names = c(NA, -10L), 
       class = c("data.table", "data.frame")
       )
-setorder(dt)[]
+setorder(inst)[]
 ```
+<!-- }}} -->
 
 ### Examine install packages
-```{r}
+From inspecting inst: you can see   
+pkgs A-E  are all in directory 1;  
+pkgs E-H are in directory 2;  
+**E and H are in BOTH 1 and 2**.  
 
-```
-### Candidate, or old.packages(), for upgrade
-```{r}
+This occurs in my setup when E,H in the past were upgraded.   R alerted me that
+directory 2 was read only and allowed me to choose another directory.  I chose
+1.
 
+### create Candidate, or old.packages(), for upgrade
+<!-- {{{ -->
+```{r}
 cand  <-  structure(list(x = c("A", "B", "E", "F", "E", "H"), y = c(1L, 1L, 1L, 2L, 2L, 2L)), row.names = c(NA, -6L), class = c("data.table", "data.frame"))
-
 cand
 ```
+<!-- }}} -->
 
 ### Examine candidate packages
-```{r}
 
-```
+dir 1, A,B,E are update candidates
+
+dir 2, E,F,H are update candidates
+
+Note:  E is in both 1 and 2.
+F is candidate, but not in directory 1
+G is not candidate, so ignored.
 
 
-### Match candidaes and installed
-```{r}
-#| eval: false
-#| include: false
+### Update process: cases:w
 
-cand1 = cand[y== 1,]
-
-### not all of these are true upgrades
-cand2 = cand[y == 2, ]
-```
-### Update process
+<!-- {{{ -->
 If the candidates are in directory 1, we can update these as is.
 Case 1 
-```{r}
+```{r case_1}
 cand[y==1, ] 
+```
 
-If the candidates are in directory 2, there are a few cases.
-The time is     now.
+However, if the candidates are in directory 2, there are a few cases.
 
-  Case 2A
-  If the candidate is also a candidate in 1 then case 1 will handle and nothing more to be done.
-  cand[y==1,][cand [y == 2, ], on = .(x), nomatch=NULL]
-
-Case 2B
-# If the candidate is not a now candidate in 1 but was previously installed in  1 (ie past upgrade)
-# false positive, ignore
-cand[y == 2] [!cand[y ==1],  on=.(x)][dt[y == 1,], on = .(x), nomatch=NULL]
-
-Case 2C
-# If candidate never install in 1, upgrade
-cand[y ==2, ][!dt[y == 1, ], on=.(x)]
+Case 2A
+ If candidate was never install in 1, upgrade to directory 1.
+```{r}
+cand[y== 2, ][!inst[y==1, ], on=.(x)]
 
 ```
+<!-- }}} -->
+
+Case 2B
+If the candidate package is currently installed in 1, there is nothing more to check. Any update, if any, will be done in CASE I. (details below)
+```{r}
+cand[y ==2, ][inst[y == 1], on=.(x), nomatch=NULL]
+```
+
+
+
+### Actual update:
+
+:::: {.columns}
+
+::: {.column width="40%"}
+```{r}
+print("installed")
+inst
+```
+
+:::
+
+::: {.column width="60%"}
+```{r}
+print("cand")
+cand
+```
+:::
+
+::::
+
+### Details for Case 2B:
+<!-- {{{ -->
+  Case 2B   is really 2 cases.
+  If the candidate is also a candidate in 1 then case 1 will handle and nothing more to be done.
+```{r}
+  cand[y==1,][cand [y == 2, ], on = .(x), nomatch=NULL]
+```
+And if candidate pkg is currently installed in 1, but NOT candidate in 1, then there is nothing to do.
+ If the candidate is not a now candidate in 1 but was previously installed in  1 (ie past upgrade)
+ false positive, ignore
+```{r}
+cand[y == 2] [!cand[y ==1],  on=.(x)][inst[y == 1,], on = .(x), nomatch=NULL]
+```
+
+```{r}
+
+
+cand[y ==2, ][!inst[y == 1, ], on=.(x)]
+```
+<!-- }}} -->
+
 ```{r}
 #| include: false
 knitr::knit_exit()
