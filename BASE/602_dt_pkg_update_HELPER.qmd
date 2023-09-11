@@ -1,8 +1,9 @@
 <!--
   NO LONGER NEED yaml header,  see _quarto.yml
 -->
+** REAL: SEE 603_**
 
-### PURPOSE:    HELPER:  using dt to update  packages  
+### PURPOSE:    HELPER:  using dt to update  packages, to uderstand logic, SEE DT TOY example.
 <!-- {{{ -->
 Outline:  
 
@@ -29,7 +30,7 @@ Functions:
 library(data.table)
 dt = as.data.table(installed.packages())
 head(dt)[1:3,1:3 ]
-dim(installed) # [1] 264  16
+dim(dt) # [1] 264  16
 ```
 <!-- }}} -->
 
@@ -53,6 +54,7 @@ dt1
 <!-- }}} -->
 
 ### widen (omit)
+
 <!-- {{{ -->
 ```{r include=F, eval=F}
 dt[ LibPath==.libPaths()[[2]], ][, 1:3]

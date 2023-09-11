@@ -81,7 +81,10 @@ dput(cand)
 ```
 <!-- }}} -->
 
+:::: {.columns}
+
 ### create installed packages for toy example:
+::: {.column width="50%"}
 <!-- {{{ -->
 ```{r, create_inst}
 inst  <- structure(
@@ -90,10 +93,22 @@ inst  <- structure(
       row.names = c(NA, -10L), 
       class = c("data.table", "data.frame")
       )
-setorder(inst)[]
 ```
 <!-- }}} -->
+:::
 
+
+
+::: {.column width="30%"}
+
+```{r}
+setorder(inst)[]
+```
+
+:::
+
+
+::::
 ### Examine install packages
 From inspecting inst: you can see   
 pkgs A-E  are all in directory 1;  
@@ -149,7 +164,7 @@ cand[y ==2, ][inst[y == 1], on=.(x), nomatch=NULL]
 ```
 
 
-
+<!--
 ### Actual update:
 
 :::: {.columns}
@@ -170,6 +185,8 @@ cand
 :::
 
 ::::
+-->
+***
 
 ### Details for Case 2B:
 <!-- {{{ -->
@@ -195,43 +212,6 @@ cand[y ==2, ][!inst[y == 1, ], on=.(x)]
 ```{r}
 #| include: false
 knitr::knit_exit()
-```
-
-### LEGACY
-```{r}
-library(data.table)
-
-dt1 <- data.table(A1=letters[1:10], B1=sample(1:5,10, replace=TRUE))
-dt2 <- data.table(A2=letters[c(1:5, 11:15)], B2=sample(1:5,10, replace=TRUE))
-
-setkey(dt1, A1)
-setkey(dt2, A2)
-dt1
-#     A1 B1
-#  1:  a  4
-#  2:  b  1
-#  3:  c  3
-#  4:  d  1
-#  5:  e  3
-#  6:  f  4
-#  7:  g  3
-#  8:  h  5
-#  9:  i  1
-# 10:  j  3
-
-dt2
-#     A2 B2
-#  1:  a  3
-#  2:  b  5
-#  3:  c  2
-#  4:  d  4
-#  5:  e  3
-#  6:  k  4
-#  7:  l  4
-#  8:  m  5
-#  9:  n  4
-# 10:  o  5
-
 ```
 ```{r}
 
