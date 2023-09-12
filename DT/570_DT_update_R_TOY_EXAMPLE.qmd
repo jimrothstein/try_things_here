@@ -1,23 +1,31 @@
   NOTE:  Example taken from updating R packages, where .libPaths()[[2]] is read-only
+-- /home/jim/code/try_things_here/DT/570_DT_update_R_TOY_EXAMPLE.qmd
 <!-- TODO
 - quarto, double column for simple vertical lists, tibbles, etc/
 
 -->
 
+##    Toy Example
+
+
 ###  Create toy example
 
-When I update my R packgaes, I have a twist because my site directory is<!-- {{{ -->
-read-only.  
-
-In a separate post, I will show how I navigate this without opening the permissions. 
-
-This toy example illustrates how I use anti-join to accomplish this.
+<!-- {{{ -->
 
 
-The toy example simplifies what `installed.packages()` and `old.packages()`
+When I update my R packgaes, I have a problem:  my site directory is read-only.  
+In a separate post, I will show how I navigate this without opening the
+permissions. 
 
-- inst;  currently installed packages,using installed.packages
-- cand;  packages R thinks are old, from old.packages
+In this post, I use a toy example to illustrate the use of joins to accomplish this.
+
+The toy example simplifies results of  `installed.packages()` and `old.packages()`
+
+- **inst**;  currently installed packages, using installed.packages
+- **cand**;  packages R thinks are old, using old.packages
+- **x**;     represents pkg
+- **y**;     represents directory (1 or 2)      (.libPaths() has only 2 entries)
+
 <!-- }}} -->
 
 <!--
@@ -56,7 +64,8 @@ dput(inst)
 ### Prepare Candidates  or old.packages for toy examples
 -->
 <!-- {{{ -->
-```{r}
+
+```{r }
 #| include: false
 #| eval: true
 s = "x, y
@@ -83,10 +92,12 @@ dput(cand)
 
 :::: {.columns}
 
-### create installed packages for toy example:
+### Create installed packages for toy example:
 ::: {.column width="50%"}
 <!-- {{{ -->
-```{r, create_inst}
+
+
+```{r create_inst, style="background: lightgreen;" }
 inst  <- structure(
       list(x = c("A", "B", "C", "D", "E", "F", "G", "H", "E", "H"), 
            y = c(1, 1, 1, 1, 2, 2, 2, 2, 1, 1)), 
@@ -97,72 +108,90 @@ inst  <- structure(
 <!-- }}} -->
 :::
 
+::: {.column width="20%"}
 
-
-::: {.column width="30%"}
-
-```{r}
+```{r collapse = TRUE, bg-success, class.source="bg-success"}
 setorder(inst)[]
 ```
-
 :::
-
 
 ::::
 ### Examine install packages
+
+<!-- {{{ -->
 From inspecting inst: you can see   
-pkgs A-E  are all in directory 1;  
-pkgs E-H are in directory 2;  
-**E and H are in BOTH 1 and 2**.  
+
+- pkgs A-E  are all in directory 1;  
+- pkgs E-H are in directory 2;  
+- Note:  pkg **E and H are in BOTH 1 and 2**.  
 
 This occurs in my setup when E,H in the past were upgraded.   R alerted me that
 directory 2 was read only and allowed me to choose another directory.  I chose
 1.
+<!-- }}} -->
 
-### create Candidate, or old.packages(), for upgrade
+### Create update candidates (old.packages)
 <!-- {{{ -->
+
 ```{r}
-cand  <-  structure(list(x = c("A", "B", "E", "F", "E", "H"), y = c(1L, 1L, 1L, 2L, 2L, 2L)), row.names = c(NA, -6L), class = c("data.table", "data.frame"))
+cand  <-  structure(list(x = c("A", "B", "E", "F", "E", "H"), y = c(1L, 1L, 1L,
+                                                                    2L, 2L,
+                                                                    2L)),
+                    row.names = c(NA, -6L), class = c("data.table",
+                                                      "data.frame"))
 cand
 ```
 <!-- }}} -->
 
 ### Examine candidate packages
-
-dir 1, A,B,E are update candidates
-
-dir 2, E,F,H are update candidates
-
-Note:  E is in both 1 and 2.
-F is candidate, but not in directory 1
-G is not candidate, so ignored.
+<!-- {{{ -->
 
 
-### Update process: cases:w
+- dir 1, A,B,E are update candidates
+- dir 2, E,F,H are update candidates
+- Note:  E is in both 1 and 2.
+- F is candidate, but not in directory 1
+(- G is not candidate, so ignored.)
+<!-- }}} -->
+
+### Which packages will update?
+<!-- {{{ -->
+
+- In dir 1, all candidates will update (A,B,E,H)
+- In dir 2, candidate F will update (to dir 1)
+
+- Pkgs C,D will not update (no candidate)
+- Pkgs G will not update (no candidate)
+<!-- }}} -->
+
+### Update process: cases
 
 <!-- {{{ -->
+**Case** **1** 
 If the candidates are in directory 1, we can update these as is.
-Case 1 
+
 ```{r case_1}
 cand[y==1, ] 
 ```
 
 However, if the candidates are in directory 2, there are a few cases.
 
-Case 2A
- If candidate was never install in 1, upgrade to directory 1.
+**Case** **2A**
+ If candidate was never installed in 1, upgrade to directory 1.
+ Select only candidates in 2 that were NOT previously installed in 1 (anti-join).
 ```{r}
 cand[y== 2, ][!inst[y==1, ], on=.(x)]
-
 ```
-<!-- }}} -->
 
-Case 2B
+**Case** **2B**
 If the candidate package is currently installed in 1, there is nothing more to check. Any update, if any, will be done in CASE I. (details below)
+Case 1 will any candidate in 2 that was previously installed in 1. 
 ```{r}
 cand[y ==2, ][inst[y == 1], on=.(x), nomatch=NULL]
 ```
+<!-- }}} -->
 
+***
 
 <!--
 ### Actual update:
@@ -186,7 +215,10 @@ cand
 
 ::::
 -->
-***
+```{r}
+#| include: false
+knitr::knit_exit()
+```
 
 ### Details for Case 2B:
 <!-- {{{ -->
