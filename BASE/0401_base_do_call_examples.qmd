@@ -1,3 +1,48 @@
+PURPOSE: do.call basic examples.
+
+#### Call: Unevaluted function, where args ARE evaluated. Function is NOT a
+call.
+```{r intro_call}
+    f  <- function(x) {
+	x^2}
+
+    # create a call
+    (cl  <- call("f", 3))
+    # f(3)
+
+    ##  Test for call.
+	sapply(list(f, "f", cl), is.call) # [1] FALSE FALSE  TRUE
+    ##  To evaluate a call.
+	eval(cl) # [1] 9
+```
+
+
+### do.call use case:  long arg list
+<!-- {{{ -->
+* (differs from most examples here)
+```{r use_case}
+  g  <- function(x,y,z) {x+y+z}
+
+  ##  package the values in a list AND run the function
+  do.call("g", list(1,2,3))
+# [1] 6
+```<!-- }}} -->
+
+### do.call vs lapply
+<!-- {{{ -->
+```{r do_call_simple}
+# acts on entire list
+  do.call("sum", list(1,2,3))
+
+# acts on each element of list
+  x= lapply(list(1,2,3), sum)
+  dput(x)
+
+# list(1, 2, 3)
+```
+<!-- }}} -->
+
+
 ---
 ---
 
@@ -24,6 +69,7 @@ f <- function(x, y, z) {
 }
 
 f(1, 2, 3)
+
 ```
 
 

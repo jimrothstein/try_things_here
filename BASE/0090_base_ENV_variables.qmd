@@ -1,6 +1,9 @@
 ## Some system ENV variables used by R
 ```{r}
 
+# vim.keymap.set("n", "<C-e>", ":!pandoc %:p --output=%:t:r.pdf --pdf-engine=wkhtmltopdf<CR>:!open %:t:r.pdf<CR><CR>", {buffer = true})
+# lua vim.keymap.set("n", "<C-e>", ":!quarto preview %")
+
 v  <- c("R_LIBS",                      # unset(default)
         "R_LIBS_STATE",
         "R_LIBS_USER",
