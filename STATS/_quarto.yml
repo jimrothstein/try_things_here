@@ -1,0 +1,42 @@
+## project level
+#  all *.qmd files inherit
+#
+project:
+  #  output-dir: _output
+  output-dir: docs            ## NO indent, also _quarto.yml for entier project
+
+## global
+author: "JR"  
+date: "5/22/2021"  
+pdf-engine: lualatex  
+number-sections: true
+toc: true
+# bibliography: references.bib  
+  
+execute:
+    error: true 
+    warning: true
+    collapse: true 
+    standalone: true
+
+format:
+  html:
+    css: styles.css
+    html-math-method: katex
+    code-fold: true
+    toc: true 
+    toc_depth: 3
+    toc-location: body
+      #toc_float: true
+    embed-resources:  true
+    code-block-bg: true
+    code-block-border-left: "#31BAE9"       
+    indent: true
+    number-sections: true
+    number-depth: 3
+    number-offset: 2
+    code-link: true             # hyperlink R functions
+  pdf:
+    documentclass: report
+    margin-left: 30mm
+    margin-right: 30mm

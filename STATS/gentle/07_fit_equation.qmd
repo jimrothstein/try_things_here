@@ -1,0 +1,14 @@
+```{r}
+
+library(mosaic)
+heartrate  <- read.csv("~/code/try_things_here/STATS/gentle/heartrate.csv")
+head(heartrate)
+ggplot(heartrate) + 
+  geom_point(aes(x=age, y=hrmax)) + 
+  geom_smooth(aes(x=age, y=hrmax), method='lm')
+model_hr = lm(hrmax ~ age, data=heartrate)
+summary(model_hr)
+coef(model_hr)
+fitted(model_hr) %>%
+   head(5)
+```
