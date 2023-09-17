@@ -1,41 +1,5 @@
-<!--
----
-title: " 600_base_package_commands.qmd "  
-author: "JR"  
-date: "5/22/2021"  
-pdf-engine: lualatex  
-format:   
-  html:  
-        code-fold: true
-        toc: true 
-        #toc_depth: 3
-        toc_location: body 
-        #toc_float: true
-        embed-resources:  true
-        code-block-bg: true
-        code-block-border-left: "#31BAE9"       
-        indent: true
-        number-sections: true
-        number-depth: 3
-        number-offset: 1
-        code-link: true             # hyperlink R functions
-        html-math-method: katex
-        css:  styles.css
-execute:
-    error: true 
-    warning: true
-    collapse: true 
-    standalone: true
-output-dir: docs            ## NO indent, also _quarto.yml for entier project
----
-
--->
 
 DO NOT DELETE 
-
-TODO:
-  *   Goal is create working update code, includes HELPERS (dt, matrix, ) in
-  other packages
 
 ***
 This is [DEEPER]{style="color: red;"} version.  
@@ -44,7 +8,10 @@ Rscripts/jim Tools - is intended for daily produciton
 
 ***
 
-### PURPOSE:    Update R packages<!-- {{{ -->
+### PURPOSE:    Update R packages
+<!-- {{{ -->
+This file contains various information about R packages installed.
+This file does NOT update R packages.  SEE dt, matrix files for this.
 
 Outline:  
 
@@ -72,20 +39,18 @@ Functions:
     -   knitr functions:  <https://cran.r-project.org/web//packages/knitr/knitr.pdf>
 <!-- }}} -->
 
-TODO:  <!-- {{{ -->
-*    W-I-P
-*    FIX:  find.package to find packages in TWO locations
-*       TODO:  Update !}}}
-
-SEE ALSO:<!-- {{{ -->
+SEE ALSO:
+<!-- {{{ -->
 
 -   (update issues) https://github.com/ColinGoodall1/editUtilsR
 -   ~/code/zsh_scripts_project/071_run_R_to_update_packages.sh
--   0512_system_tools.R_}}}
+-   0512_system_tools.R_
+<!--}}}
 
 ***
 
-###     Setup<!-- {{{ -->
+###     Setup
+<!-- {{{ -->
 ```{r, include=F}
 knitr::opts_chunk$set(echo = T, include=T, eval=T)
 ```
@@ -114,10 +79,12 @@ dt = data.table(installed.packages())
 dt = dt[, .(Package, Version, LibPath, Built)]
 dt[, .N]
 dt[, .N, by=LibPath]
-```<!-- }}} -->
+```
+<!-- }}} -->
 ***
 
-### Each distinct library, show number of packages<!-- {{{ -->
+### Each distinct library, show number of packages
+<!-- {{{ -->
 ```{r}
 dt[, .N, by=LibPath]
 
@@ -179,7 +146,6 @@ venn.plot <- draw.pairwise.venn(area1      = 100,
 ***
 
 
-##   UPDATE  - multi- step process?
 ###  UPDATE  - Intro
 Ask:  if directory is not writable prompt user to OK ~/R/x86_64-pc-linux-gnu-library/4.3/<!-- {{{ -->
 
@@ -222,68 +188,25 @@ instPkgs = (default) all installed packages (ie check all ?)<!-- }}} -->
 ```
 ***
 
-### CASE # 1 , update OLD in ~/R/4.3.1/...
-<!-- {{{ -->
-```{r}
-# limit to `old` and in User dir  (no warnings, good)
-update.packages( lib.loc= .libPaths()[[1]],
-  ask = F,    ## TRUE means asks for each pkg
-                oldPkgs = old3,         # ONLY these packages updated
-                instlib = .libPaths()[[1]],       # gives WARNING that R_HOME not writable
-                checkBuilt=T)
+### Omit:  all updates
 
-```<!-- }}} -->
-
-### DO NOT Update packages in sys (yet)
-<!-- {{{ -->
-```{r, eval=F}
-#      DO NOT RUN !
-#
-#
-# `old` and in /opt directory   , these will ALWAYS want to update.
-#  Before doing so, check if already updated and reside in [[1]]
-update.packages(lib.loc = .libPaths()[[2]], 
-  ask = F,    ## TRUE means asks for each pkg
-                oldPkgs = old3,         # ONLY these packages updated
-                instlib = .libPaths()[[1]],       # gives WARNING that R_HOME not writable
-                checkBuilt=T)
-```<!-- }}} -->
-
-### STOP  - need join
-### CASE #2 ,  update OLD in area of overlap (ie BOTH user/opt)
-# {{{
-```{r}
-## Do old packages in /opt/R/4.3.1  already have newer versions in ~/R/4.3.1/...
-## If so, why recompile all over again?
-
-## TODO:
-## each compare with find.package, OR run join against pkgs in ~/R/x86...
-
-# (testing)  All `old` packages in \opt are already in new directory
-# triggers a WARNING
-
-old4 = NULL
-update.packages(ask = F,    ## TRUE means asks for each pkg
-                oldPkgs = old4,         # ONLY these packages updated
-                instlib = .libPaths()[[1]],       # avoids WARNING that R_HOME not writable
-                checkBuilt=T)
-
-```# }}}
 ***
 
-### Step #2
-```{r upgrade2, eval=F}
-{
-  # oldPkgs = NULL is default
-begin  <- Sys.time()
-    update.packages(ask = FALSE ,  instlib= .libPaths()[[1]], checkBuild=TRUE)
-    end  <- Sys.time()
-    diff  <- end - begin
-    diff
-}
+# Options, environments ...
+
+### A few options
+```{r}
+getOption("defaultPackages")
+if (interactive()) chooseCRANmirror()   # window opens
+options()
+# two ways to find CRAN server  (grep returns element number)
+    options()[[grep("repos",  names(options()))]]
+    # or
+    getOption("repos")
+
+## summary info
+  packageStatus()
 ```
-
-***
 
 ###  R's environment variables 
 ***
@@ -546,9 +469,7 @@ names(tmp)
 p = tmp |> dplyr::select(c("Package", "Version", "LibPath",  "Built"))
 ```
 
-# -----------------------------------------------------------------------------------
-#                       LEGACY (more 088A)
-# -----------------------------------------------------------------------------------
+###                       LEGACY (more 088A)
 
 ### unique paths
 ```{r}
@@ -559,11 +480,11 @@ p |> select("LibPath")  |> count(LibPath)
 # 1 /home/jim/R/x86_64-pc-linux-gnu-library/4.3   157
 # 2 /usr/lib/R/library                             29
 ```
+***
 
-# -----------------------------------------------------
-#   /usr/lib/R/library is NOT updatable (only sudo)
-#   List these packages  (29)
-# -----------------------------------------------------
+###   /usr/lib/R/library is NOT updatable (only sudo)
+List these packages  (29)
+
 ```{r}
 p$LibPath[grepl(pattern="/usr/lib/", x=p$LibPath)]
 print(dplyr::filter(p, LibPath == "/usr/lib/R/library") ,
@@ -572,11 +493,14 @@ print(dplyr::filter(p, LibPath == "/usr/lib/R/library") ,
 
 
 
-# ---------------------------------------------
-## ENV variables
-# ---------------------------------------------
+#  Level I ---------------------------------------------
+## Level II 
+
 *  See: https://stat.ethz.ch/R-manual/R-devel/library/base/html/EnvVar.html
-# /usr/lib/R
+*  /usr/lib/R
+
+### Sys.getenv()
+
 ```{r}
 (r_home <-R.home(component="home")) # [1] "/usr/lib/R"
 Sys.getenv("R_HOME") 			# /usr/lib/R ; where R installed
@@ -623,9 +547,11 @@ t  <- tibble(pkg=l$tibble)
 t
 ##### 010-for <pkg>, find packages dependent upon it
 ```
-# ------------------------------------------------------------
 ###	PROBLEM:  R pkgs   - can be in TWO locations !!!	
-# ------------------------------------------------------------
+<!-- {{{ -->
+
+[TODO: condense]{style="color: red;"} 
+
 ```{r}
 ip = as_tibble(installed.packages(lib.loc=NULL))   # NULL, searches all paths
 ip = ip |> dplyr::select("Package","LibPath", "Version", "Built") 
@@ -638,10 +564,12 @@ ip |> dplyr::filter(Package==("KernSmooth"))
 ip |> dplyr::filter(Package==("dplyr") )
  
 
-##	Where is MASS
+##	Where is MASS  (condense !   use gt or other package?)
 m = installed.packages(lib.loc=NULL)
-m
+#m
 ```
+<!-- }}} -->
+
 #   2nd way to find directories for ONE pkg  
 ```{r}
 
