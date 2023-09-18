@@ -32,7 +32,7 @@ y <- jitter(mpg$cty)
 z <- factor(mpg$drv)
 plot(x, y, col = z)
 legend("topleft", legend = levels(z), col = 1:nlevels(z), pch = 1, title = "Drive")
-```
+
 
 REF:    http://www.sthda.com/english/wiki/line-plots-r-base-graphsk
 

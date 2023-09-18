@@ -1,0 +1,32 @@
+```{r}
+library(data.table)
+rxntime = fread("rxntime.csv")
+```
+
+### Dummy variables are 0, 1 (include or not include)
+$$
+y = \beta_{0} + \beta_{1}x_{1} + \beta_{2}x_{2} + \epsilon 
+$$
+```{r}
+rxntime[, .(PictureTarget.RT, FarAway, Littered)]
+```
+### coef
+```{r}
+games_model1 = lm(PictureTarget.RT ~ FarAway + Littered, data=rxntime)
+coef(games_model1) |>
+  round(0)
+
+```
+$$
+\hat{y} = 482 + 50x_{1} + 87x_{2}
+$$
+
+***
+
+```{r}
+#| eval: false
+#| include: false
+summary(games_model1)
+```
+
+

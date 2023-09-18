@@ -1,15 +1,22 @@
 
 DO NOT DELETE 
 
+
+#  Purpose
+## Level II 
+
+*  See: https://stat.ethz.ch/R-manual/R-devel/library/base/html/EnvVar.html
+*  /usr/lib/R
 ***
+
 This is [DEEPER]{style="color: red;"} version.  
 [102_... HELPER.qmd is more streamlined.]{style="background-color: yellow"}.  
 Rscripts/jim Tools - is intended for daily produciton
 
-***
-
 ### PURPOSE:    Update R packages
+
 <!-- {{{ -->
+
 This file contains various information about R packages installed.
 This file does NOT update R packages.  SEE dt, matrix files for this.
 
@@ -37,30 +44,36 @@ Functions:
     -   installed.packages
     -   find.package
     -   knitr functions:  <https://cran.r-project.org/web//packages/knitr/knitr.pdf>
-<!-- }}} -->
 
 SEE ALSO:
-<!-- {{{ -->
 
 -   (update issues) https://github.com/ColinGoodall1/editUtilsR
 -   ~/code/zsh_scripts_project/071_run_R_to_update_packages.sh
 -   0512_system_tools.R_
-<!--}}}
 
-***
+```{r}
+print("end of purpose")
+```
 
+<!-- }}} -->
+
+
+
+
+# Code
+```{r}
+print("section: Code")
+```
 ###     Setup
-<!-- {{{ -->
+
 ```{r, include=F}
 knitr::opts_chunk$set(echo = T, include=T, eval=T)
 ```
-<!-- }}} 
-
 ### R version/sessionInfo
-<!-- {{{ -->
 ```{r }
 suppressMessages(library(dplyr))
 suppressMessages(library(data.table))
+library(gt)
 
     version
 #   loaded now
@@ -69,11 +82,11 @@ sessionInfo()
 getOption("repos")  # cran.rstudio.com
 }
 ```
-<!-- }}} -->
 
-***
 ### Currently Installed Packages:  data.table version
+
 <!-- {{{ -->
+
 ```{r}
 dt = data.table(installed.packages())
 dt = dt[, .(Package, Version, LibPath, Built)]
@@ -83,46 +96,44 @@ dt[, .N, by=LibPath]
 <!-- }}} -->
 ***
 
+
 ### Each distinct library, show number of packages
-<!-- {{{ -->
 ```{r}
-dt[, .N, by=LibPath]
+dt[, .N, by=LibPath] |> gt()
 
 # list duplicate packges
 dt[, .N, by=Package][N>1]
 
 # show duplicates and reason (Version or Built) 
 dt[, .(.N, Package, LibPath, Version, Built), by=Package][N>1]
-```<!-- }}} -->
 
-***
+```
+### Test
+```{r}
+print("test")
+```
+
 ### List Packages in user library 
-<!-- {{{ -->
 ```{r}
 dt[LibPath == .libPaths()[[1]], .(Package)  ][1:3,]
 ```
-<!-- }}} -->
 
 
 ### List Packages in /opt/R/4.3.1/lib/R/library. (non-data.table) 
-<!-- {{{ -->
 This directory is NOT upgradeable and could cause update problems.
 ```{r,  eval=T}
 dt[LibPath == .libPaths()[[2]], .(Package, LibPath)]
 
 # prior to 4.3.1 where R_HOME point
 ```  
-<!--}}} -->
 
 ### List ALL Packages (interactive ONLY)in 
-<!-- {{{ -->
 `r .libPaths()[[1]]`  (lengthy)
 ```{r eval=F}
 if ( interactive()) lapply(.libPaths(), list.dirs, recursive=FALSE)
 # as nested
 t  <- tibble::tibble(if ( interactive()) lapply(.libPaths(), list.dirs, recursive=FALSE))
 ```
-<!-- }}} -->
 
 ***
 ### A Diagram:  Expect
@@ -146,7 +157,7 @@ venn.plot <- draw.pairwise.venn(area1      = 100,
 ***
 
 
-###  UPDATE  - Intro
+#  UPDATE  - Intro - OMIT
 Ask:  if directory is not writable prompt user to OK ~/R/x86_64-pc-linux-gnu-library/4.3/<!-- {{{ -->
 
 NOTE:    if dir not writeable: 
@@ -165,7 +176,6 @@ lib.loc = dir to check for old packages
 instPkgs = (default) all installed packages (ie check all ?)<!-- }}} -->
 
 ***
-### Step #0  - Find OLD packages
 
 ```{r update_old  }
 .libPaths()
@@ -217,13 +227,14 @@ Sys.getenv("R_HOME") 			# /usr/lib/R ; where R installed
 Sys.getenv("R_LIBS_USER") # # [1] "/home/jim/R/x86_64-pc-linux-gnu-library/4.3"
 Sys.getenv("R_HIST_SIZE") # [1] ""
 Sys.getenv("R_BROWSER")  # [1] "xdg-open"
-# ---------------------------------------------
 length(Sys.getenv()) # 132
 
 # too lengthy
 if  (FALSE) Sys.getenv()		
 ```
 ***
+
+# More Package Info
 
 ### Check Package Versions
 ```{r}
@@ -308,7 +319,7 @@ ip |> dplyr::filter(Package==("dplyr") )
 ```
 
 
-003 view all installed R packages? ----
+003 view all installed R packages? 
  at cmd line  which needed?
  apt-get cache search "^r-*" | sort
 
@@ -343,10 +354,11 @@ getOption("repos")  # cran.rstudio.com
 ```
 
 
-013_jennyBC
-###  from https://github.com/smithjd/explore-libraries/blob/master/01_explore-libraries_jenny.R
-```{r, eval=F}
+#  013_jennyBC
 
+REF <https://github.com/smithjd/explore-libraries/blob/master/01_explore-libraries_jenny.R>{{{
+
+```{r, eval=F}
 ipt <- installed.packages() %>%
   as_tibble()
 
@@ -378,7 +390,13 @@ ipt %>% filter(Package=="BH")
 
 # uninstall(BH)
 ```
-### LEGACY (mostly dplyr)
+<!-- }}} -->
+
+# LEGACY (mostly dplyr)
+```{r}
+
+```
+
 
 ### Currently Installed Packages
 <!-- {{{ -->
@@ -450,9 +468,8 @@ ip |> dplyr::filter(Package==("Matrix"))
 ```<!-- }}} -->
 
 ***
-#---------------------------------------------
-##  Installed Packages
-# ---------------------------------------------
+
+###  Installed Packages
 ```{r}
 library(dplyr)                         # Not BASE, but easier  
 tmp = as_tibble(installed.packages())
@@ -465,11 +482,14 @@ names(tmp)
 # [11] "License_is_FOSS"       "License_restricts_use"
 # [13] "OS_type"               "MD5sum"               
 # [15] "NeedsCompilation"      "Built"                
-
 p = tmp |> dplyr::select(c("Package", "Version", "LibPath",  "Built"))
 ```
 
-###                       LEGACY (more 088A)
+# LEGACY (more 088A)
+```{r}
+print("088A")
+```
+
 
 ### unique paths
 ```{r}
@@ -493,11 +513,6 @@ print(dplyr::filter(p, LibPath == "/usr/lib/R/library") ,
 
 
 
-#  Level I ---------------------------------------------
-## Level II 
-
-*  See: https://stat.ethz.ch/R-manual/R-devel/library/base/html/EnvVar.html
-*  /usr/lib/R
 
 ### Sys.getenv()
 
@@ -507,16 +522,14 @@ Sys.getenv("R_HOME") 			# /usr/lib/R ; where R installed
 Sys.getenv("R_LIBS_USER") # # [1] "/home/jim/R/x86_64-pc-linux-gnu-library/4.3"
 Sys.getenv("R_HIST_SIZE") # [1] ""
 Sys.getenv("R_BROWSER")  # [1] "xdg-open"
-# ---------------------------------------------
 length(Sys.getenv()) # 132
 
 # too lengthy
 if  (FALSE) Sys.getenv()		
 ```
 
-# ---------------------------------------------
 ### Package Versions
-# ---------------------------------------------
+
 ```{r}
 packageVersion("rmarkdown") # 3.5.1
 packageVersion("MASS")      # 7.3.60
@@ -524,18 +537,13 @@ packageVersion("class")      # 7.3.22:
 R.version.string     # [1] "R version 4.3.0 (2023-04-21)"
 ```
 
-# ---------------------------------------------
-Dependncies
+### Dependncies
 TODO:   utils::depends(pkg =  c(), dependencies=c ())
-# ---------------------------------------------
 ```{r}
 # For each installed pkg, find its dependencies
 #### return list of character vectors, ~15,293 
 	
-l <- tools::package_dependencies(
-							"tibble",
-							db=installed.packages(),
-							reverse=TRUE	)
+l <- tools::package_dependencies( "tibble", db=installed.packages(), reverse=TRUE	)
 l
 
 # And "tibble" is dependenat upon:
@@ -547,7 +555,7 @@ t  <- tibble(pkg=l$tibble)
 t
 ##### 010-for <pkg>, find packages dependent upon it
 ```
-###	PROBLEM:  R pkgs   - can be in TWO locations !!!	
+#	PROBLEM:  R pkgs   - can be in TWO locations !!!	
 <!-- {{{ -->
 
 [TODO: condense]{style="color: red;"} 
@@ -570,7 +578,7 @@ m = installed.packages(lib.loc=NULL)
 ```
 <!-- }}} -->
 
-#   2nd way to find directories for ONE pkg  
+###   2nd way to find directories for ONE pkg  
 ```{r}
 
 #    SEE ?find.pacakge()
@@ -582,7 +590,7 @@ m = installed.packages(lib.loc=NULL)
      findPkgAll("knitr")
 ```
 
-#   Bug in find.package?
+###   Bug in find.package?
 
 ```{r}
 #   MASS is in 2 directories
@@ -607,10 +615,8 @@ In find.package("MASS", verbose = T) :
 
 
 
-# ---------------------------------------------
-### LEGACY
-# ---------------------------------------------
-### Loads,  but does not attach; TRUE if able to load.
+# LEGACY
+Loads,  but does not attach; TRUE if able to load.
 ```{r}
 check_suggests <- function(package) {
   if (!requireNamespace(package, quietly = TRUE)) {
@@ -661,9 +667,8 @@ if (FALSE)
 getOption("repos")  # cran.rstudio.com
 ```
 
-# -----------------------------jennyBC ------------------------------------------------------------------
-##### 013_jennyBC
-####  from https://github.com/smithjd/explore-libraries/blob/master/01_explore-libraries_jenny.R
+# 013_jennyBC
+from https://github.com/smithjd/explore-libraries/blob/master/01_explore-libraries_jenny.R
 ```{r}
 
 ipt <- installed.packages() %>%
