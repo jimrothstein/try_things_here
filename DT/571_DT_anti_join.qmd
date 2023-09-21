@@ -1,0 +1,21 @@
+### /home/jim/code/try_things_here/DT/571_DT_anti_join.qmd
+
+TAGS:   data.table, anti-join, setdiff
+
+```{r}
+  library(data.table)
+t1  <- data.table(x=letters[1:10])
+t2  <- data.table(x=letters[1:11])
+
+t1  
+t2
+### anti-join
+### Find letter in  t2 that is NOT  in t1
+t2[!t1, on=.(x)]
+```
+
+### another way
+```{r}
+setdiff(t2, t1)
+```
+

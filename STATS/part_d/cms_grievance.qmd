@@ -1,0 +1,64 @@
+```{r}
+library(data.table)
+
+```
+
+```{r}
+the_file  <- "cms_grievance_ALL_decisions_data.csv"   # 9/2022 - 9/2023
+x  <- fread(the_file)
+dim(x)  
+# [1] 34851    10
+
+names(x)
+#  [1] "decision_number"        "part"                  
+#  [3] "decision_date"          "decision_date_sortable"
+#  [5] "decision"               "appeal_type"           
+#  [7] "_condition"             "drug"                  
+#  [9] "decision_rationale"     "coverage_rules"        
+```
+
+### decision
+```{r}
+table(x$decision)
+# 
+#           Favorable Partially Favorable         Unfavorable 
+#                2031                  69               32751 
+boxplot(table(x$decision))
+
+```
+
+
+### appeal_type
+```{r}
+table(x$appeal_type)
+```
+
+### top 16 drugs (in grievances)
+```{r}
+unique(x$drug)  # 4289 unique drugs
+y  <- table(x$drug)
+
+is.atomic(y)
+typeof(y)
+y
+
+dt  <- data.table(y)
+dt[order(desc(N))][1:10, ]
+dt[order(N)][1:10, ]
+
+dt[order(N)][N>20] # 344
+dt[order(N)][N>50] # 121
+dt[order(N)][N>100] # 49 drugs
+
+t16 = dt[order(N)][N>200] # 16 drugs
+t16
+
+barplot(t16$N, names.arg = t16$V1)
+hist(t16$N)
+
+
+```
+
+
+
+
