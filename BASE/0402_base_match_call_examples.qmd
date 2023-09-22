@@ -1,5 +1,7 @@
 PURPOSE: match call: basic examples.
 
+TAGS: match.call, match.arg
+
 #### Call: Unevaluted function, where args ARE evaluated. Function is NOT a
 call.
 ```{r intro_call}
@@ -19,30 +21,29 @@ call.
 
 
 ### match.call() 
-* match function's arguments (formals) and values presented
-* returns object call; unevaluated function, but with arguments evaluated.
+* returns object call (unevaluated function, but with arguments evaluated.)
+* match function's arguments (formals) and values in call
 * use: inside a function.
 * use: as.list.
 * [1] is name of function.
 * [2:n] are UNevaluated args.  (ie symbols are ok)
+
 ```{r match.call}
-## return in 1 line; without as.list (I like better)
     g  <- function(x, y, z){
       return(match.call())
     }
-    g(1,2,3)
-# g(x = 1, y = 2, z = 3)
-
-
-
+# Ex1
+    g(1,2,3)		# g(x = 1, y = 2, z = 3)
     is.call(g(1,2,3)) # [1] TRUE
 
+# Ex2
     a = 4
     g(a, 2,3) # g(x = a, y = 2, z = 3)
+
     eval(g(a,2,3)) # g(x = a, y = 2, z = 3)
     eval(g(2*a,2,3)) # g(x = 2 * a, y = 2, z = 3)
 
-    # but g is function
+    # but g (alone) is function
     is.call(g) # [1] FALSE
     is.function(g) # [1] TRUE
 
@@ -53,8 +54,8 @@ call.
 
 
 # Examples
-g(1,2,3)
-eval(g(1 + 2,2,3)) # g(x = 1 + 2, y = 2, z = 3)
+    g(1,2,3)
+    eval(g(1 + 2,2,3)) # g(x = 1 + 2, y = 2, z = 3)
 
 # drop 1st element
 g(1,2,3)[-1]

@@ -1,7 +1,9 @@
-## PURPOSE:   convert list to df or matrix
+## PURPOSE:   convert list to df or matrix; how rbind works
 REF:    https://stackoverflow.com/questions/37459677/what-is-equivalent-to-do-callrbind-list
 *REF:  https://stackoverflow.com/questions/35074200/why-do-rbind-and-do-callrbind-return-different-results
 https://www.r-bloggers.com/2023/05/the-do-call-function-in-r-unlocking-efficiency-and-flexibility/
+
+TAGS: do.call, matrix,rbind 
 
 ### matrix fill by column (default)
 ```{r}

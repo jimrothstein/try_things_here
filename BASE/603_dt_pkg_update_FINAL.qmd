@@ -49,7 +49,7 @@ cand = as.data.table(old.packages(checkBuilt=T))
 cand
 ```
 
-### candidate in 1, update
+### Any candidate in lib1, then update these.
 ```{r}
 lib1 = .libPaths()[[1]]
 lib2 = .libPaths()[[2]]
@@ -64,7 +64,7 @@ update.packages(
 
 ```
 
-
+### Check lib2 for valid candidates:
 ```{r}
 # if cand is in lib1, not need to check if 2 (SEE TOY)
 # but if cand in 2, only need to check if was every installed in 1

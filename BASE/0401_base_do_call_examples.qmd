@@ -1,5 +1,7 @@
 PURPOSE: do.call basic examples.
 
+TAGS:	do.call, rbind,
+
 #### Call: Unevaluted function, where args ARE evaluated. Function is NOT a
 call.
 ```{r intro_call}
