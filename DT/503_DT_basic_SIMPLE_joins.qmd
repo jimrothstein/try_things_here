@@ -1,33 +1,21 @@
 ---
 title: "502_DT_basic_joins.qmd"
 author: "jr"
-date: "5/22/2021"
-pdf-engine: lualatex
-format:
-    html:
-        toc: true
-        html-math-method: katex
-        css: styles.css
-        embed-resources: true
-output-dir: docs
-editor_options: 
-  chunk_output_type: console
-execute: 
-  error: true                   ## include errors in output
-  warning: true
-  collapse: true
-  standalone: true
+date: "5/22/2023"
+code-fold: true
 ---
 
-# ----------------------------------------
+----------------------------------------
 
-For example using R update, see 570_anti-join.qmd
+PURPOSE:    Simple (!)  DT join examples, using fake data. \
+(For example using R update, see 570_anti-join.qmd)
 
 ### Another way to use anti-join
-installed:  10 rows,  6 have 1, 4 have 2# {{{
+installed:  10 rows,  6 have 1, 4 have 2
 
 ```{r}
 library(data.table)
+library(knitr)
 (dt = data.table(x=(LETTERS[1:4]),
            y= c(rep(1,4))
            ))
@@ -39,6 +27,9 @@ library(data.table)
 (dt= rbind(dt, data.table(x=c("E","H"), y=c(1,1))))
 setorder(dt)
 ```
+
+
+***
 
 ### toy example:   installed
 ```{r}
@@ -57,11 +48,13 @@ dput(dt)
 #  8: H 2
 #  9: E 1
 # 10: H 1
-```# }}}
+``` 
 
+
+
+***
 
 ### Summary of Installed
-# {{{
 ```{r}
 install  <- dt
 # entries for each pkg
@@ -73,11 +66,10 @@ install  <- dt
     install2 = dt[y == 2]
 install1
 install2
+```
+***
 
-```# }}}
-
-### joins with dt1,dt2
-# {{{
+### example joins with dt1,dt2
 ```{r}
 ## pkg in 2, NOT in 1
   install2[!install1, on=.(x)]
@@ -105,10 +97,9 @@ install2
     install1[install2, on=.(x=x)] [is.na(y)]
     install1[install2, on=.(x=x)] 
     install2[!install1, on=.(x=x)]
+```
 
-```# }}}
-
-##  FAKE Candidates
+####  FAKE Candidates
 ```{r}
 #   all pkgs, EXCEPT "C" are candidates
 cand=data.table(x=c(LETTERS[1:2], LETTERS[4:10]))
@@ -129,13 +120,13 @@ c1
 # fake cand from dir 2, previously updated
 dt[y == 2,]
 c2 = data.table(x=LETTERS[1:3], y=rep(1,3))
-
-
 ```
 
+
 LEGACY
-###	PURPOSE:   Collect DT merge/join examples
-REF: https://stackoverflow.com/questions/54864132/intuition-for-data-table-join-syntax
+
+####	PURPOSE:   Collect DT merge/join examples \
+REF: <https://stackoverflow.com/questions/54864132/intuition-for-data-table-join-syntax>
 
 Simple example:
 -dt is observations, uses an abbrev for each state
@@ -184,6 +175,9 @@ dt[lookup] # include ALL from lookup (TX not in lookup)
 
 ```
 
+```{r}
+knitr::knit_exit()
+```
 ### Inner join is easist to understand.  Merge creates a new table with cols x and y.
 The rows include only where a common value exisits. 
 ```{r simplest}
