@@ -15,6 +15,7 @@ v  <- c("R_LIBS",                      # unset(default)
 )
 
 read.delim
+
 ```
 
 ### functions set/get library search paths
