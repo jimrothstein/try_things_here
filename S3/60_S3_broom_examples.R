@@ -9,7 +9,7 @@ toc: TRUE
 toc_depth:  1 
 fontsize: 12pt 
 geometry: margin=0.5in,top=0.25in 
-TAGS:   S3, vctrs
+TAGS:   S3, vctrs, broom
 ---
 
 library(broom)
