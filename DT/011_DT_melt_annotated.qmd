@@ -1,0 +1,79 @@
+
+---
+title: skeleton.qmd
+date: last-modified
+# Quarto requires title, if want date to appear
+# ~/.config/kickstart/skeleton/skeleton.qmd
+---
+#   TAGS:   
+
+```{r}
+
+```
+
+#### normalize - votes
+Status?   not sure.
+```{r votes}
+# each=2, each element repeated twice, before moving on.
+votes <- function() {
+  data.table(issue = rep(c("issue1", "issue2"),times=1, each=2),
+             A = rep(c("Y",NA), 2),
+             B = rep(c(NA,"N"),2)
+             )
+}
+dt = votes()
+dt
+```
+
+
+#### Use melt (wide --> long)
+reprex for slack
+```{r melt}
+reprex(wd =  ".", venue = "slack",{
+
+
+#' For those of us tidyverse-averse (or just stubborn) here is one way twith data.table :
+
+library(data.table)
+#' Create fake data  in wide format ('unnormalized')
+#' Column A refers to votes of Country A, etc
+
+votes <- function() {
+  data.table(issue = rep(c("issue1", "issue2"),times=1, each=2),
+             A = rep(c("Y",NA), 2),
+             B = rep(c(NA,"N"),2)
+             )
+}
+dt = votes()
+dt
+
+
+#' melt (wide to long, aka 'normalize' the data)  
+#'  *  id.vars are the variables want to keep.  
+#'  *  measure.vars are the columns to collapse.  
+dt.1  <- data.table::melt(dt,
+                 id.vars = c("issue"),
+                 measure.vars = c("A", "B"),
+                 variable.name = "country",
+                 value.name = "vote",
+                 na.rm = TRUE
+
+)
+dt.1
+###' order by issue
+dt.2  <- dt.1[order(issue)]
+dt.2
+             })
+```
+
+## anti-join    
+```{r}
+dt  <- votes()
+dt_A  <- dt[!is.na(A), .(country = "A", vote=A), by = issue]
+dt_A
+dt_B  <- dt[!is.na(B), .(country = "B", vote=B), by = issue]
+dt_B
+
+```
+
+vim:linebreak:nospell:nowrap:cul tw=78 fo=tqlnrc foldcolumn=1 cc=+1 filetype=r

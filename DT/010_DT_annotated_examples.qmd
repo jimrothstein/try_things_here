@@ -1,3 +1,5 @@
+# 010_DT_WIP_annotated_ref_examples_WIP.Rmd
+
 \footnotesize{footnotesize}   
 Remainder of document now ....  But NOT TOC.
 
@@ -37,87 +39,61 @@ Deep copy
 ####    List datatable options: 
 ```{r dt_options}
   op = .Options[grep("datatable", names(.Options))]
+
   # unlist to named character vector 
   op = unlist(op)
   (dt = data.table(name = names(op), value = op))
 
+#   change options
+options(datatable.print.class = T)
+options(datatable.print.rownames = F)
 ```
 #### create example dt
 ```{r begin1, eval=T}
-options(datatable.print.class = T)
-options(datatable.print.rownames = F)
-
 create_dt  <- function() {
   data.table(x = rep(c("b", "a", "c"), each = 3),
                   y = c(1, 3, 6),
                   v = 1:9)
 }
-dt  <- create_dt()
-
-dt
+( dt  <- create_dt() )
 ```
+
 #### Notation:  columns vs variables
 ```
 "y" or 'y' refers to column in dt
 y  refers to a variable
 ```
 
-#### Notation:  several ways to select columns
+#### Select columns (multiple ways) 
 ```{r notation}
 ## select cols y, v only.
 dt[, c("y", "v")]
 dt[, .(y,v)]  # same as dt[, list(y,v)]
+dt[, .SD, .SDcols=c("y", "v")]
 
 w  <- c("y", "v")
 dt[, ..w]
+dt[, .SD, .SDcols=w]
 
-dt[, .SD, .SDcols=c("y", "v")]
+## one column, return character vector
+    dt[, y]
 
 ## but NOT
 dt[, .SD, .SDcols= ..w] # ..w not found
-```
-
-#### select: one column
-```{r one_column}
-    cols  <- c("y")
-    dt[, .SD, .SDcols = c('y')]
-    dt[, .SD, .SDcols = cols]
-
-#options(error=recover)
-## NOT (error)
-    dt[, .SD, ..cols]
-    dt[, .SD, .SDcols = ..cols]
-```
-
-
-#### Select: one col, choose:  character vector or data.table (ie list)
-```{r same2}
-## character vector
-    dt[, y]
-
-
-## list
-    dt[, "y"]
-    dt[, 'y']
-
 ```
 
 
 #### setkey 
 does NOT remove duplicate rows
 keys makes merge efficient
-keys(DT) returns key
-```
-does NOT remove duplicate rows
-keys makes merge efficient
-keys(DT) returns key
-```
 
 ```{r key}
 ## note:  columns are Unquoted
     dt  <- create_dt()
     setkey(dt, y, x)
     dt
+    key(dt)                            # show key 
+
 ##  note:
     attributes(dt) # 'sorted'
 ```
@@ -362,7 +338,13 @@ dt
 # no permanent change, display only new
 dt[, .(new = y + v)]  # temp
 dt
-
+```
+#### Columns:  Change col name (permanent)
+```{r}
+dt=create_dt()
+dt[, `:=` (jim,x),][,c(-1)]            # change col name x, to jim
+dt[, `:=` (new = jim)]                 #  change col name jim , to new
+dt
 
 # group on col x, print .N, and sum each col
 dt[, c(.N, lapply(.SD, sum)), by = .(x)]
@@ -629,6 +611,29 @@ dt[y == 6,][order(v),]
 # wrong
 dt[y == 6 & order(-v), ]
 ```
+
+#### Compare Two Tibbles
+```{r}
+
+(S1 = sample(LETTERS[1:15], 10, replace=T))
+(S2 = sample(LETTERS[1:15], 10, replace=T))
+S1
+S1 = data.table(x=S1)
+S2 = data.table(x=S2)
+S1
+S2
+##  letters in both? (note, not keyed)
+S1[S2, on="x", nomatch=NULL]           #inner 
+unique(S1[S2, on="x", nomatch=NULL])           #inner , 
+
+# in S1, not in S2
+S1[!S2,  on="x"]
+
+# in S2, not in S1
+S2[!S1,  on="x"]
+
+```
+
 
 ```{r challenge}
 
@@ -1043,6 +1048,7 @@ str(dt)
 
 
 ### JOINS (merge)
+# -----------------
 First,  datatable::merge, based on, but not same, base::
 
 #### Merge:
@@ -1106,9 +1112,20 @@ merge(dt, dt2, by=)
 ##  (Left) All rows of dt1, match or not in dt
     dt[dt1, on="x"]
 
-##  (Inner) Only rows of dt1  with match in dt 
-    dt[dt1, on="x", nomatch=0]
 
+##  (Inner) Only rows of dt1  with match in dt 
+
+    # default:  nomatch = NA
+    dt[dt1, on="x"]
+    dt[dt1, on="x", nomatch=NA]
+
+    # nomatch:  drop
+    dt[dt1, on="x", nomatch=0]
+    dt[dt1, on="x", nomatch=NULL]      # older notation 
+
+
+##  anti-join, all rows of dt which do not match rows of dt1        
+    dt[!dt1, on=.(x)]
 ```
 
 #### Lookup Table
@@ -1189,70 +1206,6 @@ rbindlist(list(l1,l2))
 
 ```
 
-#### normalize - votes
-Status?   not sure.
-```{r votes}
-# each=2, each element repeated twice, before moving on.
-votes <- function() {
-  data.table(issue = rep(c("issue1", "issue2"),times=1, each=2),
-             A = rep(c("Y",NA), 2),
-             B = rep(c(NA,"N"),2)
-             )
-}
-dt = votes()
-dt
-```
-
-
-#### Use melt (wide --> long)
-reprex for slack
-```{r melt}
-reprex(wd =  ".", venue = "slack",{
-
-
-#' For those of us tidyverse-averse (or just stubborn) here is one way twith data.table :
-
-library(data.table)
-#' Create fake data  in wide format ('unnormalized')
-#' Column A refers to votes of Country A, etc
-
-votes <- function() {
-  data.table(issue = rep(c("issue1", "issue2"),times=1, each=2),
-             A = rep(c("Y",NA), 2),
-             B = rep(c(NA,"N"),2)
-             )
-}
-dt = votes()
-dt
-
-
-#' melt (wide to long, aka 'normalize' the data)  
-#'  *  id.vars are the variables want to keep.  
-#'  *  measure.vars are the columns to collapse.  
-dt.1  <- data.table::melt(dt,
-                 id.vars = c("issue"),
-                 measure.vars = c("A", "B"),
-                 variable.name = "country",
-                 value.name = "vote",
-                 na.rm = TRUE
-
-)
-dt.1
-###' order by issue
-dt.2  <- dt.1[order(issue)]
-dt.2
-             })
-```
-
-
-```{r}
-dt  <- votes()
-dt_A  <- dt[!is.na(A), .(country = "A", vote=A), by = issue]
-dt_A
-dt_B  <- dt[!is.na(B), .(country = "B", vote=B), by = issue]
-dt_B
-
-```
 ```{r render, eval=FALSE, include=F	} 
 args(rmarkdown::render)
 file  <- "/home/jim/code/try_things_here/DT/00291_DT_STUDY_examples.Rmd"
