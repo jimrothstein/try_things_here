@@ -1,24 +1,54 @@
 ---
+title: /home/jim/code/try_things_here/NSE_project/200_base_parse_intro.qmd 
 format:
     html
 editor_options: 
   chunk_output_type: console
+#   TAGS:   parse, getParseData
 ---
+
+base::parse() 
+    -   takes string, returns object type `expression`
+    -   also: str2lang(), str2
+getParse*() 
+    -   can view AST components
+
     #
     # https://www.rostrum.blog/2023/03/03/getparsedata/
     #   webD version: https://webr-parse-test.netlify.app/
     # https://renkun.me/2020/11/08/using-parse-data-to-analyze-r-code/
     # https://github.com/wch/r-source/blob/0ee550ff68f22b8a1807377e728f99f2775cc43c/src/main/gram.y#L2312-L235
     #
-    #   TAGS:   parse, getParseData
     #
     # PURPOSE:  Basic intro to  parse, token,
     #
     #
     x <- subset(mtcars, subset = carb == 8)
 
+
 ```{r}
-e <- parse(text = "x = subset(mtcars, subset = carb == 8)")
+parse(text = "1 + 1") # expression(1 + 1)
+parse(text = "1 + x") # expression(1 + x)
+base::parse(text = "x = subset(mtcars, subset = carb == 8)")
+# expression(x = subset(mtcars, subset = carb == 8))
+
+
+y=2 # does no evaluation 
+parse(text = "1 + y") # expression(1 + y)
+```
+
+#### examine result of parse , almost AST
+```{r}
+e  <- parse(text="1+1")
+getParseData(e)[,  c("token", "text")] # almost AST
+df = getParseData(e)[,  c("token", "text")] # df
+
+# try for AST
+names(df)
+df[df$token != "expr", ]
+
+e <- base::parse(text = "x = subset(mtcars, subset = carb == 8)")
+e
 getParseData(e)[, c("token", "terminal", "text")]
 ```
 #                     token terminal   text
@@ -42,7 +72,13 @@ getParseData(e)[, c("token", "terminal", "text")]
 # 19              NUM_CONST     TRUE      8
 # 20                   expr    FALSE
 # 21                    ')'     TRUE      )
-#
+
+
+```{r}
+
+
+
+# view AST 
 cols <- c("token", "text")
 cols
 #
@@ -51,7 +87,7 @@ y
 y[y$text != "", cols]
 #
 #
-#
+#   ADVANCED
 #       poorman
 mtcars[mtcars$mpg < 15, c("carb", "mpg")]
 sessionInfo()
@@ -67,3 +103,4 @@ str(select_env)
 select_env$calling_frame
 select_env$.data
 colnames(select_env$.data)
+```

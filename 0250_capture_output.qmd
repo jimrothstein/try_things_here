@@ -1,0 +1,18 @@
+
+---
+title: /home/jim/code/try_things_here/0250_capture_output.qmd 
+date: last-modified
+# Quarto requires title, if want date to appear
+# ~/.config/kickstart/skeleton/skeleton.qmd
+---
+TAGS:   utils::capture.output()
+
+####  capture output, print nothing to console
+```{r}
+f  <- function() print('HI')
+
+z= utils::capture.output(f(), file = NULL)
+```
+
+
+vim:linebreak:nospell:nowrap:cul tw=78 fo=tqlnrc foldcolumn=1 cc=+1
