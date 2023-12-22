@@ -1,4 +1,6 @@
-
+---
+  title: test
+---
 
 
 ##  cross join  (ie all combinations)

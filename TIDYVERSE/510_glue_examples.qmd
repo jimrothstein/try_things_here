@@ -1,0 +1,64 @@
+---
+title: /home/jim/code/try_things_here/TIDYVERSE/510_glue_examples.qmd
+date: last-modified
+# Quarto requires title, if want date to appear
+# ~/.config/kickstart/skeleton/skeleton.qmd
+#   TAGS:   glue
+---
+REF: https://glue.tidyverse.org/index.html
+
+
+TODO:
+- glue_data (examples)
+- glue-transform ??
+- paste0 (never looks inside brackets)
+
+```{r}
+library(glue)
+
+```
+```{r}
+glue("my name is {name}")
+
+a <- 2
+bquote(a == .(a)) " fails for strings
+# a == 2
+```
+
+mult-line glue
+```{r}
+country = "US"
+glue("my name is {name} " ,
+     "and my country is {country} ",
+     "and I code in R")
+
+
+## not what I expected
+glue(" my name is   
+     and my country is  //
+    and I code.
+     ")
+```
+
+## include params, in glue statement
+```{r}
+glue(" {param1} my name " ,
+     "is {param2} ",
+     param1="Hello",
+     param2="jim")
+```
+## include literal {  (CSS needs literal brackets)
+```{r}
+# Can do  with ' and quote, but hard on eyes.
+glue("Enclosed in side of brackets {{name}}")
+glue("{{ a }}")
+glue("{{ { }}") # NO
+glue("}") # YES
+```
+
+
+
+
+
+
+vim:linebreak:nospell:nowrap:cul tw=78 fo=tqlnrc foldcolumn=1 cc=+1
