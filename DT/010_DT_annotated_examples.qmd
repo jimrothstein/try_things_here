@@ -90,8 +90,25 @@ dt[, c(x,y,v)]
 ## but NOT
 dt[, .SD, .SDcols= ..w] # ..w not found
 ```
+```{r}
 
 
+### Select columns, with variables  DT[, var1 > var2], Use quote and eval
+
+#   FAILS
+dt[y > v]
+var1 = "y"
+var2 = "v"
+dt[var1 > var2]                        # no error but wrong ! 
+
+## this works
+var1  <- quote(y)
+var2  <- quote(v)
+dt[eval(var1) > eval(var2)]                        
+#    x y v
+# 1: b 3 2
+# 2: b 6 3
+```
 ### setkey 
 does NOT remove duplicate rows
 keys makes merge efficient
@@ -727,7 +744,9 @@ dt[,print(.SD), by =x]
 # for each grouping, show val
 dt[, .(val = y), by =x]
 
+### Containate one or more columns, as list or atomic 
 ```{r list_column}
+dt  <- create_dt()
 # THINK   (concatinates)
 dt[, .(val = c(y,v)), by=x]
 
@@ -799,6 +818,28 @@ if(F) dt[, tags = lapply(.SD, g), by=ID]
     dt[B != "bad"]
 
 ```
+
+### lapply to single column
+```{r}
+dt  <- create_dt()
+dt[, .(x,y,v,lapply(y, function(e) e*100))]
+
+## in place, SAME
+dt[, c("v") := lapply(y, function(e) e*100)]
+dt[, c("v") := lapply(.SD, function(e) e*100),  .SDcols=c("v")]
+dt
+```
+###  lapply to multiple columns (not working)
+```{r}
+dt  <- create_dt()
+cols  <- c("x","y","z")
+dt[, .(lapply(.SD, \(x) x*100 )), .SDCols=c("x","y")]
+
+new_cols  <- paste("prefix", cols, sep=".")
+new_cols
+
+```
+
 
 ### lapply - problems
 ```{r lapply_problems}
@@ -1206,31 +1247,36 @@ dt[, eval(temp), with=F]               # fails
 dt[, .(eval(temp))]                    # why V1 ? 
 
 ```
-###
+### Run dt, choose colname at runtime.
+!so 12391950, this works, but
+-   TODO:  replace with glue::glue
 ```{r}
-
+library(data.table)
 dt  <- as.data.table(mtcars)
 colname="mpg"
-expr =     paste0("dt[,",
+
+expr2 =     paste0("dt[,",
+            ".(new_col", 
+           "= mean(",
            colname,
-           ":= mean(",
-           colname,
-           ")]"
+           "))]"
            )
-expr
+expr2 # string | parse returns expression | then evaluated
+eval(parse(text=expr2))
 
-eval(parse(text=expr))
 
 
+## EVAL as function
 EVAL = function(...){
-    browser()
     text=paste0(...)
     eval(parse(text=paste0(...)),envir=parent.frame(2))
 }
+colname = "mpg"
+EVAL("dt[,",
+     ".(X=mean(",
+     colname,
+     "))]")
 
-EVAL("dt[,",colname,":=cumsum(",colname,")]")
-
-EVAL( "dt[,", "X",  ":= mean(", colname, ")]")
                             
    
 ```
@@ -1293,3 +1339,25 @@ dt[
    ,  list(seq_len(cyl))
    ,  by = "cyl"]
 ```
+
+### in place, drop 2 or more columns
+### in place, drop y, v columns
+``{r}
+dt  <- create_dt()
+cols  <- c('y', 'v')
+dt[, (cols) := NULL]
+dt
+#    x
+# 1: b
+# 2: b
+# 3: b
+# 4: a
+# 5: a
+# 6: a
+# 7: c
+# 8: c
+# 9: c
+
+
+```
+
