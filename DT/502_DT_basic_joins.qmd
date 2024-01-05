@@ -613,3 +613,16 @@ X
 
 ```
 
+### Repeat, columns names different in each dt
+```{r}
+Y  <- data.table( id2 = c(1,2,4), b = c("b1", "b2", "b3"))
+#    id2  b
+# 1:   1 b1
+# 2:   2 b2
+# 3:   4 b3
+
+
+dt[Y, on = .(id=id2), nomatch=0]
+```
+
+Y  <- data.table( id = c(1,2,4), b = c("b1", "b2", "b3"))

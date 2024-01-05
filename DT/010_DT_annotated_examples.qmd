@@ -1342,7 +1342,7 @@ dt[
 
 ### in place, drop 2 or more columns
 ### in place, drop y, v columns
-``{r}
+```{r}
 dt  <- create_dt()
 cols  <- c('y', 'v')
 dt[, (cols) := NULL]
@@ -1358,6 +1358,34 @@ dt
 # 8: c
 # 9: c
 
-
 ```
+
+### example, Given a dt, use join to find new dt where value of Col e is determined when Col a==Col b
+```{r}
+library(reprex)
+library(data.table)
+
+ret  <- reprex({
+library(data.table)
+original <-  data.table(a=c("x","y"),
+                        d=c("y","x"),
+                        e=c(2,4))
+
+original
+
+##  2 tables, 
+A = original[, .(a)]
+D = original[, .(d,e)]
+
+D[A, on=.(d=a)]
+})
+ret
+A[D, on=.(a=d)]
+
+
+
+## is this a bug? no column a in D
+D[A, on=.(a=d)]
+```
+
 
