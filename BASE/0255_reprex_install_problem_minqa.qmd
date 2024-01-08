@@ -1,0 +1,24 @@
+TAGS:   utils::capture.output()
+
+####  capture output, print nothing to console
+```{r}
+f  <- function() print('HI')
+
+z= utils::capture.output(f(), file = NULL)
+```
+```{r}
+reprex::reprex({
+install.packages("minqa")
+},
+#        std_out_err = T,
+        session_info=T,
+        venue="slack")
+
+
+```
+
+#  minqa [CRAN](https://cran.r-project.org/web/packages/minqa/), [source]()
+
+
+
+vim:linebreak:nospell:nowrap:cul tw=78 fo=tqlnrc foldcolumn=1 cc=+1
