@@ -1384,8 +1384,27 @@ A[D, on=.(a=d)]
 
 
 
+## NO, look at order
 ## is this a bug? no column a in D
 D[A, on=.(a=d)]
 ```
+###  Based on grouping, include/exclude rows
 
+```{r}
+dt  <- data.table(ref_date = c(rep(1, 5 ), rep(2, 5)),
+                  report_date = c(0:4, 2:6))
+
+# missing ref_date
+r  <- list(NA, 99)
+dt  <- rbind (dt, r)
+
+# ref_date BEFORE report_date
+r  <- list(3, 4)
+dt  <- rbind(dt,r)
+dt
+
+dt[, .SD, by="ref_date"]
+dt[, .SD[ref_date >= min(report_date) | is.na(ref_date)], by=ref_date]
+
+```
 
