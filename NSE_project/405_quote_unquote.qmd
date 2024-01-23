@@ -27,7 +27,84 @@ knitr::opts_chunk$set(echo = TRUE,
   x <-6
   y  <- quote(x)        # x
   quote(6) # [1] 6
+  quote(y)
 ```
+
+#### Noquote
+```{r}
+quote(hello)
+quote("hello")
+
+eval(quote("hello"))
+quote(eval("hello"))
+
+
+```
+```
+
+With book open I can follow `quasiquotation`
+I was taught functions are mappings between 2 sets
+f: A-->B
+
+
+If f has an inverse, then
+f o finv = finv o f = identify function = e
+```
+
+
+### Are eval() and quote() inverses?
+```{r}
+library(reprex)
+reprex({
+# ----------------------------------------
+# eval() and quote() are NOT inverses
+# ----------------------------------------
+    z = 2*3
+
+    eval(z)
+    quote(z)
+
+    eval(quote(z))
+    quote(eval(z))
+#
+#
+# ----------------------------------------
+# quote() and noquote() are NOT inverses
+# ----------------------------------------
+    z = 2*3
+
+    noquote(z)
+    quote(z)
+
+    noquote(quote(z))
+    quote(noquote(z))
+})
+```
+
+### Are noquote() and quote() inverses?
+```{r}
+reprex({
+z = 2*3
+
+noquote(z)
+quote(z)
+
+eval(quote(z))
+quote(eval(z))
+})
+```
+
+
+```{r}
+
+eval("hello")
+
+noquote(quote(hello))
+noquote("hello")
+z = noquote("hello")
+noquote(z)
+```
+
 
 ####    Eval is opposite of Quote
 ```{r eval}

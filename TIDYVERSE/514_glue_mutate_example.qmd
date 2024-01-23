@@ -71,8 +71,10 @@ train  <- get_train()
 
 # data 
 # i is env_var
-# col is data_var 
-my_mutate <- function(data, i, col = x){
+# col is data_var (ie part of tibble) 
+#my_mutate <- function(data, i, col = x){  # uses x in prefix
+
+my_mutate <- function(data, i, col = y){   # uses y
     dplyr::mutate(
         data,
         # name uses the reference column as well as i
@@ -83,6 +85,7 @@ my_mutate <- function(data, i, col = x){
 }
 
 Reduce(f = my_mutate, 1:6, init = head(mtcars))
-Reduce(f = my_mutate, x=1:6, init = head(train))
+Reduce(f = my_mutate, x=1:6,  init = head(train)) # magically, train is passed
+as `data`
 ```
 vim:linebreak:nospell:nowrap:cul tw=78 fo=tqlnrc foldcolumn=1 cc=+1
