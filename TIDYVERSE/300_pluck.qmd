@@ -2,7 +2,15 @@
 ---
 --- 
 
-PURPOSE:    USE pluck notation.   This is also used in tidyr::hoist and unnesting list-columns.
+PURPOSE:    
+USE pluck notation.   This is also used in tidyr::hoist and unnesting list-columns.
+
+pluck(.x, ..., .default=NULL)
+
+NOTE:
+
+When using BASE R `[[`,  dput makes much more readable:
+
 300_pluck.qmd
 TODO:
 2023-06-06
@@ -11,6 +19,24 @@ TODO:
 ```{r}
 library(purrr)
 library(tidyr)
+```
+
+### use dput to make nested lists easier to read
+```{r}
+?`[[`
+
+obj1 <- list("a", list(1, elt = "foo"))
+obj2 <- list("b", list(2, elt = "bar"))
+x <- list(obj1, obj2)
+
+#   compare 
+
+x[[2]][[2]][2]
+# $elt
+# [1] "bar"
+dput( x[[2]][[2]][2])
+# list(elt = "bar")
+
 ```
 
 ### Pluck [REF](https://purrr.tidyverse.org/reference/pluck.html)     

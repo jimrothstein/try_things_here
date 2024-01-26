@@ -1,0 +1,39 @@
+---
+---
+
+TAGS:   lengths()  
+## 510_lengths.qmd
+
+### lengths()
+PURPOSE:	finds length of each element
+
+### REF:  <https://www.spsanderson.com/steveondata/posts/2024-01-23/>
+```{r}
+mixed_list <- list(c(1, 2, 3), "Hello", matrix(1:6, ncol = 2))
+
+# Use lengths() to get the lengths of elements
+element_lengths <- lengths(mixed_list)
+
+# Print the result
+print(element_lengths)
+```
+```{r}
+
+# Create a data frame
+data_frame_example <- data.frame(Name = c("Alice", "Bob", "Charlie"),
+                                 Age = c(25, 30, 22),
+                                 Score = c(90, 85, 95))
+
+# Use lengths() to get the lengths of columns in the data frame
+column_lengths <- lengths(data_frame_example, use.names=T)
+
+# Print the result
+print(column_lengths)
+#  Name   Age Score 
+#     3     3     3 
+```
+
+```{r}
+?lengths
+```
+
