@@ -1,9 +1,10 @@
+/home/jim/code/try_things_here/TIDYVERSE/300_pluck.qmd
 
----
---- 
+TAGS: pluck, purrr 
 
 PURPOSE:    
 USE pluck notation.   This is also used in tidyr::hoist and unnesting list-columns.
+REF:	https://purrr.tidyverse.org/reference/pluck.html
 
 pluck(.x, ..., .default=NULL)
 
@@ -11,7 +12,6 @@ NOTE:
 
 When using BASE R `[[`,  dput makes much more readable:
 
-300_pluck.qmd
 TODO:
 2023-06-06
 -   compare pluck and map (below)
@@ -61,7 +61,7 @@ identical(dput(x[[1]]), dput(purrr::pluck(x, 1)))   #T
 # 
 # 
 ##  Examples
-pluck(x,1,2)
+pluck(x,1,2)   # from 1st element, pluck 2nd item (a list)
 dput(pluck(x,1,2))
 # list(1, elt = "foo")
 
@@ -89,6 +89,8 @@ pluck(x, 2, my_element)
 
 # compare to:     cool!
 map(x, my_element)
+base::Map(my_element, x)
+#base::Map(x, my_element)  NO
 ```
 
 ```{r pluck_my_example}
@@ -98,9 +100,9 @@ l3  <- list(a="joe", b="john", c="moe")
 l  <- list(l1=l1, l2=l2, l3=l3)
 
 # crawls the hierachy ....
-pluck(l, 1)
+pluck(l, 1) # first 1st element (a list)
 pluck(l, 2 )
-pluck(l, 1, 2)
+pluck(l, 1, 2) # second element of first item
 pluck(l, 3, "c")
 # pluck(l,c(1,2,3), "c")
 
@@ -117,3 +119,33 @@ format_single_string  <- function(l) {
 l  <- list(one="a", two="b", three="c")
 single  <- format_single_string(l)
 ```
+
+### example from httr2, youtube-api, simplify list 
+```{r}
+L=list(id="123", list(title="abc", description="describe"))
+L
+L1 = unlist(L, recursive=F, use.names=T)   # list, but flattened
+dput(L1)
+# list(id = "123", title = "abc", description = "describe")
+```
+
+### want:   c("id", "title", "descrption")
+```{r}
+
+L=list(id="123", list(title="abc", description="describe"))
+pluck(L, \(x) "id")
+pluck(L, 2, \(x) x[["title"]])
+pluck(L, 2,  \(x) x[["description"]])
+
+pluck(L, \(x) c( x[["id"]], x[[2]][["title"]]))
+# [1] "123" "abc"
+
+
+
+
+## no need pluck !
+L1 = unlist(L, recursive=F, use.names=T)   # list, but flattened
+dput(L1)
+
+```
+
