@@ -4,7 +4,17 @@
 ###     PURPOSE:  tidyr::hoist to extract from ROWS in list-column
 ```{r}
 library(tidyr)
+```
 
+```
+As database:   I expect:
+character*
+species,
+color,
+films
+```
+
+```{r}
 df <- tibble(
   character = c("Toothless", "Dory"),
   metadata = list(
@@ -38,7 +48,14 @@ args(hoist)
 #     .ptype = NULL, .transform = NULL) 
 
 ##---------------------------------------- 
+```
+```{r}
+enframe(df)   # error, df already is tibble
+enframe(unlist(df))
+```
 
+
+```{r}
 # easiest
 hoist(df, metadata, "species")
 # # A tibble: 2 × 3
@@ -58,11 +75,12 @@ hoist(df, metadata, "films")
 
 #   Note:  The 2 lists hold 3 and 2 films respectively
 # Extract only specified components
-z = (df %>% hoist(metadata,
+(z= (df %>% hoist(metadata,
   "species",
   first_film = list("films", 1L),   ## 1st films entry in EACH list
   third_film = list("films", 3L)    ## 3rd entry, if any
 ))
+)
 
 
 
