@@ -1,0 +1,42 @@
+---
+title: "230_pass_df_and_env_var_to_function.qmd"
+format: html
+editor: source
+editor_options: 
+  chunk_output_type: console
+TAGS: expression
+---
+
+
+### SIMPLEST examples of passing df and col to a function
+```{r}
+  
+  # works, quote the col name (quoting arugments is safest way)
+f  <- function(df, col){
+  df[[col]]
+}
+f(mtcars, "hp")
+
+
+# works
+f1  <- function(df, col){
+  df[[substitute(col)]]
+}
+f1(mtcars, "hp")
+f1(mtcars, hp)
+
+
+# but not
+x="hp"
+f1(mtcars, x)
+
+
+# works
+f2  <- function(df, col){
+  df[[eval(substitute(col))]]
+}
+x="hp"
+f2(mtcars, x)
+
+
+

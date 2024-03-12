@@ -49,14 +49,79 @@ args(hoist)
 
 ##---------------------------------------- 
 ```
+
+##  Not useful here, since we have a tibble
 ```{r}
 enframe(df)   # error, df already is tibble
 enframe(unlist(df))
 ```
 
-
+## Check metadata column suitable to extract columns
 ```{r}
-# easiest
+df$metadata |> lengths()    # appears to all be 3
+# [1] 3 3
+
+df$metadata |> lengths() |> unique()   # yep
+# [1] 3
+```
+
+##  NAMES
+## But not all elements are named
+```{r}
+identical(
+df |> select(character, metadata) |> tidyr::unnest_wider(metadata),
+tidyr::unnest_wider(df, metadata)
+)
+
+dput(df$metadata[[1]])
+# list(species = "dragon", color = "black", films = c("How to Train Your Dragon", 
+# "How to Train Your Dragon 2", "How to Train Your Dragon: The Hidden World"
+# ))
+# $species
+# [1] "dragon"
+# 
+# $color
+# [1] "black"
+# 
+# $films
+# [1] "How to Train Your Dragon"                   "How to Train Your Dragon 2"                
+# [3] "How to Train Your Dragon: The Hidden World"
+attributes(df$metadata[[1]])
+# $names
+# [1] "species" "color"   "films"  
+
+names(df$metadata[[1]])
+# [1] "species" "color"   "films"  
+
+rlang::is_named(df$metadata[[1]])
+
+rlang::have_name(df$metadata[[1]])
+# [1] TRUE TRUE TRUE
+
+df$metadata |> is_named() # [1] FALSE
+
+```
+##  last column, films
+```{r}
+tidyr::unnest_wider(df, metadata)
+tidyr::unnest_wider(df, metadata) |> unnest_longer(films)
+# # A tibble: 5 × 4
+#   character species   color films                                     
+#   <chr>     <chr>     <chr> <chr>                                     
+# 1 Toothless dragon    black How to Train Your Dragon                  
+# 2 Toothless dragon    black How to Train Your Dragon 2                
+# 3 Toothless dragon    black How to Train Your Dragon: The Hidden World
+# 4 Dory      blue tang blue  Finding Nemo                              
+# 5 Dory      blue tang blue  Finding Dory                              
+```
+
+
+
+
+## Harder cases, may need to focus on specfic column(s) to unnest
+##  extract species as a column
+```{r}
+
 hoist(df, metadata, "species")
 # # A tibble: 2 × 3
 #   character species   metadata        
