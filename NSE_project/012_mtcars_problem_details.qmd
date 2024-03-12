@@ -39,6 +39,9 @@ $$
 Should be able to write function that takes column name as argument and
 computer the mean.
 
+```{r}
+
+
 f = function(col) {
     mean(mtcars[[col]])
 #    mean(mtcars$col)
@@ -47,9 +50,19 @@ f = function(col) {
 f1 = function(col) {
     mtcars |> mean(col)
 }
+f2 = function(col) {
+    #mtcars |> mean({{col}})
+    mtcars |> mean({col})
+}
 f1(mpg)
 f1("mpg")
+f2(hp)
+f2("hp")
+f2(quote(hp))
+z="hp"
+f2(z)
 
+```
 my_summary <- function(df, grouping_var){
  df %>%
   group_by(grouping_var) %>% 
