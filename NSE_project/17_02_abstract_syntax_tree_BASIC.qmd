@@ -1,0 +1,94 @@
+---
+title: "18.2_Abstract_syntax trees"
+format:  html 
+editor_options: 
+  chunk_output_type: console
+output-dir:  docs
+execute: 
+  error: true    # do not halt
+  cache: true    # re-render only if change
+---
+
+
+##    PURPOSE:   simplest examples of lobstr::ast()
+
+```{r}
+library(rlang)
+library(lobstr)
+
+lobstr::ast(f(x, "y", 1))   # knitr complains about character
+
+lobstr::ast(
+    f(g(1, 2), h(3, 4, i()))
+)
+
+
+lobstr::ast(
+    f(g(h(2)))
+)
+```
+
+## lobstr::ast does no subsitution, no evaluation
+```{r}
+lobstr::ast(1+2)
+
+x=3
+lobstr::ast(1+x)
+```
+
+##  Build tree from smaller pieces
+```{r}
+# first, capture, defuse, quote (all the same)
+x <- expr(x + x); xx
+yy <- expr(y + y)
+
+# Note:
+lobstr::ast(xx) # xx 
+
+lobstr::ast(expr(!!xx))
+# █─expr 
+# └─█─`+` 
+#   ├─x 
+#   └─x 
+lobstr::ast(!!xx)
+# █─`+` 
+# ├─x 
+# └─x 
+
+lobstr::ast(expr(xx))
+
+rlang::is_call(z)
+rlang::is_call(xx)
+rlang::is_call(!!xx)
+
+lobstr::ast(!!yy)
+
+## BUILD
+z= expr(!!xx / !!yy); z
+#> (x + x)/(y + y)
+
+lobstr::ast(expr(!!z))
+```
+
+##  compare 
+z= 2
+lobstr::ast(f(z))
+lobstr::ast(f(z = 3))
+lobstr::ast(f(!!z))   # evaluates !
+
+## why not evaluate?
+lobstr::ast(
+  f(eval(z)) # does not evaluate !
+)
+
+x = 2
+y <- x * 10
+
+# as prefix
+`<-`(y, `*`(x, 10))
+
+lobstr::ast(
+        `<-`(y, `*`(x, 10))
+)
+``` 
+

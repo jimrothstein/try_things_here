@@ -3,18 +3,46 @@ output:
   pdf_document: default
   html_document: default
 TAGS:  rlang, expr, call2, ast
+editor_options: 
+  chunk_output_type: console
 ---
-## TODO:
-## 2023-05-28
--   SEE defuse, seems same as quote
+
+PURPOSE:    defuse basic examples (pauses evalutation), like quote, bquote
+SEE booby-trap
+https://rlang.r-lib.org/reference/topic-defuse.html
 ##
 ```{r}
-require(tidyverse)
+library(tidyverse)
 ####
 #   lang::expr returns exactly what typed
 ####
 expr(mean(x, na.rm = TRUE))
 expr(10 + 100 + 1000)
+```
+
+
+
+## Using rlang::expr to  `Defusing` an argument (pausing evalution)
+```{r}
+arg = warn("boom!")
+
+ignore = function(x) NULL
+force = function(x) x
+
+ignore(arg)
+
+# why differ?
+force(arg)       # do not understand
+force(warn("boom!"))
+
+
+## Can we defuse arg ?   YES
+
+rlang::expr(force(warn("boom!")))   # aka capture expression
+
+## After defuse, let it evaluate !   YES
+eval(rlang::expr(force(warn("boom!"))))   # 
+
 ```
 
 # but not inside functions
