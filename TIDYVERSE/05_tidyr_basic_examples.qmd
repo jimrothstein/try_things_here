@@ -1,6 +1,6 @@
----
-TAGS:  pivot, nest, tidyr
----
+#---
+#TAGS:  pivot, nest, tidyr
+#---
 # Simple Examples of the Messy Data 
 
 # SEE https://tidyr.tidyverse.org/articles/tidy-data.html
@@ -11,8 +11,6 @@ TAGS:  pivot, nest, tidyr
 - separate (one combo column, split into two)
 # 
 ```{r}
-
-
 library(dplyr)
 library(tibble)
 library(tidyr)
@@ -75,3 +73,7 @@ relig2  <- relig_income %>%
   values_to = "freqency") 
 relig2
 ```
+
+```{r}
+tribbble 
+````
