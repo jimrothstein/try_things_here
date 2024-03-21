@@ -10,15 +10,9 @@ output:
 geometry: margin=0.5in, bottom=.75in
 editor_options:
   chunk_output_type: console
-TAGS:  regex, grepl,ifelse
+TAGS:  regex, grepl,ifelse, sub
 ---
 
-<!-- 
-For pdf:
-!pandoc % -f markdown -t latex -o ~/Downloads/print_and_delete/out.pdf
-
-!zathura ~/Downloads/print_and_delete/out.pdf
--->
 ==========================================================
  CONSOLIDATE here:   regex,stringr (+ related testthat)
 ==========================================================
@@ -638,6 +632,16 @@ file
 rmarkdown::render(file,
                   output_format = "html_document",
                   output_dir = output_dir)
+
+```
+#### X.Y  - remove .Y
+#### \\.   literal dot
+```{r}
+remove_right <- function(s = NULL) { sub(x = s, "\\..*$", "")}
+
+remove_right("X.Y") # [1] "X"
+remove_right("X.Y.Z") # [1] "X"
+remove_right("abc") # [1] "abc"
 
 ```
 

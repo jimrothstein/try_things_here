@@ -24,8 +24,7 @@ classroom <- tribble(
   "Lionel", "B",    "C",    "B",
   "Jenny",  "A",    "A",    "B"
   )
-
-# OR
+ #OR
 
 tribble(
   ~assessment, ~Billy, ~Suzy, ~Lionel, ~Jenny,
@@ -50,6 +49,11 @@ classroom |> head()
 
 
 ##  To normalize:   index becomes (in effect) all combos name, quizes (assessment  )
+# --------
+# names*
+# assessment*
+# grade
+# --------
 (classroom2 <- classroom %>% 
   tidyr::pivot_longer(cols = quiz1:test1, 
     names_to = "assessment", 
@@ -75,5 +79,40 @@ relig2
 ```
 
 ```{r}
-tribbble 
-````
+tribble 
+```
+
+Another pivot_wider example (not corrrect)
+Here there are 2 sets of need to be fixed
+# ----
+ID *
+Plan *
+Year *
+Stock *
+Value
+# ----
+SEE vignette("pivot")
+```{r}
+
+df = data.frame(ID = "A", 
+           Plan = "Ab", 
+           Year = 2024, 
+           Stock1_name = "stock 1", 
+           Stock1_dollars = 100, 
+           Stock2_name = "stock 2",  
+           Stock2_dollars = 200)  
+df
+df |>  pivot_longer(cols = contains("_name"), 
+                    names_to =  c("Stock", "Value"),
+#                    names_pattern = contains("_dollars")
+                    )
+
+
+
+
+
+
+```
+```{r}
+
+```
