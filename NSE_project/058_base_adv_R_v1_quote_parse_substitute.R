@@ -1,5 +1,10 @@
 # 058_adv_R_hadley_non_standard.R 
 
+# TODO:
+
+# https://tomaztsql.wordpress.com/2024/03/23/little-useless-useful-r-functions-reverse-hello-world/
+# Explain "hello world", using substitute?
+
 
 
 ###
@@ -8,11 +13,17 @@
 f <- function(x) {
 	substitute(x)
 }
+# --------------------------------
+# return string with contents of function call
+# --------------------------------
 g <- function(x) {
 	deparse(substitute(x))
 }
 f(1:10)		# 1:10
 g(1:10)		# "1:10" 
+g(x+y)   # "x +  y"
+g(2 + 3)   # "2 + 3"
+
 
 x <- 10
 f(x)		# x  b/c unevaluated
@@ -23,7 +34,29 @@ y <- 13
 f(x + y^2)	# x x y^2
 g(x + y^2)
 
-substitute(library(ggplot2))
+
+# --------------------------------
+## EXPLAIN
+# --------------------------------
+library(rlang)
+h = function(print) {
+  z = deparse(substitute(print ))
+  cat(z)
+  cat("print")
+  if (z[[1]] == "print") { print("Hello World")
+    } else {print("Well ...")}
+}
+h("jim")
+h(2)
+h("hi")
+h("print")
+h(print)
+h(1:10)
+h(x+y)
+h(2 + 3)
+"hello" == "hello"
+# --------------------------------
+# --------------------------------
 e<-quote(`foo bar`)
 e  		# `foo bar`
 deparse(e)	# "foo bar"
