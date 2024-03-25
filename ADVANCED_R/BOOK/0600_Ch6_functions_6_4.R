@@ -1,20 +1,52 @@
+# 0600_Ch6_functions_6_4.R
 
 ## Chapter 6 - 6.4.5  FUNCTIONS
 
-library(magrittr)
 library(lobstr)
-library(jimTools)
 
+# ------------------------------------
 ## Chapter 6.2 
+##  formals, body, scref of function
+# ------------------------------------
 f <- function(x) {
 	# comment
 	x + y
 }
-body(f)
-attr(f, "srcref") # includes comments
-ref(f)
-obj_size(f)
-anonymous
+  formals(f) # $x  plus initial value, if any.
+# 
+  body(f)	    # source, but excludes non-code 
+# {
+#     x + y
+# }
+
+  attr(f, "srcref") # source, includes comments
+# function(x) {
+# # comment
+# x + y
+# }
+  attributes(f)
+  lobstr::ref(f) # [1:0x565226943738] <fn> 
+  lobstr::obj_size(f) # 3.38 kB
+
+# ---------------------------------------------
+# Difference between args(f)  and formals(f)?
+  # args(f) for interactive
+  # formals(f) for coding (longer, list-like)
+# NOTE: args(f) is for INTERACTIVE use, use `formals` in CODING.
+# ---------------------------------------------
+  args(f)                              # for interactive, use formals in coding. 
+# function (x) 
+# NULL
+
+
+args(lm)
+# function (formula, data, subset, weights, na.action, method = "qr", 
+#     model = TRUE, x = FALSE, y = FALSE, qr = TRUE, singular.ok = TRUE, 
+#     contrasts = NULL, offset, ...) 
+# NULL
+if (F) formals(lm)                     # lengthy list 
+
+# BEGIN HERE
 lapply(mtcars, function(x) length(unique(x)))
 
 # base::Filter( FUN, x) returns whether predicate (logical) or not?

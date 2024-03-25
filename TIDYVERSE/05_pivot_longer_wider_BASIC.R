@@ -1,8 +1,12 @@
+#   05_pivot_longer_wider_BASIC.R
 #---
 #TAGS:  pivot, nest, tidyr
 #---
+# ------------------------------------
 # Simple Examples of the Messy Data 
-
+#     NOTES
+# ------------------------------------
+# SEE r4ds Chapter 12
 # SEE https://tidyr.tidyverse.org/articles/tidy-data.html
 - non-tidy
 - tidy
@@ -10,7 +14,9 @@
 - pivot_wider
 - separate (one combo column, split into two)
 # 
-```{r}
+# -----------------------------
+# Libraries & setup sample data
+# -----------------------------
 library(dplyr)
 library(tibble)
 library(tidyr)
@@ -33,8 +39,9 @@ tribble(
   "test1",     "C",    NA,    "B",     "B"
   )
 
-# ------------------------- Normalize---------------------
-
+# ----------------------------------------------
+# The PROBLEM:  column heads contain variables
+# ----------------------------------------------
 # OR  Tidy (normalize), where columns and rows HAVE MEANING (semantics)
 #
 str(classroom)
@@ -48,7 +55,11 @@ classroom |> head()
 # 4 Jenny  A     A     B    
 
 
-##  To normalize:   index becomes (in effect) all combos name, quizes (assessment  )
+# ---------------------------
+#   USE tidyr::pivot_longer
+# ---------------------------
+
+##  GOAL: To normalize:   key index becomes (in effect) all combos name, quizes (assessment  )
 # --------
 # names*
 # assessment*
@@ -66,53 +77,3 @@ classroom |> head()
 
 
 
-# ------------ relig_income----------------------------------
-##  Normalize!   Create all combos religion x income, 
-relig_income
-str(relig_income)
-
-relig2  <- relig_income %>% 
-  tidyr::pivot_longer(cols = 2:11,  # also cols=-religion
-  names_to = "income",
-  values_to = "freqency") 
-relig2
-```
-
-```{r}
-tribble 
-```
-
-Another pivot_wider example (not corrrect)
-Here there are 2 sets of need to be fixed
-# ----
-ID *
-Plan *
-Year *
-Stock *
-Value
-# ----
-SEE vignette("pivot")
-```{r}
-
-df = data.frame(ID = "A", 
-           Plan = "Ab", 
-           Year = 2024, 
-           Stock1_name = "stock 1", 
-           Stock1_dollars = 100, 
-           Stock2_name = "stock 2",  
-           Stock2_dollars = 200)  
-df
-df |>  pivot_longer(cols = contains("_name"), 
-                    names_to =  c("Stock", "Value"),
-#                    names_pattern = contains("_dollars")
-                    )
-
-
-
-
-
-
-```
-```{r}
-
-```
