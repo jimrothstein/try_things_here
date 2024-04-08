@@ -3,7 +3,7 @@ https://leetcode.com/problems/longest-substring-without-repeating-characters/des
 # - REGEX?
 
 # -----------------
-  ##  PRELIMINARY
+  ##  String verbs
 # -----------------
   Given a string s = c(LETTERS[1:5], LETTERS[1])
   s = c(LETTERS[1:5], LETTERS[1])
@@ -12,6 +12,17 @@ unique(s) # [1] "A" "B" "C" "D" "E"
 duplicated(s) # [1] FALSE FALSE FALSE FALSE FALSE  TRUE
 match(s, table= "A")
 match("A",  s)  # first match [1] 1
+
+# Recall:  x or text are char[] character vectors
+substr(x="abcde", 2,4) # [1] "bcd"
+substr(x=c("abcde", "12345"),  2,4) # [1] "bcd" "234"
+substr(paste0(letters, collapse = ""), 2, 4) # [1] "bcd"
+
+# none of elements of char[] text have more than 1 character
+substring(text=LETTERS[1:5],2,4) # [1] "" "" "" "" ""
+substring(paste0(letters, collapse = ""), 2, 4) # [1] "bcd"
+substring(c(paste0(letters, collapse = ""), "ABCDE"), 2, 4) # [1] "bcd" "BCD"
+
 
 # substring can begin anywhere
 
