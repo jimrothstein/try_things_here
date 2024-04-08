@@ -1,3 +1,4 @@
+810_tibblify_examples.R
 library(tibblify)
 
 # Examples:
@@ -49,7 +50,10 @@ tibblify(x[[1]], tspec_object(spec))
 # [1] "Tyrion Lannister"
 x[[1]]
 
+# -----------------------------------------------------------------------------
 # Recursive Trees -----------------------------------------------------------
+#       produces tibble with colunn of nested tibbles
+# -----------------------------------------------------------------------------
 x <- list(
         list(
                 id = 1,

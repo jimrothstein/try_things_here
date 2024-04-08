@@ -1,5 +1,4 @@
-## 407_substitute_bquote_eval_NEEDS_WORK.R
-
+## 010_substitute_deparse_BASIC.R
 ##  PURPOSE:   Basic substitute, parse usage
 ##  TODO:
 ##  -  What is useful?   EXTRACT pieces and move to appropriate files.
@@ -26,13 +25,6 @@ g(z  <-  "bye")
 g(z)
 e = 2+3
 g(e)
-
-# ----------------------------------------
-## COUNTER-EXAMPLE;  expect "2+3"  nope!
-# ----------------------------------------
-x=2
-g(x+3) # [1] "x + 3"   note:  does NOT substitute value for x; not what it
-does !
 
 # =========================
 #deparse, substitute KEEP

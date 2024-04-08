@@ -1,15 +1,3 @@
---- 
-title: Template for .Rmd 
-date: "`r paste('last updated', 
-    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
-output: 
-  pdf_document: 
-    latex_engine: xelatex
-toc: TRUE 
-toc_depth:  1 
-fontsize: 10pt 
-geometry: margin=0.5in,top=0.25in 
----
 
 ## Concise, basic Definitions Related to R **Functions & Environments:**
 (1 page?)
@@ -39,13 +27,6 @@ To find what "user" actually sent to function, use rlang::enexprs(), inside f.
 
 * Global Environment
 
-```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,
-                      comment = "      ##",
-                      error = TRUE,
-                      collapse = TRUE)
-library(jimTools)
-```
 ```{r global}
 ls()
 objects()
@@ -345,12 +326,6 @@ typeof(g)
 g()
 ```
 
-
-
-
-
-
-
 * Scope
 * Closure
   from Peng:
@@ -362,17 +337,5 @@ g()
 * Permant vs Temporal Environments
 
 
-```{r knit_exit()} 
-knitr::knit_exit()
-```
 
-/newpage
 
-```{r render, eval=FALSE	} 
-file <- "01000_SCRATCH_fct_env_definitions.Rmd"
-file  <- basename(file)
-dir <- "env_code"
-
-jimTools::ren_pdf(file,dir)
-jimTools::ren_github(file, dir)
-```

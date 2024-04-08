@@ -1,25 +1,4 @@
---- 
-title: `knitr::content_input()` 
-date: "`r paste('last updated', 
-    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
-output: 
-  pdf_document:                            
-    latex_engine: xelatex
-toc: TRUE 
-toc_depth:  1 
-fontsize: 12pt 
-geometry: margin=0.5in,top=0.25in 
-TAGS:  env, frame
----
-
-```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,
-                      comment = "      ##",
-                      error = TRUE,
-                      collapse = TRUE)
-
-
-```
+010_environment_definitions_CHEAT_examples.R
 
 ### Environment consists of 
   - frame:  set of named objects (is frame a `bag`? list?)
@@ -125,25 +104,4 @@ f()
 
 
 
-```{r knit_exit()} 
-# knitr::knit_exit()
-```
 
-
-```{r render, eval=FALSE	} 
-
-# TODO:  file is found when knitr runs (see above)
-
-# file must be of form:
-# dir/name_of_this_file    where dir is relative to project root
-dir  <- "env_code"
-file  <- here(dir, "")
-
-file
-"
-
-rmarkdown::render(file,
-                  #output_format = "pdf_document",
-                  output_format = "html_document",
-                  output_file = "~/Downloads/print_and_delete/out")
-```

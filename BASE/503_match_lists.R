@@ -1,19 +1,39 @@
-##  Purpose:  For vector, find element positions, repeats, etc.
+##  Purpose:  
+##  BASE:  For simple vector, find element positions, repeats,  matches etc.
+
 ## 503_match_lists.R
-Mode <- function(x) {
-  ux <- unique(x)
-  ux[which.max(tabulate(match(x, ux)))]
-}
 
+##  
 
-ex <- c(letters[1:3], "a")
-unique(ex)
+# ------------------------
+# create char vector:   
+# -----------------------
+letters[1:5]
+x=c(letters[1:5], "a")
 
-match(ex, unique(ex)) # vector of positions (1st position)
+# -------------------
+## strsplit  - break up 'words' into individual charcters
+# -------------------
+z="abcd"
+y=unlist(strsplit(z, split=""))
+y
+# --------------------------------------
+# match(find this, source) # returns index
+# --------------------------------------
+match("b", c("a", "b", "c")) # [1] 2
+match("a", x) # [1] 1
 
-tabulate(match(ex, unique(ex))) # counts integers (only)
-m <- which.max(tabulate(match(ex, unique(ex)))) # counts integers (only)
-ex[m]
+# ---------
+# ---------
+subset,  
+# ---------
+# ---------
+x[x == x[1]] # [1] "a" "a"
+x[x == x[c(1,2)]] # [1] "a" "b"
+x[x > "b"] # [1] "c" "d" "e"
 
+duplicated
+unique
+any
+which
 
-Mode(ex)
