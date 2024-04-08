@@ -1,70 +1,67 @@
---- 
-title: Template for .Rmd 
-date: "`r paste('last updated', 
-    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
-format:
-    html
-#     pdf: 
-#         latex_engine: lualatex
-#         toc: TRUE 
-#         toc_depth:  4 
-fontsize: 10pt 
-qeometry: margin=0.4in,top=0.25in 
-TAGS:  deparse, substitute, symbol
-editor_options: 
-  chunk_output_type: console
-execute: 
-  cache: true   #  no re-render code if unchnaged
-  error: true
-  collapse: true
----
 
 REF: https://stackoverflow.com/questions/25235240/r-variable-names-symbols-names-or-something-else/25235365#25235365
 
 
 ##  R allows string or symbol
 ```{r}
-
 # clear globalenv
 rm(list = ls())
-
 ```
 
 ####    Symbol, aka name
 ```{r}
-q2  <- quote(x)
+q2  <- quote(x)                        # even though x DNE 
 is.symbol(q2)       #T
 ```
+# ----------------------------------------------------------------------
 ####    Symbol represents value or stored object (Hadley, tidyr cheat)
-Constants are not symbols
+# ----------------------------------------------------------------------
+
+# -------------------------
+Constants, even variables are not symbols
+# -------------------------
 ```{r}
-is.symbol("hello")
-is.symbol(x=5)
+is.symbol("hello") # [1] FALSE
+is.symbol(x=5) # [1] FALSE
 z=10
-is.symbol(z)
+is.symbol(z) # [1] FALSE
 
 # not
-is.symbol(pi)
-is.symbol(expression(pi))
+is.symbol(pi) # [1] FALSE
+is.symbol(expression(pi)) # [1] FALSE
 
-# yes
-is.symbol(expr(pi))
 
-```
+# ---------------------
+##  What is a symbol?
+##  not appear in most regular code?
+# ---------------------
+#
+is.symbol(expr(pi)) # [1] TRUE
+is.symbol(expr(x)) # [1] TRUE
+is.symbol(expr(2)) # [1] FALSE
+is.symbol(expr(x + y)) # [1] FALSE
+is.symbol(+)  # errro
+is.symbol(`+`) # [1] FALSE
+
+# not a function
+f = function() 3
+sapply(list(`+`, sin, `[`, f), is.symbol) # [1] FALSE FALSE FALSE FALSE
 
 #### Coerce to symbol, or name
-```{r}
+##  By itself, x is variable, not symbol, not name
 x  <- 4
 
-typeof(x)
-is.object(x)   # F
+# appears a little different
+z = as.symbol(x); z
+is.symbol(z) # [1] TRUE
+# `4`
 
-# coerce
-as.name(x)
-as.symbol(x)
-identical(as.name(x), as.symbol(x))
 
-ls()
+w = as.symbol(x)
+is.symbol(w) # [1] TRUE
+w # `4`
+
+identical(z,w) # [1] TRUE
 ```
 
 #### What is `4`
