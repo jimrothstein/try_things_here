@@ -7,39 +7,35 @@ below line initializes the file and renames it for editing.
 
 # create yaml file
 ```{r yaml, eval=F, include=F}
-  args(usethis::use_github_action)
+args(usethis::use_github_action)
 
 ## fails
-  usethis::use_github_action(name = "render-readme.yaml")
+usethis::use_github_action(name = "render-readme.yaml")
 
 ## works, but creates ./github and files withi
-  usethis::use_github_action(name = "render-rmarkdown.yaml")
+usethis::use_github_action(name = "render-rmarkdown.yaml")
 ```
 
 # rename to render a generic doc
 ```{r rename, eval=F, include=F}
-
-from  <-
+from <-
   file.path("~/code/try_things_here/.github/workflows/render-rmarkdown.yaml")
-to  <- 
+to <-
   file.path("~/code/try_things_here/.github/workflows/skeleton.yaml")
 
-file.copy(from = from, to= to, overwrite=F)
+file.copy(from = from, to = to, overwrite = F)
 
 if (F) {
-fs::file_move(
-  here::here(".github/workflows/render-readme.yaml"),
-  here::here(".github/workflows/render-doc.yaml")
-)
+  fs::file_move(
+    here::here(".github/workflows/render-readme.yaml"),
+    here::here(".github/workflows/render-doc.yaml")
+  )
 }
 ```
 
 We then edit the .yaml in session:
 ```{r edit}
-
 #  usethis::edit_file('.github/workflows/render-doc.yaml')
-
-
 ```
 
 You can view the resulting file within the repo, but for ease of reading:
