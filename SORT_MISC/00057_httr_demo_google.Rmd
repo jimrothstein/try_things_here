@@ -23,10 +23,12 @@ s/https.*/[&]()/g
 -->
 
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,
-                      comment = "      ##",
-                      error = TRUE,
-                      collapse = TRUE)
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = TRUE
+)
 ```
 
 <!--  RENDER:  see bottom -->
@@ -47,14 +49,14 @@ oauth_endpoints("google")
 # 2. Register an application at https://cloud.google.com/console#/project
 #    Replace key and secret below.
 myapp <- oauth_app("google",
-key="254738439744-0rl7a94t125fbkam9nlkg63p1sm1ski6.apps.googleusercontent.com",
-secret="OjEJig9Mj1QIoo4K07tkp7_B"
+  key = "254..XXX...apps.googleusercontent.com",
+  secret = "OjE...XX..oo4K07tkp7_B"
 )
 # google calls this key as "Client ID"
 myapp
 
 # This creates .httr-oauth (binary) in project root
-# run this in st (X11) b/c need to approve 
+# run this in st (X11) b/c need to approve
 # 3. Get OAuth credentials
 google_token <- oauth2.0_token(oauth_endpoints("google"), myapp,
   scope = "https://www.googleapis.com/auth/userinfo.profile"
@@ -79,9 +81,9 @@ knitr::knit_exit()
 
 ```{r render, eval=FALSE	} 
 file <- ""
-file  <- basename(file)
+file <- basename(file)
 dir <- "rmd"
 
-jimTools::ren_pdf(file,dir)
+jimTools::ren_pdf(file, dir)
 jimTools::ren_github(file, dir)
 ```
