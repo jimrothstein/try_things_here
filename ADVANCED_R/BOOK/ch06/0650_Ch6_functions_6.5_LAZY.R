@@ -1,86 +1,29 @@
----
-title: 
-output: 
-  pdf_document:
-    latex_engine: xelatex
-fontsize: 11pt
-geometry: margin=0.5in,top=0.25in  
-params:  
-  d:  !r Sys.Date()
-#  md_document:
-#  html_document:
-#    toc: true
-#  	toc_float: true
-#    css: styles.css
-TAGS:  rlang, env,lazy, |>
----
-
-
 ### Chapter 6.5
 
 <!-- 6.5 Lazy -->
 <!-- promises -->
 
 
-<!-- To Render   -->
-```{r render, eval=FALSE, echo=FALSE	, include=FALSE		}
-library(here)
-ren  <- function() {
-rmarkdown::render(here::here("book_advanced_R","R","006A_functions.Rmd"), 
-									output_dir="~/Downloads/print_and_delete") 
-}
-ren()
-ren2  <- function() {
-rmarkdown::render(here::here("book_advanced_R","R","006A_functions.Rmd"), 
-									output_format="github_document",
-									#output_dir="~/Downloads/print_and_delete"
-									output_dir="../md") 
-}
-ren2()
-
-```
-
-```{r one, include=FALSE} 
-knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE, collapse=TRUE)
-library(magrittr)
-
-```
-
-
-####useful rlang functions  
-```{r useful, eval=TRUE	 }
-e  <- current_env()
-
-# show bindings  SAME ls()
-env_names(e)
-# more details
-env_print(e)
-
-# total number of bindings?
-env_length(e)
-
-env_inherits(e, env_parent()) # T
-env_inherits(e, base_env()) # T
-caller_env()
-# 
-```
-
 ### 6.5 Lazy Evaluation#  
-```{r 6.5_text, eval=FALSE	}
 In R, objects bind to a `symbol`.
 Humans like names.   So we assign a name like `f`.
 
 Promises, **are not R code**,  so can not be maniuplated with R code.  
 Chapter 20:  convert promises to `quosures` (ie objects)
 # 
-```
 
+h01 <- function(x) {
+  10
+}
+h01(stop("This is an error!")) #> [1] 10
+
+# ---------------
+## ASIDE:  Lazy
+# ---------------
 #### Lazy Evaluation:  example
   *  REF: https://rfordatascience.slack.com/archives/C01SHS2Q9HV/p1635341136017800
   *  Ask:  why \code{.} ?
   *  Trigger for evaluation is ?
-```{r example_lazy}
-
 {
 
     first  <- function() {
@@ -92,7 +35,6 @@ Chapter 20:  convert promises to `quosures` (ie objects)
     print("second")
     return(.)
     }
-
 
 
     third  <- function(.) {
@@ -107,62 +49,17 @@ Chapter 20:  convert promises to `quosures` (ie objects)
 
 # tidyverse magrittr
     first() %>% second() %>% third() 
-```
 
-6.5.1 Promises 
+# ---------------
+#6.5.1 Promises 
+    # expression
+    # environment
+# ---------------
  
-```{r h_fct, eval=TRUE }
-h <- function(x) {
-	# 	printing ...
-	#   cat ... can not handle <env>
-	# not done (lengthy output)
-  #print(pryr::promise_info(x))
 
-	e  <-  pryr::promise_info(x)
-
-	print(e$code)
-	print(e$env)
-	print(e$evaled)
-}
-h(2 + 1)
-# 
-```
-####simplest promise?  
-```{r simplest}
-y  <- 10
-h000  <- function(x){
-	y <- 100
-	print(rlang::env_get(rlang::current_env(),"y"))
-	print(rlang::env_get(rlang::caller_env(),"y"))
-}
-h000() # note:  `x is <missing>`, user did not provide
-```
-
-### order printed 
-```{r two} 
-# Why does rlang::env_print() appear first?
-y <- 10
-h02 <- function(x) {
-  y <- 100
-	print(rlang::current_env())
-	print(rlang::caller_env())
-	print(rlang::env_get(rlang::current_env(),"x"))  # value of x=10
-	x+1
-}
-h02(y)
-h02(y+1)
-
-# 
-
-```
-
-````	
 3rd criteria for promise is a value that:
 is computed, just once, cached, and in its own env.
 
-````
-
-```{r}
 
 double  <- function(x) {
 	message("Calculating ...")
@@ -170,14 +67,13 @@ double  <- function(x) {
 }
 
 h03  <- function(x) {
-	c(x,x)
+	c(x,x)                                # only looks up x ONCE 
 }
+h03(double(20))                        # evaluated before h03 runs 
 
-h03(double(20))
-h03(as.double(20))
-h03(20/2)
-
+# --------------
 # compare to :
+# --------------
 h03A  <- function(x) {
 	c(abs(double(x)),double(abs(x)))}
 
@@ -197,10 +93,10 @@ h03B(20)
 
 # 
 
-```
-<!-- BEGIN -->
 
+# ----------------------------
 #### 6.5.2 Default arguments
+# ----------------------------
 
 ```{r}
 h05  <- function(x=ls()) {
@@ -383,4 +279,54 @@ f1(x)
 f1(x <- 5)
 ```
 
+# --------
+## ASIDE
+# --------
+h <- function(x) {
+	# 	printing ...
+	#   cat ... can not handle <env>
+	# not done (lengthy output)
+  #print(pryr::promise_info(x))
 
+	# skip this;  superceded, but not sure by what
+	if (F) {
+	library(pryr)
+	e  <-  pryr::promise_info(x)
+	}
+
+	print(e$code)
+	print(e$env)
+	print(e$evaled)
+}
+h(2 + 1)
+# 
+```
+####simplest promise?  
+```{r simplest}
+y  <- 10
+h000  <- function(x){
+	y <- 100
+	print(rlang::env_get(rlang::current_env(),"y"))
+	print(rlang::env_get(rlang::caller_env(),"y"))
+}
+h000() # note:  `x is <missing>`, user did not provide
+```
+### order printed 
+```{r two} 
+# Why does rlang::env_print() appear first?
+y <- 10
+h02 <- function(x) {
+  y <- 100
+	print(rlang::current_env())
+	print(rlang::caller_env())
+	print(rlang::env_get(rlang::current_env(),"x"))  # value of x=10
+	x+1
+}
+h02(y)
+h02(y+1)
+
+# 
+
+```
+
+````	

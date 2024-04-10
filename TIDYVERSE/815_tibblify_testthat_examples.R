@@ -1,3 +1,10 @@
+##  815_tibblify_testthat_examples.R
+##  PUROSE:   This file is from original tibblify:: 
+##              Full of examples of testing (using) tspec etc.
+##              esp.  recursive
+library(testthat)
+library(tibblify)
+
 test_that("spec argument is checked", {
   expect_snapshot({
     (expect_error(tibblify(list(), "x")))
@@ -1482,23 +1489,35 @@ test_that("colmajor: checks size", {
 # recursive ---------------------------------------------------------------
 
 test_that("recursive: works", {
+
   spec <- tspec_recursive(
     tib_int("id"),
     tib_chr("name"),
     .children = "children"
   )
+
   spec2 <- tspec_object(
     tib_recursive(
       "data",
       tib_int("id"),
       tib_chr("name"),
-      .children = "children"
+      .children = "children")
+#      .required=FALSE)
     )
+
   )
 
+  ## FAILS
+  df = data.frame(a=1L, name="joe")
+  tibblify(df)
+  tibblify(df, spec)
+  tibblify(df, spec2)
+
+  # fails, attributes differ !
   expected <- tibble(id = 1L, name = "a", children = list(NULL))
+    res = tibblify(list(list(id = 1, name = "a")), spec); res
   expect_equal(
-    tibblify(list(list(id = 1, name = "a")), spec),
+    res,   
     expected
   )
 

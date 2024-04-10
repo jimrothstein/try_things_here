@@ -17,6 +17,12 @@ g01 <- function() {
 g01()
 x
 
+g01_variant <- function(x) {
+  x <- 20
+  x
+}
+g01_variant(x)
+x
 
 
 # Result?
@@ -27,8 +33,8 @@ g02  <- function(x) {
 a  <-3
 b  <- 5
 x  <- 10
-g02(a+b)
-# 
+g02(a+b) # [1] 8
+
 
 #### Features of Lexical Scoping
 -	name mask
@@ -47,15 +53,30 @@ g02 <- function() {
 }
 g02()
 
-#  6.4.2 Lexical also applies to functions
+x <- 1
+y  <- 100
+g04 <- function() {
+  y <- 2
+  i <- function() {
+    z <- 3
+    c(x, y, z)
+  }
+  i()
+}
+g04() # [1] 1 2 3
 
-# which g07 runs?
+# ------------------------------------------
+#  6.4.2 Lexical also applies to functions
+# ------------------------------------------
+
+# which g07 runs? (masking)
 g07  <- function(x) x + 1
 g08  <- function() {
 	g07  <- function(x) x + 100
 	g07(10)
 }
 g08()
+
 
 
 # RULE:  When R searches for function g09, non-functions are ignored.
@@ -66,12 +87,32 @@ g10  <- function() {
 	g09(g09)
 }
 g10()
-# ---------------------------------------------------------------------
 
+# -----------------------------------------
+##  An aside, some properties of function
+# -----------------------------------------
+# given function name, return value (function itself)
+match.fun(g09) # function(x) x + 100
+class(g09) # [1] "function"
+typeof(g09) # [1] "closure"
 
+# - No memory, unless a put into global env---------------
+rm(a)
+g11 <- function() {
+  if (!exists("a")) {
+    a <- 1
+  } else {
+    a <- a + 1
+  }
+  a
+}
 
+g11()
+g11()
 
+# ----------------------
 #### 6.4.5 Exercises# 
+# ----------------------
 
 # && stops if 1 term is FALSE	
 # assume non-vector
@@ -110,37 +151,46 @@ f1()
 y
 a
 b
-***
+# --------------------------------------
 #### 6.4.4 DYNAMIC - change env of f# 
+# --------------------------------------
 
-More with Ch 6.4.4# 
-Tinker with env, before running f()
-CHANGE env, then run FUN
+# WHERE:   global env
+# WHEN:	   only when must (lazy)
+g12 <- function() x + 1
+x <- 15
+g12() #> [1] 16
 
-f  <- function() x+1  
+x <- 20
+g12() #> [1] 21
 
-# first
-x  <- 10
-f() #11
-
-
-# change f env
-e  <- env(x=5)
-fn_env(f)  <-  e
-f() #6
-
-
-# 3, try another new env
-e1  <- env(base_env(), x=3)
-fn_env(f)  <- e1
-f()  #4
-
-# Finally, right back to `first`, x =
-fn_env(f)  <- global_env()
-f()   # 11
-# 
+# ------------------------------
+##  ASIDE:  unbound variables?
+# ------------------------------
+## unbound symbols
+codetools::findGlobals(g12) # [1] "+" "x"
+codetools::findGlobals(ast)
+lobstr::ast(g12()) # █─g12 
+lobstr::ast(function() x + 1)
+# █─`function` 
+# ├─NULL 
+# ├─█─`+` 
+# │ ├─x 
+# │ └─1 
+# └─NULL 
 
 
+# ----------------------------------
+# To change WHERE functions looks:
+# tinker with function's environemnt
+# ----------------------------------
+emptyenv() # <environment: R_EmptyEnv>
+environment(g12)  <- emptyenv()
+environment(g12)
+g12()                                  #error:  now can not find `+`   
+
+
+q
 
 ####    do.call(f, list of args), apply data to list of functions
 seq_fn  <- c("sum", "mean", "sd")
