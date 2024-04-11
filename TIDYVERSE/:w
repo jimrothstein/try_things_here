@@ -1,6 +1,5 @@
 810_tibblify_examples.R
 library(tibblify)
-library(constructive)
 
 # Examples:
 
@@ -20,70 +19,32 @@ spec <- tspec_df(
         id = tib_int("id"),
         name = tib_chr("name")
 )
-
-## But ...too simple returns list, not tibble
 tibblify(x, spec)
+
+
+#
+# -------------------------------
+#       more simple tibblify...
+# -------------------------------
+#       
+#       can't make tibble
+tibblify(list(a=1, b=2))
 # $a
 # [1] 1
 # 
 # $b
 # [1] 2
 
-# ---------------------
-##      tibble, 1 row
-# ---------------------
-z=tibblify(list(
-              list(id=1, name="A")
-              ), spec); z
+tibblify(list(
+              list(a=1, b=2)
+              ))
 
-# ----------------------------
-##      compare spec 2 ways:
-##      from tibblify::get_spec()
-##      from constructive::construct()
-# ----------------------------
-##      
-construct(z)
-tibblify::get_spec(z)
 
-# --------------------------
-##      tibble with 2 rows
-# --------------------------
-z=tibblify(list(
-              list(id=1, name="A"),
-              list(id=2, name="B"))
+tibblify(list(
+              list(a=1, b=2),
+              list(a=2, b=4))
 )
-z
-# # A tibble: 2 × 2
-#      id name 
-#   <dbl> <chr>
-# 1     1 A    
-# 2     2 B    
 
-construct(z)
-get_spec(z)
-
-
-# ---------------
-## more complex
-# ---------------
-## tibblify(L) won't work (not object, not list of objects)
-L=list(
-                list(level="A", 
-                     list(level="B", month="APR", 
-                          data=
-                                     list(
-                                          list(id=1, value=1),
-                                          list(id=2, value=2),
-                                          list(id=3, value=3),
-                                          list(id=4, value=4)
-                                          )
-                          )
-                     )
-                )
-z=enframe(L)
-str(z)
-tidyr::unnest_wider(z,value)
-str(z$value)
 
 # ----------------------------
 # 3) fails with using functions
@@ -131,9 +92,6 @@ x <- list(
                 )
         )
 )
-## it tries, can do better
-tibble(x)
-
 dput(x)
 # list(list(id = 1, name = "a", children = list(list(id = 11, name = "aa"),
 #     list(id = 12, name = "ab", children = list(list(id = 121,
@@ -148,7 +106,8 @@ spec <- tspec_recursive(
         .children = "kids" # name of field holding children
 )
 
-out <- tibblify(x, spec); out
+out <- tibblify(x, spec)
+out
 
 out$kids
 out$kids[[1]]
