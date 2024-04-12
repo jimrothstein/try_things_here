@@ -11,25 +11,27 @@ the_file <- "~/code/try_things_here/rrapply/bookmarks/bookmarks-2023-05-24_FF.js
 x <- jsonlite::read_json(path = the_file)
 
 
+# ---------
+## chokes
+# ---------
 t <- tibblify(x)
 t
 if (F) { # Mess !
   tibblify::get_spec(t)
 }
 
+
 # --------------
 # Improve spec
 # --------------
 spec <- tibblify::tspec_recursive(
-  tib_chr("root"),
+  tib_chr("root", required=FALSE),
   tib_chr("guid"),
   tib_chr("title"),
+  tib_int("typeCode"),
   tib_chr("uri", required = FALSE),
   .children = "children"
 )
-z=x$children[[1]]$children[[1]]
+z=x$children[[1]]$children
 t2 <- tibblify::tibblify(z, spec)
-x[[1]]
-x[[2]]
-names(x)
-x[[9]]
+t2[, c(2,3,4,5)]

@@ -7,6 +7,9 @@ library(tibblify)
 library(tibblify)
 
 # create list
+# for each of gh_users[[1]], gh_users[[2]],... 4  ...grab only specific fields.
+gh_users[[1]][c("followers", "login", "name")]
+
 gh_users_small <- 
         purrr::map(gh_users, ~ .x[c("followers", "login", "url", "name", "location", "email", "public_gists")])
 gh_users_small
