@@ -1,47 +1,55 @@
----
-title: 
-output: 
-  pdf_document:
-geometry: "left=2cm,right=2cm,top=2cm,bottom=2cm"
-fontsize: 12pt
----
 #### My tutorial on functions, env, rlang (~ Ch6 & Ch7)
 
-```{r 000a, echo=TRUE, eval=FALSE}
-from rlang: https://rlang.r-lib.org/reference/search_envs.html
-from adv-r v2 Chapter 7
-```
-**To Render:**# 
-```{r 0001, include=FALSE	 , eval=FALSE}
+# REF: rlang: https://rlang.r-lib.org/reference/search_envs.html
+# REF: from adv-r v2 Chapter 7
 
-dir="book_advanced_R/R"
-file="007_env_rlang.Rmd"
-ren_github(file, dir)
-
-rmarkdown::render("~/code/book_advanced_R/007_env_rlang.Rmd", output_dir="~/Downloads/print_and_delete") 
-```# 
-
-```{r createchild}
-source("./000_useful_functions.R")	
-# create child
+library(rlang)
+# --------------
+#	Ch 7.1
+# create child env (to global)
+# --------------
 env <- env(a = 1, b = "foo")
 env
 env$b
 env$a
 
-# all objects in current env
+# ---------------------------------
+# show all objects in an env
+#	rlang::env_print() much detail
+# ---------------------------------
 ls()
-env_print(env)
+rlang::env_print()
+rlang::env_names(rlang::current_env())
 
+# env just created
+rlang::env_print(env)                  # much  more info! 
+
+
+# ---------------------------
+#	Ch 7.2
 # Where am I?   Global_env 
-global_env()
-current_env()
+# NOTE:   env are NOT vectors
+# 
+rlang::global_env()
+rlang::current_env()
 identical(global_env(), current_env())
-```
+# ---------------------------
 
+
+# ------------------
+#	Ch 7.2.3 Parents
+#	Hadley draw arrow FROM child TO parent!
+# ------------------
+rlang::env(a=1)                        #default:   current_env is parent of new env
+rlang::env_parent(rlang::env(a=1))     # here parent  is global_env
+
+j=rlang::env(emptyenv(), a=2)          # j is child of TOP parent emptyenv() 
+env_parent(j) # <environment: R_EmptyEnv>
+j$a
+
+rlang::current_env()
 
 What value for x prints?
-```{r simple_example}
 # value of x depends upon <env> sent to f
 f  <- function(env = global_env()){
 	env$x
@@ -53,10 +61,8 @@ f()
 
 e  <- env(base_env(), x = 500)
 f(e)
-```
 
 
-```{r env_has}
 parent <- child_env(NULL, foo = "foo")
 env <- child_env(parent, bar = "bar")
 env_has(env, "foo")
@@ -81,20 +87,16 @@ g$a
 ref(e)
 ref(f)
 ref(g)
-```# 
 
 
-```{r caller_env }# 
 fn  <- function() list(current = current_env(),
 											 caller = caller_env(),
 											 parent = env_parent())
 
 g  <- function() fn()
 g()
-```# 
 
 #### YOU decide the env to evaluate f
-```{r function_3_frames # 
 x <- 0
 f  <- function(a) {
 	a + x
@@ -116,10 +118,8 @@ with_env(f, current_env())(1)
 with_env(f, a)(1)
 with_env(f, b)(1)
 with_env(f)(1) # defaults to calling_env (Global)
-``` 
 
 from 1st ed  (Environments)
-```{r calling}
 
 # value when i() runs?
 
@@ -164,7 +164,6 @@ f  <- function() {
 inner  <- f()
 inner
 inner()
-```
 
 	enclosing_env# 
 # ```{r enclosing_env}
@@ -184,7 +183,6 @@ actually making copy
 # 
 find("sd") 
 rm("sd")
-# ```
 
 
 #### parent.frame()# 
@@ -243,41 +241,29 @@ rlang::env_print()
 
 #### base::search()	--> char[], 
 #### all env names, beginning with lowest, .GlobalEnv
-```{r}
 base::search()
-```
 
 #### add package (note: search path increases)
-```{r}
 library(rlang)
-```
 
 #### rlang::search_envs()--> list
 #### list of actual env objects on search path
-```{r}
 rlang::search_envs()
-```
 
 #### first & last env
 ####
-```{r}
 l  <- rlang::search_envs()
 # first & last
 l[1]
 l[length(l)]
-```
 
 #### shortcuts: first & last env obj
-```{r}
 global_env()
 base_env()
-```
 
 #### rlang::pkg_env_name("pkg") --> char[]
 #### takes bare pkg name; returns formal: 'package:pkg'
-```{r}
 rlang::pkg_env_name("rlang")
-```
 
 ##### formal name & attributes
 ##### note:  attributes(formal) is NULL?
@@ -309,10 +295,8 @@ is.package(formal) #F
 is.package("tidyverse") #F
 
 rlang::pkg_env("base")
-``` 
 
 #### function's env depends upon ????? ToDo# 
-```{r function_env, eval=FALSE	}
 parent_ls  <- function() {
 	ls (parent.frame())
 }
