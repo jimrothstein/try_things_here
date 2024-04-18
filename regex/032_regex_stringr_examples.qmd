@@ -14,7 +14,8 @@ TAGS:  regex, grepl,ifelse, sub
 ---
 
 ==========================================================
- CONSOLIDATE here:   regex,stringr (+ related testthat)
+R:  CONSOLIDATE here:   regex,stringr (+ related testthat)
+BUT ... ~/code/zsh_project/REGEX is really best place to test and DOCUMENT regex
 ==========================================================
 *  For ADVANCED see 2nd regex Rmd file.
 *  some REQUIREs  X11 
