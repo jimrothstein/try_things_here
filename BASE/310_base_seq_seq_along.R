@@ -45,6 +45,9 @@ seq_along(c(sin, cos, tan )) # [1] 1 2 3
 seq_along(pi)  # pi is just 1 elment # [1] 1
 seq_along(rep(pi, 7))  # [1] 1 2 3 4 5 6 7
 
+L=list("a", "b")
+
+for (i in seq_along(L)) { print(L[[i]])}
 ```
 
 
