@@ -1,18 +1,20 @@
-812_tibblify_gh.R
+# 812_tibblify_gh.R
 library(tibblify)
 
 # -----------
 # Examples:  Github users, Guess specs, modify, tifflify again
 # -----------
-library(tibblify)
 
-# create list
-# for each of gh_users[[1]], gh_users[[2]],... 4  ...grab only specific fields.
-gh_users[[1]][c("followers", "login", "name")]
+# gh_users has 4 elements (people?) and each has list of 30 properties (name,url ....)
 
-gh_users_small <- 
-        purrr::map(gh_users, ~ .x[c("followers", "login", "url", "name", "location", "email", "public_gists")])
+# each element (of 4) extract a few fields
+
+gh_users_small <-
+    purrr::map(gh_users, ~ .x[c("followers", "login",
+                                "url", "name", "location", "email", "public_gists")])
+
 gh_users_small
+
 # 1 list containing 4 other lists (each of length 7)
 str(gh_users_small, max.level=1)
 names(gh_users_small[[1]])
@@ -21,7 +23,7 @@ names(gh_users_small[[1]])
 tibblify(gh_users_small)
 
 # ----------------
-# It can Guess !
+# It can Guess spec !
 # ----------------
 guess_tspec(gh_users_small)
 # tspec_df(

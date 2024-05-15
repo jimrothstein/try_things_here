@@ -13,7 +13,7 @@
 
 # 00-Setup---------------------------------------------------------------------
 suppressPackageStartupMessages(library('dplyr'))
-packageVersion("dplyr") # 0.7.0
+packageVersion("dplyr") # 1.1.4
 
 # 0-summarize --- Works as expected 8 x 4
 mtcars %>%
@@ -74,3 +74,52 @@ mtcars %>%
         dplyr::show_query()
 
 
+##  use .data pronoun; summarize returns new tibble
+mtcars |>
+  dplyr::group_by(.data$gear) |>
+  dplyr::summarise(round_cyl = round(mean(.data$cyl)
+
+
+                                     ## Using R expressions
+
+'pipe_to_round' = { 
+mtcars |>
+    dplyr::group_by(.data$gear) |>
+    dplyr::summarise(round_cyl = mean(.data$cyl)) |> round(2)
+}
+eval(pipe_to_round)
+
+
+z  = { 
+mtcars |>
+    dplyr::group_by(.data$gear) |>
+    dplyr::summarise(round_cyl = mean(.data$cyl)) |> round(2)
+}
+
+is.expression(z)
+
+'no_rules' = {
+
+mtcars |>
+
+  dplyr::summarise(
+
+    round_cyl = {
+
+      .data$cyl |>
+
+        mean() |>
+
+        round(2)
+
+    },
+
+    .by = 'gear'
+
+  )
+
+}
+'no_rules'
+is_expression('no_rules')
+eval('no_rules')
+eval(no_rules)

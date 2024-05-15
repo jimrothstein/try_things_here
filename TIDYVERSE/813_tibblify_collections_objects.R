@@ -1,4 +1,4 @@
-813_tibblify_collections_objects.R
+# 813_tibblify_collections_objects.R
 
 #       get_spec
 
@@ -17,7 +17,7 @@ list(1, x=2)  # can not OBJECT, names
 # -----------------------
 
 # --------------
-##      SCALAR
+##      SCALAR, b/c children are singlular
 # --------------
 # tib_scalar and its shortcuts, such  as tib_int
 
@@ -75,8 +75,9 @@ tibblify(x, spec)
 
 
 # --------------
-#       VECTOR
+#       VECTOR 
 # --------------
+#  List of 4 elments, each element has variable number of childrne   character vector                                     
 x <- list(
   list(id = 1, children = c("Peter", "Lilly")),
   list(id = 2, children = "James"),
@@ -86,9 +87,41 @@ x <- list(
 # guess  (guess "dbl")
 get_spec(tibblify(x))
 
+# our best tspec:
 spec = tspec_df(
                 tib_int("id"),
                 tib_chr_vec("children")
                 )
 tibblify(x,  spec)
 identical(tibblify(x), tibblify(x, spec))
+
+
+# -----------------------
+## OBJECT,  children no simple vector, but object
+# -----------------------
+
+#  30 elements
+gh_repos_small <- purrr::map(gh_repos, ~ .x[c("id", "name", "owner")])
+length(gh_repos_small)
+
+
+# and each has 3 properties, but note owner is list of 17
+str(gh_repos_small[[1]], max.level=1)
+str(gh_repos_small[[1]]$owner, max.level=1)
+
+# nodify only owner object $object from list of 17 to list of 3
+gh_repos_small  <- purrr::map(gh_repos_small,
+                              \(repo) {
+     repo$owner  <-  repo$owner[c("login", "id", "url")]
+    repo})
+
+
+str(gh_repos_small[[1]]$owner, max.level=1)
+
+# owner now is list of 3
+gh_repos_small
+
+
+
+
+

@@ -1,8 +1,5 @@
----
----
-
-
-# #PURPOSE:    -   Examples of creating nested tibbles
+    
+#PURPOSE:    -   Examples of creating nested tibbles
 #             -   Examples of (basic) tools to examine such tibbles 
 #             -   str, dput, 
 library(tidyr)
