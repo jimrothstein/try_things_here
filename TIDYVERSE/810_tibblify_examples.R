@@ -1,17 +1,18 @@
-810_tibblify_examples.R
+# 810_tibblify_examples.R
 library(tibblify)
 library(constructive)
 
 # Examples:
 
-# -----------------------------------------------------------------------------
-# 1) List of Objects -----------------------------------------------------------
-# -----------------------------------------------------------------------------
-x <- list(
-        list(id = 1, name = "Tyrion Lannister"),
-        list(id = 2, name = "Victarion Greyjoy")
-)
-tibblify(x)
+x =  list(
+    a=list(id = 1, name ="one"),
+    b=list(id= 2,name="two")
+    )
+
+y =  list(
+    list(id = 1, name ="one"),
+    list(id= 2,name="two")
+    )
 
 # -------------------------
 # 2) Provide a specification
@@ -23,6 +24,7 @@ spec <- tspec_df(
 
 ## But ...too simple returns list, not tibble
 tibblify(x, spec)
+
 # $a
 # [1] 1
 # 
@@ -33,9 +35,12 @@ tibblify(x, spec)
 ##      tibble, 1 row
 # ---------------------
 z=tibblify(list(
-              list(id=1, name="A")
-              ), spec); z
+              list(id=1, name="A")), spec); z
 
++ # A tibble: 1 × 2
+     id name 
+  <int> <chr>
+1     1 A    
 # ----------------------------
 ##      compare spec 2 ways:
 ##      from tibblify::get_spec()
@@ -53,6 +58,7 @@ z=tibblify(list(
               list(id=2, name="B"))
 )
 z
+
 # # A tibble: 2 × 2
 #      id name 
 #   <dbl> <chr>
@@ -154,4 +160,40 @@ out$kids
 out$kids[[1]]
 out$kids[[1]]$kids[[2]]
 
-###
+### tibblify list that contains a data.frame?   Do  in REVERSE...
+
+                                        # first,  result should  be:
+tbl =  tibble(id=c(1,2),
+       data=list(mtcars[1,],  mtcars[3,]))
+dput(tbl)
+
+# get the spec
+spec = tibblify::guess_tspec_df(tbl);  spec
+
+tibblify(dput(tbl), spec)
+tibblify(tbl, spec)
+
+
+#  NOw,  create a list
+L=list(id=c(1,2),
+       data=list(mtcars[1,],mtcars[3,]))
+
+spec = tspec_df(
+    tib_dbl("id"),
+    tib_df(
+        "data",
+        tib_dbl("mpg")
+        )
+    )
+                                        # Not quite!
+tibblify(L, spec)
+
+L = list(
+    a=list(line=1, df=mtcars),
+    b=list(line=2, df=mtcars)
+    )
+
+
+
+
+
