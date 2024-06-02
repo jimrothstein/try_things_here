@@ -1,5 +1,5 @@
 ##  815_tibblify_testthat_examples.R
-##  PUROSE:   This file is from original tibblify:: 
+##  PUROSE:   This file is from original tibblify::  (source  ?)
 ##              Full of examples of testing (using) tspec etc.
 ##              esp.  recursive
 library(testthat)

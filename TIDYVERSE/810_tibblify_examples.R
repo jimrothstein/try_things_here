@@ -68,6 +68,70 @@ z
 construct(z)
 get_spec(z)
 
+# --------------------------
+                                        #SEE:  https://mgirlich.github.io/tibblify/articles/overview-supported-structures.html
+#  tibblify can have  trouble with empty list
+# --------------------------
+L=list(
+    list(a=1:2),
+    list(a=list())
+    )
+L
+Z=tibblify(L)
+
+#  demanding it be vector does not help
+tibblify(L, tspec_df(tib_int_vec("a")))
+
+#  BETTER:
+tibblify(L,  tspec_df(tib_int_vec("a"), vector_allows_empty_list = T))
+
+# --------------------------
+# --------------------------
+x_json <- '[
+  {"a": [1, 2]},
+  {"a": [1, 2, 3]}
+]'
+
+x <- jsonlite::fromJSON(x_json, simplifyVector = FALSE)
+
+x
+dput(x)
+
+tibblify(x, tspec_df(tib_int_vec("a", input_form = "scalar_list")))
+
+tibblify(x, tspec_df(tib_int_vec("a", input_form = "scalar_list")))$a
+
+                                        #  fails because x is not named list!
+
+tibblify(x, tspec_df(tib_int_vec("a", input_form = "object")))$a
+
+
+# --------------------------
+#  more complex
+# --------------------------
+
+x_json <- '[
+  {"a": {"x": 1, "y": 2}},
+  {"a": {"a": 1, "b": 2, "b": 3}}
+]'
+
+x <- jsonlite::fromJSON(x_json, simplifyVector = FALSE)
+
+dput(x)
+
+spec <- tspec_df(
+  tib_int_vec(
+    "a",
+    input_form = "object",
+    names_to = "name",
+    values_to = "value"
+  )
+)
+spec
+
+tibblify(x, spec)
+
+tibblify(x, spec)$a
 
 # ---------------
 ## more complex
