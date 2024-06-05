@@ -48,3 +48,14 @@ spec <- tspec_df(
 
 tibblify(gh_users_small, spec)
 
+
+#  more pedantic (?),  specify  row spec
+spec2 = tspec_df(
+    tspec_row(
+        login_name = tib_chr("login"),
+        tib_chr("name"),
+        tib_int("public_gists"),
+        tib_int("followers")
+        )
+    )
+tibblify(gh_users_small, spec2)

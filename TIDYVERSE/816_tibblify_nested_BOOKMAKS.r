@@ -52,3 +52,23 @@ unnest_tree(
         parent_to = "parent",
         ancestors_to = "ancestors"
 )
+
+                                        # try bookmarks  !
+library(jsonlite)
+library(tibblify)
+
+the_dir = "~/Downloads/"
+the_file =  "bookmarks-2024-06-04.json"
+
+the_data = jsonlite::read_json(paste0(the_dir, the_file))
+
+spec = tibblify::guess_tspec(the_data)
+spec
+
+# unspecified fields
+t = tibblify(the_data, spec)
+
+head(t)
+
+
+
