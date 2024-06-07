@@ -1,15 +1,56 @@
 # 813_tibblify_collections_objects.R
 
-#       get_spec
+                                        
+                                        # PURPOSE:   Collections,  Objects, vector,  scalar
+                                        # SEE tribblify:  (begin with Objects)   https://mgirlich.github.io/tibblify/
+
 
 #       gh_users_small is example of COLLECTION
-#       each element within is OBJECT.
+#       each element (row) within is OBJECT.
 
-#       See definition of OBJECT (names, etc.)  and must convert to a single ROW.
-#       COLLECTION then becomes column
+#       OBJECT (names, etc.)  and must convert to a single ROW.
+#       COLLECTION is list of such OBJECTS
 
-list(1, x=2)  # can not OBJECT, names
 
+# -------
+# MUST NAME, RULES
+# -------
+
+library(tibblify)
+library(vctrs)
+library(jsonlite)
+
+# criteria?  error if names are not uniuqe, returns suggested unique names
+# vctrs::vec_as_names(names, repair="unique")
+
+vec_as_names(c("a", "a"), repair="unique")
+
+vec_as_names(c("a", "b"), repair="unique")
+
+# not a list
+L= c(one=1, two=2)
+tibblify(L)
+
+
+# missing name
+L=list(1, two=2)  # can not be OBJECT, missing names
+tibblify(L)
+
+
+## Named,  but  not  correct WHY?
+L=list(one=1, two=2)
+attributes(L)
+z=tibblify(L)
+
+## This is correct ,  WHY?
+L = list(
+        list(one=1, two=2)
+        )
+
+attributes(L)
+
+tibblify(L)
+    
 
 
 # -----------------------
@@ -31,13 +72,19 @@ z=tibblify(
     tib_chr("name")
   )
 )
-#       show the spec
+z
+# -------
+# show the spec
+# -------
 get_spec(z)
 # tspec_df(
 #   tib_int("id"),
 #   tib_chr("name"),
 # )
 
+# -------
+# date time (return later)
+# -------
 
 x <- list(
   list(id = 1, duration = vctrs::new_duration(100), name="joe"),
@@ -73,41 +120,116 @@ spec = tspec_df(
  )
 tibblify(x, spec)
 
+# -----------------
+#  Homogeneous R List of Scalars (are not vectors)  vs Vector of Scalars
+# -----------------
+# Compare L2 (vector of scalars) and L (list of scalars)
+L2 = list(
+    list(a = c(1L, 2L)),
+    list(a = c(1L, 2L, 3L))
+    )
+tibblify(L2, tspec_df(tib_int_vec("a")))
+
+x_json <- '[
+  {"a": [1, 2]},
+  {"a": [1, 2, 3]}
+]'
+
+    # we get list,  not simple vector, fields are not even named
+L = jsonlite::fromJSON(x_json, simplifyVector =F)
+str(L)
+dput(L)
+list(
+    list(a = list(1L, 2L)),
+    list(a = list(1L, 2L, 3L))
+    )
+    
+# tell it scalar_list
+tibblify(L, tspec_df(tib_int_vec("a", input_form = "scalar_list")))
 
 # --------------
-#       VECTOR 
+#       another VECTOR  of scalars
 # --------------
-#  List of 4 elments, each element has variable number of childrne   character vector                                     
+
+#  List of 4 elments, each element has variable number of children and 1 or more (not scalar)   
 x <- list(
   list(id = 1, children = c("Peter", "Lilly")),
   list(id = 2, children = "James"),
   list(id = 3, children = c("Emma", "Noah", "Charlotte"))
 )
 
+y <- list(
+  list(children = c("Peter", "Lilly")),
+  list(children = "James"),
+  list(children = c("Emma", "Noah", "Charlotte"))
+)
+
 # guess  (guess "dbl")
 get_spec(tibblify(x))
 
-# our best tspec:
+# our best tspec: column for "children"  becomes list-column
 spec = tspec_df(
                 tib_int("id"),
                 tib_chr_vec("children")
                 )
+
 tibblify(x,  spec)
+
+# int v dbl
 identical(tibblify(x), tibblify(x, spec))
 
+# ----------                                       
+# CONVERT single OBJECT
+# ----------                                       
+# row vs tibble?
+
+api_output <- list(
+  status = "success",
+  requested_at = "2021-10-26 09:17:12",
+  data = list(
+    list(x = 1),
+    list(x = 2)
+  )
+)
+
+#one row tibble
+spec_row = tspec_row(
+    status = tib_chr("status"),
+    requested_at = tib_chr_date("requested_at"),
+    tib_df(
+        "data",
+        tib_int("x")
+        )
+    )
+# list of tibbles column (!)
+tibblify(api_output, spec_row)
+
 
 # -----------------------
-## OBJECT,  children no simple vector, but object
+## OBJECT,  children not simple vector, but object
+#  Recall object can be converted to row in a tibble
 # -----------------------
 
-#  30 elements
+#  30 elements in LIST
 gh_repos_small <- purrr::map(gh_repos, ~ .x[c("id", "name", "owner")])
 length(gh_repos_small)
+head(gh_repos_small)
 
 
 # and each has 3 properties, but note owner is list of 17
 str(gh_repos_small[[1]], max.level=1)
+
 str(gh_repos_small[[1]]$owner, max.level=1)
+
+# Each element (of 30)  looks like:
+#   owner  is OBJECT, a  list that could become its own tibble
+
+# list(
+#   id= 611,
+#   name = "after",
+#   owner = list(  .... 17)
+# )
+
 
 # nodify only owner object $object from list of 17 to list of 3
 gh_repos_small  <- purrr::map(gh_repos_small,
