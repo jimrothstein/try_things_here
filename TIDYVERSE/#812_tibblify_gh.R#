@@ -1,8 +1,6 @@
 # 812_tibblify_gh.R
 library(tibblify)
 
-
-
 # -----------
 # Examples:  Github users, Guess specs, modify, tifflify again
 # -----------
