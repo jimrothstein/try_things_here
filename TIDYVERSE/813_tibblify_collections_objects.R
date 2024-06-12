@@ -247,3 +247,25 @@ gh_repos_small
 
 
 
+#  -----------------------------
+#  List of Tibbles/data.frames
+#  -----------------------------
+
+L=list(
+    list(id=1, data=mtcars[1,]),
+    list(id=2, data=mtcars[3,]),
+    list(id=3, data=NULL),
+#    list(id=4, data=data.frame()),   # error
+    list(id=4, data=list())
+    )
+
+spec = tspec_df(
+    tib_dbl("id"),
+    tib_df(
+        "data",
+        tib_dbl("mpg", required=F),
+        .required=F
+        )
+    )
+
+tibblify(L, spec)
