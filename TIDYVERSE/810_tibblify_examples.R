@@ -2,6 +2,8 @@
 library(tibblify)
 library(constructive)
 
+load_all()
+
 # Examples:
 
 x =  list(

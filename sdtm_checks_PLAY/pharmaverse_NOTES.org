@@ -1,0 +1,31 @@
+
+** organizations
+PHUSE (UK) 
+pharmaR
+R Validation Hub (~50 companies)
+
+
+
+
+** tools
+phuse.org/valtools (nice spreadsheet)
+pharamverse
+
+
+PharmaR:    *riskmetric* package  and a shiny app:  *Riskasessment*
+
+
+
+** US FDA
+eCTR = electronic communications ..
+
+SDTM =  Study Data Tabulation Model
+
+TLF = Tables, Listings ..
+
+** SAS
+Good validation (CDISC STDM/Admiral standard)
+
+R has many packages, but who validates?
+
+
