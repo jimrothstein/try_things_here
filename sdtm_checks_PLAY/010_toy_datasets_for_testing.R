@@ -25,63 +25,57 @@
 #' toy_datasets = check_toy_datasets()
 #'
 
-check_toy_datasets = function(){
+check_toy_datasets = function() {
 
-    L = list(
-        check_ae_aeacnoth= list(
-            AE1 <- data.frame(
-                USUBJID = 1:7,
-                AETERM = 1:7,
-                AESTDTC = 1:7,
-                AEACNOTH = 1:7,
-                AEACNOT1 = 1:7,
-                AEACNOT2 = 1:7,
-                AESPID = "FORMNAME-R:13/L:13XXXX"),
-            AE2 <- data.frame(
-                #USUBJID = 1:7,
-                AETERM = 1:7,
-                AESTDTC = 1:7,
-                AEACNOTH = 1:7,
-                AEACNOT1 = 1:7,
-                AEACNOT2 = 1:7,
-                AESPID = "FORMNAME-R:13/L:13XXXX"),
-            AE3 = data.frame(
-               ##USUBJID = 1:7,
-                AETERM = 1:7,
-                AESTDTC = 1:7,
-                AEACNOTH = 1:7,
-                AEACNOT1 = 1:7,
-                AEACNOT2 = 1:7,
-                AESPID = "FORMNAME-R:13/L:13XXXX")
-        ),
-        check_ae_aedecode = list(
-            AE <- data.frame(
-                USUBJID = 1:5,
-                DOMAIN = c(rep("AE", 5)),
-                AESEQ = 1:5,
-                AESTDTC = 1:5,
-                AETERM = 1:5,
-                AEDECOD = 1:5,
-                AESPID = c("FORMNAME-R:13/L:13XXXX",
-                            "FORMNAME-R:16/L:16XXXX",
-                            "FORMNAME-R:2/L:2XXXX",
-                            "FORMNAME-R:19/L:19XXXX",
-                            "FORMNAME-R:5/L:5XXXX"),
-                stringsAsFactors = FALSE)
+  #pass
+   AE <- data.frame(
+    USUBJID = 1:7,
+    AETERM = 1:7,
+    AESTDTC = 1:7,
+    AEACNOTH = 1:7,
+    AEACNOT1 = 1:7,
+    AEACNOT2 = 1:7,
+    AESPID = "FORMNAME-R:13/L:13XXXX"
+   )
+  
+    #fail
+ AE1 =  AE
+   AE1$AEACNOTH[1] = ""
+   AE1$AEACNOT1[1] = ""
+   AE1$AEACNOT2[1] = ""
+   AE1$AEACNOTH[2] = "MULTIPLE"
+   AE1$AEACNOT1[2] = "DOSE REDUCED"
+   AE1$AEACNOT2[2] = "DRUG WITHDRAWN"
+   AE1$AEACNOTH[3] = "MULTIPLE"
+   AE1$AEACNOT1[3] = "DOSE REDUCED"
+   AE1$AEACNOT2[3] = ""
+   AE1$AEACNOTH[4] = "MULTIPLE"
+   AE1$AEACNOT1[4] = ""
+   AE1$AEACNOT2[4] = "DRUG WITHDRAWN"
+   AE1$AEACNOTH[5] = "MULTIPLE"
+   AE1$AEACNOT1[5] = ""
+   AE1$AEACNOT2[5] = ""
+   
+   
+    AE2 = AE1
+   AE2$AEACNOTH[1] = NA
+   AE2$AEACNOT1[1] = NA
+   AE2$AEACNOT2[1] = NA
+   AE2$AEACNOT2[3] = NA 
+   AE2$AEACNOT1[4] = NA 
+   AE2$AEACNOT1[5] = NA
+   AE2$AEACNOT2[5] = NA
+
+    ### nest
+
+L = list (
+    check_ae_aeacnoth= list(
+        pass = list(one=AE),
+        fail = list(one=AE1, two=AE2)
         )
     )
-    L
 }
 
-check_toy_datasets()
-
-# -------------------
-
-L
-
-L["AE3"]
-
-L["AE2"]
-
-L[["AE2"]]
-length(L)
+L = check_toy_datasets()
+    
+identical(L[[c("check_ae_aeacnoth", "pass","one")]], L$check_ae_aeacnoth$pass$one)
