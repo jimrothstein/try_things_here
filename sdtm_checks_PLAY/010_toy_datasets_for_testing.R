@@ -1,7 +1,7 @@
 
-#' @title Puts into environment a list of toy datasets for testing. 
+#' @title Puts into environment a list of dummy datasets for testing. 
 #'
-#' @description Ad-hoc named list of toy dataframes first used for testing each check function and copied here.  List is structured first by name of check function and then 0, 1 or more dataframes.  Before use, the list must be unnested and assembled as required.
+#' @description Ad-hoc named list of dummy dataframes first used for testing each check function and copied here.  List is structured first by name of check function and then 0, 1 or more dataframes.  Before use, the list must be unnested and assembled as required.
 
 #'
 #'
@@ -22,12 +22,14 @@
 #' @keywords 
 #'
 #' @examples
-#' toy_datasets = check_toy_datasets()
-#'
+#' dummy_datasets = check_toy_datasets()
+#' 
+#' L = check_dummy_datasets()
+#' identical(L[[c("check_ae_aeacnoth", "pass","one")]], L$check_ae_aeacnoth$pass$one)
 
-check_toy_datasets = function() {
+check_dummy_datasets = function() {
 
-  #pass
+  # will pass
    AE <- data.frame(
     USUBJID = 1:7,
     AETERM = 1:7,
@@ -38,7 +40,7 @@ check_toy_datasets = function() {
     AESPID = "FORMNAME-R:13/L:13XXXX"
    )
   
-    #fail
+    # will fail
  AE1 =  AE
    AE1$AEACNOTH[1] = ""
    AE1$AEACNOT1[1] = ""
@@ -76,6 +78,3 @@ L = list (
     )
 }
 
-L = check_toy_datasets()
-    
-identical(L[[c("check_ae_aeacnoth", "pass","one")]], L$check_ae_aeacnoth$pass$one)

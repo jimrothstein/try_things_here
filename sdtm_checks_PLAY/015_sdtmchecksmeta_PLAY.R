@@ -1,6 +1,7 @@
 #  sdtmchecks - practice area
 library(sdtmchecks)
 library(testthat)
+debug(run_test)
 
 ### PURPOSE:  Understand R code for sdtmchecksmeta 
 
