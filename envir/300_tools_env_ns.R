@@ -1,14 +1,8 @@
----
-title: "300_tools_env_ns.qmd"
-date: today
-editor_options: 
-  chunk_output_type: console
----
 
 ## TAGS:  tools, namespace, rlang, environment
 
 
-# PURPOSE:  misc tools for env, NS  
+# PURPOSE:  misc tools for env, NS  (namespace)
 -   getAnywhere()
 -   exists()
 -   makeActiveBinding
@@ -17,10 +11,13 @@ editor_options:
 ---
 
 
-
 ##    base::getAnywhere() finds pkg, NS, and code
 ```{r}
-getAnywhere(aes)
+
+library(pkgload)
+library(rlang)
+
+utils::getAnywhere(aes)
 getAnywhere(vapply)
 getAnywhere(getAnywhere)
 getAnywhere(.rs.restart)
@@ -33,9 +30,6 @@ getAnywhere(.rs.restart)
 
 ```{r}
 
-library(pkgload)
-library(rlang)
-
 pkgload::inst("ggplot2") #/home/jim/R/x86...-library/3.6/ggplot2
 pkgload::inst("base")   #/usr/lib/R/library/base
 
@@ -46,6 +40,7 @@ base::search()
 #
 # insert env, single ":"
 base::objects("package:stats")
+base::objects("package:sdtmchecks")
 
 # OR, a bit easier to read
 rlang::search_envs()

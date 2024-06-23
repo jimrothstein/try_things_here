@@ -9,6 +9,8 @@ library(testthat)
 ### in next R file, compare   `run_check` for the SAME test
 
 
+
+# should pass
   AE1 <- data.frame(
     USUBJID = 1:7,
     AETERM = 1:7,
@@ -18,6 +20,7 @@ library(testthat)
     AEACNOT2 = 1:7,
     AESPID = "FORMNAME-R:13/L:13XXXX"
   )
+
 
 test_that("Function returns true when no errors are present", {
   expect_true(check_ae_aeacnoth(AE1))

@@ -1,7 +1,18 @@
 #  sdtmchecks - practice area
+#  Misc info about pkg=sdtmchecks
+
 library(sdtmchecks)
 library(testthat)
-debug(run_test)
+
+# finds pkg, objects ect,
+search()
+
+# find package
+utils::getAnywhere(sdtmchecksmeta)
+
+# all objects
+base::objects(package:sdtmchecks)
+
 
 ### PURPOSE:  Understand R code for sdtmchecksmeta 
 
