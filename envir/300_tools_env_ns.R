@@ -11,11 +11,12 @@
 ---
 
 
-##    base::getAnywhere() finds pkg, NS, and code
+##    Given an object, base::getAnywhere() finds pkg, NS, and code
 ```{r}
 
 library(pkgload)
 library(rlang)
+library(ggplot2)
 
 utils::getAnywhere(aes)
 getAnywhere(vapply)
@@ -23,11 +24,20 @@ getAnywhere(getAnywhere)
 getAnywhere(.rs.restart)
 
 ```
+
+##-----------------------------------------
+##  Given a package, list All objects :
+
+```{r}
+base::objects("package:stats")
+base::objects("package:sdtmchecks")
+base::objects(package:tibble)
+
+```
 ##-----------------------------------------
 
-# Where is package installed? (pkgload:: part of devtools::)
-``
 
+# Where is package installed? (pkgload:: part of devtools::)
 ```{r}
 
 pkgload::inst("ggplot2") #/home/jim/R/x86...-library/3.6/ggplot2
@@ -36,11 +46,6 @@ pkgload::inst("base")   #/usr/lib/R/library/base
 ##  IS PACKAGE LOADED & ATTACHED?
 
 base::search()
-
-#
-# insert env, single ":"
-base::objects("package:stats")
-base::objects("package:sdtmchecks")
 
 # OR, a bit easier to read
 rlang::search_envs()

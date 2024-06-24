@@ -61,3 +61,35 @@ if ( z[[index]] %in% rem ) # dup found
   match(z[[index]], rem)
 }
 
+
+
+###  Given a string, break into single letters
+
+string = c(letters[1:10], "a")
+a=unlist(strsplit(string, split=""))
+a
+
+N=length(a)
+
+### Reverse letters
+for (i in 1:N) {
+b[i] = a[N+1 - i]
+}
+
+b
+
+
+t = tibble(original_index=1:N, value=a)
+t |> dplyr::group_by(value)
+
+
+
+###   use vectors ONLY
+string = c(letters[1:10], "a")
+a=unlist(strsplit(string, split=""))
+N=length(a)
+
+### "a" is first element in vector.
+### position 10 is next "a"
+
+which("a" == a[2:N])
