@@ -59,3 +59,19 @@ v2i(c(1:3)) # [1] 123
 add1 <- function(x, y) {
   i2v(v2i(rev(x)) + v2i(rev(y)))
 }
+
+
+###  can int vector hold repeatd values? YES
+X=c(1,2,1)
+X
+
+## sort
+sort.int(X)
+
+sort(X)
+
+# which index have same value
+which(1 == X)[[1]]
+which(1 == X)[[2]]
+
+which(1 == X)
