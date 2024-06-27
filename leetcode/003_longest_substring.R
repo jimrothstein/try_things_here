@@ -54,42 +54,37 @@ rem  <- cut(z, index); rem                          #remainder
 #  LATER MATCH?  given char at  position index
 # ----------------------------------------------
 # for character at position, is there a match LATER in str?
-find  <- function(z[[index]], rem)
-if ( z[[index]] %in% rem ) # dup found
-{
-  # return position
-  match(z[[index]], rem)
-}
+
+# t or f
+find  <- function(s, X) s %in% X  # dup found
+
+find("a", X)
+find("z", X)
 
 
+# stops after 1st match
+match("a", X)
 
 ###  Given a string, break into single letters
 
 string = c(letters[1:10], "a")
-a=unlist(strsplit(string, split=""))
-a
+X=unlist(strsplit(string, split=""))
+X
+N=length(X)
+Y=character(N)
 
-N=length(a)
+
+### Does X[[1]] have match?
+which(X[[1]] == X[2:N])
+
+# yes, positions 1, 11
+which(X[[1]] == X)
+
+      X[2:N]
 
 ### Reverse letters
 for (i in 1:N) {
-b[i] = a[N+1 - i]
+Y[i] =X[N+1 - i]
 }
+Y
 
-b
-
-
-t = tibble(original_index=1:N, value=a)
-t |> dplyr::group_by(value)
-
-
-
-###   use vectors ONLY
-string = c(letters[1:10], "a")
-a=unlist(strsplit(string, split=""))
-N=length(a)
-
-### "a" is first element in vector.
-### position 10 is next "a"
-
-which("a" == a[2:N])
