@@ -34,15 +34,17 @@ sort(x1)
 
 # dictionary order?
 month_levels <- c(
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 )
-x2 <- factor(x1, levels=month_levels)
-x2  # no change to data, but levels are correct
+x2 <- factor(x1, levels = month_levels)
+x2 # no change to data, but levels are correct
 
-t  <- tribble(~"month", ~"count",
-        "Dec", 23,
-        "Apr",  0)
+t <- tribble(
+  ~"month", ~"count",
+  "Dec", 23,
+  "Apr", 0
+)
 
 t
 
@@ -53,37 +55,33 @@ x1 %>% fct_reorder(x2)
 
 # in school year order?
 school_levels <- c(
-									 "Sep","Oct","Nov","Dec","Jan",
-									 "Feb","Mar","Apr","May","Jun")
-x4 <- factor(x1, levels=school_levels)
+  "Sep", "Oct", "Nov", "Dec", "Jan",
+  "Feb", "Mar", "Apr", "May", "Jun"
+)
+x4 <- factor(x1, levels = school_levels)
 x4
-
 ```
 ```{r}
 # school begins in Sept
-t  <- tibble(m = factor(month_levels), s = c(5:12,1:4))
+t <- tibble(m = factor(month_levels), s = c(5:12, 1:4))
 t
 cat(t$m)
-levels(t$m)  # alpha order
+levels(t$m) # alpha order
 t
 
-t$s[[9]]  #1
+t$s[[9]] # 1
 t$s[1]
 t$m[t$s[[9]]]
 
-f  <- factor(t$m)
+f <- factor(t$m)
 t$m <- f
 t
-
-
 ```
 
 
 ```{r}
-
-
 # gss_cat is list, partyid is a factor, with 10 possibiliteis
-str(gss_cat, max.levels=1)
+str(gss_cat, max.levels = 1)
 levels(gss_cat$partyid)
 
 # in order of levels
@@ -106,26 +104,23 @@ fct_count(partyid2)
 
 glimpse(gss_cat)
 head(gss_cat)
-gss_cat[1:5,]
+gss_cat[1:5, ]
 
 # reorder, based on partyid2
 gss_cat$partyid2 <- partyid2
-
 ```
 
 
 ```{r}
 # Structure
 # ===========
-structure(c(first=c("a","b"),second=c("x","y")), names =c("joe", "jim"))
-as.character ("a")	
-	
-
+structure(c(first = c("a", "b"), second = c("x", "y")), names = c("joe", "jim"))
+as.character("a")
 ```
 
 ```{r}
 # START HERE
-relig<- gss_cat %>%
+relig <- gss_cat %>%
   group_by(relig) %>%
   summarise(
     age = mean(age, na.rm = TRUE),
@@ -134,59 +129,59 @@ relig<- gss_cat %>%
   )
 relig
 
-relig1  <- relig %>% 
-  mutate(relig = fct_reorder(relig, tvhours)) 
+relig1 <- relig %>%
+  mutate(relig = fct_reorder(relig, tvhours))
 str(relig)
 str(relig1)
 
 relig$relig
 relig1$relig
 relig1 %>% ggplot() +
-	aes(relig, tvhours) +
-	geom_point()
+  aes(relig, tvhours) +
+  geom_point()
 ```
 
 #### 0010_create_tibble
 ```{r}
-
 # use tribble
 t <- tribble(
-	~key, ~value,
-	"A", 1,
-	"A", 2,
-	"A", 2,
-	"B", 3,
-	"B", 4,
-	"C", 10,
-	"C", 20,
-	"C", 30,
-	"C", 40
+  ~key, ~value,
+  "A", 1,
+  "A", 2,
+  "A", 2,
+  "B", 3,
+  "B", 4,
+  "C", 10,
+  "C", 20,
+  "C", 30,
+  "C", 40
 )
 # make key a factor
 t
 t %>% mutate(key = factor(key))
 
 # key, n=count(each key)
-s <- t %>% count(key, sort=TRUE)
+s <- t %>% count(key, sort = TRUE)
 s
 # s lost the factor!
 s %>% glimpse()
 
 # now s has factor
-s %>% mutate( key = forcats::fct_reorder(key,n))
+s %>% mutate(key = forcats::fct_reorder(key, n))
 
 # months
 # ========
 
-t  <- tribble(
-~month, ~order, ~school_order,
-"JAN", 1, 5,
-"FEB", 2, 6,
-"MAR", 3, 7,
-"APR", 4, 8,  
-"DEC", 12, 4)
+t <- tribble(
+  ~month, ~order, ~school_order,
+  "JAN", 1, 5,
+  "FEB", 2, 6,
+  "MAR", 3, 7,
+  "APR", 4, 8,
+  "DEC", 12, 4
+)
 
-t$month  <- factor(t$month)
+t$month <- factor(t$month)
 str(t)
 t
 fct_reorder(t$month, t$order, .f = mean)

@@ -35,30 +35,30 @@ Here now is my question:
 ### Base R fix for row.names
 ```{r}
 library(reprex)
-reprex({
-library(glue)
+reprex(
+  {
+    library(glue)
 
-# `glue_data()` is useful in magrittr pipes
-if (require(magrittr)) {
-  mtcars %>% glue_data("{rownames(.)} has {hp} hp") %>% head()
-}
+    # `glue_data()` is useful in magrittr pipes
+    if (require(magrittr)) {
+      mtcars %>%
+        glue_data("{rownames(.)} has {hp} hp") %>%
+        head()
+    }
 
-# then I tried the base R pipe
-  mtcars |> glue_data("{rownames(.)} has {hp} hp")
-
-
-
-}, session_info = T)
-
+    # then I tried the base R pipe
+    mtcars |> glue_data("{rownames(.)} has {hp} hp")
+  },
+  session_info = T
+)
 ```
 
 
 ### fix for rownames not a column
 ```{r}
-
-x  <- row.names(mtcars)
+x <- row.names(mtcars)
 typeof(x)
-z  <- cbind(mtcars, x)
+z <- cbind(mtcars, x)
 glue_data(z, " {hp} for car type {x}")
 ```
 

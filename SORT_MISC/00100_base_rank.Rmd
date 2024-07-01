@@ -25,71 +25,71 @@ Numbers can be ordinal,positional (1st, 2nd) or cardinal, quantity (10 > 9)
 
 Ranking sorts by some value; then positions largest as `1st` ;   think of sports ranking.
 ```{r rank}
-
 # RANK is each element's distance from lowest (smallest) bottom (=1)
 # Think:  who is winning? (is first on list)
 # 10 is always 3rd from bottom (which is 1 here)
 # Rank:  map each element to its position when ranked  (from top)
-rank(c(10, 8, 1))  # 3, 2, 1   # item 1 (10) is largest
+rank(c(10, 8, 1)) # 3, 2, 1   # item 1 (10) is largest
 rank(c(10, 8, 3)) # [1] 3 2 1
-rank(c(1,10,8)) # [1] 1 3 2    10 moves to 1st
+rank(c(1, 10, 8)) # [1] 1 3 2    10 moves to 1st
 
 
-v  <- c("j", "d", "i")                 # j "largest"; moves to top position
+v <- c("j", "d", "i") # j "largest"; moves to top position
 rank(v) # [1] 3 1 2
 ```
 
 
 
 ```{r reprex}
-
 # R
 #'  **Order vs rank**
-                 #'
-#'  The function roll() picks 3 letters (from the first 10) and displays results several ways.   
 #'
-#'  Every now and then order and rank do not match, puzzling me.   
+#'  The function roll() picks 3 letters (from the first 10) and displays results several ways.
+#'
+#'  Every now and then order and rank do not match, puzzling me.
 #'
 
 
 
-#'  First, the roll function                
-    roll  <- function(original = NULL) {
-    # if user provides no original, pick sample  of 3
+#'  First, the roll function
+roll <- function(original = NULL) {
+  # if user provides no original, pick sample  of 3
 
-    if (is.null(original))
-      original  <- sample(letters[1:10], size=3)
+  if (is.null(original)) {
+    original <- sample(letters[1:10], size = 3)
+  }
 
-    #  
-    list  <- list(original = original, 
-                  sort = sort(original),
-                  order = order(original),
-                  rank = rank(original)
-                  )
-    }
-#' 
+  #
+  list <- list(
+    original = original,
+    sort = sort(original),
+    order = order(original),
+    rank = rank(original)
+  )
+}
+#'
 #'  # let's try, examine the different ways to present:
-    #
-    (r  <- roll())
+#
+(r <- roll())
 #'
 
-#' Now, try with this specific choice, why do order and rank differ? 
+#' Now, try with this specific choice, why do order and rank differ?
 #'
-    v  <- c("j", "d", "i")    # rank, from largest( j, i, d) (3, 2, 1) 3=larges
-    (r  <- roll(v))
-    (r  <- roll())
+v <- c("j", "d", "i") # rank, from largest( j, i, d) (3, 2, 1) 3=larges
+(r <- roll(v))
+(r <- roll())
 # $original
 # [1] "c" "j" "b"   # in order, b,c,j   j is largest
-# 
+#
 # $sort
 # [1] "b" "c" "j"
-# 
+#
 # $order
 # [1] 3 1 2
-# 
-# $rank     j is largest, winning (3), c -> 2nd place, b -> 3rd 
+#
+# $rank     j is largest, winning (3), c -> 2nd place, b -> 3rd
 # [1] 2 3 1
-# 
-# 
+#
+#
 ```
 

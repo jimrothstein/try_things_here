@@ -7,14 +7,14 @@
 ##      Add new column, based on column passed
 # ----------------------------------------------
 test_function <- function(data, my_col) {
-        return(data %>% mutate(
-                {{ my_col }} := 5
-        ))
+  return(data %>% mutate(
+    {{ my_col }} := 5
+  ))
 }
 
 identical( # TRUE
-        test_function(mtcars, "new_column"),
-        test_function(mtcars, new_column)
+  test_function(mtcars, "new_column"),
+  test_function(mtcars, new_column)
 )
 
 
@@ -23,7 +23,7 @@ identical( # TRUE
 #       Pass env_var
 # --------------------
 test_function1 <- function(data, col) {
-        `[[`(data, {{ col }})
+  `[[`(data, {{ col }})
 }
 
 

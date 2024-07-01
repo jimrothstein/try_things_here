@@ -19,11 +19,10 @@ TAGS:  trace, debug, trace
 
 #### `c` vs `f` in debug()
 ```{r c_f}
-
-test <- function(){
-      browser()
-      browser()
-  }
+test <- function() {
+  browser()
+  browser()
+}
 
 test()
 
@@ -31,7 +30,7 @@ test()
 # Browse[1]> c
 # Called from: test()
 # Browse[1]> c
-# 
+#
 # > test()
 # Called from: test()
 # Browse[1]> f
@@ -42,17 +41,16 @@ test()
 #### loops:  Why `c` does not appear to work?
   *   https://stackoverflow.com/questions/13663043/exit-current-browser-return-one-level  
 ```{r }
-
 FUN <- function() {
-browser()                      #first one
+  browser() # first one
 
 
-# each loop is single level, press `c` to exit browser and next loop puts you
-# right back in.
-    lapply(1:10, function(x) { 
-        browser()                      #second one
-        print(x)
-    })
+  # each loop is single level, press `c` to exit browser and next loop puts you
+  # right back in.
+  lapply(1:10, function(x) {
+    browser() # second one
+    print(x)
+  })
 }
 
 FUN()
@@ -68,11 +66,11 @@ trace(what = yourFunction,       tracer = some R expression,        at = code li
 
 #### create
 ```{r trace1}
-create_f  <- function(){
-    a  <- 1
-    b  <- 2
-    a+b
-    }
+create_f <- function() {
+  a <- 1
+  b <- 2
+  a + b
+}
 
 create_f()
 ```
@@ -80,8 +78,10 @@ create_f()
 #### facts
   *  observer .doTrace added
 ```{r facts}
-trace(what =create_f,
-      tracer = recover)
+trace(
+  what = create_f,
+  tracer = recover
+)
 
 body(create_f)
 # {
@@ -95,21 +95,20 @@ body(create_f)
 
 
 ##  see line numbers
-    as.list(body(create_f))
+as.list(body(create_f))
 # [[1]]
 # `{`
-# 
+#
 # [[2]]
 # .doTrace(recover(), "on entry")
-# 
+#
 # [[3]]
 # {
 #     a <- 1
 #     b <- 2
 #     a + b
 # }
-# 
-
+#
 ```
 #### 
 ```{r recover}
@@ -120,10 +119,11 @@ untrace(create_f)
 
 
 ```{r browser}
-trace(what=create_f, 
-      tracer=browser)
+trace(
+  what = create_f,
+  tracer = browser
+)
 create_f()
-
 ```
 
 

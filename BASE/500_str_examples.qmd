@@ -22,19 +22,21 @@ Consolidate str() examples here:
 ##		-----------------------------------
 ```{r}
 library(tibble)
-library(constructive)   # alternative to dput, experimental:  see  remotes::install_github("cynkra/constructive")
+library(constructive) # alternative to dput, experimental:  see  remotes::install_github("cynkra/constructive")
 ```
 
 ##	atomic, data.frame
 
 ```{r}
-v  <- letters[1:10] #  [1] "a" "b" "c" "d" "e" "f" "g" "h" "i" "j"
+v <- letters[1:10] #  [1] "a" "b" "c" "d" "e" "f" "g" "h" "i" "j"
 str(v) #  chr [1:10] "a" "b" "c" "d" "e" "f" "g" "h" "i" "j"
 
 
-df  <- data.frame(x=v,
-									y=v,
-									z=v)
+df <- data.frame(
+  x = v,
+  y = v,
+  z = v
+)
 
 df
 str(df)
@@ -46,7 +48,7 @@ str(df)
  -------------------------------------------------- 
 ##  list.len, for sibblings(a one level) number to display
 ```{r}
-L=list(1,2,3,4,5)
+L <- list(1, 2, 3, 4, 5)
 str(L)
 # List of 5
 #  $ : num 1
@@ -55,7 +57,7 @@ str(L)
 #  $ : num 4
 #  $ : num 5
 
-str(L, list.len=2)
+str(L, list.len = 2)
 #  $ : num 1
 # List of 5
 #  $ : num 2
@@ -64,10 +66,10 @@ str(L, list.len=2)
  -------------------------------------------------- 
 ##  vec.len TODO
 ```{r}
-str(letters[1:11], vec.len=3)
+str(letters[1:11], vec.len = 3)
 #  chr [1:11] "a" "b" "c" ...
 
-str(list(1,2,   letters[1:11], list(1,2,3,4,5)), vec.len=3)
+str(list(1, 2, letters[1:11], list(1, 2, 3, 4, 5)), vec.len = 3)
 # List of 4
 #  $ : num 1
 #  $ : num 2
@@ -83,37 +85,37 @@ str(list(1,2,   letters[1:11], list(1,2,3,4,5)), vec.len=3)
 
 ##  Probe
 ```{r}
-probe = function(x, max.depth=1, list.len=3, vec.len=1) str(x, max.depth, list.len, vec.len)
+probe <- function(x, max.depth = 1, list.len = 3, vec.len = 1) str(x, max.depth, list.len, vec.len)
 
 #   even simple gets messy
-L = list(1, c(2), list(3, list(4,list(5))))
+L <- list(1, c(2), list(3, list(4, list(5))))
 probe(L)
-probe(L, max.depth=2)
-probe(L, max.depth=3)
+probe(L, max.depth = 2)
+probe(L, max.depth = 3)
 ```
 
 ##  dput (control = ??)
 
 ##  Pop off outer list
 ```{r}
-L[1]  # subset
+L[1] # subset
 # [[1]]
 # [1] 1
-# 
-dput(L[1])   # get suppress line2 , 3?
+#
+dput(L[1]) # get suppress line2 , 3?
 # list(1)
 # [[1]]
 # [1] 1
-# 
-# 
-# 
+#
+#
+#
 ## easier way to see effect of [[]]
-dput(L[[1]], control=NULL)  # remove line 2
+dput(L[[1]], control = NULL) # remove line 2
 # 1
 # [1] 1
-# 
-# 
-# 
+#
+#
+#
 dput(as.data.frame(L[[1]]))
 # structure(list(`L[[1]]` = 1), row.names = c(NA, -1L), class = "data.frame")
 #   L[[1]]
@@ -125,7 +127,6 @@ dput(tibble(L[[1]]))
 #   `L[[1]]`
 #      <dbl>
 # 1        1
-
 ```
 
 

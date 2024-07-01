@@ -52,8 +52,8 @@ z <- lapply(users$value, function(e) list(names(e)))
 length(z) # [1] 6
 # naems are same? yes
 setdiff(
-        z[[1]],
-        z[[2]]
+  z[[1]],
+  z[[2]]
 )
 
 # NOTE:  `name` appears TWICE

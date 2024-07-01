@@ -7,10 +7,12 @@ TAGS:  ENV, sys.calls, sys.nframe
 
 
 ```{r setup,  include=FALSE}
-knitr::opts_chunk$set(echo = TRUE,
-                      comment = "      ##",
-                      error = TRUE,
-                      collapse = TRUE)
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = TRUE
+)
 ```
 
 Before do anything, what frame # ?
@@ -23,36 +25,37 @@ How many levels down ?
   -  0=GlobalEnv  
   -  chain of functions, a() calls b() ...  
 ```{r nframe_levels}
-
-a  <- function() {
-  cat("nframe = ", sys.nframe() , "\n")
+a <- function() {
+  cat("nframe = ", sys.nframe(), "\n")
   b()
 }
 
-b   <- function(){ 
-  cat("nframe = ", sys.nframe() , "\n")
+b <- function() {
+  cat("nframe = ", sys.nframe(), "\n")
   print(paste0("Called from ", sys.call()))
   c()
 }
 
-c  <- function() {
+c <- function() {
   cat("nframe = ", sys.nframe(), "\n")
   print(paste0("Called from ", sys.call()))
-  #cat("called from ", sys.call(), "\n")
-  #sys.calls()
+  # cat("called from ", sys.call(), "\n")
+  # sys.calls()
 }
 
 cat("nframe = ", sys.nframe(), "\n")
 
-f  <- function() a()
+f <- function() a()
 f()
 ```
 
 recursive!
 ```{r loop, eval=FALSE   }
 cat("nframe = ", sys.nframe(), "\n")
-a  <- function() {
-  if (sys.nframe() == 9) return()
+a <- function() {
+  if (sys.nframe() == 9) {
+    return()
+  }
   cat("nframe = ", sys.nframe(), "\n")
   a()
 }
@@ -61,12 +64,13 @@ a()
 
 ```{r render, eval=FALSE, include = FALSE     }
 rmarkdown::render(
-   "/home/jim/code/hugo_projects/blog/content/post/0010_sys_calls.Rmd",
-   output_format = "html_document",
-   output_file = "~/Downloads/print_and_delete/out.html")
+  "/home/jim/code/hugo_projects/blog/content/post/0010_sys_calls.Rmd",
+  output_format = "html_document",
+  output_file = "~/Downloads/print_and_delete/out.html"
+)
 
-   # output_format = "pdf_document",
-   # output_file= "~/Downloads/print_and_delete/out.pdf")
+# output_format = "pdf_document",
+# output_file= "~/Downloads/print_and_delete/out.pdf")
 ```
 
 

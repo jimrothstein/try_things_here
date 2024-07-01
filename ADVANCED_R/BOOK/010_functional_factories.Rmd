@@ -21,24 +21,26 @@ library(here)
 library(ggplot2)
 library(scales)
 
-ren  <- function() {
-rmarkdown::render(here::here("book_advanced_R","R","010_functional_factories.Rmd"), 
-									output_dir="~/Downloads/print_and_delete") 
+ren <- function() {
+  rmarkdown::render(here::here("book_advanced_R", "R", "010_functional_factories.Rmd"),
+    output_dir = "~/Downloads/print_and_delete"
+  )
 }
 ren()
 
-ren2  <- function() {
-rmarkdown::render(here::here("book_advanced_R","R","010_functional_factories.Rmd"), 
-									output_format ="github_document",
-									output_dir="~/Downloads/print_and_delete") 
+ren2 <- function() {
+  rmarkdown::render(here::here("book_advanced_R", "R", "010_functional_factories.Rmd"),
+    output_format = "github_document",
+    output_dir = "~/Downloads/print_and_delete"
+  )
 }
 ren2()
 ```
 
 ```{r one, include=FALSE} 
-knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE, collapse=TRUE)
+knitr::opts_chunk$set(echo = TRUE, comment = "      ##", error = TRUE, collapse = TRUE)
 
-# 
+#
 ```
 
 ```
@@ -48,7 +50,7 @@ knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE, collapse=TR
 ```{r 10.1_code}
 power1 <- function(exp) {
   function(x) {
-    x ^ exp
+    x^exp
   }
 }
 square(2)
@@ -84,7 +86,7 @@ fn_env(square)$exp
 fn_env(cube)$exp
 
 # LOOK:  above must have forced eval!
-x  <- 3
+x <- 3
 square(2)
 ```
 
@@ -109,19 +111,18 @@ Solution: use force(exp), so will exp, b/c it will be returned
 ```
 
 ```{r}
-
 power2 <- function(exp) {
-	force(exp)
+  force(exp)
   function(x) {
-    x ^ exp
+    x^exp
   }
 }
 
-x  <-  2
-square  <- power2(2)
-square  # code still shows "exp" but env now knows 
+x <- 2
+square <- power2(2)
+square # code still shows "exp" but env now knows
 fn_env(square)$exp
-x  <- 3
+x <- 3
 square(2)
 ```
 
@@ -132,7 +133,7 @@ square(2)
 set.seed(0602)
 new_counter <- function() {
   i <- 0
-  
+
   function() {
     i <<- i + 1
     i
@@ -151,34 +152,36 @@ counter_two <- new_counter()
 rm(i)
 rm(x)
 
-pick  <- function(i) {
-	e  <- current_env()
-	cat(capture.output(e))
-	l <- info()
-	cat(capture.output(l$current), 
-		capture.output(l$caller) ,
-	capture.output(l$caller_parent), sep="\n")
+pick <- function(i) {
+  e <- current_env()
+  cat(capture.output(e))
+  l <- info()
+  cat(capture.output(l$current),
+    capture.output(l$caller),
+    capture.output(l$caller_parent),
+    sep = "\n"
+  )
 
-	force(i)
-	one  <- function(x) x[[i]]
+  force(i)
+  one <- function(x) x[[i]]
 }
 
 # pick(i)  # Error, demands value for i
 
-i  <- 3
-f  <-  pick(i)
+i <- 3
+f <- pick(i)
 
 
-# create 
+# create
 # code
 f
 
 # EXAMPLES
-letters  <- letters
-f(letters) #c
+letters <- letters
+f(letters) # c
 
-l  <- list("one", "two", "threee")
-f(l)  # threee
+l <- list("one", "two", "threee")
+f(l) # threee
 info()
 ```
 

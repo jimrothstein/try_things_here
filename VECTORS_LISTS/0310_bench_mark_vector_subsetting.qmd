@@ -25,28 +25,27 @@ vec_num <- force(as.integer(vec_fac))
 table(vec_str)
 
 #> vec_str
-#>      a      b      c      d      e 
+#>      a      b      c      d      e
 #> 200322 199965 200148 199841 199724
 
 table(vec_fac)
 #> vec_fac
-#>      a      b      c      d      e 
+#>      a      b      c      d      e
 #> 200322 199965 200148 199841 199724
 
 table(vec_num)
 
 #> vec_num
-#>      1      2      3      4      5 
+#>      1      2      3      4      5
 #> 200322 199965 200148 199841 199724
 
 bench::mark(
   vec_str[vec_str == "a"],
   vec_fac[vec_fac == "a"],
-  vec_num[vec_num == 1],   # casts to numeric (dbl?) 
-  vec_num[vec_num == 1L], 
+  vec_num[vec_num == 1], # casts to numeric (dbl?)
+  vec_num[vec_num == 1L],
   check = FALSE,
   relative = TRUE,
   iterations = 1000
 )
-
 ```

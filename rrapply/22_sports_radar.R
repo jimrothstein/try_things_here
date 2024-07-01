@@ -9,18 +9,25 @@ listviewer::jsonedit(sr_raw)
 
 # of 17 items from root, he wants only 2 siblings (summary, plays)   which are lists
 # All the same ...
-  sr_raw %>% magrittr::extract(c("summary", "plays")) %>% tibble() 
-  sr_raw %>% `[`(c("summary", "plays")) %>% tibble()      # functional form
-  sr_raw %>% `[`(c("summary", "plays")) %>% tibble() %>% jsonedit()   # functional form
+sr_raw %>%
+  magrittr::extract(c("summary", "plays")) %>%
+  tibble()
+sr_raw %>%
+  `[`(c("summary", "plays")) %>%
+  tibble() # functional form
+sr_raw %>%
+  `[`(c("summary", "plays")) %>%
+  tibble() %>%
+  jsonedit() # functional form
 
 ##  individually
-  sr_raw$summary %>% tibble()
-  sr_raw$plays %>% tibble() 
+sr_raw$summary %>% tibble()
+sr_raw$plays %>% tibble()
 
 ##  another way
-  sr2  <- sr_raw[c("summary", "plays")] %>% tibble()
-  sr2
+sr2 <- sr_raw[c("summary", "plays")] %>% tibble()
+sr2
 
 ## seems doing too much for free. (ie transposes)
-  plays  <- sr_raw$plays  %>% tibble
-  plays
+plays <- sr_raw$plays %>% tibble()
+plays

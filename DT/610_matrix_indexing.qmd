@@ -30,7 +30,7 @@ grep -EHRn 'A\[B\]'
 ```{r}
 #| label: matrix A
 #| warning: false
-A  <- matrix(1:12, 4)
+A <- matrix(1:12, 4)
 A
 #'      [,1] [,2] [,3]
 #' [1,]    1    5    9
@@ -63,34 +63,33 @@ A[B]
 
 ### `Usual Base R is generate T/F`
 ```{r}
-A[, ] == 5   ## NOTE!
+A[, ] == 5 ## NOTE!
 #       [,1]  [,2]  [,3]
 # [1,] FALSE  TRUE FALSE
 # [2,] FALSE FALSE FALSE
 # [3,] FALSE FALSE FALSE
 # [4,] FALSE FALSE FALSE
-x  <-  A[,] == 5
+x <- A[, ] == 5
 
-##    WHY ? 
+##    WHY ?
 A[x]
 # [1] 5
 
 ##   WHY?
 
-A[,] == 5| 11    # wrong
-A[,]  == 5 | A[, ] == 11   # right
+A[, ] == 5 | 11 # wrong
+A[, ] == 5 | A[, ] == 11 # right
 
-A[A[,] == 5]
-A[A[,] == 5, drop=F]
+A[A[, ] == 5]
+A[A[, ] == 5, drop = F]
 
 # return as mattrix, entire row
-A[A[, 2] == 5,, drop=F]
+A[A[, 2] == 5, , drop = F]
 
-A[A[,] == 11]
-A[A[,] == 11]
+A[A[, ] == 11]
+A[A[, ] == 11]
 
-A[A[,2] ==  5,, drop=F ]   # first row matches
-A[A[,2] ==  11,, drop=F ]   # no row matches
-
+A[A[, 2] == 5, , drop = F] # first row matches
+A[A[, 2] == 11, , drop = F] # no row matches
 ```
 

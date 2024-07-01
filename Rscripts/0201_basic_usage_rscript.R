@@ -3,7 +3,7 @@
 #
 #
 #
-#  K E E P 
+#  K E E P
 # ===========
 #
 # chmod 744 should suffice
@@ -12,12 +12,12 @@ print("hello")
 Sys.time()
 print("== all args ==")
 # char[] of all args
-args  <- commandArgs()
+args <- commandArgs()
 print(args)
 
 
 print("== only trailing ==")
-args  <- commandArgs(trailingOnly = T)
+args <- commandArgs(trailingOnly = T)
 print(args)
 
 # ======================================================

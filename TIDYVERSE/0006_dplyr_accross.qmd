@@ -14,11 +14,13 @@ iris <- as_tibble(iris) |> print()
 # Different ways to select the same set of columns
 # See <https://tidyselect.r-lib.org/articles/syntax.html> for details
 iris |>
-  mutate(across(c(Sepal.Length, Sepal.Width), round)) |> head()
+  mutate(across(c(Sepal.Length, Sepal.Width), round)) |>
+  head()
 
 iris
 iris %>%
-  mutate(across(c(1, 2), round)) |> print(n=3)
+  mutate(across(c(1, 2), round)) |>
+  print(n = 3)
 
 iris %>%
   mutate(across(1:Sepal.Width, round))
@@ -34,7 +36,7 @@ iris %>%
 # If the external vector is named, the output columns will be named according
 # to those names.  Now cols are NAMED columns.
 names(cols) <- tolower(cols)
-names(cols) = paste0("pre-", names(cols))
+names(cols) <- paste0("pre-", names(cols))
 iris %>%
   mutate(across(all_of(cols), round))
 
@@ -101,6 +103,4 @@ iris %>%
   filter(if_any(ends_with("Width"), ~ . > 4))
 iris %>%
   filter(if_all(ends_with("Width"), ~ . > 2))
-
-
 ```

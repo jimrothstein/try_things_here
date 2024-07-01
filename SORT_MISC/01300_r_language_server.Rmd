@@ -23,10 +23,12 @@ s/https.*/[&]()/g
 -->
 
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,
-                      comment = "      ##",
-                      error = TRUE,
-                      collapse = TRUE)
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = TRUE
+)
 ```
 
 <!--  RENDER:  see bottom -->
@@ -34,7 +36,6 @@ knitr::opts_chunk$set(echo = TRUE,
 ```{r library, include=FALSE		}
 library(jimTools)
 library(languageserver)
-
 ``` 
 
 NOTES:
@@ -53,11 +54,10 @@ knitr::knit_exit()
 /newpage
 
 ```{r render, eval=FALSE	} 
-
 file <- ""
-file  <- basename(file)
+file <- basename(file)
 dir <- "rmd"
 
-jimTools::ren_pdf(file,dir)
+jimTools::ren_pdf(file, dir)
 jimTools::ren_github(file, dir)
 ```

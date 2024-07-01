@@ -27,11 +27,13 @@ TAGS:  skeleton
 PURPOSE:  functions and dot-dot-dot
 
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,
-                      comment = "      ##",
-                      tidy = "styler",
-                      error = TRUE,
-                      collapse = T   ) # T easier to read
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  tidy = "styler",
+  error = TRUE,
+  collapse = T
+) # T easier to read
 ```
 
 ```{r library 		}
@@ -40,7 +42,7 @@ knitr::opts_chunk$set(echo = TRUE,
 ```{r cars-plot, include=F,  eval=F}
 #| echo = FALSE,
 #| message = FALSE,
-#| fig.width = 6, 
+#| fig.width = 6,
 #| fig.height = 6,
 #| fig.path = "figures/",
 #| fig.caption = "This is a long caption that fits better inside of a code chunk",
@@ -51,47 +53,46 @@ library(ggplot2)
 
 #### list(...) evaluates arguments and returns list
 ```{r inner}
-inner  <- function(...){
+inner <- function(...) {
   list(...)
 }
 
-inner(a=2, b=3+1, c=4)
+inner(a = 2, b = 3 + 1, c = 4)
 # $a
 # [1] 2
-# 
+#
 # $b
 # [1] 4
-# 
+#
 # $c
 # [1] 4
-# 
+#
 ```
 
 
 ```{r render, eval=FALSE, include=FALSE 	} 
-output_dir  <- Sys.getenv("OUTPUT_DIR")
+output_dir <- Sys.getenv("OUTPUT_DIR")
 output_dir
 
 {
-# get file
-file <- "/home/jim/.config/nvim/templates/skeleton.Rmd"
-file  <- normalizePath(file)
-file
+  # get file
+  file <- "/home/jim/.config/nvim/templates/skeleton.Rmd"
+  file <- normalizePath(file)
+  file
 
 
-## Ref only
-    # the_dir  <- dirname(file)
-    # file  <- basename(file)
-    # file  <- file.path(the_dir, file)
-
+  ## Ref only
+  # the_dir  <- dirname(file)
+  # file  <- basename(file)
+  # file  <- file.path(the_dir, file)
 }
 
 rmarkdown::render(file,
-#                  output_format="html_document",
-                    output_format="pdf_document",
-                    intermediates_dir='./tmp',
-                    clean = F,              # leave tmp files
-                    output_dir=output_dir
-                  )
+  #                  output_format="html_document",
+  output_format = "pdf_document",
+  intermediates_dir = "./tmp",
+  clean = F, # leave tmp files
+  output_dir = output_dir
+)
 ```
 

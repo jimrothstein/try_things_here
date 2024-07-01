@@ -1,16 +1,16 @@
 ---
-  title: test
+  title:test
 ---
 
 
-##  cross join  (ie all combinations)
-df1  <- data.frame(ONE=letters[1:3])
+  ##  cross join  (ie all combinations)
+  df1 <- data.frame(ONE = letters[1:3])
 df1
 
-df2  <- data.frame(TWO=letters[24:26])
+df2 <- data.frame(TWO = letters[24:26])
 df2
 
-merge(df1, df2, by=NULL)
+merge(df1, df2, by = NULL)
 #   ONE TWO
 # 1   a   x
 # 2   b   x
@@ -26,7 +26,7 @@ merge(df1, df2, by=NULL)
 
 
 ##  outer join? FAILS
-merge(df1, df2, by="ONE", all=T)
+merge(df1, df2, by = "ONE", all = T)
 
 
 
@@ -37,8 +37,8 @@ merge(df1, df2, by="ONE", all=T)
 
 library(data.table)
 
-ONE=letters[1:3]
-TWO=letters[24:26]
+ONE <- letters[1:3]
+TWO <- letters[24:26]
 
 CJ(ONE, TWO)
 #    ONE TWO
@@ -51,6 +51,3 @@ CJ(ONE, TWO)
 # 7:   c   x
 # 8:   c   y
 # 9:   c   z
-
-
-

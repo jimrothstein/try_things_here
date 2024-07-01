@@ -20,14 +20,16 @@ geometry: margin=0.5in,top=0.25in
 * X' = map(X, f) where X is a set
 
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,  
-											comment="      ##",  
-											error=TRUE, 
-											collapse=TRUE) 
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = TRUE
+)
 ```
 
 ```{r library, include=FALSE		}
-library(jimTools) 
+library(jimTools)
 library(purrr)
 library(dplyr)
 ``` 
@@ -37,7 +39,7 @@ purrr::rerun (replaces replicate())
 # create a list, or repeat any expression
 purrr::rerun(10, "hello")
 
-rerun(3, date() )
+rerun(3, date())
 
 # this creates chr[]
 purrr::map_chr(1:10, ~"hello")
@@ -49,10 +51,10 @@ rep
 base::rep("hello", 10)
 
 # double[]
-base::rep(c(1,2),4)
+base::rep(c(1, 2), 4)
 
 # create atomic vectors
-rep(1+1, 3)  #2 2 2 
+rep(1 + 1, 3) # 2 2 2
 rep(date(), 2) # chr[]
 ```
 
@@ -61,47 +63,47 @@ SIDE EFFECTS
 * side effect means ENV changed, global, a file.  Usually not desired.
 * Sometimes, ex print(), side effect is benefit.
 ```{r sideeffect}
-l  <- c("jim", "joe", "sally")
+l <- c("jim", "joe", "sally")
 # SIDE EFFECT:  print each element of l
-z  <- map_chr(l, print)
+z <- map_chr(l, print)
 
 # in addition, returns chr[] z
 z
 ```
 WALK
 ```{r walk}
-# WALK,   calls sideeffect 
+# WALK,   calls sideeffect
 #   AND returns .x
-z  <- purrr::walk(l, ~print(length(.)))
+z <- purrr::walk(l, ~ print(length(.)))
 z
 ```
 
 # more advanced
 ```{r}
-
 # SIDE EFFECT,  print goes to console (1st 10 lines)
 # THEN print a list
 map(rep("hello", 10), print)
 
 # map returns LIST of just 1 elment, chr[]
-map("hello", ~rep(.x, 10))
+map("hello", ~ rep(.x, 10))
 
 # ERROR
-if (FALSE )
-map_chr("hello", ~rep(.x, 10))
+if (FALSE) {
+  map_chr("hello", ~ rep(.x, 10))
+}
 ```
 
 ```{r knit_exit()} 
-knitr::knit_exit() 
+knitr::knit_exit()
 ```
 
 /newpage
 
 ```{r render, eval=FALSE	} 
-file <- "" 
-file  <- basename(file) 
-dir <-"rmd"
+file <- ""
+file <- basename(file)
+dir <- "rmd"
 
-jimTools::ren_pdf(file,dir)
+jimTools::ren_pdf(file, dir)
 jimTools::ren_github(file, dir)
 ```

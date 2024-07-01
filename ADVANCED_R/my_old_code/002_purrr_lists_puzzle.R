@@ -9,45 +9,45 @@
 ## I do not understand
 
 # clean up
-rm(list=ls())
+rm(list = ls())
 library(tidyverse)
 
 #-----------------------------
 # create vector (this will be inflation)
-v <- c(1,2,3)
-what_is_it(v)  # default is double
+v <- c(1, 2, 3)
+what_is_it(v) # default is double
 
 #-----------------------------
 # vector to name each element of v (instead of "2009Q3")
 # check now
-names(v)  # NULL, no names
+names(v) # NULL, no names
 
-n<-c("a","b","c")  
-what_is_it(n)   # check this too!
+n <- c("a", "b", "c")
+what_is_it(n) # check this too!
 
 # use purrr to set names
-v<-purrr::set_names(v,n)
-names(v)  # still NULL?
+v <- purrr::set_names(v, n)
+names(v) # still NULL?
 
 # what is v now?
-what_is_it(v)  # passes same tests
+what_is_it(v) # passes same tests
 #-----------------------------
 
 # our goal is to give v a string ("2009Q3" or "b") and get a number (inflation)
 # but ... look at few elements of v
 
 # we ONLY want the value  ... problem!
-v[2]  #  prints BOTH name and inflation value
+v[2] #  prints BOTH name and inflation value
 
 # play, some more, all return BOTH name and value
-v["b"]# returns b 2 (vertical)
-v[c("c","a","a")] # returns c a a  then on new line 3 1 1
-v[c(3,1,1)] 
+v["b"] # returns b 2 (vertical)
+v[c("c", "a", "a")] # returns c a a  then on new line 3 1 1
+v[c(3, 1, 1)]
 
 #-------------------------------
 # To obtain value ONLY, MUST use ..[[ ]]
-v[[2]]   # 2 only
-v[["c"]]  # 3 only
+v[[2]] # 2 only
+v[["c"]] # 3 only
 
 
 # -----------------------------
@@ -56,19 +56,19 @@ v[["c"]]  # 3 only
 #       where QUARTER is string  like "2009Q3"
 
 # choice 1, correct, returns value only (turns out this will fail)
-multiply_by  <- function(QUARTER) {
-        1 + v[[QUARTER]]
+multiply_by <- function(QUARTER) {
+  1 + v[[QUARTER]]
 }
 
 # choice 2,  wrong, returns BOTH name and value (yet this will work)
-multiply_by_wrong <- function(QUARTER){
-        1 + v[QUARTER]
+multiply_by_wrong <- function(QUARTER) {
+  1 + v[QUARTER]
 }
 
 # choice 3= kluge, return value only (and this also will work)
 # This kluge is what I propose for real code.
-multiply_by_kluge <-function(QUARTER){
-        1 + as.numeric(v[QUARTER])
+multiply_by_kluge <- function(QUARTER) {
+  1 + as.numeric(v[QUARTER])
 }
 
 #
@@ -90,9 +90,11 @@ multiply_by_kluge("a") # get value (2)
 # for AMOUNT, keep it simple to $1.00
 
 # our fake house expenses
-df <-data.frame(AMOUNT=c(1,1,1,1),
-                QUARTER=c("a","b","c","a"), 
-                z=c("do","ray","me","do"))
+df <- data.frame(
+  AMOUNT = c(1, 1, 1, 1),
+  QUARTER = c("a", "b", "c", "a"),
+  z = c("do", "ray", "me", "do")
+)
 
 print(df)
 
@@ -104,43 +106,49 @@ print(df)
 
 
 house_expenditures_clean <- df %>%
-        mutate('2016_dollars' = as.numeric("")) %>%
-        mutate('2016_dollars' = 
-                       round(AMOUNT* multiply_by_wrong(QUARTER),2)) %>%
-        select(everything())  
+  mutate("2016_dollars" = as.numeric("")) %>%
+  mutate(
+    "2016_dollars" =
+      round(AMOUNT * multiply_by_wrong(QUARTER), 2)
+  ) %>%
+  select(everything())
 house_expenditures_clean
 
 #------------------------
 # BOTTOM LINE
 # Kluge works, but the correct way returns error!
-# 
+#
 
 
 ##  functions
 
-# 
-what_is_it <-function(v) {
-        t<-tibble(test=
-                          c("list",
-                            "atomic",
-                            "vector",
-                            "numeric",
-                            "integer",
-                            "double",
-                            "character",
-                            "logical"),
-                  result=
-                          c(is_list(v),
-                            is_atomic(v),
-                            is_vector(v), 
-                            is_numeric(v),
-                            is_integer(v),
-                            is_double(v),
-                            is_character(v),
-                            is_logical(v))
-        )
-        print(v)
-        print(t)
-        print(paste(c("typeof=",typeof(v))))
-        
-}      
+#
+what_is_it <- function(v) {
+  t <- tibble(
+    test =
+      c(
+        "list",
+        "atomic",
+        "vector",
+        "numeric",
+        "integer",
+        "double",
+        "character",
+        "logical"
+      ),
+    result =
+      c(
+        is_list(v),
+        is_atomic(v),
+        is_vector(v),
+        is_numeric(v),
+        is_integer(v),
+        is_double(v),
+        is_character(v),
+        is_logical(v)
+      )
+  )
+  print(v)
+  print(t)
+  print(paste(c("typeof=", typeof(v))))
+}

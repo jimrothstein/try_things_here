@@ -11,6 +11,6 @@
 # did you run aa.R?
 stopifnot(exists("a") && exists("b") && exists("c"))
 
-c <- function() 'Hello from package b!'
-b <- function() paste('B+', c())
+c <- function() "Hello from package b!"
+b <- function() paste("B+", c())
 if (FALSE) source("R/aa.R")

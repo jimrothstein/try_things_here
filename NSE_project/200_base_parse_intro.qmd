@@ -33,15 +33,15 @@ base::parse(text = "x = subset(mtcars, subset = carb == 8)")
 # expression(x = subset(mtcars, subset = carb == 8))
 
 
-y=2 # does no evaluation 
+y <- 2 # does no evaluation
 parse(text = "1 + y") # expression(1 + y)
 ```
 
 #### examine result of parse , almost AST
 ```{r}
-e  <- parse(text="1+1")
-getParseData(e)[,  c("token", "text")] # almost AST
-df = getParseData(e)[,  c("token", "text")] # df
+e <- parse(text = "1+1")
+getParseData(e)[, c("token", "text")] # almost AST
+df <- getParseData(e)[, c("token", "text")] # df
 
 # try for AST
 names(df)
@@ -75,10 +75,7 @@ getParseData(e)[, c("token", "terminal", "text")]
 
 
 ```{r}
-
-
-
-# view AST 
+# view AST
 cols <- c("token", "text")
 cols
 #
@@ -93,8 +90,8 @@ mtcars[mtcars$mpg < 15, c("carb", "mpg")]
 sessionInfo()
 select_env <- new.env()
 select_env$setup <- function(.data, calling_frame) {
-    select_env$.data <- .data
-    select_env$calling_frame <- calling_frame
+  select_env$.data <- .data
+  select_env$calling_frame <- calling_frame
 }
 
 x <- select_env$setup(mtcars, environment())

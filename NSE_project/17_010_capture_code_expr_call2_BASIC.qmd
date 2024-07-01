@@ -12,13 +12,12 @@ expression is NOT a string (use str())
 ```{r}
 library(rlang)
 
-rlang::expr(mean(x, na.rm = TRUE))     # aka defuse
+rlang::expr(mean(x, na.rm = TRUE)) # aka defuse
 #> mean(x, na.rm = TRUE)
 
 ## again, expression, not string, str(return ) shows language
 expr(10 + 100 + 1000)
 #> 10 + 100 + 1000
-
 ```
 To capture code in function, use enexpr (to get what user typed)
 ```{r}
@@ -35,14 +34,14 @@ expression have list properties, can use $ or [[
 Use ast to probe inside expression
 ```{r}
 library(lobstr)
-z = rlang::expr(mean(x, na.rm = TRUE))     # aka defuse
+z <- rlang::expr(mean(x, na.rm = TRUE)) # aka defuse
 
 # hmm, z is expression, right?
-lobstr::ast(rlang::expr(mean(x, na.rm = TRUE)))     # aka defuse
+lobstr::ast(rlang::expr(mean(x, na.rm = TRUE))) # aka defuse
 
-lobstr::ast(capture_it(a+b+c))
+lobstr::ast(capture_it(a + b + c))
 # but not ...
-z=capture_it(a+b+c)
+z <- capture_it(a + b + c)
 lobstr::ast(z)
 ```
 

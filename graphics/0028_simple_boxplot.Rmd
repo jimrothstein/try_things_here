@@ -29,16 +29,18 @@ s/https.*/[&]()/g
 -->
 
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,
-                      comment = "      ##",
-                      error = TRUE,
-                      collapse = FALSE   ) # easier to read
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = FALSE
+) # easier to read
 library(ggplot2)
 ```
 
 
 ```{r library, include=FALSE		}
-file  <- knitr::current_input() 
+file <- knitr::current_input()
 
 library(jimTools)
 ``` 
@@ -46,12 +48,11 @@ library(jimTools)
 
 ### ggplot boxplot, gitter shows all the points
 ```{r begin}
-p  <-  ggplot(mpg, aes(class,  hwy))
+p <- ggplot(mpg, aes(class, hwy))
 p + geom_boxplot()
 
 # jitter brings out ALL the points
 p + geom_boxplot() + geom_jitter(width = 0.2)
-
 ```
 
 ***
@@ -70,9 +71,11 @@ dev.off()
 ```
 
 ```{r plot_png_example, eval=FALSE  }
-filename  <- "~/Downloads/print_and_delete/out.png"
-png(filename = filename,
-         width = 480, height = 480, units = "px", pointsize = 12)
+filename <- "~/Downloads/print_and_delete/out.png"
+png(
+  filename = filename,
+  width = 480, height = 480, units = "px", pointsize = 12
+)
 plot(density_object)
 dev.off()
 ```
@@ -82,13 +85,14 @@ dev.off()
 # file must be of form:
 # dir/name_of_this_file    where dir is relative to project root
 
-file  <- here("", "")
-file 
+file <- here("", "")
+file
 # NOTE:   .tex only works with PDF
 # NOTE:    tex will NOT work with html
 # in general, pdf will look nicer
 rmarkdown::render(file,
-                  #output_format = "pdf_document",
-                  output_format = "html_document",
-                  output_file = "~/Downloads/print_and_delete/out")
+  # output_format = "pdf_document",
+  output_format = "html_document",
+  output_file = "~/Downloads/print_and_delete/out"
+)
 ```

@@ -10,8 +10,8 @@ if (FALSE) {
   if (exists("c")) rm("c")
 }
 
-c <- function() 'Hello from package a!'
-a <- function() paste('A+', c())
+c <- function() "Hello from package a!"
+a <- function() paste("A+", c())
 b <- a
 
 ##  NOTES

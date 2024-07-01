@@ -8,8 +8,8 @@ TAGS:  pak,
 ---
 0 - improved vs devtools::install ....
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, comment="    ...## ")
-#library(devtools)
+knitr::opts_chunk$set(echo = TRUE, comment = "    ...## ")
+# library(devtools)
 library(tibble)
 library(pak)
 library(dplyr)
@@ -33,7 +33,7 @@ lib_status("usethis")
 3 -
 ```{r}
 ## NOT RUN,  empties cache
-#pak_cleanup()
+# pak_cleanup()
 ```
 
 

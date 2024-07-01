@@ -16,34 +16,37 @@ TAGS:  enclosure, envir, Grolemund,
 
 ## Simple enclosure,based on Grolemund Chapter 8 (2014)
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,
-                      comment = "      ##",
-                      error = TRUE,
-                      collapse = TRUE)
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = TRUE
+)
 library(jimTools)
 ``` 
 ```{r counter}
+counter <- function(n) {
+  N <- n # do not change N
 
-counter  <- function(n) {
-  N  <- n   # do not change N
-
-  get_number  <- function() n
-  next_number  <- function() assign ("n", n + 1, envir = globalenv())
-  reset_number  <- function() assign("n", N, envir = globalenv())
-    #  n <<- N this sets n in runtime env of counter!
+  get_number <- function() n
+  next_number <- function() assign("n", n + 1, envir = globalenv())
+  reset_number <- function() assign("n", N, envir = globalenv())
+  #  n <<- N this sets n in runtime env of counter!
 
 
-  list(get_number = get_number,
-       next_number = next_number,
-       reset_number = reset_number)
+  list(
+    get_number = get_number,
+    next_number = next_number,
+    reset_number = reset_number
+  )
 }
-n  <- 10
-number  <- counter(n)
+n <- 10
+number <- counter(n)
 number$get_number()
 
 number$next_number()
 n
-l  <- number$reset_number()
+l <- number$reset_number()
 l
 n
 ```

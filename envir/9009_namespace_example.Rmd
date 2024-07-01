@@ -22,46 +22,47 @@ cc=+1			"colorcolumn is 1 more than tw
 <!--  commments -->
 
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,  
-											comment="      ##",  
-											error=TRUE, 
-											collapse=TRUE) 
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = TRUE
+)
 # use to render later
-file  <- paste0("env_code/", knitr::current_input())
+file <- paste0("env_code/", knitr::current_input())
 ```
 
 <!--  RENDER:  see bottom -->
 
 ```{r library, include=FALSE		}
-library(jimTools) 
+library(jimTools)
 ``` 
 
 https://github.com/pharmaR/riskmetric/issues/176
 ```{r begin}
-file  <- knitr::current_input()
+file <- knitr::current_input()
 file
 ?getNamespaceExports()
 ```
 
 ```{r}
 # returns chr[]
-getNamespaceExports("dplyr")   #285
+getNamespaceExports("dplyr") # 285
 
 # from help:
 # ns: string or namespace object.
 # name: string or name.
 
 # returns named data.frame x, freq
-z  <- getNamespaceExports("dplyr") %>% plyr::count()
+z <- getNamespaceExports("dplyr") %>% plyr::count()
 z %>% dplyr::filter(freq > 1)
-
 ```
 
 ```{r}
 # returns named list  x, freq
 # compare function names in 2 packages
-counts <- c(getNamespaceExports("plyr"), getNamespaceExports("dplyr")) %>% 
-  plyr::count() %>% 
+counts <- c(getNamespaceExports("plyr"), getNamespaceExports("dplyr")) %>%
+  plyr::count() %>%
   dplyr::filter(freq > 1)
 counts
 nrow(counts)
@@ -70,7 +71,7 @@ nrow(counts)
 ***
 
 ```{r knit_exit()} 
-# knitr::knit_exit() 
+# knitr::knit_exit()
 ```
 
 /newpage
@@ -78,15 +79,16 @@ nrow(counts)
 
 
 ```{r render, eval=FALSE	} 
-file  <- here("env_code", "09009_namespace_example.Rmd")
+file <- here("env_code", "09009_namespace_example.Rmd")
 
 # file must be of form:
 # dir/name_of_this_file    where dir is relative to project root
 
 rmarkdown::render(file,
-                  #output_format = "pdf_document",
-                  output_format = "html_document",
-                  output_file = "~/Downloads/print_and_delete/out")
+  # output_format = "pdf_document",
+  output_format = "html_document",
+  output_file = "~/Downloads/print_and_delete/out"
+)
 
 
 root <- rprojroot::is_r_package

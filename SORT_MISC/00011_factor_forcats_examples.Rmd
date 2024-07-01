@@ -27,15 +27,17 @@ s/https.*/[&]()/g
 -->
 
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,
-                      comment = "      ##",
-                      error = TRUE,
-                      collapse = FALSE   ) # easier to read
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = FALSE
+) # easier to read
 ```
 
 
 ```{r library, include=FALSE		}
-file  <- knitr::current_input() 
+file <- knitr::current_input()
 
 library(jimTools)
 library(forcats)
@@ -59,10 +61,10 @@ Ref: https://rstudio-education.github.io/hopr/r-objects.html Ch 5.5.2
 gender <- factor(c("male", "female", "female", "male"))
 
 typeof(gender)
-attributes(gender)   # levels, class
+attributes(gender) # levels, class
 
 # internally, stored as integer
-unclass(gender)  # as  integers, with level attr
+unclass(gender) # as  integers, with level attr
 
 
 # R uses the levels attribute when it displays the factor, as you will see.
@@ -76,21 +78,21 @@ gender
 #### factor: Peng, think ints with each having a label
 ```{r factors2, collapse=TRUE}
 # create factors
-levels <- c("a","b")
+levels <- c("a", "b")
 
 # "c" becomes "NA"  NO ERROR
-x <- c("a","b","b","b","c")
+x <- c("a", "b", "b", "b", "c")
 
-x <- c("a","b","b","b")  # chr[]
+x <- c("a", "b", "b", "b") # chr[]
 
 
 # factor: closer look
 # store as integer, use levels for display
-y <- factor(x, levels=levels)
+y <- factor(x, levels = levels)
 y
 
 typeof(y)
-attributes(y)  # levels, class 
+attributes(y) # levels, class
 
 # also
 
@@ -103,7 +105,7 @@ table(y)
 names(y)
 labels(y)
 
-unclass(y)	# underneath, stored as ints
+unclass(y) # underneath, stored as ints
 names(unclass(y))
 labels(unclass(y))
 ```
@@ -111,16 +113,16 @@ labels(unclass(y))
 ####10_base sort
 ```{r base}
 # create data another way
-x <- rep(c("a","b"),6)  # chr[]
+x <- rep(c("a", "b"), 6) # chr[]
 x
 
 # turn into factora
-levels=c("a","b")
-y <- factor(x, levels=levels)
+levels <- c("a", "b")
+y <- factor(x, levels = levels)
 y
 
 
-sort(y)  # sort the underlying ints, then display with levels
+sort(y) # sort the underlying ints, then display with levels
 ```
 https://forcats.tidyverse.org/index.html
 #### forcats::fct_*
@@ -134,16 +136,16 @@ x
 # Repeat 100 times
 
 set.seed(2021)
-y <- sample(x, size=100, replace=TRUE)
-y  # int[100]
+y <- sample(x, size = 100, replace = TRUE)
+y # int[100]
 
 
 # only change is create factor
-z <- factor(y, levels=0:9)
+z <- factor(y, levels = 0:9)
 z
 
 # nice freq table  5 is most common (17)
-table(z)  
+table(z)
 
 ####
 # Data internally or display, does not change, added class and levels
@@ -153,8 +155,8 @@ table(z)
 # order factors by freq
 forcats::fct_infreq(z)
 # keep largest 3, lump rest into "other"
-forcats::fct_lump(z, n=3)
-forcats::fct_lump(z, n=3, other_level = "Z")
+forcats::fct_lump(z, n = 3)
+forcats::fct_lump(z, n = 3, other_level = "Z")
 
 
 
@@ -165,7 +167,7 @@ forcats::fct_inorder(z)
 forcats::fct_shuffle(z)
 
 # again
-a  <- forcats::fct_shuffle(z)
+a <- forcats::fct_shuffle(z)
 a
 ```
 
@@ -174,7 +176,7 @@ f <- factor(c("a", "b", "c"))
 f
 
 fct_rev(f) #> [1] a b c
-g  <- fct_rev(f)
+g <- fct_rev(f)
 g
 levels(g)
 
@@ -184,7 +186,8 @@ fct_inseq(g)
 ```{r begin_cheat}
 library(forcats)
 f <- base::factor(c("a", "c", "b", "a"),
- levels = c("a", "b", "c")) 
+  levels = c("a", "b", "c")
+)
 f
 
 levels(f)
@@ -194,7 +197,7 @@ unclass(f) # structure
 
 ```{r fct_count}
 fct_count(f)
-fct_count(f, sort = FALSE  )
+fct_count(f, sort = FALSE)
 ```
 
 ```{r fct_unique}
@@ -222,7 +225,7 @@ fct_infreq(f)
 
 f3 <- factor(c("c", "c", "a"))
 f3
-fct_infreq(f3) 
+fct_infreq(f3)
 ```
 
 set factors in order of appearance in data
@@ -233,36 +236,35 @@ fct_inorder(f2)
 
 fct_reorder
 ```{r fct_reorder}
-str(iris)  # Species is categorical (factor)
+str(iris) # Species is categorical (factor)
 
 # initial ordering
 levels(iris$Species)
 head(iris$Species, n = 20L)
 
 pdf("~/Downloads/print_and_delete/forcats.pdf")
-#plot(x, r, col = 2, ylim = c(-5, 5))
+# plot(x, r, col = 2, ylim = c(-5, 5))
 # abline(h = 0)
 boxplot(data = iris, Sepal.Width ~ Species)
-# boxplot(data = iris, Sepal.Width ~ fct_reorder(Species, Sepal.Width)) 
+# boxplot(data = iris, Sepal.Width ~ fct_reorder(Species, Sepal.Width))
 dev.off()
 ```
 ## Redo boxplot but  in asc or desc order
 ```{r reorder}
 # .f = factor
-# for each .f, group .x (a variable) and apply .fun 
-# sort based on .fun(.x) in asc order 
+# for each .f, group .x (a variable) and apply .fun
+# sort based on .fun(.x) in asc order
 # fct_reorder(.f, .x, .fun=median, .desc = FALSE)
 
-f   <- iris$Species # a factor
-x   <- iris$Sepal.Width
+f <- iris$Species # a factor
+x <- iris$Sepal.Width
 library(dplyr)
 
-x  <- fct_reorder(iris$Species, iris$Sepal.Width)
+x <- fct_reorder(iris$Species, iris$Sepal.Width)
 levels(x)
 pdf("~/Downloads/print_and_delete/forcats.pdf")
-boxplot(data = iris, Sepal.Width ~ fct_reorder(Species, Sepal.Width)) 
+boxplot(data = iris, Sepal.Width ~ fct_reorder(Species, Sepal.Width))
 dev.off()
-
 ```
 
   
@@ -282,12 +284,13 @@ dev.off()
 # file must be of form:
 # dir/name_of_this_file    where dir is relative to project root
 
-file  <- here("", "")
+file <- here("", "")
 file
 
 # in general, pdf will look nicer
 rmarkdown::render(file,
-                  #output_format = "pdf_document",
-                  output_format = "html_document",
-                  output_file = "~/Downloads/print_and_delete/out")
+  # output_format = "pdf_document",
+  output_format = "html_document",
+  output_file = "~/Downloads/print_and_delete/out"
+)
 ```

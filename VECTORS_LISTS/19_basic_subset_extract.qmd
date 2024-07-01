@@ -5,25 +5,22 @@ PURPOSE:
 
 ### partial match
 ```{r}
-x  <- list(ardvark = 1:5)
+x <- list(ardvark = 1:5)
 
 # WORKS
-x$a                                    #partial 
-x[["a", exact=F]]                      #extract, 
+x$a # partial
+x[["a", exact = F]] # extract,
 
 # FAILS
-x[["a"]]                               #extract, 
-
-
+x[["a"]] # extract,
 ```
 
 ### Compare
 ```{r}
-y  <- list(x, bark=letters[1:5], char = LETTERS[1:5])
-y[[c(2,3)]]                            # c extract el 3, from first list element 
-y[[c(3,1)]]                            # A
-y[[c(1,1)]]                            # 1:5 elment 1 is now list 
-
+y <- list(x, bark = letters[1:5], char = LETTERS[1:5])
+y[[c(2, 3)]] # c extract el 3, from first list element
+y[[c(3, 1)]] # A
+y[[c(1, 1)]] # 1:5 elment 1 is now list
 ```
 
 

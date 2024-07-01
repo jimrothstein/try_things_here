@@ -7,9 +7,9 @@
 
 ## subset rows
 ```{r}
-df  <-  mtcars
+df <- mtcars
 df |>
-    subset(hp > 200)
+  subset(hp > 200)
 ```
 
 ## select columns
@@ -22,6 +22,6 @@ base::transform
   -   allows unquoted operations on column in data.frame
   -   adds new column
 ```{r}
-transform(mtcars, twice = hp * 2) |> head(n=3)
+transform(mtcars, twice = hp * 2) |> head(n = 3)
 ```
 

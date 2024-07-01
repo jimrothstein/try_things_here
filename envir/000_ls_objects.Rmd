@@ -8,36 +8,34 @@ Simple examples of ls() and environment
 
 ls() returns objects in character vector.
 ```{r simple}
-x  <- 2
-y  <- 2*x
+x <- 2
+y <- 2 * x
 ls()
 ```
 
 ls() ALSO includes name of functions.
 ```{r add_fun}
 ls()
-f  <- function() {
-  z  <- 2
+f <- function() {
+  z <- 2
 }
 
-ls()  # includes f
+ls() # includes f
 ```
 
 #### and ls() sees environment
 ```{r ENV}
-
-E1  <- new.env()
+E1 <- new.env()
 ls()
 ```
 
 #### ls can also examine OTHER environments
 ```{r other}
-ls(envir=E1)
+ls(envir = E1)
 
-E1$x  <- 2
+E1$x <- 2
 ls(envir = E1)
 # [1] "x"
-
 ```
 
 
@@ -52,28 +50,27 @@ typeof(environment())
 
 examine package with as.environemnt(<package>)
 ```{r usethis}
-ls(envir=as.environment("package:usethis")) |> head()
-# [1] "browse_circleci"       "browse_cran"          
+ls(envir = as.environment("package:usethis")) |> head()
+# [1] "browse_circleci"       "browse_cran"
 # [3] "browse_github"         "browse_github_actions"
-# [5] "browse_github_issues"  "browse_github_pat"    
+# [5] "browse_github_issues"  "browse_github_pat"
 
 library(tinytest)
-ls(envir=as.environment("package:tinytest")) |> head()
-# [1] "all_fail"           "all_pass"           "any_fail"          
+ls(envir = as.environment("package:tinytest")) |> head()
+# [1] "all_fail"           "all_pass"           "any_fail"
 # [4] "any_pass"           "at_home"            "build_install_test"
-
 ```
 
 Examine f's execution environement
 ```{r modify_f}
 ls()
 
-f  <- function() {
-  z  <- 2
-  w  <- environment()
+f <- function() {
+  z <- 2
+  w <- environment()
 }
 
-w  <- f()
+w <- f()
 # <environment: 0x55ece2fcfc70>
 
 typeof(w)

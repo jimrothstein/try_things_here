@@ -6,8 +6,10 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE,
-                      eval = FALSE)
+knitr::opts_chunk$set(
+  echo = TRUE,
+  eval = FALSE
+)
 ```
 
 **Learning Objectives:**
@@ -51,11 +53,11 @@ library(palmerpenguins) # Palmer Archipelago (Antarctica) Penguin Data, CRAN v0.
 
 ```{r create_datatable, eval=FALSE}
 # to convert a dataframe obj to a data.table obj
-(penguinsDT <- as.data.table(penguins)) 
+(penguinsDT <- as.data.table(penguins))
 # OR
 penguinsDT
 
-(exampleDT <- data.table(x = c(1,2), y = 4, z = c("banana", "mango")))
+(exampleDT <- data.table(x = c(1, 2), y = 4, z = c("banana", "mango")))
 ```
 
 Note: `data.table` gives the col type (similar property of tibbles)!
@@ -69,7 +71,7 @@ head(penguinsDT)
 
 ```{r tail_DT, eval=FALSE}
 tail(penguinsDT)
-#tail(penguinsDT, n = 3)
+# tail(penguinsDT, n = 3)
 ```
 
 - To view the structure of the  `data.table` object, use the function `str()`.
@@ -103,7 +105,7 @@ penguinsDT
 ```
 
 ```{r ordering_rows-order, eval=FALSE}
-penguinsDT[order(-bill_length_mm)] #ordering in descending order
+penguinsDT[order(-bill_length_mm)] # ordering in descending order
 ```
 
 - Also, we can sort based on multiple columns:
@@ -130,36 +132,36 @@ penguinsDT
 An example:
 
 ```{r selecting_rows_eg(1), eval=FALSE}
-penguinsDT[3:4] #selects the 3rd and 4th rows
+penguinsDT[3:4] # selects the 3rd and 4th rows
 ```
 
 ```{r selecting_rows_eg(2), eval=FALSE}
-penguinsDT[3:4, ] #selects the 3rd and 4th rows plus all the columns
+penguinsDT[3:4, ] # selects the 3rd and 4th rows plus all the columns
 ```
 
 Let's deselect some of the rows:
 
 ```{r selecting_rows_eg(3), eval=FALSE}
-penguinsDT[-(1:5)] #deselects rows 1 to 5
+penguinsDT[-(1:5)] # deselects rows 1 to 5
 ```
 
 OR
 
 ```{r selecting_rows_eg(4), eval=FALSE}
-penguinsDT[!(1:5)] #deselects rows 1 to 5
+penguinsDT[!(1:5)] # deselects rows 1 to 5
 ```
 
 - We can select the last row as follows:
 
 ```{r select_last_row, eval=FALSE}
-penguinsDT[.N] #selecting the last row
+penguinsDT[.N] # selecting the last row
 ```
 
 - Let's select all rows except the last 5 rows:
 
 ```{r select_all_rows_except_last_5rows, eval=FALSE}
 # select all rows except the last 5 rows
-penguinsDT[1:(.N-5)]
+penguinsDT[1:(.N - 5)]
 ```
 
 - We can also select rows based on a condition fulfilled in column:
@@ -238,10 +240,12 @@ penguinsDT[, .(island, bill_length = bill_length_mm)]
 
 ```{r multiple_Selecting_rows_cols}
 # select rows, and creating new cols
-penguinsDT[species == "Adelie" & 
-             bill_length_mm < 50 &
-             body_mass_g > 4500,
-             !c("island")]
+penguinsDT[
+  species == "Adelie" &
+    bill_length_mm < 50 &
+    body_mass_g > 4500,
+  !c("island")
+]
 ```
 
 ## Adding information
@@ -257,8 +261,10 @@ Option 1:
 
 ```{r new_cols_preserving_old_op1}
 # creating new cols maintaining existing cols
-penguinsDT[, propBillLength := bill_length_mm/sum(bill_length_mm,na.rm = F)][,
-                                                            propFlipperLength := flipper_length_mm/sum(flipper_length_mm)]
+penguinsDT[, propBillLength := bill_length_mm / sum(bill_length_mm, na.rm = F)][
+  ,
+  propFlipperLength := flipper_length_mm / sum(flipper_length_mm)
+]
 penguinsDT
 ```
 
@@ -266,8 +272,9 @@ Option 2: **LHS := RHS form**
 
 ```{r new_cols_preserving_old_op2}
 # creating new cols maintaining existing cols
-penguinsDT[, c("propBillLength","propFlipperLength") := list(
-  bill_length_mm/sum(bill_length_mm), flipper_length_mm/sum(flipper_length_mm))]
+penguinsDT[, c("propBillLength", "propFlipperLength") := list(
+  bill_length_mm / sum(bill_length_mm), flipper_length_mm / sum(flipper_length_mm)
+)]
 penguinsDT
 ```
 
@@ -275,8 +282,7 @@ Option 3: **Functional form**
 
 ```{r new_cols_preserving_old_op3}
 # creating new cols maintaining existing cols
-penguinsDT[, `:=` (propBillLength = bill_length_mm/sum(bill_length_mm),                               propFlipperLength =   flipper_length_mm/sum(flipper_length_mm))
-           ]
+penguinsDT[, `:=`(propBillLength = bill_length_mm / sum(bill_length_mm), propFlipperLength = flipper_length_mm / sum(flipper_length_mm))]
 penguinsDT
 ```
 
@@ -287,15 +293,17 @@ penguinsDT
 
 ```{r new_cols_not_preserving_old_eg1}
 # new cols
-penguinsDT[, .(maxLength = pmax(bill_length_mm, flipper_length_mm),
-               minLength = pmin(bill_length_mm, flipper_length_mm))]
+penguinsDT[, .(
+  maxLength = pmax(bill_length_mm, flipper_length_mm),
+  minLength = pmin(bill_length_mm, flipper_length_mm)
+)]
 ```
 
 Let's create a new data.table object:
 
 ```{r new_cols_not_preserving_old_eg2}
 # creating new cols dropping existing cols
-(newPenguinsDT <- penguinsDT[,.(body_mass_kg = body_mass_g/1000, bill_depth_cm = bill_depth_mm/10)])
+(newPenguinsDT <- penguinsDT[, .(body_mass_kg = body_mass_g / 1000, bill_depth_cm = bill_depth_mm / 10)])
 ```
  
 ## Reducing information
@@ -312,15 +320,19 @@ An example:
 # creating new cols dropping existing ones
 # mean of flipper length, bill length and bill depth (in mm)
 
-penguinsDT[, .(meanFlipperLength = mean(flipper_length_mm, na.rm = T),
-               meanBillLength = mean(bill_length_mm, na.rm = T),
-               meanBillDepth = mean(bill_depth_mm, na.rm = T))]
+penguinsDT[, .(
+  meanFlipperLength = mean(flipper_length_mm, na.rm = T),
+  meanBillLength = mean(bill_length_mm, na.rm = T),
+  meanBillDepth = mean(bill_depth_mm, na.rm = T)
+)]
 ```
 ```{r count_factor}
 # count of species and islands; our sample size
-penguinsDT[, .(nSamples = .N,
-               nSpecies = uniqueN(species),
-               nIslands = uniqueN(islands))]
+penguinsDT[, .(
+  nSamples = .N,
+  nSpecies = uniqueN(species),
+  nIslands = uniqueN(islands)
+)]
 ```
 
 ### Summarising rows with filtering
@@ -328,13 +340,17 @@ penguinsDT[, .(nSamples = .N,
 - Let's input a condition. An example:
 
 ```{r summarise_by_filtering}
-#creating new cols but filtering the data first by species -> Adelie
-penguinsDT[species == "Adelie",
-          .(meanFlipperLength = mean(flipper_length_mm, na.rm = T),
-               meanBillLength = mean(bill_length_mm, na.rm = T),
-               meanBillDepth = mean(bill_depth_mm, na.rm = T))]
+# creating new cols but filtering the data first by species -> Adelie
+penguinsDT[
+  species == "Adelie",
+  .(
+    meanFlipperLength = mean(flipper_length_mm, na.rm = T),
+    meanBillLength = mean(bill_length_mm, na.rm = T),
+    meanBillDepth = mean(bill_depth_mm, na.rm = T)
+  )
+]
 
-penguinsDT[species =="Gentoo",] # filter data based on species -> Gentoo
+penguinsDT[species == "Gentoo", ] # filter data based on species -> Gentoo
 ```
 
 ### Grouping by one or more variables
@@ -343,20 +359,22 @@ penguinsDT[species =="Gentoo",] # filter data based on species -> Gentoo
 - by: group by what? An example:
 
 ```{r group_by_col}
-#finding mean grouped by species
-penguinsDT[, .(meanFlipperLength = mean(flipper_length_mm, na.rm = T),
-               meanBillLength = mean(bill_length_mm, na.rm = T),
-               meanBillDepth = mean(bill_depth_mm, na.rm = T)), by = "species"]
+# finding mean grouped by species
+penguinsDT[, .(
+  meanFlipperLength = mean(flipper_length_mm, na.rm = T),
+  meanBillLength = mean(bill_length_mm, na.rm = T),
+  meanBillDepth = mean(bill_depth_mm, na.rm = T)
+), by = "species"]
 ```
 
 ```{r count_by_grouping}
 # count of species by islands
-penguinsDT[,.(nSamples = .N, nSpecies = uniqueN(species)), by  = .(island)]
+penguinsDT[, .(nSamples = .N, nSpecies = uniqueN(species)), by = .(island)]
 ```
 
 ```{r count_by_grouping_plus_rename}
 # count of species by islands plus rename the island to islands
-penguinsDT[,.(nSamples = .N, nSpecies = uniqueN(species)), by  = .(islands = island)]
+penguinsDT[, .(nSamples = .N, nSpecies = uniqueN(species)), by = .(islands = island)]
 ```
 
 ## Combining information
@@ -392,7 +410,7 @@ An example:
 
 ```{r join_two_DT_using_data.table_syntax}
 # create two data.tables: x & y
-(x <- data.table(id = c(1, 2, 4, 5, 6),x = c(45, 67, 90, 54, 8)))
+(x <- data.table(id = c(1, 2, 4, 5, 6), x = c(45, 67, 90, 54, 8)))
 
 (y <- data.table(id = c(1, 3, 4, 6, 6), y = c(8, 14, 19, 2, 4)))
 ```
@@ -410,7 +428,6 @@ merge(x = x, y = y, by = "id")
 
 ```{r inner_join_data.table_syntax}
 y[x, on = .(id), nomatch = 0]
-
 ```
 
 - Let's do left and full join the two data.tables now using the base R `merge` function:
@@ -477,7 +494,7 @@ setkey(y, "id")
 
 
 ```{r haskey_xDT}
-# a logical statement T/F 
+# a logical statement T/F
 # does x has a key?
 haskey(x)
 ```

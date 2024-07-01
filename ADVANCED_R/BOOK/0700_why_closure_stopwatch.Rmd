@@ -29,35 +29,33 @@ have access to `start_time`.
 
 ```{r stopwatch}
 # cache start_time
-stopwatch  <- function() {
-    start_time  <- NULL
-    current_time  <- NULL
+stopwatch <- function() {
+  start_time <- NULL
+  current_time <- NULL
 
-    self  <- list()
+  self <- list()
 
-    self$start  <- function() start_time  <<- Sys.time()
+  self$start <- function() start_time <<- Sys.time()
 
-    self$current  <- function() difftime(Sys.time(), start_time)
+  self$current <- function() difftime(Sys.time(), start_time)
 
-    self$stop  <- function() difftime(Sys.time(), start_time)
+  self$stop <- function() difftime(Sys.time(), start_time)
 
-    return(self)
+  return(self)
 }
 ```
 
 ```{r invoke}
+watch1 <- stopwatch()
+watch1$start()
 
-        watch1  <- stopwatch()
-        watch1$start()
-
-            watch  <- stopwatch()
-            watch$start()
-            watch$current()
-            watch$stop()
+watch <- stopwatch()
+watch$start()
+watch$current()
+watch$stop()
 
 
-        watch1$stop()
-
+watch1$stop()
 ```
 
 Looking under the hood, there is a little more complexity that a programmer use

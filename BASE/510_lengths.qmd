@@ -18,19 +18,20 @@ element_lengths <- lengths(mixed_list)
 print(element_lengths)
 ```
 ```{r}
-
 # Create a data frame
-data_frame_example <- data.frame(Name = c("Alice", "Bob", "Charlie"),
-                                 Age = c(25, 30, 22),
-                                 Score = c(90, 85, 95))
+data_frame_example <- data.frame(
+  Name = c("Alice", "Bob", "Charlie"),
+  Age = c(25, 30, 22),
+  Score = c(90, 85, 95)
+)
 
 # Use lengths() to get the lengths of columns in the data frame
-column_lengths <- lengths(data_frame_example, use.names=T)
+column_lengths <- lengths(data_frame_example, use.names = T)
 
 # Print the result
 print(column_lengths)
-#  Name   Age Score 
-#     3     3     3 
+#  Name   Age Score
+#     3     3     3
 ```
 
 ```{r}

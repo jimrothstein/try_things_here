@@ -23,23 +23,22 @@ NOT a usual USE CASE
 
 ```{r}
 string <- "2^2"
-typeof(string)              # [1] "character"
+typeof(string) # [1] "character"
 
 res <- parse(text = string)
-res                         # expression(2^2)
+res # expression(2^2)
 
-is.expression(res)          # [1] TRUE
-is.character(res)           # FALSE,  trivial, but take note.
+is.expression(res) # [1] TRUE
+is.character(res) # FALSE,  trivial, but take note.
 as.list(res)
-typeof(res)                 # [1] "expression"
+typeof(res) # [1] "expression"
 ```
 ```{r}
 string <- "2^2"
-typeof(string)              # [1] "character"
+typeof(string) # [1] "character"
 
 res2 <- quote(string)
-res2                         # call, not expression
-
+res2 # call, not expression
 ```
 
 
@@ -115,12 +114,12 @@ g(x + y^2 / z + exp(a + sin(b)))
 
 ```{r advanced}
 f <- function(a, ...) {
-    # browser()
-    # substitue(a) returns x, unquoted, ie symbol
-    # arg is "x", dots is NULL,
-    arg <- deparse(substitute(a))
-    dots <- substitute(list(...))[-1]
-    c(arg, sapply(dots, deparse))
+  # browser()
+  # substitue(a) returns x, unquoted, ie symbol
+  # arg is "x", dots is NULL,
+  arg <- deparse(substitute(a))
+  dots <- substitute(list(...))[-1]
+  c(arg, sapply(dots, deparse))
 }
 
 x <- 1
@@ -151,9 +150,9 @@ f(x, y, z)
 Return the unevaluated expression, deparsed (not a call?)
 ```{r}
 f <- function(x = {
-                  2 * x
+                2 * x
               }) {
-    as.character(rlang::enexpr(x))
+  as.character(rlang::enexpr(x))
 }
 
 
@@ -175,7 +174,7 @@ file <- normalizePath(file)
 
 
 rmarkdown::render(file,
-    output_format = "pdf_document",
-    output_dir = "~/Downloads/print_and_delete"
+  output_format = "pdf_document",
+  output_dir = "~/Downloads/print_and_delete"
 )
 ```

@@ -17,10 +17,12 @@ s/https.*/[&]()/g
 -->
 
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,
-                      comment = "      ##",
-                      error = TRUE,
-                      collapse = TRUE)
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = TRUE
+)
 library(glue)
 ```
 ```{r}
@@ -28,22 +30,20 @@ library(glue)
 
 <!--  RENDER:  see bottom -->
 ```{r glue}
-x  <- 3
-y   <- 4
+x <- 3
+y <- 4
 
 glue("x= {x}\n")
-
 ```
 
 ```{r invisible}
-f  <- function(x) {
-  invisible(list(x = x, a = 2*x))
+f <- function(x) {
+  invisible(list(x = x, a = 2 * x))
 }
 
-f(2)   # nothing prints!
-ans  <- f(2)
-ans 
-
+f(2) # nothing prints!
+ans <- f(2)
+ans
 ```
 
 
@@ -56,9 +56,9 @@ knitr::knit_exit()
 
 ```{r render, eval=FALSE	} 
 file <- "00900_html_notebook.Rmd"
-file  <- basename(file)
+file <- basename(file)
 dir <- "rmd"
 
-jimTools::ren_pdf(file,dir)
+jimTools::ren_pdf(file, dir)
 jimTools::ren_github(file, dir)
 ```

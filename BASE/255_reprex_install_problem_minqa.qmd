@@ -2,19 +2,19 @@ TAGS:   utils::capture.output()
 
 ####  capture output, print nothing to console
 ```{r}
-f  <- function() print('HI')
+f <- function() print("HI")
 
-z= utils::capture.output(f(), file = NULL)
+z <- utils::capture.output(f(), file = NULL)
 ```
 ```{r}
-reprex::reprex({
-install.packages("minqa")
-},
-#        std_out_err = T,
-        session_info=T,
-        venue="slack")
-
-
+reprex::reprex(
+  {
+    install.packages("minqa")
+  },
+  #        std_out_err = T,
+  session_info = T,
+  venue = "slack"
+)
 ```
 
 #  minqa [CRAN](https://cran.r-project.org/web/packages/minqa/), [source]()

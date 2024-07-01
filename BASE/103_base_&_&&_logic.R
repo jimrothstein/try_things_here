@@ -1,27 +1,14 @@
---- 
-title: Template for .Rmd 
-date: "`r paste('last updated', 
-    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
-output: 
-  pdf_document: 
-    latex_engine: xelatex
-toc: TRUE 
-toc_depth:  4 
-fontsize: 10pt 
-geometry: margin=0.4in,top=0.25in 
-TAGS:  &, &&
----
- 
 #### Logic:    & vs &&
 
 
 #### & is vectorized, compares 2 boolean vectors, element-by-elemnt
 
 # simple
-{
-x = c(1,2,3) 
-y = c(1,2,-3)
+
+x <- c(1, 2, 3) 
+y <- c(1, 2, -3)
 (x > 0) & (x < 4)
+
 # [1] TRUE TRUE TRUE
 
 

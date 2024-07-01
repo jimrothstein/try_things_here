@@ -40,29 +40,27 @@ f <- function(`_data`, ...) {
   expr <- substitute(list(...))
   envir <- `_data`
   enclos <- parent.frame()
-  
 }
 debug(f)
-f(mtcars, twice = hp*2)
+f(mtcars, twice = hp * 2)
 # undebug(f)
 ```
 ##   Create Environemnt -- convert to data.frame
 ```{r}
-e <- new.env(hash=TRUE,size=3)
-assign(x="a",value=10,envir=e)
-assign(x="b",value=100,envir=e)
-assign(x="c",value=1000,envir=e)
+e <- new.env(hash = TRUE, size = 3)
+assign(x = "a", value = 10, envir = e)
+assign(x = "b", value = 100, envir = e)
+assign(x = "c", value = 1000, envir = e)
 e
 ls(e)
-df <- data.frame(setNames(lapply(ls(e), get, envir=e), ls(e)))
+df <- data.frame(setNames(lapply(ls(e), get, envir = e), ls(e)))
 ```
 use that data.frame
 ```{r}
-transform(df, twice = 2*b)
+transform(df, twice = 2 * b)
 ```
 
 ##      Reverse:   data.frame to environment
 ```{r}
-
 ```
 

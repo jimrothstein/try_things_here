@@ -16,14 +16,16 @@ geometry: margin=0.5in,top=0.25in
 ---
 
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,  
-											comment="      ##",  
-											error=TRUE, 
-											collapse=TRUE) 
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = TRUE
+)
 ```
 
 ```{r library, include=FALSE		}
-library(jimTools) 
+library(jimTools)
 ``` 
 
 ### When a function returns ....
@@ -39,35 +41,34 @@ library(jimTools)
   *  Good practice when using return is return(invisible(x)) so only the
      object is returned.
 ```{r invisible}
-
-
-
-print(x=3)
+print(x = 3)
 
 {
-# print returns 3, also prints 3 ...this can lead to duplication
-y  <- print(x=3)
-y
+  # print returns 3, also prints 3 ...this can lead to duplication
+  y <- print(x = 3)
+  y
 }
 
-f  <- function(x) {
-  return(x)}
+f <- function(x) {
+  return(x)
+}
 
 # not assigned, but prints
 f(2)
 
 # assigned normally, does not print
-y  <- f(2)
+y <- f(2)
 y
 
 
 # SAME, but do NOT send to console
-g  <- function(x) {
-  invisible(x)}
+g <- function(x) {
+  invisible(x)
+}
 
 # not assigned, no print
 g(3)
 
-y  <- g(3)
+y <- g(3)
 y
 ```

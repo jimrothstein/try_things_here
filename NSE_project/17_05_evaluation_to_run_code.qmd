@@ -16,17 +16,15 @@ eval(z, env(x=1, y=2))
 5/0 should trigger errors; 
 By capturing arg of joke before eval, create a new env to evaluate with a `new` f
 ```{r}
+joke <- function(x) {
+  e <- env(
+    rlang::caller_env(),
+    f = function(x) 0
+  )
 
-
-joke = function(x) {
-e = env(
-        rlang::caller_env(),
-f=function(x) 0)
-
-eval(enexpr(x) , e)
+  eval(enexpr(x), e)
 }
 
-joke(f(5/0))
-
+joke(f(5 / 0))
 ```
 

@@ -43,103 +43,98 @@ geometry: margin=0.5in,top=0.25in
 
 ```{r}
 library(tibble)
-names=base::names(par())
+names <- base::names(par())
 names
 
-values=unname(par())
-values = as.character(values)
+values <- unname(par())
+values <- as.character(values)
 
-t = tibble(names=names, values=values)
-print(t, n=72)
-
+t <- tibble(names = names, values = values)
+print(t, n = 72)
 ```
 
 
 ####	Capabilities vary with R build
 ```{r build}
-	as.data.frame(capabilities())
+as.data.frame(capabilities())
 ```
 
 ####	control devices
 https://rdrr.io/r/grDevices/dev.html
 ```{r dev}
-##	if 1, then null device
-	dev.cur()
-	dev.list()
+## 	if 1, then null device
+dev.cur()
+dev.list()
 
-##	 error if only null device
-	if (dev.cur() != 1) dev.off()
+## 	 error if only null device
+if (dev.cur() != 1) dev.off()
 
-##	create several devices
-	
-	pdf()
-	png()
-	# only this pops up a window
-	if (F) x11()	
+## 	create several devices
 
-	dev.list()
-	.Devices		# if device removed, its entry appears empty here
+pdf()
+png()
+# only this pops up a window
+if (F) x11()
+
+dev.list()
+.Devices # if device removed, its entry appears empty here
 
 ## finally, close active device
-	dev.off()	
-	dev.list()
+dev.off()
+dev.list()
 
-##	shut down ALL devices
-	graphics.off()
-	dev.list()
-	unlist(.Devices)
+## 	shut down ALL devices
+graphics.off()
+dev.list()
+unlist(.Devices)
 
 
-##	
-##	if null, this CREATES new device
-#	getOption("device")
+##
+## 	if null, this CREATES new device
+# 	getOption("device")
 ```
 
 
 #### in X11
 ```{r x11}
-
-##	reset & get list of curent options
-	as.data.frame(unlist(X11.options(reset=T)))
+## 	reset & get list of curent options
+as.data.frame(unlist(X11.options(reset = T)))
 
 Sys.getenv("display")
 
 as.data.frame(unlist(pdf.options()))
-#	options("device")
+# 	options("device")
 ```
 
 ####	Use par() to get/set values
 ```{r par}
+## 	par() returns info about active device
+## 	BUT will create a device if null now.
 
-##	par() returns info about active device
-##	BUT will create a device if null now. 
-
-	dev.cur()
-	if (dev.cur() != 1) {
-		par() 
-		par("pch")
-		par(no.readonly=F)
-		par("lty")
-	}
-
+dev.cur()
+if (dev.cur() != 1) {
+  par()
+  par("pch")
+  par(no.readonly = F)
+  par("lty")
+}
 ```
 
 #### pdf() device
 ```{r pdf}
+## 	remove all
+graphics.off()
+dev.list()
 
-##	remove all
-	graphics.off()
-	dev.list()
-
-##	
-	as.data.frame(unlist(pdf.options()))
+##
+as.data.frame(unlist(pdf.options()))
 ```
 
 
 ####	plot
 ```{r plot}
-##	S3 classes 
-	methods(plot)
+## 	S3 classes
+methods(plot)
 ```
 
 
@@ -163,9 +158,11 @@ dev.off()
 ```
 
 ```{r png_example, eval=F}
-filename  <- "~/Downloads/print_and_delete/out.png"
-png(filename = filename,
-         width = 480, height = 480, units = "px", pointsize = 12)
+filename <- "~/Downloads/print_and_delete/out.png"
+png(
+  filename = filename,
+  width = 480, height = 480, units = "px", pointsize = 12
+)
 plot(density_object)
 dev.off()
 ```
@@ -176,22 +173,24 @@ plot(density_object)
 
 stripchart()
 ```{r sripchart, eval=F}
-
-png(filename = paste0("~/Downloads/print_and_delete/" , file,".png"),
-         width = 480, height = 480, units = "px", pointsize = 12,
-          bg = "white",  res = NA,
-         type = c("cairo", "cairo-png", "Xlib", "quartz")
+png(
+  filename = paste0("~/Downloads/print_and_delete/", file, ".png"),
+  width = 480, height = 480, units = "px", pointsize = 12,
+  bg = "white", res = NA,
+  type = c("cairo", "cairo-png", "Xlib", "quartz")
 )
 
-stripchart(x = x, 
-           ylim=c(0, 225),
-           pch = 1, 
-           cex = 0.5,
-           frame = TRUE, 
-           vertical = TRUE,
-           main = "24-hour Ur Ox")
+stripchart(
+  x = x,
+  ylim = c(0, 225),
+  pch = 1,
+  cex = 0.5,
+  frame = TRUE,
+  vertical = TRUE,
+  main = "24-hour Ur Ox"
+)
 
-abline(h = 35, col=2)
+abline(h = 35, col = 2)
 
 # plot(x, fake, ylim = c(-5, 5), sub = "t-value = 21.5", type = "p")
 # abline(h = fake_mean, col=2)
@@ -202,20 +201,21 @@ dev.off()
 
 ```{r render, eval=FALSE, include=F	} 
 {
-##	Canonical format
-file <- "/home/jim/code/try_things_here/graphics/1040_base_plot_examples.Rmd"
-file  <- normalizePath(file)
-file
+  ## 	Canonical format
+  file <- "/home/jim/code/try_things_here/graphics/1040_base_plot_examples.Rmd"
+  file <- normalizePath(file)
+  file
 
-# in general, pdf will look nicer
-rmarkdown::render(file,
-                  output_format = "pdf_document",
-                  #output_format = "html_document",
-									output_file = "base_plots.pdf")
-                  #output_file = "~/Downloads/print_and_delete/out")
+  # in general, pdf will look nicer
+  rmarkdown::render(file,
+    output_format = "pdf_document",
+    # output_format = "html_document",
+    output_file = "base_plots.pdf"
+  )
+  # output_file = "~/Downloads/print_and_delete/out")
 }
 
-tinytex::lualatex('base_plots.tex')
-tinytex::pdflatex('base_plots.tex')
+tinytex::lualatex("base_plots.tex")
+tinytex::pdflatex("base_plots.tex")
 tinytex::tlmgr_update()
 ```

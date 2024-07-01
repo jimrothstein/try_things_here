@@ -33,7 +33,7 @@ SEE ALSO:  ~/code/zsh_scripts_project/071_run_R_to_update_packages.sh
 ```{r}
 check_suggests <- function(package) {
   if (!requireNamespace(package, quietly = TRUE)) {
-    #stop("Suggested package '{package}' not present.")
+    # stop("Suggested package '{package}' not present.")
     stop("Not found")
   }
 }
@@ -55,24 +55,24 @@ check_suggests("ggplot2")
 *   Use checkBuilt= T to force
 
 ```{r update_old}
-update.packages(ask = F,
-                oldPkgs = old.packages(),
-                checkBuilt=F)
+update.packages(
+  ask = F,
+  oldPkgs = old.packages(),
+  checkBuilt = F
+)
 ```
 
 ## To upgrade
 
 vs update.packages() ?
 ```{r upgrade}
-
 {
-begin  <- Sys.time()
-    update.packages(ask = FALSE , checkBuild=TRUE)
-    end  <- Sys.time()
-    diff  <- end - begin
-    diff
+  begin <- Sys.time()
+  update.packages(ask = FALSE, checkBuild = TRUE)
+  end <- Sys.time()
+  diff <- end - begin
+  diff
 }
-
 ```
 
 
@@ -126,11 +126,12 @@ knitr::all_labels()
 # NOTE:    tex will NOT work with html
 # in general, pdf will look nicer
 
-file  <-  "/home/jim/code/try_things_here/rmd/0088_base_package_commands.Rmd"
+file <- "/home/jim/code/try_things_here/rmd/0088_base_package_commands.Rmd"
 
 rmarkdown::render(file,
-                  #output_format = "pdf_document",
-                  output_format = "html_document",
-                  output_file = "./out")
-  #                output_file = "~/Downloads/print_and_delete/out")
+  # output_format = "pdf_document",
+  output_format = "html_document",
+  output_file = "./out"
+)
+#                output_file = "~/Downloads/print_and_delete/out")
 ```

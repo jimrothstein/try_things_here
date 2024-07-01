@@ -20,15 +20,17 @@ Vignette:  Keys
 https://rdatatable.gitlab.io/data.table/articles/datatable-keys-fast-subset.html
 
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,
-                      comment = "      ##",
-                      error = TRUE,
-                      collapse = FALSE   ) # easier to read
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = FALSE
+) # easier to read
 ```
 
 
 ```{r library, include=FALSE		}
-file  <- knitr::current_input() 
+file <- knitr::current_input()
 library(jimTools)
 ``` 
 
@@ -56,10 +58,11 @@ print(file)
 # NOTE:    tex will NOT work with html
 # in general, pdf will look nicer
 
-file  <-  "/home/jim/code/try_things_here/rmd/0088_base_package_commands.Rmd"
+file <- "/home/jim/code/try_things_here/rmd/0088_base_package_commands.Rmd"
 
 rmarkdown::render(file,
-                  #output_format = "pdf_document",
-                  output_format = "html_document",
-                  output_file = "~/Downloads/print_and_delete/out")
+  # output_format = "pdf_document",
+  output_format = "html_document",
+  output_file = "~/Downloads/print_and_delete/out"
+)
 ```

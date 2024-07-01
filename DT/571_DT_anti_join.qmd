@@ -3,15 +3,15 @@
 TAGS:   data.table, anti-join, setdiff
 
 ```{r}
-  library(data.table)
-t1  <- data.table(x=letters[1:10])
-t2  <- data.table(x=letters[1:11])
+library(data.table)
+t1 <- data.table(x = letters[1:10])
+t2 <- data.table(x = letters[1:11])
 
-t1  
+t1
 t2
 ### anti-join
 ### Find letter in  t2 that is NOT  in t1
-t2[!t1, on=.(x)]
+t2[!t1, on = .(x)]
 ```
 
 ### another way

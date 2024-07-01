@@ -20,9 +20,6 @@
 library(testthat)
 library(rlang)
 library(vctrs)
-
-
-
 ```
 
 ```

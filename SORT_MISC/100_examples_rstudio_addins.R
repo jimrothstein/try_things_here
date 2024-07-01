@@ -6,11 +6,11 @@
 ##  with remap of Alt + 2 applies reshape
 foo <- function(a, b, c) {
   NULL
-  }
+}
 
-##  position cursor on "list" 
+##  position cursor on "list"
 ##  run `addin Reshape Expression`, Alt + 2
 list(
-  a=1,
-  b=list(2,3)
+  a = 1,
+  b = list(2, 3)
 )

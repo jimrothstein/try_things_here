@@ -16,31 +16,31 @@ rm(f)
 
 ls()
 # creates call
-call2("g", 1,2,3,x)
+call2("g", 1, 2, 3, x)
 
 
-f  <- function(...) sum(...)
+f <- function(...) sum(...)
 
 # create call, no evaluation (whether f, g exist or not)
-call2("f", 1,2,3) # f(1, 2, 3)
-call2("g", 1,2,3) # f(1, 2, 3)
+call2("f", 1, 2, 3) # f(1, 2, 3)
+call2("g", 1, 2, 3) # f(1, 2, 3)
 
-lobstr::ast(call2("f", 1,2,3))
-# █─call2 
-# ├─"f" 
-# ├─1 
-# ├─2 
-# └─3 
+lobstr::ast(call2("f", 1, 2, 3))
+# █─call2
+# ├─"f"
+# ├─1
+# ├─2
+# └─3
 
 # but it DOES try to substitute
-a=2
-call2("f", a,a) # f(2, 2)
+a <- 2
+call2("f", a, a) # f(2, 2)
 
-# throws error is x is null 
-if (FALSE) call2("f", 1,2,3,x)
+# throws error is x is null
+if (FALSE) call2("f", 1, 2, 3, x)
 
 # but ast freezes (stops substitution here)
-ast(call2("f", 1,2,3,x))
+ast(call2("f", 1, 2, 3, x))
 ```
 
 
@@ -50,24 +50,22 @@ call2("+", 1, call2("*", 2, 3)) # 1 + 2 * 3
 
 ## use ast to see structure / tree
 ast(call2("+", 1, call2("*", 2, 3)))
-ast(call2("mean", x, na.rm=TRUE))
+ast(call2("mean", x, na.rm = TRUE))
 ```
 
 ## Create template, or way to create more complicated functions from simpler
 ```{r}
-
 cv <- function(var) {
-  var <- enexpr(var)    # capture
-  expr(sd(!!var) / mean(!!var))  # create NEW expr
+  var <- enexpr(var) # capture
+  expr(sd(!!var) / mean(!!var)) # create NEW expr
 }
 
 cv(x) #> sd(x)/mean(x)
 cv(x + y) #> sd(x + y)/mean(x + y)
 
 ## no substittuion, no evaluaiton
-z=1
-cv(x+2 + z) # sd(x + 2 + z)/mean(x + 2 + z)
-
+z <- 1
+cv(x + 2 + z) # sd(x + 2 + z)/mean(x + 2 + z)
 ```
 
 

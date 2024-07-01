@@ -29,21 +29,25 @@ REF:    http://www.sthda.com/english/wiki/line-plots-r-base-graphsk
 ```{r}
 # Create some variables
 x <- 1:10
-y <- rep(x=5,  times=length(x))
+y <- rep(x = 5, times = length(x))
 y
 
 # Gives first line
-plot(x, y, type = "b", frame = FALSE, pch = 19, 
-     col = "red", xlab = "x", ylab = "y")
+plot(x, y,
+  type = "b", frame = FALSE, pch = 19,
+  col = "red", xlab = "x", ylab = "y"
+)
 
-lines(x,y=rep(4, times=length(x)), pch=18, col="blue", type="b", lty=3)
-lines(x,y=rep(3, times=length(x)), pch=18,cex=5,  col="blue", type="b", lty=3)
+lines(x, y = rep(4, times = length(x)), pch = 18, col = "blue", type = "b", lty = 3)
+lines(x, y = rep(3, times = length(x)), pch = 18, cex = 5, col = "blue", type = "b", lty = 3)
 
 # Add a second line
 lines(x, y2, pch = 18, col = "blue", type = "b", lty = 2)
 # Add a legend to the plot
-legend("topleft", legend=c("Line 1: x*x", "Line 2: 2*x*x"),
-       col=c("red", "blue"), lty = 1:2, cex=0.8)
+legend("topleft",
+  legend = c("Line 1: x*x", "Line 2: 2*x*x"),
+  col = c("red", "blue"), lty = 1:2, cex = 0.8
+)
 ```
 
 

@@ -23,10 +23,12 @@ TAGS:  data.table,NSE,quote,substitution,eval
   before  evalutation.
 
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,
-                      comment = "      ##",
-                      error = TRUE,
-                      collapse = FALSE   ) # easier to read
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = FALSE
+) # easier to read
 library(jimTools)
 library(data.table)
 ```
@@ -42,14 +44,14 @@ https://stackoverflow.com/questions/46834655/whats-the-difference-between-substi
 
 # using AST, substitute prepares - but not evaluate - a list
 # To obtain values, eval()
-test  <- function(...){
-  by  <- substitute(list(...))
+test <- function(...) {
+  by <- substitute(list(...))
 }
 
 
-Team  <- c("teamA", "teamB", "teamC")
-by  <- test(Team)
-typeof(by)   # language
+Team <- c("teamA", "teamB", "teamC")
+by <- test(Team)
+typeof(by) # language
 by
 
 # now evaluate it
@@ -61,24 +63,25 @@ eval(by)
 ## https://stackoverflow.com/questions/46834655/whats-the-difference-between-substitute-and-quote-in-r
 
 f <- function(argX) {
-   list(quote(argX), 
-        substitute(argX), 
-        argX,
-        eval(argX))
+  list(
+    quote(argX),
+    substitute(argX),
+    argX,
+    eval(argX)
+  )
 }
-    
+
 suppliedArgX <- 100
 f(argX = suppliedArgX)
 
 # [[1]]
 # argX
-# 
+#
 # [[2]]
 # suppliedArgX
-# 
+#
 # [[3]]
 # [1] 100
-
 ```
 
 
@@ -104,10 +107,11 @@ f(argX = suppliedArgX)
 # NOTE:    tex will NOT work with html
 # in general, pdf will look nicer
 
-file  <-  "/home/jim/code/try_things_here/rmd/0088_base_package_commands.Rmd"
+file <- "/home/jim/code/try_things_here/rmd/0088_base_package_commands.Rmd"
 
 rmarkdown::render(file,
-                  #output_format = "pdf_document",
-                  output_format = "html_document",
-                  output_file = "out")
+  # output_format = "pdf_document",
+  output_format = "html_document",
+  output_file = "out"
+)
 ```

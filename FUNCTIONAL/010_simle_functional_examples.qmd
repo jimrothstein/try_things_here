@@ -10,40 +10,39 @@ date: last-modified
 ### One advantage:  eaiser to programatically construct expressions
 
 ```{r}
-a  <- 3 
-`^`(2,a)
-`^`(2,seq(1,5,1))
+a <- 3
+`^`(2, a)
+`^`(2, seq(1, 5, 1))
 ```
 
 ```{r}
-v  <- -1:5
+v <- -1:5
 v
 v[v > 0]
 
 
-`[`(v, v>0)
-`[`(v, `>` (v,0))
-
+`[`(v, v > 0)
+`[`(v, `>`(v, 0))
 ```
 
 ### factorial
 ```{r}
-fact  <- function(x) 
-  ifelse( x == 0 | x== 1, 1, fact(x-1)*x)
+fact <- function(x) {
+  ifelse(x == 0 | x == 1, 1, fact(x - 1) * x)
+}
 fact(7)
 ```
 
 ### fiboninci   (next:  vectorize fib !)
 ```{r}
-fib  <- function(x) {
-  ifelse( x == 0 | x == 1, 1, fib(x-2) + fib(x-1))
+fib <- function(x) {
+  ifelse(x == 0 | x == 1, 1, fib(x - 2) + fib(x - 1))
 }
 fib(0)
 fib(1)
 fib(2)
 fib(3)
 fib(4)
-
 ```
 
 

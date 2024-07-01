@@ -21,32 +21,27 @@ sys.nframe()
 ### nframe:  index of current frame | takes no arguments
 
 ```{r wrapper_nframe}
-
 parentls <- function() {
-  cat("nframe = ", sys.nframe() , "\n")
+  cat("nframe = ", sys.nframe(), "\n")
 }
 
 {
-cat("nframe = ", sys.nframe() , "\n")
-parentls()
+  cat("nframe = ", sys.nframe(), "\n")
+  parentls()
 }
 ```
 
 How many levels down ?  0=GlobalEnv, 1= 1 level
 ```{r nframe_levels}
-
-
-f  <- function() {
+f <- function() {
   parentls()
 }
 
 {
-cat("nframe = ", sys.nframe() , "\n")
-parentls()
-f()
+  cat("nframe = ", sys.nframe(), "\n")
+  parentls()
+  f()
 }
-
-
 ```
   
 
@@ -56,10 +51,10 @@ f()
 sys.frame()
 sys.status()
 
-f  <- function(){
+f <- function() {
   sys.status()
 }
-z  <- f()
+z <- f()
 z$sys.frames
 
 ### and this is parent env of frame one level down.
@@ -67,58 +62,54 @@ parent.env(z$sys.frames[[1]])
 ```
 
 ```{r}
-
-a  <- function() {
-  cat("nframe = ", sys.nframe() , "\n")
+a <- function() {
+  cat("nframe = ", sys.nframe(), "\n")
   b()
 }
 
-b   <- function(){ 
-  cat("nframe = ", sys.nframe() , "\n")
+b <- function() {
+  cat("nframe = ", sys.nframe(), "\n")
   sys.status()
 }
 
 a()
-
-
 ```
 
 
 
 
 ```{r more}
-
-
-
-a  <- function() {
-  cat("nframe = ", sys.nframe() , "\n")
+a <- function() {
+  cat("nframe = ", sys.nframe(), "\n")
   b()
 }
 
-b   <- function(){ 
-  cat("nframe = ", sys.nframe() , "\n")
+b <- function() {
+  cat("nframe = ", sys.nframe(), "\n")
   c()
 }
 
-c  <- function(){ 
-  cat("nframe = ", sys.nframe() , "\n")
+c <- function() {
+  cat("nframe = ", sys.nframe(), "\n")
 }
 
 
-cat("nframe = ", sys.nframe() , "\n")
+cat("nframe = ", sys.nframe(), "\n")
 a() # objects in a's environment
 
-f  <- function() a()
+f <- function() a()
 f()
 ```
 recursive!
 sys.nframe()
 blogdown has trouble  Cstack; 
 ```{r loop, eval=FALSE, include=FALSE   }
-cat("nframe = ", sys.nframe() , "\n")
-a  <- function() {
-  if (sys.nframe() == 9) return()
-  cat("nframe = ", sys.nframe() , "\n")
+cat("nframe = ", sys.nframe(), "\n")
+a <- function() {
+  if (sys.nframe() == 9) {
+    return()
+  }
+  cat("nframe = ", sys.nframe(), "\n")
   a()
 }
 a()
@@ -126,9 +117,10 @@ a()
 
 ```{r render, eval=FALSE  }
 rmarkdown::render(
-   "/home/jim/code/hugo_projects/blog/content/post/0001_nframe.Rmd", 
-   output_format = "pdf_document",
-   output_file= "~/Downloads/print_and_delete/out.pdf")
+  "/home/jim/code/hugo_projects/blog/content/post/0001_nframe.Rmd",
+  output_format = "pdf_document",
+  output_file = "~/Downloads/print_and_delete/out.pdf"
+)
 ```
 
 
@@ -141,15 +133,15 @@ parentls <- function() {
   ls(envir = parent.frame())
 }
 
-a<-function() {
-    x <- 5
-    parentls()
+a <- function() {
+  x <- 5
+  parentls()
 }
 
 b <- function() {
-    z <- 10
-    parentls()
- }
+  z <- 10
+  parentls()
+}
 
 a() # objects in a's environment
 b()

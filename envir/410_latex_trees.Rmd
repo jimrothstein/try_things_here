@@ -38,28 +38,27 @@ as of August 2021
   -  0=GlobalEnv  
   -  chain of functions, a() calls b() ...  
 ```{r nframe_levels}
-
-a  <- function() {
-  cat("nframe = ", sys.nframe() , "\n")
+a <- function() {
+  cat("nframe = ", sys.nframe(), "\n")
   b()
 }
 
-b   <- function(){ 
-  cat("nframe = ", sys.nframe() , "\n")
+b <- function() {
+  cat("nframe = ", sys.nframe(), "\n")
   print(paste0("Called from ", sys.call()))
   c()
 }
 
-c  <- function() {
+c <- function() {
   cat("nframe = ", sys.nframe(), "\n")
   print(paste0("Called from ", sys.call()))
-  #cat("called from ", sys.call(), "\n")
-  #sys.calls()
+  # cat("called from ", sys.call(), "\n")
+  # sys.calls()
 }
 
 cat("nframe = ", sys.nframe(), "\n")
 
-f  <- function() a()
+f <- function() a()
 f()
 ```
 
@@ -102,10 +101,12 @@ Seems to work Great (pdf:  even installs needed latex packages )
 
 
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,
-                      comment = "      ##",
-                      error = TRUE,
-                      collapse = T   ) # easier to read
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = T
+) # easier to read
 ```
 
 
@@ -120,27 +121,27 @@ A & B \\
 ```
 
 ```{r render, eval=FALSE, include=FALSE 	} 
-# !zathura ~/Downloads/print_and_delete/ 
+# !zathura ~/Downloads/print_and_delete/
 # for debugging
 
 options(tinytex.verbose = TRUE)
 
 {
   file <- "0410_latex_trees.Rmd"
-  #file  <- file.path(paste0("~/code/publish_project/MATH/", file))
-  #file  <- here("MATH", file)
-  file  
+  # file  <- file.path(paste0("~/code/publish_project/MATH/", file))
+  # file  <- here("MATH", file)
+  file
 }
 
 # NOTE:   .tex only works with PDF
 # NOTE:    tex will NOT work with html
 # in general, pdf will look nicer
 
-output_dir= Sys.getenv("OUTPUT_DIR")
+output_dir <- Sys.getenv("OUTPUT_DIR")
 output_dir
 rmarkdown::render(file,
-                  output_format = "pdf_document"
-                  #output_format = "html_document",
-                  #output_dir = output_dir
+  output_format = "pdf_document"
+  # output_format = "html_document",
+  # output_dir = output_dir
 )
 ```

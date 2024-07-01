@@ -9,60 +9,58 @@ editor_options:
 library(rlang)
 
 
-a=1
-b=2
+a <- 1
+b <- 2
 
-rlang::expr(a+b)
-rlang::expr(a + !!b)      ## a + 2
-rlang::expr(!!a + !!b)      ## 1 + 2
+rlang::expr(a + b)
+rlang::expr(a + !!b) ## a + 2
+rlang::expr(!!a + !!b) ## 1 + 2
 
-rlang::expr(a + {{b}} )     ## a + ~2
+rlang::expr(a + {{ b }}) ## a + ~2
 ```
 
 ---
 
 ```{r}
-e = rlang::expr(a+b)
-e                         ## a+b
-{{e}}                     ## a+b
+e <- rlang::expr(a + b)
+e ## a+b
+{{ e }
+} ## a+b
 
-eval(e)                   ## a+b 
+eval(e) ## a+b
 
 
 ##
-expr(log(e))              ##  log(e)
-expr(log(!!e))            ##  log(a+b)
-expr(log( {{e}}) )        ##  log(~a+b)
+expr(log(e)) ##  log(e)
+expr(log(!!e)) ##  log(a+b)
+expr(log({{ e }})) ##  log(~a+b)
 
 
-eval(expr(log(!!e)))      ## 1.1
-if(F) eval(expr(log( {{e}} )))  ## Error
+eval(expr(log(!!e))) ## 1.1
+if (F) eval(expr(log({{ e }}))) ## Error
 
 
 
-expr(log( eval(e ) ))   ##   log(eval(e))
-
+expr(log(eval(e))) ##   log(eval(e))
 ```
 
 ```{r}
-#y<- x * 10
+# y<- x * 10
 
 # how to capture expression BEFORE evaluated?
 z <- rlang::expr(y <- x * 10)
 z
 
-z = expr(1+1)
+z <- expr(1 + 1)
 as.list(z)
 eval(z)
 
-x = 2
-z = expr(1 + .(x))
+x <- 2
+z <- expr(1 + .(x))
 z
 eval(z)
 
-name="jim"
-eval(print("hello",  {{name}}))
-
-
+name <- "jim"
+eval(print("hello", {{ name }}))
 ```
 

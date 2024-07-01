@@ -19,10 +19,11 @@ hist(x)
 fit <- MASS::fitdistr(
   x,
   dnorm,
-  start = list (mean=0,
-                sd=1)
+  start = list(
+    mean = 0,
+    sd = 1
+  )
 )
-
 ```
 
 # fit is list, but messy
@@ -34,7 +35,7 @@ str(fit)
 
 # 3 verbs
 ```{r}
-  tidy(fit)
+tidy(fit)
 ```
 
 # goodness of fit measures
@@ -55,9 +56,8 @@ glance(fit)
 
 ```{r}
 mtcars %>%
-  ggplot(aes(x=mpg, y=hp)) +
+  ggplot(aes(x = mpg, y = hp)) +
   geom_point()
-
 ```
 # augument(), for linear models
 

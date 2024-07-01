@@ -19,19 +19,17 @@ cement <- function(...) {
   paste(purrr::map(args, as_string), collapse = " ")
 }
 
-cement(a,b,c)
+cement(a, b, c)
 cement(jim)
 ```
 
 #### evaluate 1st, then quote 
 ```{r}
-greet  <- "hi"
+greet <- "hi"
 name <- "jim"
 cement(name) # [1] "name", oops quoted
 cement(!!name) # [1] "jim", force evaluation before quoting
 cement(!!greet, !!name) # [1] "hi jim"
-
-
 ```
 
 

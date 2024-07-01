@@ -12,23 +12,25 @@ library(rlang)
 #   log("a") })
 # )
 
-tryCatch(stop("fred"),  error = function(e) e, finally = print("Hello1"))
-tryCatch(abort("fred"),  error = function(e) e, finally = print("Hello2"))
-tryCatch(abort("fred", class="xyz"),  
-         error.xyz =  function(e) {cat("xyz"); e},
-         error = function(e) e, 
-         finally = print("Hello2")
+tryCatch(stop("fred"), error = function(e) e, finally = print("Hello1"))
+tryCatch(abort("fred"), error = function(e) e, finally = print("Hello2"))
+tryCatch(abort("fred", class = "xyz"),
+  error.xyz = function(e) {
+    cat("xyz")
+    e
+  },
+  error = function(e) e,
+  finally = print("Hello2")
 )
 quit()
 
-tryCatch (
-  { rlang::abort("throw an error", class="xyz_error") },
-  xyz_error  <- function(e) {
-     warn(conditionMessage(e))
-     NA
+tryCatch(
+  {
+    rlang::abort("throw an error", class = "xyz_error")
   },
-
-  finally  <- function() print("did we handle the error?")
+  xyz_error <- function(e) {
+    warn(conditionMessage(e))
+    NA
+  },
+  finally <- function() print("did we handle the error?")
 )
-
-

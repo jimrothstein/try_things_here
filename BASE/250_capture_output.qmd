@@ -9,9 +9,9 @@ TAGS:   utils::capture.output()
 
 ####  capture output, print nothing to console
 ```{r}
-f  <- function() print('HI')
+f <- function() print("HI")
 
-z= utils::capture.output(f(), file = NULL)
+z <- utils::capture.output(f(), file = NULL)
 ```
 
 

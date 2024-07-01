@@ -1,12 +1,12 @@
 # 027_reprex_reproduce.R
 # TAGS:   reprex
 
-# 
+#
 # Takes some practice, but makes for very nice questions in forums.
 #
 # IDEA:    reprex (opt1 =,
 #                  opt2 =,
-#                  venue = "slack", 
+#                  venue = "slack",
 #                     x = {
 #                     # code
 #                     # code ....
@@ -19,8 +19,8 @@
 #
 #
 # TO PASTE in nvim
-#		Run code
-#		Paste:  "+p
+# 		Run code
+# 		Paste:  "+p
 # ==============
 #
 ## Method 1
@@ -50,11 +50,11 @@ stop("in console, run reprex()")
 ## then run:
 ## clipboard now has results
 # not run
-#reprex()
+# reprex()
 
 # works (ie sent to clipboard)
 reprex({
-	print ("hi")
+  print("hi")
 })
 
 #### METHOD 3:   BEST  ####
@@ -64,16 +64,19 @@ reprex({
 # works
 # run code, enclosed in reprex
 # result put into clipboard
-r <- reprex( {
-	x <- 1:4
-	y  <- 2:5
-	x+y
-}, venue="R")
+r <- reprex(
+  {
+    x <- 1:4
+    y <- 2:5
+    x + y
+  },
+  venue = "R"
+)
 
 # Then paste from clipboard, yields:
 x <- 1:4
-y  <- 2:5
-x+y
+y <- 2:5
+x + y
 #> [1] 3 5 7 9
 
 r
@@ -81,7 +84,11 @@ r
 
 # SESSIONINFO
 # =============
-#	si=TRUE includes session_info()
-r  <- reprex({
-	x     <- 1
-	x }, si = TRUE)
+# 	si=TRUE includes session_info()
+r <- reprex(
+  {
+    x <- 1
+    x
+  },
+  si = TRUE
+)

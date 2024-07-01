@@ -13,8 +13,7 @@ library(tidyverse)
 ```
 ```{r}
 f <- "https://raw.githubusercontent.com/chris-taylor/USElection/master/data/electoral-college-votes.csv"
-electoral.college <- read.csv(f, header=FALSE)
-
+electoral.college <- read.csv(f, header = FALSE)
 ```
 
 ```{r}

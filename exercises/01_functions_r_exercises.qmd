@@ -5,8 +5,10 @@
 ## 1
 ```{r}
 library(tinytest)
-f  <- function(x = 0L, y = 0L) return (x + y)
-f(2,3)
+f <- function(x = 0L, y = 0L) {
+  return(x + y)
+}
+f(2, 3)
 f()
 f(, 1)
 ```
@@ -14,31 +16,30 @@ f(, 1)
 
 ### 2
 ```{r}
-f  <- function(x = NULL, v) any(x == v)
-v = 1:20
+f <- function(x = NULL, v) any(x == v)
+v <- 1:20
 f(2, v)
 f(21, v)
-
 ```
 ### 3
 ```{r}
-f  <- function(df = NULL) {
-	data.frame(names = names(df), types = sapply(df, typeof))
+f <- function(df = NULL) {
+  data.frame(names = names(df), types = sapply(df, typeof))
 }
-f (mtcars)
+f(mtcars)
 ```
 
 ### 4
 ```{r}
-f  <- function(v = NULL) {
-	unique(v)
+f <- function(v = NULL) {
+  unique(v)
 }
-f(rep(1,10))
-f(c(rep(1,10), 2))
-tinytest::expect_equal(f(c(rep(1,10),2)) ,  c(1,2))
+f(rep(1, 10))
+f(c(rep(1, 10), 2))
+tinytest::expect_equal(f(c(rep(1, 10), 2)), c(1, 2))
 tinytest::expect_false(
-		       identical(f(c(rep(1,10),2)) ,  list(1,2))
-		       )
+  identical(f(c(rep(1, 10), 2)), list(1, 2))
+)
 ```
 
 

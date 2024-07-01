@@ -24,10 +24,12 @@ TAGS:  skeleton, yaml, ymlthis::
 ####  Create .Rmd skeleton in code; modify yaml; save the file.
   * REF:  https://github.com/tgerke/rmd-with-ci#how-this-was-set-up
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,
-                      comment = "      ##",
-                      error = TRUE,
-                      collapse = T   ) # T easier to read
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = T
+) # T easier to read
 library(glue)
 library(rmarkdown)
 ```
@@ -39,7 +41,7 @@ library(rmarkdown)
 skeleton <- glue::glue('
 ---
 title: "My document"
-output: 
+output:
   github_document: default
   word_document: default
   html_document: default
@@ -58,41 +60,36 @@ Some highly informative text.
 
 
 ```{r create_file}
-
 ## dir (use ./rmd)
 # dir.create(here::here("my-document"))
 
 ## write to file
 cat(skeleton, file = here::here("rmd", "test_skeleton_document.Rmd"))
-try  <- '
+try <- '
 ---
 title:  "FAKE"
 ---
 '
-cat(try, file= here("rmd", "fake"))
-
-
+cat(try, file = here("rmd", "fake"))
 ```
 
 
 #### ymlthis::  So much easier !
 ```{r ymlthis}
 library(ymlthis)
-yml()  %>% yml_output(
-         pdf_document(
-         keep_tex = TRUE
-        )
-         )
-
+yml() %>% yml_output(
+  pdf_document(
+    keep_tex = TRUE
+  )
+)
 ```
 
 
 ```{r render, eval=F, include=F}
-
 {
-file  <- "" 
-file  <- basename(file)
-file  <- here("rmd", file)
-file
+  file <- ""
+  file <- basename(file)
+  file <- here("rmd", file)
+  file
 }
 ```

@@ -18,3 +18,5 @@ end = sapply(start, function(e) switch(e,
                                  USE.NAMES=F)
 end
 # [1] "1"        "1"        "0"        "bad data"
+
+

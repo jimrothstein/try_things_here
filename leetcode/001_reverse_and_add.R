@@ -62,7 +62,7 @@ add1 <- function(x, y) {
 
 
 ###  can int vector hold repeatd values? YES
-X=c(1,2,1)
+X <- c(1, 2, 1)
 X
 
 ## sort

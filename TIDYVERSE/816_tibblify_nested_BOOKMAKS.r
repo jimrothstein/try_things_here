@@ -1,21 +1,21 @@
 library(tibblify)
 
 df <- tibble(
-        id = 1L,
-        name = "a",
-        children = list(
-                tibble( # children list has ONE element
-                        id = 11:12,
-                        name = c("b", "c"),
-                        children = list(
-                                NULL,
-                                tibble(
-                                        id = 121:122,
-                                        name = c("d", "e")
-                                )
-                        )
-                )
+  id = 1L,
+  name = "a",
+  children = list(
+    tibble( # children list has ONE element
+      id = 11:12,
+      name = c("b", "c"),
+      children = list(
+        NULL,
+        tibble(
+          id = 121:122,
+          name = c("d", "e")
         )
+      )
+    )
+  )
 )
 
 df
@@ -46,29 +46,26 @@ df$children
 # 2    12 c     <tibble [2 × 2]>
 
 unnest_tree(
-        df,
-        child_col = "children",
-        level_to = "level",
-        parent_to = "parent",
-        ancestors_to = "ancestors"
+  df,
+  child_col = "children",
+  level_to = "level",
+  parent_to = "parent",
+  ancestors_to = "ancestors"
 )
 
-                                        # try bookmarks  !
+# try bookmarks  !
 library(jsonlite)
 library(tibblify)
 
-the_dir = "~/Downloads/"
-the_file =  "bookmarks-2024-06-04.json"
+the_dir <- "~/Downloads/"
+the_file <- "bookmarks-2024-06-04.json"
 
-the_data = jsonlite::read_json(paste0(the_dir, the_file))
+the_data <- jsonlite::read_json(paste0(the_dir, the_file))
 
-spec = tibblify::guess_tspec(the_data)
+spec <- tibblify::guess_tspec(the_data)
 spec
 
 # unspecified fields
-t = tibblify(the_data, spec)
+t <- tibblify(the_data, spec)
 
 head(t)
-
-
-

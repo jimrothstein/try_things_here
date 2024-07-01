@@ -9,22 +9,25 @@ data(package = "rrapply")
 
 ##  give.attr=F (cleaner)
 ##  list.len=3
-##  max.level = 
-##  
+##  max.level =
+##
 # ------------------------------
 # FAKE structure
 # ------------------------------
-create_X  <- function() { 
-X  <- structure(list(a=c(1,2,3),
-                     b=c(4,5,6)),
-                class = "myclass")
+create_X <- function() {
+  X <- structure(
+    list(
+      a = c(1, 2, 3),
+      b = c(4, 5, 6)
+    ),
+    class = "myclass"
+  )
 
-# add 2nd
-attr(X, "attr_two")  <- "hello"
-return(X)
-
+  # add 2nd
+  attr(X, "attr_two") <- "hello"
+  return(X)
 }
-X  <- create_X()
+X <- create_X()
 str(X)
 # List of 2
 #  $ a: num [1:3] 1 2 3
@@ -52,7 +55,7 @@ str(replace(X, 2, NULL))
 # ------------------------------
 # 2) use NULL
 # ------------------------------
-X[[2]]  <- NULL
+X[[2]] <- NULL
 X
 str(X)
 # List of 2
@@ -69,22 +72,22 @@ str(X)
 # 3) use rrapply
 # ------------------------------
 # toupper, list names
-X  <- create_X()
-rrapply(X, 
-        how="names",
-        f= \(x, .xname) toupper(.xname)
-  )
+X <- create_X()
+rrapply(X,
+  how = "names",
+  f = \(x, .xname) toupper(.xname)
+)
 
 
-names(X)[-2]  # from right, drop
+names(X)[-2] # from right, drop
 # [1] "a"
 # #
 # -------------------------------------------------------------------------
 # apply  identity to elements in 1st position, prune (remove) rest, ie $b
 # OR, apply identity to elemnts where .xname == "a"
 # -------------------------------------------------------------------------
-rrapply(X, 
-        condition = function(x, .xname, .xpos)  .xpos == 1,  
-        f = identity, 
-        how="prune")
-
+rrapply(X,
+  condition = function(x, .xname, .xpos) .xpos == 1,
+  f = identity,
+  how = "prune"
+)

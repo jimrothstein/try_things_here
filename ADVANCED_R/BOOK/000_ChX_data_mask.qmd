@@ -19,7 +19,7 @@ https://rlang.r-lib.org/reference/topic-data-mask-ambiguity.html
 
 ```{r}
 #|  echo: true
-#|  results: false 
+#|  results: false
 library(dplyr)
 ```
 
@@ -34,8 +34,8 @@ ls()
 Simplest thing I can think of is to add a new environment, e, and add object of same name, but differnt value
 ```{r}
 #| collapse: true
-e = new.env()
-e$x = 1000
+e <- new.env()
+e$x <- 1000
 ls()
 search()
 ```

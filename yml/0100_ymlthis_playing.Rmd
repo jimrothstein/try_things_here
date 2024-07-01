@@ -32,10 +32,12 @@ custom `TAGS: tag1, tag2`
 ```
 
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,
-                      comment = "      ##",
-                      error = TRUE,
-                      collapse = T   ) # T easier to read
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = T
+) # T easier to read
 library(tinytest)
 library(ymlthis)
 library(magrittr)
@@ -45,65 +47,64 @@ library(yaml)
 #### yml object
 ```{r playing}
 ## create .yml object
-   y  <- yml()
-   is_yml(y)
+y <- yml()
+is_yml(y)
 # [1] TRUE
-    {
-    str(y)
-    ls.str(y)
-    class(y)
-    y
-    }
+{
+  str(y)
+  ls.str(y)
+  class(y)
+  y
+}
 
 ##  as_yml(.yml) is generic S3 function
-    methods(as_yml)
+methods(as_yml)
 
 ##  ad-hoc, create a yml object (here single string, yml string?)
-    z  <- as_yml("
+z <- as_yml("
                 TAG: tag1, tag2
                 ")
-    is_yml(z)
+is_yml(z)
 # [1] TRUE
 
 
 ## append ad-hoc to bottom of existing .yml (y)
-    args(yml_toplevel)
-    yml_toplevel(y, z)
+args(yml_toplevel)
+yml_toplevel(y, z)
 
-##  tree 
-    draw_yml_tree()
-
-   
+##  tree
+draw_yml_tree()
 ```
 
 #### yml_empty
 ```{r empty}
-
-   yml_empty()
+yml_empty()
 ```
 
 ```{r explain}
-
-Z  <-     yml() %>% 
-         yml_output(pdf_document(toc =  TRUE, toc_depth=4)) %>%
-         yml_latex_opts(
-                    fontfamily = "Fira Sans Thin",
-                    fontsize = "11pt",
-                    links_as_notes = TRUE) %>% 
-         # adds suffix `:` to LHS
-         yml_toplevel(list(TAGS= "the_tags_line")) %>% yml()
+Z <- yml() %>%
+  yml_output(pdf_document(toc = TRUE, toc_depth = 4)) %>%
+  yml_latex_opts(
+    fontfamily = "Fira Sans Thin",
+    fontsize = "11pt",
+    links_as_notes = TRUE
+  ) %>%
+  # adds suffix `:` to LHS
+  yml_toplevel(list(TAGS = "the_tags_line")) %>%
+  yml()
 Z
 is_yml(Z)
 ```
 ```{r distill}
-    distill_listing()
+distill_listing()
 
-    yml_distill_opts(y, 
-                     categories=c("R", "envir", "DT"))
+yml_distill_opts(y,
+  categories = c("R", "envir", "DT")
+)
 ```
 
 ```{r site}
-    yml_site_opts(y)
+yml_site_opts(y)
 ```
 
 
@@ -111,27 +112,25 @@ is_yml(Z)
 
 
 ```{r render, eval=FALSE, include=FALSE 	} 
-output_dir  <- Sys.getenv("OUTPUT_DIR")
+output_dir <- Sys.getenv("OUTPUT_DIR")
 output_dir
 
 {
-file  <- "" 
-file  <- basename(file)
-file  <- here("rmd", file)
-file
+  file <- ""
+  file <- basename(file)
+  file <- here("rmd", file)
+  file
 }
 
 rmarkdown::render(file,
-                  output_format="html_document",
-                  output_dir="."
-                  )
+  output_format = "html_document",
+  output_dir = "."
+)
 
 
 ## replacement for here
 if (F) {
-  the_dir  <- dirname(file)
-  file  <- file.path(the_dir, file)
+  the_dir <- dirname(file)
+  file <- file.path(the_dir, file)
 }
-
-
 ```

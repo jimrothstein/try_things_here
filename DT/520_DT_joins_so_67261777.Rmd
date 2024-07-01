@@ -28,11 +28,13 @@ TAGS:  skeleton
 ~/code/MASTER_INDEX.md
 
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,
-                      comment = "      ##",
-                      tidy = "styler",
-                      error = TRUE,
-                      collapse = T   ) # T easier to read
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  tidy = "styler",
+  error = TRUE,
+  collapse = T
+) # T easier to read
 ```
 
 ```{r library 		}
@@ -40,13 +42,17 @@ library(data.table)
 ``` 
 
 ```{r example}
-DT = data.table(x = rep(c("b", "a", "c"), each = 3),
-                y = c(1, 3, 6),
-                v = 1:9)
+DT <- data.table(
+  x = rep(c("b", "a", "c"), each = 3),
+  y = c(1, 3, 6),
+  v = 1:9
+)
 
-X = data.table(x = c("c", "b"),
-               v = 8:7,
-               foo = c(4, 2))
+X <- data.table(
+  x = c("c", "b"),
+  v = 8:7,
+  foo = c(4, 2)
+)
 DT
 #         x     y     v
 #    <char> <num> <int>
@@ -79,20 +85,24 @@ DT[X, on = .(x, y <= foo)]
 
 ```{r test}
 # better NAMES for columns
-DT = data.table(x = rep(c("b", "a", "c"), each = 3),
-                y = c(1, 3, 6),
-                z = 1:9)
+DT <- data.table(
+  x = rep(c("b", "a", "c"), each = 3),
+  y = c(1, 3, 6),
+  z = 1:9
+)
 DT
 
 
-X = data.table(a = c("c", "b"),
-               b = 8:7,
-               c = c(4, 2))
+X <- data.table(
+  a = c("c", "b"),
+  b = 8:7,
+  c = c(4, 2)
+)
 # error
 DT[X]
 
 
-DT[X, on = .(x=a)]
+DT[X, on = .(x = a)]
 #         x     y     z     b     c
 #    <char> <num> <int> <int> <num>
 # 1:      c     1     7     8     4
@@ -104,12 +114,12 @@ DT[X, on = .(x=a)]
 
 
 # error
-X[DT, on = .(x=a)]
+X[DT, on = .(x = a)]
 
 # note differnces!
-X[DT, on = .(a=x)]
+X[DT, on = .(a = x)]
 
-DT[X, on = .(x=a, y <= c)]
+DT[X, on = .(x = a, y <= c)]
 #         x     y     z     b
 #    <char> <num> <int> <int>
 # 1:      c     4     7     8
@@ -130,23 +140,23 @@ DT[X, on = .(y <= c)]
 # 9:      c     2     7      b     7
 
 3 %% 2
-DT[X, on = .(x=a, y = c  ) ]
+DT[X, on = .(x = a, y = c)]
 #         x     y     z     b
 #    <char> <num> <int> <int>
 # 1:      c     4    NA     8
 # 2:      b     2    NA     7
 
 
-DT[X, .(x,x,x), on = .(x=a, y = c  ) ]
+DT[X, .(x, x, x), on = .(x = a, y = c)]
 
 
-DT[X, .(x,y,z,a,b,c), on = .(x=a, y = c  ) ]
+DT[X, .(x, y, z, a, b, c), on = .(x = a, y = c)]
 #         x     y     z      a     b     c
 #    <char> <num> <int> <char> <int> <num>
 # 1:      c     4    NA      c     8     4
 # 2:      b     2    NA      b     7     2
 
-DT[X, .(x,y,z,a,b,c,x), on = .(x=a, y = c  ) ]
+DT[X, .(x, y, z, a, b, c, x), on = .(x = a, y = c)]
 #         x     y     z      a     b     c      x
 #    <char> <num> <int> <char> <int> <num> <char>
 # 1:      c     4    NA      c     8     4      c
@@ -155,36 +165,35 @@ DT[X, .(x,y,z,a,b,c,x), on = .(x=a, y = c  ) ]
 
 
 ```{r render, eval=FALSE, include=FALSE 	} 
-output_dir  <- Sys.getenv("OUTPUT_DIR")
+output_dir <- Sys.getenv("OUTPUT_DIR")
 output_dir
 
 {
-# get file
-file <- "/home/jim/.config/nvim/templates/skeleton.Rmd"
-file  <- normalizePath(file)
-file
+  # get file
+  file <- "/home/jim/.config/nvim/templates/skeleton.Rmd"
+  file <- normalizePath(file)
+  file
 
 
-## Ref only
-    # the_dir  <- dirname(file)
-    # file  <- basename(file)
-    # file  <- file.path(the_dir, file)
-
+  ## Ref only
+  # the_dir  <- dirname(file)
+  # file  <- basename(file)
+  # file  <- file.path(the_dir, file)
 }
 
 rmarkdown::render(file,
-#                  output_format="html_document",
-                    output_format="pdf_document",
-                    intermediates_dir='./tmp',
-                    clean = F,              # leave tmp files
-                    output_dir=output_dir
-                  )
+  #                  output_format="html_document",
+  output_format = "pdf_document",
+  intermediates_dir = "./tmp",
+  clean = F, # leave tmp files
+  output_dir = output_dir
+)
 ```
 
 #### html ONLY (fonts)
 ```{r, results = 'asis',echo = F}
 htmltools::h3("Test big font")
-htmltools::h4('Test medium font')
-htmltools::h5('Test smaller font')
+htmltools::h4("Test medium font")
+htmltools::h5("Test smaller font")
 ```
 `r htmltools::h3("Outside chunck")`

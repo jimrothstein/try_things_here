@@ -23,20 +23,19 @@ sys.frames()
 sys.parents()
 sys.nframe()
 ```{r loop, eval=FALSE}
-a  <- function() {
-  if (sys.nframe() == 9) 
-    return( list(
-                 
-                 calls = sys.calls(),
-                 frames = sys.frames(),
-                 parents = sys.parents()
-                 )
-  )
-  
-  cat("nframe = ", sys.nframe() , "\n")
+a <- function() {
+  if (sys.nframe() == 9) {
+    return(list(
+      calls = sys.calls(),
+      frames = sys.frames(),
+      parents = sys.parents()
+    ))
+  }
+
+  cat("nframe = ", sys.nframe(), "\n")
   a()
 }
-l  <- a()
+l <- a()
 
 l$calls
 l$frames
@@ -50,10 +49,11 @@ tibble::tibble(calls = unlist(l$calls), "parents_nframe" = l$parents)
 
 ```{r render, eval=FALSE, include = FALSE     }
 rmarkdown::render(
-   "/home/jim/code/hugo_projects/blog/content/post/0001A_nframe.Rmd", 
-   output_format = "html_document",
-   output_file="~/Downloads/print_and_delete/out.html")
+  "/home/jim/code/hugo_projects/blog/content/post/0001A_nframe.Rmd",
+  output_format = "html_document",
+  output_file = "~/Downloads/print_and_delete/out.html"
+)
 
-   # output_format = "pdf_document",
-   # output_file= "~/Downloads/print_and_delete/out.pdf")
+# output_format = "pdf_document",
+# output_file= "~/Downloads/print_and_delete/out.pdf")
 ```

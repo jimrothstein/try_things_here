@@ -11,13 +11,13 @@ df
 
 # `pick()` provides a way to select a subset of your columns using
 # tidyselect. It returns a data frame.
-dplyr::mutate(df,cols= pick(x,y))
+dplyr::mutate(df, cols = pick(x, y))
 
-dplyr::select(df, c(x,y))
+dplyr::select(df, c(x, y))
 
 # This is useful for functions that take data frames as inputs.
 # For example, you can compute a joint rank between `x` and `y`.
-dplyr::dense_rank(c(10,20,20,20,30,40))
+dplyr::dense_rank(c(10, 20, 20, 20, 30, 40))
 # 1 2 2 2 3 4   (row #)
 
 # high to low?

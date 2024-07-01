@@ -19,10 +19,12 @@ TAGS: try_things_here
 ~/code/MASTER_INDEX.md
 
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,
-                      comment = "      ##",
-                      error = TRUE,
-                      collapse = T   ) # T easier to read
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = T
+) # T easier to read
 ```
 
 ### print line numbers (pdf only?)
@@ -34,24 +36,23 @@ if (TRUE) {
 ```
 
 ```{r library 		}
-
 library(jimTools)
 ``` 
 
 
 ```{r skeleton, include=F, eval=F}
-file="/home/jim/.config/nvim/templates/skeleton.Rmd"
+file <- "/home/jim/.config/nvim/templates/skeleton.Rmd"
 ```
 
 ```{r render, eval=FALSE, include=FALSE 	} 
-output_dir  <- Sys.getenv("OUTPUT_DIR")
+output_dir <- Sys.getenv("OUTPUT_DIR")
 output_dir
 
 {
-file  <- "" 
-file  <- basename(file)
-file  <- here("rmd", file)
-file
+  file <- ""
+  file <- basename(file)
+  file <- here("rmd", file)
+  file
 }
 
 
@@ -59,9 +60,7 @@ file
 
 ## replacement for here
 if (F) {
-  the_dir  <- dirname(file)
-  file  <- file.path(the_dir, file)
+  the_dir <- dirname(file)
+  file <- file.path(the_dir, file)
 }
-
-
 ```

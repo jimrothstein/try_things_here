@@ -6,7 +6,6 @@ date: last-modified
 ---
 
 ```{r}
-
 ```
 
 
@@ -26,14 +25,13 @@ try(f(1, 4))
 # This fails because `foofy` can't be matched partially by name
 try(f(1, foof = 4))
 
-try(f(1,...,4))
+try(f(1, ..., 4))
 # [1] "Error in try(f(1, ..., 4)) : '...' used in an incorrect context\n"
 
-try(f(1,...,foofy = 4))
+try(f(1, ..., foofy = 4))
 # [1] "Error in try(f(1, ..., foofy = 4)) : '...' used in an incorrect context\n"
 
 # Thanks to `...`, it must be matched exactly
 f(1, foofy = 4)
-
 ```
 vim:linebreak:nospell:nowrap:cul tw=78 fo=tqlnrc foldcolumn=1 cc=+1 filetype=r

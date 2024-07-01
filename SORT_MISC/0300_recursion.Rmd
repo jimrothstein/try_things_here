@@ -20,15 +20,17 @@ geometry: margin=0.5in,top=0.25in
 ###  Calculate  {{pi}} - 3, using recursion and  infinite series
 
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,
-                      comment = "      ##",
-                      error = TRUE,
-                      collapse = FALSE   ) # easier to read
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = FALSE
+) # easier to read
 ```
 
 
 ```{r library, include=FALSE		}
-file  <- knitr::current_input() 
+file <- knitr::current_input()
 
 library(jimTools)
 ``` 
@@ -36,17 +38,16 @@ library(jimTools)
 
 ###  calc `pi` -3
 ```{r begin}
-
 # First,  hard, manual calculation of each term
-manual_calc  <- function(k = NULL) {
-  D  <- (2*k) * (2*k + 1) * (2*k +2)
-  (-1)^(k+1)*4/D
+manual_calc <- function(k = NULL) {
+  D <- (2 * k) * (2 * k + 1) * (2 * k + 2)
+  (-1)^(k + 1) * 4 / D
 }
 manual_calc(1)
 manual_calc(2)
 manual_calc(3)
 manual_calc(4)
-manual_calc(c(5,6,7))
+manual_calc(c(5, 6, 7))
 manual_calc(26)
 
 
@@ -54,35 +55,36 @@ manual_calc(26)
 
 # Lucky for us, each term in series has closed form
 
-(old_digits  <- getOption("digits"))
+(old_digits <- getOption("digits"))
 
-options("digits" = 10)  
+options("digits" = 10)
 
 # use lowest form
-term  <- function(k = NULL)  {
-  (-1)^(k+1)/(2*k^3 + 3*k^2 + k) }
+term <- function(k = NULL) {
+  (-1)^(k + 1) / (2 * k^3 + 3 * k^2 + k)
+}
 
-term(k=1)
-term(k=2)
+term(k = 1)
+term(k = 2)
 
 
 #  recursive is SUM of terms
-total  <- function(k = NULL) {
-#  cum_value  <<- cum_value + term(k)
-   if (k == 0) return(0)
-   total(k-1) + term(k)
+total <- function(k = NULL) {
+  #  cum_value  <<- cum_value + term(k)
+  if (k == 0) {
+    return(0)
+  }
+  total(k - 1) + term(k)
 }
- 
 
-k = 1250
-x  <- total(k=k)
+
+k <- 1250
+x <- total(k = k)
 x
 
 
 options("digits" = old_digits)
 getOption("digits")
-
-
 ```
 
 
@@ -102,9 +104,11 @@ dev.off()
 ```
 
 ```{r plot_png_example, eval=FALSE  }
-filename  <- "~/Downloads/print_and_delete/out.png"
-png(filename = filename,
-         width = 480, height = 480, units = "px", pointsize = 12)
+filename <- "~/Downloads/print_and_delete/out.png"
+png(
+  filename = filename,
+  width = 480, height = 480, units = "px", pointsize = 12
+)
 plot(density_object)
 dev.off()
 ```
@@ -114,13 +118,14 @@ dev.off()
 # file must be of form:
 # dir/name_of_this_file    where dir is relative to project root
 
-file  <- here("", "")
-file 
+file <- here("", "")
+file
 # NOTE:   .tex only works with PDF
 # NOTE:    tex will NOT work with html
 # in general, pdf will look nicer
 rmarkdown::render(file,
-                  #output_format = "pdf_document",
-                  output_format = "html_document",
-                  output_file = "~/Downloads/print_and_delete/out")
+  # output_format = "pdf_document",
+  output_format = "html_document",
+  output_file = "~/Downloads/print_and_delete/out"
+)
 ```

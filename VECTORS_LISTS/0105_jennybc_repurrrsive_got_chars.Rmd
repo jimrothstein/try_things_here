@@ -48,16 +48,15 @@ o.2 <- o[[1]]
 #### 03_map_* to retreive as vector
 ```{r}
 # return vector of chars [30]
-(nms <- map_chr(got_chars, "name")) 
+(nms <- map_chr(got_chars, "name"))
 (map_chr(got_chars, "url"))
 ```
 
 #### 04_map_df* to retrieve as tibble
 ```{r}
 # return tibbles
-  (map_dfr(got_chars, `[`, c("name")) )
-t <-  map_dfr(got_chars, `[`, c("name", "gender", "culture", "born")) 
-  
+(map_dfr(got_chars, `[`, c("name")))
+t <- map_dfr(got_chars, `[`, c("name", "gender", "culture", "born"))
 ```
 
 
@@ -67,11 +66,10 @@ t <-  map_dfr(got_chars, `[`, c("name", "gender", "culture", "born"))
 length(sw_films)
 
 # sw_films OMITS top level;  ie list of films is top level; so this works:
-map_chr(sw_films, "title") 
+map_chr(sw_films, "title")
 ```
 
 
 ```{r}
 knitr::knit_exit()
-
 ```

@@ -36,32 +36,34 @@ df <- tibble(
 )
 df
 
-##---------------------------------------- 
+## ----------------------------------------
 ##  Compare films
-    str(df)
-    str(df, vec.len =1 )
-    str(df, list.len=2)
+str(df)
+str(df, vec.len = 1)
+str(df, list.len = 2)
 
-##---------------------------------------- 
+## ----------------------------------------
 args(hoist)
-# function (.data, .col, ..., .remove = TRUE, .simplify = TRUE, 
-#     .ptype = NULL, .transform = NULL) 
+# function (.data, .col, ..., .remove = TRUE, .simplify = TRUE,
+#     .ptype = NULL, .transform = NULL)
 
-##---------------------------------------- 
+## ----------------------------------------
 ```
 
 ##  Not useful here, since we have a tibble
 ```{r}
-enframe(df)   # error, df already is tibble
+enframe(df) # error, df already is tibble
 enframe(unlist(df))
 ```
 
 ## Check metadata column suitable to extract columns
 ```{r}
-df$metadata |> lengths()    # appears to all be 3
+df$metadata |> lengths() # appears to all be 3
 # [1] 3 3
 
-df$metadata |> lengths() |> unique()   # yep
+df$metadata |>
+  lengths() |>
+  unique() # yep
 # [1] 3
 ```
 
@@ -69,29 +71,29 @@ df$metadata |> lengths() |> unique()   # yep
 ## But not all elements are named
 ```{r}
 identical(
-df |> select(character, metadata) |> tidyr::unnest_wider(metadata),
-tidyr::unnest_wider(df, metadata)
+  df |> select(character, metadata) |> tidyr::unnest_wider(metadata),
+  tidyr::unnest_wider(df, metadata)
 )
 
 dput(df$metadata[[1]])
-# list(species = "dragon", color = "black", films = c("How to Train Your Dragon", 
+# list(species = "dragon", color = "black", films = c("How to Train Your Dragon",
 # "How to Train Your Dragon 2", "How to Train Your Dragon: The Hidden World"
 # ))
 # $species
 # [1] "dragon"
-# 
+#
 # $color
 # [1] "black"
-# 
+#
 # $films
-# [1] "How to Train Your Dragon"                   "How to Train Your Dragon 2"                
+# [1] "How to Train Your Dragon"                   "How to Train Your Dragon 2"
 # [3] "How to Train Your Dragon: The Hidden World"
 attributes(df$metadata[[1]])
 # $names
-# [1] "species" "color"   "films"  
+# [1] "species" "color"   "films"
 
 names(df$metadata[[1]])
-# [1] "species" "color"   "films"  
+# [1] "species" "color"   "films"
 
 rlang::is_named(df$metadata[[1]])
 
@@ -99,20 +101,19 @@ rlang::have_name(df$metadata[[1]])
 # [1] TRUE TRUE TRUE
 
 df$metadata |> is_named() # [1] FALSE
-
 ```
 ##  last column, films
 ```{r}
 tidyr::unnest_wider(df, metadata)
 tidyr::unnest_wider(df, metadata) |> unnest_longer(films)
 # # A tibble: 5 × 4
-#   character species   color films                                     
-#   <chr>     <chr>     <chr> <chr>                                     
-# 1 Toothless dragon    black How to Train Your Dragon                  
-# 2 Toothless dragon    black How to Train Your Dragon 2                
+#   character species   color films
+#   <chr>     <chr>     <chr> <chr>
+# 1 Toothless dragon    black How to Train Your Dragon
+# 2 Toothless dragon    black How to Train Your Dragon 2
 # 3 Toothless dragon    black How to Train Your Dragon: The Hidden World
-# 4 Dory      blue tang blue  Finding Nemo                              
-# 5 Dory      blue tang blue  Finding Dory                              
+# 4 Dory      blue tang blue  Finding Nemo
+# 5 Dory      blue tang blue  Finding Dory
 ```
 
 
@@ -121,35 +122,34 @@ tidyr::unnest_wider(df, metadata) |> unnest_longer(films)
 ## Harder cases, may need to focus on specfic column(s) to unnest
 ##  extract species as a column
 ```{r}
-
 hoist(df, metadata, "species")
 # # A tibble: 2 × 3
-#   character species   metadata        
-#   <chr>     <chr>     <list>          
+#   character species   metadata
+#   <chr>     <chr>     <list>
 # 1 Toothless dragon    <named list [2]>
 # 2 Dory      blue tang <named list [2]>
 
 hoist(df, metadata, "films")
 # # A tibble: 2 × 3
-#   character films     metadata        
-#   <chr>     <list>    <list>          
+#   character films     metadata
+#   <chr>     <list>    <list>
 # 1 Toothless <chr [3]> <named list [2]>
 # 2 Dory      <chr [2]> <named list [2]>
-##---------------------------------------- 
+## ----------------------------------------
 
 
 #   Note:  The 2 lists hold 3 and 2 films respectively
 # Extract only specified components
-(z= (df %>% hoist(metadata,
+(z <- (df %>% hoist(metadata,
   "species",
-  first_film = list("films", 1L),   ## 1st films entry in EACH list
-  third_film = list("films", 3L)    ## 3rd entry, if any
+  first_film = list("films", 1L), ## 1st films entry in EACH list
+  third_film = list("films", 3L) ## 3rd entry, if any
 ))
 )
 
 
 
-##---------------------------------------- 
+## ----------------------------------------
 str(z)
 # tibble [2 × 5] (S3: tbl_df/tbl/data.frame)
 #  $ character : chr [1:2] "Toothless" "Dory"

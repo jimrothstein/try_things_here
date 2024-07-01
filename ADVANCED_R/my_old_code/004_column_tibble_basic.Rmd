@@ -11,7 +11,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 run chunk, suppress output
 ```{r message=FALSE}
-
 library(gapminder)
 library(tidyverse)
 ```
@@ -19,16 +18,16 @@ library(tidyverse)
 ```{r}
 ## tibble (fct, fct, tibble)
 by_country <- gapminder %>%
-    group_by(continent, country) %>%
-    nest()
-    
-country_model <- function(df)
-  lm(lifeExp ~ year, data=df)
-  
+  group_by(continent, country) %>%
+  nest()
+
+country_model <- function(df) {
+  lm(lifeExp ~ year, data = df)
+}
+
 # ? how does function country_model carry df=data ?
 models <- by_country %>%
-    mutate(mod = map(data, country_model ))
-    
+  mutate(mod = map(data, country_model))
 ```
 
 ```{r}    
@@ -36,15 +35,16 @@ models
 ```
 
 ```{r} 
-## Afganistan  
+## Afganistan
 mean(sqrt(sum(models$mod[[1]]$residuals^2)))
 ```    
 
 ```{r}
-mse <- function(mod)
-    mean(sqrt(sum(mod$residuals^2)))
+mse <- function(mod) {
+  mean(sqrt(sum(mod$residuals^2)))
+}
 
 models <- models %>%
-    mutate(mse = map(mod, mse))
+  mutate(mse = map(mod, mse))
 ```    
     

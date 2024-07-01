@@ -28,17 +28,18 @@ params:
 
 
 ```{r one, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE,  
-                      comment="      ##",  
-                      error=TRUE, 
-                      collapse=TRUE)
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = TRUE
+)
 library(purrr)
 library(sloop)
 library(jimTools)
 ```
 
 ```{r summary}
-
 ####  base
 is.object
 methods
@@ -51,7 +52,6 @@ sloop::otype
 sloop::ftype
 sloop::s3_dispatch
 sloop::s3_dispatch(print(f))
-
 ```
 
 
@@ -62,16 +62,16 @@ sloop::s3_dispatch(print(f))
 ```{r 13.2}
 f <- factor(c("a", "b", "c"))
 f
-typeof(f)   # base = int[]
-class(f)	  # 'factor'
+typeof(f) # base = int[]
+class(f) # 'factor'
 attributes(f) # includes 'levels' which hold data as presented ('a', 'b', ....)
 
 # compare, when no longer 'factor' still has attribute "levels"
-g  <- unclass(f)   # removes class, not other attributes
+g <- unclass(f) # removes class, not other attributes
 g
 typeof(g)
 class(g)
-# so does 
+# so does
 class(1:3)
 
 attributes(g)
@@ -80,14 +80,13 @@ attributes(g)
 ## Find methods for a generic function
 ```{r methods}
 methods(factor)
-methods(print)   # chr[] , many!
+methods(print) # chr[] , many!
 methods(str)
 methods(mean)
 ```
 
 ## structure
 ```{r structure}
-
 # Create and assign class in one step
 x <- structure(list(), class = "my_class")
 class(x)
@@ -100,20 +99,19 @@ class(x)
 ```{r s3}
 # Given an S3 object, generic functions process  based on class.
 
-# is a function S3 generic?  
+# is a function S3 generic?
 sloop::ftype(print) # yes, if see 'generic'
-ftype(str)  # yes
-ftype(cat)  #no, internal
-ftype(lm)   # no
-ftype(list)  # no, primitve
-ftype(as.character)  # primitive generic S3?? 
+ftype(str) # yes
+ftype(cat) # no, internal
+ftype(lm) # no
+ftype(list) # no, primitve
+ftype(as.character) # primitive generic S3??
 ftype(mean) # yes
 ftype(factor) # no
-
 ```
 ### Don't get fooled  (don't get it) 
 ```{r caution}
-(d  <- date())
+(d <- date())
 class(d)
 # tricky!  POSIXlt is S3, based on list
 # BUT str() is generic and designed to fool! Hides the list!
@@ -132,31 +130,33 @@ s3_methods_generic("factor")
 # `*`  method is not used
 
 sloop::s3_dispatch(print(f))
-sloop::s3_dispatch(print(c(1,2,3,4)))
+sloop::s3_dispatch(print(c(1, 2, 3, 4)))
 sloop::s3_dispatch(print(1 + 1))
 
 # knows it is a function!
-sloop::s3_dispatch(print(function(x) {x}))
+sloop::s3_dispatch(print(function(x) {
+  x
+}))
 
 sloop::s3_dispatch(cat("hello"))
-sloop::s3_dispatch(factor(c(1,2,3)))
+sloop::s3_dispatch(factor(c(1, 2, 3)))
 ```
 
 ### UseMethod  - wrong!
 ```{r UseMethod}
-h  <- function(generic,object ) {
-  UseMethod(generic,  object) 
+h <- function(generic, object) {
+  UseMethod(generic, object)
 }
 
 f.character <- function(x) print("character")
-f.numeric  <- function(x) print("numeric")
+f.numeric <- function(x) print("numeric")
 class("a")
 # [1] "character"
 
 class(2)
 # [1] "numeric"
 
-h(generic = "f",object = "a")
+h(generic = "f", object = "a")
 h("f", 2)
 ```
 
@@ -185,7 +185,6 @@ h("f", 2)
 *  add structure
 *  some rumentary checks
 ```{r constructor}
-
 new_difftime <- function(x = double(), units = "secs") {
   stopifnot(is.double(x))
   units <- match.arg(units, c("secs", "mins", "hours", "days", "weeks"))
@@ -200,18 +199,17 @@ class(r)
 is.double(r)
 # r or print(r)  only one method
 r
-print(r)   # SAME
+print(r) # SAME
 
 
 
 # another
-r  <- new_difftime(c(1, 10, 3600), "secs")
+r <- new_difftime(c(1, 10, 3600), "secs")
 r
 ```
 
 ## More complex S3, need for validator
 ```{r validator}
-
 new_factor <- function(x = integer(), levels = character()) {
   stopifnot(is.integer(x))
   stopifnot(is.character(levels))
@@ -223,24 +221,23 @@ new_factor <- function(x = integer(), levels = character()) {
   )
 }
 
-r  <- new_factor(c(1,10,100), levels = c("low", "medium", "high"))
+r <- new_factor(c(1, 10, 100), levels = c("low", "medium", "high"))
 class(r)
-is.integer(r) #F
-is.character(r) #F
+is.integer(r) # F
+is.character(r) # F
 is.double(r)
 typeof(r)
 
 
-r  <- new_factor(1:3, levels = c("low", "medium", "high"))
+r <- new_factor(1:3, levels = c("low", "medium", "high"))
 r
-is.integer(r) #F 
-is.double(r)  #F
+is.integer(r) # F
+is.double(r) # F
 
 
 # another, all FAIL
 new_factor(1:5, c("a"))
 new_factor(1:5, "a")
 new_factor(0:1, "a")
-
 ```
 

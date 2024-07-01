@@ -24,16 +24,16 @@ enframe <- function(x, name = "name", value = "value") {
   if (is.null(value)) {
     abort_enframe_value_null()
   }
-  
+
   if (is.null(x)) {
     x <- logical()
   }
-  
+
   # FIXME: Enable again for data frames, add test
   if (!vec_is(x) || is.data.frame(x)) {
     abort_enframe_must_be_vector(x)
   }
-  
+
   if (is.null(name)) {
     df <- list(vectbl_set_names(x))
   } else if (is.null(vec_names(x))) {
@@ -41,7 +41,7 @@ enframe <- function(x, name = "name", value = "value") {
   } else {
     df <- list(vec_names2(x), vectbl_set_names(x))
   }
-  
+
   names(df) <- c(name, value)
   new_tibble(df, nrow = vec_size(x))
 }
@@ -63,7 +63,7 @@ deframe <- function(x) {
   } else if (length(x) != 2) {
     warn("`x` must be a one- or two-column data frame in `deframe()`.")
   }
-  
+
   value <- x[[2L]]
   name <- x[[1L]]
   vectbl_set_names(value, as.character(name))

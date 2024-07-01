@@ -39,77 +39,78 @@ TODO:       Clean up !   Make coherent
 Create function accepts basename of another function (`mean, max, etc`)
 Returns basename, but as a call??
 ```{r}
-f = function(fun, args=NULL) {
-    deparse(substitute(fun))
-    #cat(as.character(typeof(new)), "\n")     ## symbol
+f <- function(fun, args = NULL) {
+  deparse(substitute(fun))
+  # cat(as.character(typeof(new)), "\n")     ## symbol
 }
 
-f(mean)                         ## [1] "mean"
-typeof(f(mean))                 ## character
+f(mean) ## [1] "mean"
+typeof(f(mean)) ## character
 
 ##  USAGE
-do.call(f(mean), list(1:10))    ##  5.5
-do.call(f(max), list(1:10))     ##  10
-do.call(f(length), list(1:10))  ##  10
+do.call(f(mean), list(1:10)) ##  5.5
+do.call(f(max), list(1:10)) ##  10
+do.call(f(length), list(1:10)) ##  10
 ```
 What did this create? nothing?
 ```{r}
-is.expression(f(mode))    ## FALSE
-is.call(f(mode))          ## FALSE
-is.function(f(mode))      ## F
-is.function(mode)         ## TRUE
-is.symbol(f(mode))         ## F 
+is.expression(f(mode)) ## FALSE
+is.call(f(mode)) ## FALSE
+is.function(f(mode)) ## F
+is.function(mode) ## TRUE
+is.symbol(f(mode)) ## F
 
 
-call(f(mean), list(1:10))       ## mean(list(1:10))
-eval(f(mean), list(1:10))       ## "mean"
+call(f(mean), list(1:10)) ## mean(list(1:10))
+eval(f(mean), list(1:10)) ## "mean"
 
-eval(f(mode, list(x=1:10)))     ## [1] "mode"
-eval(f(mode), list(x=1:10))     ## [1]  "mode"
+eval(f(mode, list(x = 1:10))) ## [1] "mode"
+eval(f(mode), list(x = 1:10)) ## [1]  "mode"
 ```
 ***
 
 ### Compare (REF:   Hadley, Adv, v.1)
 ```{r}
-w = function(arg) print(arg)    ## normal
-f = function(arg) substitute(arg) ## substitute
+w <- function(arg) print(arg) ## normal
+f <- function(arg) substitute(arg) ## substitute
 
-w(1:10)     #  1 2 3 ... 10
-(res = f(1:10))     ## 1:10, res is a call.
+w(1:10) #  1 2 3 ... 10
+(res <- f(1:10)) ## 1:10, res is a call.
 
-x = 10
-w(x)        # 10
-f(x)        # x
+x <- 10
+w(x) # 10
+f(x) # x
 
-x = 10
-y = 100
-f(x + y^2)  # x + y^2
+x <- 10
+y <- 100
+f(x + y^2) # x + y^2
 
 # z does not exist        # x + y + z
-f(x+y+z)
+f(x + y + z)
 ```
 ##  Compare quote and substitute
 ```{r}
-r1 = quote(x + 5*3)
-r2 = substitute(x + 5*3 )
+r1 <- quote(x + 5 * 3)
+r2 <- substitute(x + 5 * 3)
 is.call(r1) ##  T
 is.call(r2) ## T
 
-eval(r1)    ## 25
-eval(r2)    ## 25
+eval(r1) ## 25
+eval(r2) ## 25
 ```
 
 ##  Study   
 ```{r}
 f <- function(argX) {
-   list(argX, 
-        quote(argX), 
-        substitute(argX)
-        )
+  list(
+    argX,
+    quote(argX),
+    substitute(argX)
+  )
 }
-    
+
 suppliedArgX <- 100
-f(argX  <-  suppliedArgX)
+f(argX <- suppliedArgX)
 f(argX = suppliedArgX)
 f(suppliedArgX)
 ```
@@ -117,45 +118,44 @@ f(suppliedArgX)
 ##  Compare substitute with/without depars
 ```{r}
 ##  Use deparse to convert to stirng
-g = function(arg) deparse(substitute(arg))
+g <- function(arg) deparse(substitute(arg))
 
-g(1:10)  # "1:10"
+g(1:10) # "1:10"
 g(x) # "x"
 g(x + y^2) # [1] "x + y^2"
- g(x + y + z) # "x + y + z"
+g(x + y + z) # "x + y + z"
 ```
 
 ```{r}
 ##  surprise, f(arg) returns the code user submitted:  arg  , it does Not allow evaluate and so does not see 1:10
 ## 'substitute returns the parse tree for the (unevaluated) expression expr, substituting any variables bound in env.'
 
-f = function(arg) substitute(arg )
+f <- function(arg) substitute(arg)
 f(arg)
-f(arg + 5*3)
+f(arg + 5 * 3)
 
-g1 = function(arg) deparse(f(arg+3))
-h = function(arg) {
+g1 <- function(arg) deparse(f(arg + 3))
+h <- function(arg) {
   print(arg)
   deparse(f(arg))
-  
 }
 
-g(x)          # "arg"
-g(2*5)        # "arg"
-g(2*5+x)      # "arg"
+g(x) # "arg"
+g(2 * 5) # "arg"
+g(2 * 5 + x) # "arg"
 
-g(1:10)   ## "arg"
+g(1:10) ## "arg"
 
-g1(x )
-g1(2*5+x)
+g1(x)
+g1(2 * 5 + x)
 
 ## do not understand
-h(x)        # errror
-h(2*5)        # arg)
-eval(h(2*5))
+h(x) # errror
+h(2 * 5) # arg)
+eval(h(2 * 5))
 
 ## do not undrestand
-play = function(x) cat(x)
+play <- function(x) cat(x)
 play(2)
 play(z)
 ```
@@ -163,93 +163,94 @@ play(z)
 ##  TODO:  explain !
 ```{r}
 ## substitute return a call (unevaluated) - TODO how to evaluate???!!
-    expr  <- substitute(suppliedArgX  <- 100)
-    is.call(expr)                       ## TRUE
-    eval(expr)                          ## eval(expr)
-    is.symbol(expr)                     ## FALSE
-    deparse(expr)                       ## "suppliedArgX <- 100"
-    as.character(expr)                  ## list turned to character ???
-    as.list(expr)                       ## STUDY
-    as.call(expr)                       ## 
+expr <- substitute(suppliedArgX <- 100)
+is.call(expr) ## TRUE
+eval(expr) ## eval(expr)
+is.symbol(expr) ## FALSE
+deparse(expr) ## "suppliedArgX <- 100"
+as.character(expr) ## list turned to character ???
+as.list(expr) ## STUDY
+as.call(expr) ##
 
 ## quote returns a symbol, which is NOT a call.
-    expr2  <- quote(suppliedArgX)
-    typeof(expr2)                       ## symbol
-    is.call(expr2)                      ## FALSE
-    is.expression(expr2)                ## FALSE
-    is.symbol(expr2)                    ## TRUE
-    expr2                               ## suppliedArgX
+expr2 <- quote(suppliedArgX)
+typeof(expr2) ## symbol
+is.call(expr2) ## FALSE
+is.expression(expr2) ## FALSE
+is.symbol(expr2) ## TRUE
+expr2 ## suppliedArgX
 
 ## but easy to evaluate:
-    eval(expr2)                         ## 100
+eval(expr2) ## 100
 ```
 
 ####  String can not be 'evaluated', quote first! (becomes a call)
 ```{r call}
-s  <- "5+5"
+s <- "5+5"
 
-##  Not 10  
-eval(s)             # "5+5"
-is.call(s)          ## FALSE
-is.expression(s)    ## FALSE
+##  Not 10
+eval(s) # "5+5"
+is.call(s) ## FALSE
+is.expression(s) ## FALSE
 
 ##  But quote will allow eval
-    (s  <- quote(5+5))  ## 5+5
-    eval(s)             ## 10
-    
-    ## because it is a call
-    is.call(s)      ## TRUE
-    is.expression(s)    ## FALSE
+(s <- quote(5 + 5)) ## 5+5
+eval(s) ## 10
+
+## because it is a call
+is.call(s) ## TRUE
+is.expression(s) ## FALSE
 ```
 
 ```{r simplest??}
 rm(x)
 
-## x undefined, which is fine.  
+## x undefined, which is fine.
 ## quote captures the UNEVALUATED expression.
-quote(x + 1 )
+quote(x + 1)
 
 
 ## But in FUN, need to use substitute() to capture unevaluated content of call.
-f  <- function(x) {
-    y  <- quote(x)
+f <- function(x) {
+  y <- quote(x)
 }
 
-(f(a+1))
+(f(a + 1))
 
 
-g  <- function(x) {
-    y  <- substitute(x)
+g <- function(x) {
+  y <- substitute(x)
 }
 
-(g(a+1))
+(g(a + 1))
 # a + 1
 
 ## ERROR
-if (F)
-    g(a+1)(1)
+if (F) {
+  g(a + 1)(1)
+}
 
-eval(g(a+1), list(a=1))
+eval(g(a + 1), list(a = 1))
 # [1] 2
 ```
 
 #### parse:  string --> R expression
 ```{r parse}
 ## create expression
-    create_expr <- function(string = "2^2") {
-        parse(text = string)
-    }
+create_expr <- function(string = "2^2") {
+  parse(text = string)
+}
 
-    ex1  <- create_expr() # expression(2^2)
-    ## verify:
+ex1 <- create_expr() # expression(2^2)
+## verify:
 
-    is.expression(ex1) # [1] TRUE
-    typeof(ex1) # [1] "expression"
+is.expression(ex1) # [1] TRUE
+typeof(ex1) # [1] "expression"
 
-string  <- "2^2"
+string <- "2^2"
 typeof(string) # [1] "character"
 
-res  <- parse(text = string) # expression(2^2)
+res <- parse(text = string) # expression(2^2)
 is.expression(res) # [1] TRUE
 typeof(res) # [1] "expression"
 ```
@@ -261,36 +262,36 @@ eval(res) # [1] 4
 
 #### eval: R expression in different env, 2 results!
 ```{r env}
-    e1  <- create_expr("x + 1")
+e1 <- create_expr("x + 1")
 ## create
-    # expression(x + 1)
+# expression(x + 1)
 
 
 ## eval fail becasue no x
-    x  <- NULL  
-    if (!is.null(x) ) {
-        if (exists("x")) eval(e1)
-    }
+x <- NULL
+if (!is.null(x)) {
+  if (exists("x")) eval(e1)
+}
 
 ## create 2 env
-    env1  <- new.env()
-    env1$x  <- 10
+env1 <- new.env()
+env1$x <- 10
 
-    env2  <- new.env()
-    env2$x  <- 100
+env2 <- new.env()
+env2$x <- 100
 
 ## eval e1 in both
-    eval(e1, envir=env1)
+eval(e1, envir = env1)
 # [1] 11
-    eval(e1, envir=env2)
+eval(e1, envir = env2)
 # [1] 101
 
 ##  Note: a difference, if x exists or is NULL
-    rm(x)
-    if (F) eval(e1) # error
+rm(x)
+if (F) eval(e1) # error
 
-    x  <- NULL
-    eval(e1) # numeric(0)
+x <- NULL
+eval(e1) # numeric(0)
 ```
 
 ### sin(x=1)
@@ -298,39 +299,39 @@ eval(res) # [1] 4
 is.call(sin(1))
 # [1] FALSE
 
-typeof(sin(x=1)) # [1] "double"
+typeof(sin(x = 1)) # [1] "double"
 
 {
-substitute(sin(1)) # sin(1)
+  substitute(sin(1)) # sin(1)
 
-substitute(sin(x=1)) # sin(x = 1)
+  substitute(sin(x = 1)) # sin(x = 1)
 
-typeof(substitute(sin(x=1))) # [1] "language"
+  typeof(substitute(sin(x = 1))) # [1] "language"
 
-is.expression(sin(x=1)) # [1] FALSE
-is.expression(substitute(sin(x=1))) # [1] FALSE
-is.call(substitute(sin(x=1))) # [1] TRUE
-is.call(substitute(sin(x))) # [1] TRUE
-is.call(substitute(sin(1))) # [1] TRUE
+  is.expression(sin(x = 1)) # [1] FALSE
+  is.expression(substitute(sin(x = 1))) # [1] FALSE
+  is.call(substitute(sin(x = 1))) # [1] TRUE
+  is.call(substitute(sin(x))) # [1] TRUE
+  is.call(substitute(sin(1))) # [1] TRUE
 }
 ```
 ```{r }
-f  <- function(x) {
-    res  <- substitute(x) # 
-    return(list(res = res,
-                deparse = deparse(res), 
-                typeof = typeof(res), 
-                is.call = is.call(res), 
-                as.character = as.character(res) 
-                #expression = parse(text = as.character(res))
-    )
-    )
+f <- function(x) {
+  res <- substitute(x) #
+  return(list(
+    res = res,
+    deparse = deparse(res),
+    typeof = typeof(res),
+    is.call = is.call(res),
+    as.character = as.character(res)
+    # expression = parse(text = as.character(res))
+  ))
 }
 
 (f(a))
-(f(a+b))
-(f(a+1))
-( f(1+2) )
+(f(a + b))
+(f(a + 1))
+(f(1 + 2))
 
 
 typeof((f(function(e) e^2))[[1]])
@@ -342,23 +343,23 @@ is.call((f(function(e) e^2))[[1]])
 NOT a usual USE CASE
 
 ```{r deparse}
-d  <- deparse(res)
+d <- deparse(res)
 d
 # [1] "structure(expression(2^2), srcfile = <environment>, wholeSrcref = structure(c(1L, "
-# [2] "0L, 2L, 0L, 0L, 0L, 1L, 2L), srcfile = <environment>, class = \"srcref\"))"        
+# [2] "0L, 2L, 0L, 0L, 0L, 1L, 2L), srcfile = <environment>, class = \"srcref\"))"
 
 typeof(d)
 # [1] "character"
 
 ## guarantees character of length=1
 deparse1(d)
-
 ```
 
 #### substitute --> 
 ```{r basics}
-
-x  <- 1; y  <- 2; z  <- 3
+x <- 1
+y <- 2
+z <- 3
 
 
 ## substitute
@@ -375,7 +376,7 @@ substitute(2)
 substitute(x + y)
 # x + y
 
-is.expression(substitute(x+y))
+is.expression(substitute(x + y))
 # [1] FALSE
 
 
@@ -383,47 +384,47 @@ is.expression(substitute(x+y))
 deparse(substitute(x))
 # [1] "x"
 
-deparse(substitute(x+y))
+deparse(substitute(x + y))
 # [1] "x + y"
 
 
 is.character(deparse(substitute(x)))
 # [1] TRUE
-
 ```
 
 #### Adv-R, 1st Editiion, 
   *  Roughly:  substitute returns code
   *  deparse returns string
 ```{r hadley}
-f  <- function(x) deparse(x)
-g  <- function(x) f(substitute(x))
+f <- function(x) deparse(x)
+g <- function(x) f(substitute(x))
 
 g(1:10)
 # [1] "1:10"
-unlist(strsplit("1 + 2",split="") )
+unlist(strsplit("1 + 2", split = ""))
 # [1] "1" " " "+" " " "2"
 g(x)
 # [1] "x"
 
-g(x +y^2/z  + exp(a  + sin(b)))
+g(x + y^2 / z + exp(a + sin(b)))
 # [1] "x + y^2/z + exp(a + sin(b))"
-
 ```
 
 
 
 ```{r advanced}
-f = function(a, ...) {
-        # browser() 
-        # substitue(a) returns x, unquoted, ie symbol
-        # arg is "x", dots is NULL, 
-        arg = deparse(substitute(a))
-        dots = substitute(list(...))[-1]
-        c(arg, sapply(dots, deparse))
+f <- function(a, ...) {
+  # browser()
+  # substitue(a) returns x, unquoted, ie symbol
+  # arg is "x", dots is NULL,
+  arg <- deparse(substitute(a))
+  dots <- substitute(list(...))[-1]
+  c(arg, sapply(dots, deparse))
 }
 
-x  <- 1; y  <- 2; z  <- 3
+x <- 1
+y <- 2
+z <- 3
 
 substitute(x)
 # x
@@ -440,22 +441,23 @@ is.character(deparse(substitute(x)))
 f(x)
 # [[1]]
 # [1] "x"
-# 
+#
 
-f(x,y,z)
+f(x, y, z)
 # [1] "x" "y" "z"
-
 ```
 
 Return the unevaluated expression, deparsed (not a call?)
 ```{r}
-f  <- function(x = { 2*x}){
+f <- function(x = {
+                2 * x
+              }) {
   as.character(rlang::enexpr(x))
-    }
-    
+}
 
 
-f(2+2)
+
+f(2 + 2)
 f(sin(2))
 f(sin(2) + cos(2))
 f(sin(x))

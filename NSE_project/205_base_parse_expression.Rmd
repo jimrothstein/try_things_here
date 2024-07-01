@@ -27,16 +27,18 @@ TAGS:  deparse, substitute
 \footnotesize{this is footnotesize}
 
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,
-                      comment = "      ##",
-                      error = TRUE,
-                      collapse = T   ) # T easier to read
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = T
+) # T easier to read
 ```
 
 ```{r, results = 'asis',echo = T }
 htmltools::h3("Test big font")
-htmltools::h4('Test medium font')
-htmltools::h5('Test smaller font')
+htmltools::h4("Test medium font")
+htmltools::h5("Test smaller font")
 ```
 `r htmltools::h3("Outside chunck")`
 
@@ -58,21 +60,24 @@ https://stackoverflow.com/questions/46834655/whats-the-difference-between-substi
 #### parse:  string  -->    expression
 ```{r parse}
 # args(parse)
-e  <-  parse(text = "2^2")
+e <- parse(text = "2^2")
 e
 
 ##  e is expression, which is based on list
 is.expression(e)
 
 
-## Rmk:  a is unknown, but fine for expression. 
-e2  <- parse(text = "2*a")
+## Rmk:  a is unknown, but fine for expression.
+e2 <- parse(text = "2*a")
 
 ## Rmk2:  However, this fails because `2a` is not valid expression.
 
-tryCatch( { e3  <- parse(text = "2a")},
-     error = function(e) e
-     )
+tryCatch(
+  {
+    e3 <- parse(text = "2a")
+  },
+  error = function(e) e
+)
 
 
 ##  An expression can have attributes.
@@ -107,33 +112,37 @@ e[[1]]
 ####  parse, deparse  are not exact inverses.  Attributes are added.
 
 ```{r inverse}
-e  <- parse(text ="a   <-  sin(x)")
+e <- parse(text = "a   <-  sin(x)")
 
 
 identical(e, deparse(e))
 
-f  <- function() {x}
-e  <- parse(text="f")
+f <- function() {
+  x
+}
+e <- parse(text = "f")
 
 
 
-x  <- quote(5+5)
+x <- quote(5 + 5)
 x
-is.call(x) #T
-typeof(x)  # language
+is.call(x) # T
+typeof(x) # language
 is.pairlist(x) # F
-as.list(x)  # breaks the code
+as.list(x) # breaks the code
 
 
-z  <- quote(x+y)
-is.call(z) #T
+z <- quote(x + y)
+is.call(z) # T
 
 
-e  <- quote({print(x)
+e <- quote({
+  print(x)
 
-       x+y
+  x + y
 
-       x=3})
+  x <- 3
+})
 
 as.list(e)
 ```
@@ -146,11 +155,11 @@ eval does NOT apply quote.   So if x has a value, R considers x+1 to be double, 
 args(eval)
 
 
-x  <- 10
+x <- 10
 eval(x)
 
 ##  e is not string
-e  <- expr(x)
+e <- expr(x)
 is.character(e)
 e
 eval(e)
@@ -159,74 +168,69 @@ eval(e)
 eval(expr(x))
 
 ##  An error
-y  <- 20
+y <- 20
 rm(y)
 if (F) eval(expr(x + y))
 
 
 ##
-y  <- 12
-eval(x+y)
-eval(expr(x+y))
+y <- 12
+eval(x + y)
+eval(expr(x + y))
 
 ##  expr is cummulative
-eval(expr(expr(x+y)))
-eval(expr(expr(expr(x+y))))
+eval(expr(expr(x + y)))
+eval(expr(expr(expr(x + y))))
 
 ##  observe,  a character vector makes no sense to evaluate, it just is what it
 ##  is. But quote(x) is an expression and is evaluated.
-eval('x')
-eval('5+5')
+eval("x")
+eval("5+5")
 eval(quote(x))
 
 ##  observe quote delays lookup for x
 
-eval(quote(x+1), env(x=1000))
+eval(quote(x + 1), env(x = 1000))
 
 
 ##  Explain this: (hint:  eval takes an "expression")
-eval(x, env(x=1000))
-eval(x+1, env(x=1000))
-eval((x+1), env(x=1000))
-eval(eval(x+1), env(x=1000))
-eval(print(x+1), env(x=1000))
-eval(eval(x+1), env(x=1000))
+eval(x, env(x = 1000))
+eval(x + 1, env(x = 1000))
+eval((x + 1), env(x = 1000))
+eval(eval(x + 1), env(x = 1000))
+eval(print(x + 1), env(x = 1000))
+eval(eval(x + 1), env(x = 1000))
 
-##  
-eval(expr(x+1), env(x=1000))
-eval(quote(x+1), env(x=1000))
-eval(quote(x+1), env(x=1000))
-
-
-
+##
+eval(expr(x + 1), env(x = 1000))
+eval(quote(x + 1), env(x = 1000))
+eval(quote(x + 1), env(x = 1000))
 ```
 
 
 ```{r knit_exit(), include=F, eval=F} 
-knitr::knit_exit() 
+knitr::knit_exit()
 ```
 
 ```{r render, eval=FALSE, include = F	} 
 {
-file <- "/home/jim/code/try_things_here/BASE/0205_base_parse_expression.Rmd"
-file  <- normalizePath(file)
-file
+  file <- "/home/jim/code/try_things_here/BASE/0205_base_parse_expression.Rmd"
+  file <- normalizePath(file)
+  file
 }
 
-rmarkdown::render(file, 
-       output_format="pdf_document",
-       #output_format="html_document",
-       output_dir = "~/Downloads/print_and_delete"
-       )
-
-
+rmarkdown::render(file,
+  output_format = "pdf_document",
+  # output_format="html_document",
+  output_dir = "~/Downloads/print_and_delete"
+)
 ```
 # z is 'expression'
 
 added 5 MAY
 ```{r}
 z
-x<-4
+x <- 4
 # now eval the expression
 base::eval(z)
 y
@@ -234,23 +238,22 @@ y
 
 ##    basic NSE
 ```{r}
-a=2
-b=10
-z=quote(a+b)
-eval(z)   # 12
+a <- 2
+b <- 10
+z <- quote(a + b)
+eval(z) # 12
 
 z
-(zz = as.list(z))
-
+(zz <- as.list(z))
 ```
 # change
 ```{r}
-zz[[1]] = `*`
+zz[[1]] <- `*`
 zz
 
 ## but zz is list
 (as.call(zz))
-eval(as.call(zz))   #20
+eval(as.call(zz)) # 20
 ```
 ##    Quote can return.... (SEE Lionell)
 https://rpubs.com/lionel-/programming-draft

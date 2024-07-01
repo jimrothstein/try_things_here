@@ -27,7 +27,7 @@ library(rlang)
 ```   
 
 ```{r}
-the_dir = "~/code/try_things_here/rrapply/bookmarks"
+the_dir <- "~/code/try_things_here/rrapply/bookmarks"
 the_file <- paste0(the_dir, "/", "bookmarks-2023-05-24_FF.json")
 the_dir
 the_file
@@ -39,14 +39,13 @@ x <- jsonlite::read_json(the_file)
 # an aside
 # ----------
 enframe(x$children[[1]])
-str(x$children[[1]], max.level=1)
-str(x$children[[1]]$children[[1]], max.level=1, vec.len=1)
+str(x$children[[1]], max.level = 1)
+str(x$children[[1]]$children[[1]], max.level = 1, vec.len = 1)
 # ----------
-menu = x$children[[1]]
-toolbar = x$children[[2]]
-unfiled = x$children[[3]]
-mobile = x$children[[4]]
-
+menu <- x$children[[1]]
+toolbar <- x$children[[2]]
+unfiled <- x$children[[3]]
+mobile <- x$children[[4]]
 ```
 
 # --------------------------------  MUCH BETTER ----------------------------------
@@ -57,21 +56,20 @@ mobile = x$children[[4]]
 ```{r}
 x1 <- x$children %>% tibble()
 x1
-#   <list>           
+#   <list>
 # 1 <named list [10]>
 # 2 <named list [10]>
 # 3 <named list [10]>
 # 4 <named list [10]>
 dput(x1, "x1_output.txt")
-##  each of 4 chlidren holds another list of 10 
-str(x1, max.depth=1, list.len=4)
-
+##  each of 4 chlidren holds another list of 10
+str(x1, max.depth = 1, list.len = 4)
 ```
 ```{r}
 x2 <- x1 %>% hoist(".", # pull out from list-column
-    title = "title",
-##  id = "id",
-    children = "children"
+  title = "title",
+  ##  id = "id",
+  children = "children"
 )
 x2
 # # A tibble: 4 × 3
@@ -84,7 +82,7 @@ x2
 
 
 x3 <- x2 %>% unnest_longer("children")
-x3 |> head(n=4L)
+x3 |> head(n = 4L)
 
 ## remarks no surprise
 length(x3$children) # [1] 1509
@@ -92,31 +90,37 @@ names(x3)
 unique(x3$title)
 
 x4 <- x3 %>% hoist("children",
-    uri = "uri",
-    title1 = "title"
+  uri = "uri",
+  title1 = "title"
 )
 
 head(x4)
 tail(x4)
 
 
-x4 %>% dplyr::select(c("title", "uri", "title1")) |> head(4)
+x4 %>%
+  dplyr::select(c("title", "uri", "title1")) |>
+  head(4)
 # # A tibble: 4 × 3
-#   title uri                                                  title1       
-#   <chr> <chr>                                                <chr>        
+#   title uri                                                  title1
+#   <chr> <chr>                                                <chr>
 # 1 menu  <NA>                                                 Mozilla Fire…
 # 2 menu  https://github.com/jarun/Buku                        jarun/buku: …
 # 3 menu  https://github.com/r-lib/remotes                     r-lib/remote…
 # 4 menu  https://usethis.r-lib.org/articles/pr-functions.html pr github! r…
 
-x4 %>% select(c("title1")) |> nrow() # [1] 1509
+x4 %>%
+  select(c("title1")) |>
+  nrow() # [1] 1509
 
-x4 %>% select(c("title1")) |> head(4)
+x4 %>%
+  select(c("title1")) |>
+  head(4)
 # # A tibble: 4 × 1
-#   title1                                                                  
-#   <chr>                                                                   
-# 1 Mozilla Firefox                                                         
-# 2 jarun/buku: |  bookmark manager                                         
+#   title1
+#   <chr>
+# 1 Mozilla Firefox
+# 2 jarun/buku: |  bookmark manager
 # 3 r-lib/remotes: Install R packages from GitHub, GitLab, Bitbucket, git, …
-# 4 pr github! r helpers                                                    
+# 4 pr github! r helpers
 ```

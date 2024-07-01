@@ -16,32 +16,31 @@ geometry: margin=0.5in,top=0.25in
 ---
 
 ```{r one, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE, collapse=TRUE)
+knitr::opts_chunk$set(echo = TRUE, comment = "      ##", error = TRUE, collapse = TRUE)
 library(purrr)
 source(here("book_advanced_R/R", "000_useful_functions.R"))
 ```
 
 ```{r render, eval=FALSE,	 include=FALSE, echo=FALSE	}
-file="010B_companion.Rmd"
-dir="book_advanced_R/R"
-ren_pdf(file,dir)
+file <- "010B_companion.Rmd"
+dir <- "book_advanced_R/R"
+ren_pdf(file, dir)
 ren_github(file, dir)
 ```
 
 #### HELPER functions
 ```{r catn, eval=TRUE, include=TRUE }
-
 # catn:  Prints counter and adds "\n" to cat
 # counter is number of times catn called.
 ## increase counter by 1 in global_env()
 # USAGE:  catn(counter, str1, str2, ... strn)
-catn  <- function(counter=0, ...) {
-				env_poke(global_env(), "counter", counter +1)
-				cat(counter, ..., "\n" )
+catn <- function(counter = 0, ...) {
+  env_poke(global_env(), "counter", counter + 1)
+  cat(counter, ..., "\n")
 }
 
 # EXAMPLE
-counter  <- 1
+counter <- 1
 catn(counter, "hello")
 ```
 
@@ -49,11 +48,11 @@ catn(counter, "hello")
 # using caller_env() in catn (rather than global_env()) introduces error if
 # catn called from differnt env, ie different caller_env
 
-# Remark:   unlist(<list>)  is **generic**, typeof return value is not clear. 
+# Remark:   unlist(<list>)  is **generic**, typeof return value is not clear.
 ## UNLIST what does it do?
 ## generic, so varies based on typeof
-typeof(x )
-y  <- unlist(x)
+typeof(x)
+y <- unlist(x)
 typeof(y)
 is.atomic(y) # FALSE
 ```
@@ -62,114 +61,110 @@ is.atomic(y) # FALSE
 # get_env_info returns list of relevant <env>
 
 get_env_info <- function() {
-	list(current = current_env(), 
-			 caller = caller_env(), 
-			 caller_parent = caller_env(n=2)
-	)
+  list(
+    current = current_env(),
+    caller = caller_env(),
+    caller_parent = caller_env(n = 2)
+  )
 }
 
 # EXAMPLE
-x  <- get_env_info()
+x <- get_env_info()
 x
 ```
 
 ```{r mapper}
-#  Given a list of env, capture returns named chr[] using capture.output() 
-capture <- function(l){
-	g  <- as_mapper(~ capture.output(.x))
-	map_chr(l, g) # chr[]
+#  Given a list of env, capture returns named chr[] using capture.output()
+capture <- function(l) {
+  g <- as_mapper(~ capture.output(.x))
+  map_chr(l, g) # chr[]
 }
 
 # EXAMPLE
-l  <- get_env_info()
-s  <- capture(l)
+l <- get_env_info()
+s <- capture(l)
 s
 ```
 
 ```{r format_nice}
-
 # Given named chr[], return nicely formatted **unnamed** chr[]
-format_nice  <- function(s) {
-	z  <- map2_chr(s, names(s), ~ paste0(.y, ": " ,.x))
-	names(z)  <- NULL
-	return ( z )
+format_nice <- function(s) {
+  z <- map2_chr(s, names(s), ~ paste0(.y, ": ", .x))
+  names(z) <- NULL
+  return(z)
 }
 
 # EXAMPLE
-counter  <- 0
+counter <- 0
 format_nice(s)
-walk(format_nice(s), ~catn(counter, .x))
+walk(format_nice(s), ~ catn(counter, .x))
 ```
 
 ```{r format_nice_notes, include=FALSE	 }
 # try with imap?  Chapter 9
 # problem with counter (fixed with global_env, not caller_env
-counter  <- 1
+counter <- 1
 ```
 
 
 
 ```{r get_promise_info}
 # return promise_info, returns list
-get_promise_info  <- function(x){
-	pryr::promise_info(x)	
+get_promise_info <- function(x) {
+  pryr::promise_info(x)
 }
 
 ## USAGE
-l  <-  get_promise_info(x)
+l <- get_promise_info(x)
 l
 ```
 
 ```{r}
-
-#map_chr(l, g) # chr[]
-
+# map_chr(l, g) # chr[]
 ```
 
 
 ```{r from_companion}
-
 # make sure this isn't already defined
 rm(x)
 power2 <- function(exponent) {
-	counter  <- 0
-	s  <- capture(get_env_info())
-	walk(format_nice(s), ~catn(counter,"outer: ", .x))
+  counter <- 0
+  s <- capture(get_env_info())
+  walk(format_nice(s), ~ catn(counter, "outer: ", .x))
 
   catn(str(get_promise(exponent)))
 
 
   out <- function(x_) {
-	s  <- capture(get_env_info())
-	walk(format_nice(s), ~catn(counter, .x))
+    s <- capture(get_env_info())
+    walk(format_nice(s), ~ catn(counter, .x))
 
-	s  <- capture(get_promise_info(x_))
-	walk(format_nice(s), ~catn(counter,"inner: x_ ", .x))
-	s  <- capture(get_promise_info(exponent))
-	walk(format_nice(s), ~catn(counter,"inner: exponent ", .x))
+    s <- capture(get_promise_info(x_))
+    walk(format_nice(s), ~ catn(counter, "inner: x_ ", .x))
+    s <- capture(get_promise_info(exponent))
+    walk(format_nice(s), ~ catn(counter, "inner: exponent ", .x))
 
 
-    x_ ^ exponent
+    x_^exponent
   }
 }
 rm(x)
 rm(exponent)
 square <- power2(exponent <- 2)
 # square
-exponent  <- 3
+exponent <- 3
 
-x  <- 4
+x <- 4
 square(x)
 
-#square
+# square
 # ======
-exponent  <- 3
-x  <- 5
+exponent <- 3
+x <- 5
 
 square(x)
 
 # }}}
-
 ```
 
 

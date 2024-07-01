@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 #
-sayHello <- function(){
-   print('hello')
+sayHello <- function() {
+  print("hello")
 }
 Sys.time()
 sayHello()

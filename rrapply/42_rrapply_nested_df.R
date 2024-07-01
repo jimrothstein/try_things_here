@@ -9,24 +9,24 @@ data(package = "rrapply")
 
 ##  give.attr=F (cleaner)
 ##  list.len=3
-##  max.level = 
-##  
+##  max.level =
+##
 dim(iris)
 # [1] 150   5
 
 # GOAL:   extract only the dataframes
-d = list(
+d <- list(
   list(
     list(
-      iris[sample(1:150,3),],
-      iris[sample(1:150,3),]
+      iris[sample(1:150, 3), ],
+      iris[sample(1:150, 3), ]
     ),
     list(
       list(
-        iris[sample(1:150,3),],
+        iris[sample(1:150, 3), ],
         list(
-          iris[sample(1:150,3),],
-          iris[sample(1:150,3),]
+          iris[sample(1:150, 3), ],
+          iris[sample(1:150, 3), ]
         )
       )
     )
@@ -39,12 +39,12 @@ str(d)
 # ------------------------------
 #
 #
-res  <- rrapply(d,
-  classes="data.frame",
-  #f=identity,
-  how= "flatten"
-  )
+res <- rrapply(d,
+  classes = "data.frame",
+  # f=identity,
+  how = "flatten"
+)
 
 res
 ##  list of 5 data.frame
-str(res, list.len=3)
+str(res, list.len = 3)

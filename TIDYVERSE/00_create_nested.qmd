@@ -14,9 +14,9 @@ Mostly excluded:  tidyr, rrapply, etc.
 ```{r}
 ##  create list of 132 elements, each is list of 20 char
 l <- replicate(
-    132,
-    as.list(sample(letters, 20)),
-    simplify = FALSE
+  132,
+  as.list(sample(letters, 20)),
+  simplify = FALSE
 )
 str(l, max.level = 2, list.len = 3)
 
@@ -45,8 +45,8 @@ purrr::pluck(x1, 1, 1, 1) # [1] "q"
 x1[1, 1]
 
 x1[1, 1] %>%
-    unnest_longer(1) |>
-    head(5)
+  unnest_longer(1) |>
+  head(5)
 # # A tibble: 5 × 1
 #   .
 #   <chr>
@@ -62,8 +62,8 @@ x1[1, 1] %>%
 
 # ---------------------  unravel data.frame -----------------------
 df <- data.frame(
-    a = letters[1:3],
-    b = LETTERS[1:3]
+  a = letters[1:3],
+  b = LETTERS[1:3]
 )
 #   a b
 # 1 a A
@@ -73,15 +73,14 @@ df <- data.frame(
 unlist(df)
 #  a1  a2  a3  b1  b2  b3
 # "a" "b" "c" "A" "B" "C"
-
 ```
 
 ### Create tibble from simple, 1-level list
 ```{r}
 library(tibble)
 
-A = list(letters[1:10])
-(TA = tibble(A))
+A <- list(letters[1:10])
+(TA <- tibble(A))
 
 ## probe
 str(TA)
@@ -90,7 +89,7 @@ TA$A
 
 ### Create tibble from 2-level list
 ```{r}
-B = list(A, list(LETTERS[10:20]))
+B <- list(A, list(LETTERS[10:20]))
 B
 str(B)
 # List of 2
@@ -100,12 +99,12 @@ str(B)
 #   ..$ : chr [1:11] "J" "K" "L" "M" ...
 # NULL
 
-(TB = tibble(B))
+(TB <- tibble(B))
 
 ### Rmk
-q=quote(letters[10:19])
-(C = list(A, letters[1:10], eval(q), list(eval(q)) ))
-(TC = tibble(C))
+q <- quote(letters[10:19])
+(C <- list(A, letters[1:10], eval(q), list(eval(q))))
+(TC <- tibble(C))
 ```
 
 

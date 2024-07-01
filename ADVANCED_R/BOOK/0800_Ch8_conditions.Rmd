@@ -1,27 +1,24 @@
 # Additional work on Conditions, Error Handling
 # Chapter 8
 ```{r deparse}
-
 # =========================
-#deparse, substitute KEEP
+# deparse, substitute KEEP
 # =========================
-f  <- function(x)	substitute(x)
-g   <-function(x) deparse(substitute(x)) 
+f <- function(x) substitute(x)
+g <- function(x) deparse(substitute(x))
 
 f(unknown) # returns unquoted
 # unknown
 g(unknown) # returns in quotes, as char[1]
 # [1] "unknown"
-
 ```
 ```{r why}
-
 # why need deparse() ?   then returns "\"state\""
-test<- function(data, x) {
- substitute(x)
+test <- function(data, x) {
+  substitute(x)
 }
-test(bear_states,"state") # "state"
-#XXXXXXXXX  E N D
+test(bear_states, "state") # "state"
+# XXXXXXXXX  E N D
 ```
 
 # =========================
@@ -755,39 +752,38 @@ withCallingHandlers(f(c(NA,-4,8)), condition=function(e)print(class(e)))
 mode
 
 ```{r problem_8}
-
 # Problem 8.
 # ============
 
 # Step 1, wrapper
-verify_package_installed  <- function(pkg){
-#	if (!rlang::is_installed(pkg)) {
+verify_package_installed <- function(pkg) {
+  # 	if (!rlang::is_installed(pkg)) {
 
-	if (!requireNamespace(pkg)) {
-		message=glue::glue("Please install `{pkg}`")
-		meta=pkg
-		abort(message=message, 
-					class="pkg_not_installed_error",
-					meta=pkg)
-	
-	}
+  if (!requireNamespace(pkg)) {
+    message <- glue::glue("Please install `{pkg}`")
+    meta <- pkg
+    abort(
+      message = message,
+      class = "pkg_not_installed_error",
+      meta = pkg
+    )
+  }
 }
 
 # TEST the wrapper
-	verify_package_installed("rlang")
-	verify_package_installed("pkg")
+verify_package_installed("rlang")
+verify_package_installed("pkg")
 
 # function
 # ==========
-	
-## REAL code to deal with an error											
-f  <- function(pkg) {
-	tryCatch(
-					 verify_package_installed(pkg),
-					 error = function(e) e,
-					 pkg_not_installed_error = function (p) cat(p$meta)
-					 )
 
+## REAL code to deal with an error
+f <- function(pkg) {
+  tryCatch(
+    verify_package_installed(pkg),
+    error = function(e) e,
+    pkg_not_installed_error = function(p) cat(p$meta)
+  )
 }
 f("pkg")
 f("rlang")

@@ -17,10 +17,12 @@ TAGS:  vector,list,vapply,
 
 
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,  
-											comment="      ##",  
-											error=TRUE, 
-											collapse=TRUE) 
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = TRUE
+)
 ```
 #### Structure of Lists
   *  Purpose:  understand tree-like structure in each
@@ -29,30 +31,28 @@ knitr::opts_chunk$set(echo = TRUE,
 
 #### Simplest possible
 ```{r simplest}
-
-
 ##  SAME
-L.1  <- list(letters[1:2])
+L.1 <- list(letters[1:2])
 # [[1]]
 # [1] "a" "b"
-# 
-L.1  # one element
+#
+L.1 # one element
 
 
 
-L.2  <- list(c("a", "b"))  # one element
+L.2 <- list(c("a", "b")) # one element
 # [[1]]
 # [1] "a" "b"
-# 
+#
 
-L.3  <- list(c(letters[1:2]))  #SAME
+L.3 <- list(c(letters[1:2])) # SAME
 # [[1]]
 # [1] "a" "b"
-# 
+#
 
 ## identity function
-    id  <- function(e) e
-    identical(L.1, lapply(L.1, id))
+id <- function(e) e
+identical(L.1, lapply(L.1, id))
 
 # [1] TRUE
 
@@ -65,60 +65,59 @@ identical(L.3, lapply(L.3, id))
 
 ## SAME
 
-    L.1[[c(1,2)]]
-    # [1] "b"
-    L.2[[c(1,2)]]
-    # [1] "b"
-    L.3[[c(1,2)]]
-    # [1] "b"
+L.1[[c(1, 2)]]
+# [1] "b"
+L.2[[c(1, 2)]]
+# [1] "b"
+L.3[[c(1, 2)]]
+# [1] "b"
 
 ## SUBSET
-    L.1[1]
-    # [[1]]
-    # [1] "a" "b"
-    # 
+L.1[1]
+# [[1]]
+# [1] "a" "b"
+#
 
 ## Contents of element 1
-    L.1[[1]]
+L.1[[1]]
 # [1] "a" "b"
 
 
-    # 2nd element of character vector
-    L.1[[1]][2]
+# 2nd element of character vector
+L.1[[1]][2]
 # [1] "b"
 
 
-one  <- function(e) e[1]
-two  <- function(e) e[[1]]
+one <- function(e) e[1]
+two <- function(e) e[[1]]
 
 # function apply to THIS element
 L.1[[1]]
 
 #### THIS is not clear
-    lapply(L.1, one)
-    # [[1]]
-    # [1] "a"
-    # 
-    lapply(L.1, two)
-    # [[1]]
-    # [1] "a"
-    # 
-
+lapply(L.1, one)
+# [[1]]
+# [1] "a"
+#
+lapply(L.1, two)
+# [[1]]
+# [1] "a"
+#
 ```
 
 
 ```{r render, eval=FALSE, include=FALSE 	} 
 {
-file <- "VECTOR/0014_base_list_examples.Rmd"
-# file  <- here("VECTOR", file)
-file
+  file <- "VECTOR/0014_base_list_examples.Rmd"
+  # file  <- here("VECTOR", file)
+  file
 }
 
-output_dir = "~/Downloads/print_and_delete"
+output_dir <- "~/Downloads/print_and_delete"
 # in general, pdf will look nicer
 rmarkdown::render(file,
-                  output_dir = output_dir,
-                  #output_format = "pdf_document")
-                  output_format = "html_document")
-
+  output_dir = output_dir,
+  # output_format = "pdf_document")
+  output_format = "html_document"
+)
 ```

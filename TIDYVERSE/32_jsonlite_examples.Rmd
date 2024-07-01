@@ -10,16 +10,18 @@ editor_options:
 REF:  https://arxiv.org/abs/1403.2805
 
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,  
-											comment="      ##",  
-											error=TRUE, 
-											collapse=TRUE) 
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = TRUE
+)
 ```
 
 <!--  RENDER:  see bottom -->
 
 ```{r library, include=FALSE		}
-library(jimTools) 
+library(jimTools)
 library(gh)
 library(jsonlite)
 ```
@@ -34,10 +36,12 @@ Sys.getenv("GITHUB_PAT")
 owner <- "hadley"
 repo <- "r-pkgs"
 pr_list <-
-  gh("/repos/:owner/:repo/pulls", owner = owner, repo = repo,
-     .token=Sys.getenv("GITHUB_PAT"),
-     state = "all", .limit = Inf)
-length(pr_list)   #503
+  gh("/repos/:owner/:repo/pulls",
+    owner = owner, repo = repo,
+    .token = Sys.getenv("GITHUB_PAT"),
+    state = "all", .limit = Inf
+  )
+length(pr_list) # 503
 
 
 users <- gh("/users", .limit = 50)
@@ -54,31 +58,35 @@ use jsonlite
 ```{r}
 hadley_repos <- jsonlite::fromJSON("https://api.github.com/users/hadley/repos")
 
-str(hadley_repos, max.level=1, vec.len=1      )
+str(hadley_repos, max.level = 1, vec.len = 1)
 ```
 
 ```{r }
-apikey  <- Sys.getenv("API_KEY")
-nj  <- jsonlite::fromJSON( 
-paste0("http://www.opensecrets.org/api/?method=getLegislators&id=NJ&apikey=", 
-       apikey, "&output=json"))
+apikey <- Sys.getenv("API_KEY")
+nj <- jsonlite::fromJSON(
+  paste0(
+    "http://www.opensecrets.org/api/?method=getLegislators&id=NJ&apikey=",
+    apikey, "&output=json"
+  )
+)
 nj
 
 # best choic
-t  <- tibble::as_tibble(purrr::pluck(nj, "response", "legislator",
-                                     "@attributes"))
+t <- tibble::as_tibble(purrr::pluck(
+  nj, "response", "legislator",
+  "@attributes"
+))
 t # 14 x 21
 ```
 examine respons
 ```{r}
-str(nj, max.level=1)
-str(nj, max.level=2)
-str(nj, max.level=3)
-str(nj, max.level=4)
+str(nj, max.level = 1)
+str(nj, max.level = 2)
+str(nj, max.level = 3)
+str(nj, max.level = 4)
 ```
 
 
 ```{r}
 knitr::knit_exit()
-
 ```

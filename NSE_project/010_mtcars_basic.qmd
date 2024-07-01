@@ -19,9 +19,8 @@ envir=mtcars and enclosure
 ## Problem:  Try to access directly columns inside a data.frame.
 ```{r}
 # TODO: use option()
-head = function(df = NULL, n=3) utils::head(df, n)
+head <- function(df = NULL, n = 3) utils::head(df, n)
 library(tibble)
-
 ```
 
 Using just unquoted col name fails.
@@ -56,29 +55,30 @@ environment` with `data` means.
 tree:  "package:datasets"
 ```{r}
 exists("mtcars",
-       envir = as.environment("package:datasets"),
-       inherits = FALSE)
+  envir = as.environment("package:datasets"),
+  inherits = FALSE
+)
 ```
 
 ## But not "hp"
 ```{r}
 # alas, not hp
 exists("hp",
-       envir = as.environment("package:datasets"),
-       inherits = T)
+  envir = as.environment("package:datasets"),
+  inherits = T
+)
 ```
 
 
 ```{r}
-hp_exp = quote(hp>200)          ##  hp > 200
-is.call(hp_exp)                 ##  T
-eval(hp_exp, envir=mtcars)      ## logical vector
+hp_exp <- quote(hp > 200) ##  hp > 200
+is.call(hp_exp) ##  T
+eval(hp_exp, envir = mtcars) ## logical vector
 ```
 
 ## solution from Rlang:
 https://rlang.r-lib.org/reference/topic-defuse.html
 ```{r}
-
 e <- expr(mean(cyl))
 eval(e, mtcars)
 #> [1] 6.1875
@@ -86,18 +86,24 @@ eval(e, mtcars)
 
 ### Another way to find 'mtcars'
 ```{r}
-any(sapply(1:(which(search() == "tools:rstudio") - 1L),
-           function(pp) exists("mtcars",  where = pp, inherits = FALSE)))
-any(sapply(1:(which(search() == "tools:rstudio") - 1L),
-           function(pp) exists("mtcars",  where = pp, inherits = TRUE)))
+any(sapply(
+  1:(which(search() == "tools:rstudio") - 1L),
+  function(pp) exists("mtcars", where = pp, inherits = FALSE)
+))
+any(sapply(
+  1:(which(search() == "tools:rstudio") - 1L),
+  function(pp) exists("mtcars", where = pp, inherits = TRUE)
+))
 
 ## find position
-(which(search() == "tools:rstudio") -1L )
+(which(search() == "tools:rstudio") - 1L)
 which(search() == ".GlobalEnv")
 which(search() == "package:base")
 
 # print vertically
-search() |> tibble() |> print(n=length(search()))
+search() |>
+  tibble() |>
+  print(n = length(search()))
 ```
 
 from !so, next hook to search()
@@ -128,8 +134,7 @@ search()
 For our purposes, note there is no `hp`
 ```{r}
 ls(base)
-ls("package:base") |> grep(pattern=c("mtcars"))
-
+ls("package:base") |> grep(pattern = c("mtcars"))
 ```   
 
 Attach `mtcars` to search path  
@@ -142,34 +147,33 @@ Now, can find `hp`, but not subset
 ```{r}
 hp
 
-mtcars[hp>200]
+mtcars[hp > 200]
 ```
 
 
 Need the 
 ```{r}
-code1 = expression(hp>200)
-code = quote(hp>200)
+code1 <- expression(hp > 200)
+code <- quote(hp > 200)
 identical(code1, code)
 
 
 
 #  works, explain
-eval(code, envir=mtcars )
-eval(code, envir=mtcars, enclos=as.environment("package:base"))
-eval(code, envir=mtcars, enclos=as.environment(emptyenv()))
+eval(code, envir = mtcars)
+eval(code, envir = mtcars, enclos = as.environment("package:base"))
+eval(code, envir = mtcars, enclos = as.environment(emptyenv()))
 
 
 # fails - explain
-eval(code, envir=as.environment(mtcars))
-eval(code, envir=as.environment(mtcars), enclos=as.environment("package:base"))
-eval(code, envir=as.environment(mtcars), enclos=as.environment("package:datasets"))
+eval(code, envir = as.environment(mtcars))
+eval(code, envir = as.environment(mtcars), enclos = as.environment("package:base"))
+eval(code, envir = as.environment(mtcars), enclos = as.environment("package:datasets"))
 ```
 
 Why?  col names are in environment one level up from  globalenv()
 ```{r}
 ls(parent.env(globalenv()))
-
 ```
 
 
@@ -195,12 +199,11 @@ ls()
 eval(expr, envir=mtcars, enclos=as.environment())
 GOAL;    evaluate mean(cyl + am)
 ```{r}
-
-#   RESTART 
+#   RESTART
 ls()
 search()
 
-code = expr(mean(cyl+am))
+code <- expr(mean(cyl + am))
 typeof(code)
 
 is.expression(code)
@@ -208,28 +211,27 @@ rlang::is_expression(code)
 
 # EXPLAIN:  why works?
 
-eval(code, envir=mtcars)
-eval(code, envir=mtcars, enclos=globalenv())
-eval(code, envir=mtcars, enclos=as.environment("tools:rstudio"))
-eval(code, envir=mtcars, enclos=as.environment("package:stats"))
-eval(code, envir=mtcars, enclos=as.environment("package:base"))
-
+eval(code, envir = mtcars)
+eval(code, envir = mtcars, enclos = globalenv())
+eval(code, envir = mtcars, enclos = as.environment("tools:rstudio"))
+eval(code, envir = mtcars, enclos = as.environment("package:stats"))
+eval(code, envir = mtcars, enclos = as.environment("package:base"))
 ```
 
 ##    From Hadley
 
 ```{r}
 getOption("digits")
-old = options(digits=7)
+old <- options(digits = 7)
 getOption("digits")
-cyl = 1000
+cyl <- 1000
 dplyr::summarize(mtcars, .data$cyl)
 dplyr::summarize(mtcars, mean(.data$cyl))
 dplyr::summarize(mtcars, mean(.env$cyl))
 
-dplyr::summarize(mtcars, mean(am+cyl))
-dplyr::summarize(mtcars, mean(.data$am+cyl))
-dplyr::summarize(mtcars, mean(.data$am+.env$cyl))    # am mostly 0, 1
+dplyr::summarize(mtcars, mean(am + cyl))
+dplyr::summarize(mtcars, mean(.data$am + cyl))
+dplyr::summarize(mtcars, mean(.data$am + .env$cyl)) # am mostly 0, 1
 
 options(old)
 getOption("digits")

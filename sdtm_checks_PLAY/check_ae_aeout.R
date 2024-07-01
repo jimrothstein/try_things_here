@@ -21,15 +21,15 @@
 #' @examples
 #'
 #' AE <- data.frame(
-#'     USUBJID = 1:8,
-#'     AEDTHDTC = c(NA, "NA", "2015-03-12", "2017-01-22", "1999-11-07","",NA, "2020-01-01"),
-#'     AEOUT = c("", "", "","FATAL","RECOVERED/RESOLVED","FATAL","FATAL", NA),
-#'     AESPID = "FORMNAME-R:13/L:13XXXX",
-#'     stringsAsFactors = FALSE
+#'   USUBJID = 1:8,
+#'   AEDTHDTC = c(NA, "NA", "2015-03-12", "2017-01-22", "1999-11-07", "", NA, "2020-01-01"),
+#'   AEOUT = c("", "", "", "FATAL", "RECOVERED/RESOLVED", "FATAL", "FATAL", NA),
+#'   AESPID = "FORMNAME-R:13/L:13XXXX",
+#'   stringsAsFactors = FALSE
 #' )
 #'
 #' check_ae_aeout(AE)
-#' check_ae_aeout(AE,preproc=roche_derive_rave_row)
+#' check_ae_aeout(AE, preproc = roche_derive_rave_row)
 #'
 #' AE$AEDTHDTC <- NULL
 #' check_ae_aeout(AE)
@@ -37,26 +37,21 @@
 #' AE$AEOUT <- NULL
 #' check_ae_aeout(AE)
 #'
+check_ae_aeout <- function(AE, preproc = identity, ...) {
+  if (AE %lacks_any% c("USUBJID", "AEDTHDTC", "AEOUT")) {
+    fail(lacks_msg(AE, c("USUBJID", "AEDTHDTC", "AEOUT")))
+  } else {
+    # Apply company specific preprocessing function
+    AE <- preproc(AE, ...)
 
-check_ae_aeout <- function(AE,preproc=identity,...){
+    df <- AE %>%
+      filter((!is_sas_na(AEDTHDTC) & (AEOUT != "FATAL" | is_sas_na(AEOUT))) | (AEOUT == "FATAL" & is_sas_na(AEDTHDTC))) %>%
+      select(any_of(c("USUBJID", "AEDTHDTC", "AEOUT", "RAVE")))
 
-    if (AE %lacks_any% c("USUBJID", "AEDTHDTC", "AEOUT")) {
-
-        fail(lacks_msg(AE, c("USUBJID", "AEDTHDTC", "AEOUT" )))
-
+    if (nrow(df) > 0) {
+      fail(paste(nrow(df), "AE(s) with inconsistent AEDTHDTC and AEOUT found. "), df)
     } else {
-
-        #Apply company specific preprocessing function
-        AE = preproc(AE,...)
-
-        df <- AE %>%
-            filter((!is_sas_na(AEDTHDTC) & (AEOUT != "FATAL" | is_sas_na(AEOUT)) ) | (AEOUT=="FATAL" & is_sas_na(AEDTHDTC))) %>%
-            select(any_of(c("USUBJID","AEDTHDTC","AEOUT","RAVE")))
-
-        if( nrow(df) > 0 ){
-            fail(paste(nrow(df), "AE(s) with inconsistent AEDTHDTC and AEOUT found. "), df)
-        } else {
-            pass()
-        }
+      pass()
     }
-} 
+  }
+}

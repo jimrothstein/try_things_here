@@ -19,7 +19,7 @@ geometry: margin=0.5in,top=0.25in
 
 
 ```{r one, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE, collapse=TRUE)
+knitr::opts_chunk$set(echo = TRUE, comment = "      ##", error = TRUE, collapse = TRUE)
 library(purrr)
 library(memoise)
 source(here("book_advanced_R/R", "000_useful_functions.R"))
@@ -27,43 +27,42 @@ source(here("book_advanced_R/R", "000_useful_functions.R"))
 
 ```{r render, eval=FALSE	, include=FALSE	 }
 # To Render
-file="011B_misc_fun_operators.Rmd"
-dir="book_advanced_R/R"
-ren_pdf(file=file, dir=dir)
+file <- "011B_misc_fun_operators.Rmd"
+dir <- "book_advanced_R/R"
+ren_pdf(file = file, dir = dir)
 
-ren_github(file=file, dir=dir)
+ren_github(file = file, dir = dir)
 
-#knitr::knit_exit()
+# knitr::knit_exit()
 ```
 
 
 #### EXAMPLE: chatty() 
 ```{r 11.1_code}
-
 ## Given FUN f, chatty modifies behavior:
 
-chatty  <- function(f) {
-	print(pryr::promise_info(f))	
+chatty <- function(f) {
+  print(pryr::promise_info(f))
 
-	#force(f) not necessary?
-	#cat(x) error, no x (at this point)
+  # force(f) not necessary?
+  # cat(x) error, no x (at this point)
 
-	function(x, ...) {
-		result  <- f(x, ...)
-		cat("Processing ", x, "\n", sep="")
-		result
-	}
+  function(x, ...) {
+    result <- f(x, ...)
+    cat("Processing ", x, "\n", sep = "")
+    result
+  }
 }
 
 # prepare example
-f  <- function(x) x^2
-s  <- c(3,2,1)
+f <- function(x) x^2
+s <- c(3, 2, 1)
 
 # example
-g  <- chatty(f)
+g <- chatty(f)
 g
 g(3)
-g(s) #vector
+g(s) # vector
 
 # example in map
 purrr::map_dbl(s, chatty(f))
@@ -71,7 +70,7 @@ purrr::map_dbl(s, chatty(f))
 
 ```{r safely}
 purrr::safely
-sin_safe  <- purrr::safely(sin(0),1)
+sin_safe <- purrr::safely(sin(0), 1)
 sin_safe()
 ```
 
@@ -83,60 +82,59 @@ sin_safe()
 map_dbl(mtcars, ~ length(unique(.x)))
 
 # 1, take formula, return function (g)
-g  <- as_mapper( ~ length(unique(.x)))
+g <- as_mapper(~ length(unique(.x)))
 g
 
 # 2
 map_dbl(mtcars, g)
 
 ## NeXT
-l  <- list(a="one", b="two", c="three")
+l <- list(a = "one", b = "two", c = "three")
 pluck(l, "a")
 
-getter  <- function(x, letter) x[[letter]]
-getter(l,"a")
+getter <- function(x, letter) x[[letter]]
+getter(l, "a")
 
 # list of lists
-l1  <- list(a="a", b="b", c="c")
-l2  <- list(a=1, b=2, c=3)
-l3  <- list(a="joe", b="john", c="moe")
-l  <- list(l1=l1, l2=l2, l3=l3)
+l1 <- list(a = "a", b = "b", c = "c")
+l2 <- list(a = 1, b = 2, c = 3)
+l3 <- list(a = "joe", b = "john", c = "moe")
+l <- list(l1 = l1, l2 = l2, l3 = l3)
 unlist(l)
 unlist(l1)
 
 # extract "c"
-g  <- as_mapper("c", .default=NULL)
+g <- as_mapper("c", .default = NULL)
 map(l, g)
 
-map(l, `[`, c("a","c"))
-map(l, h, c("a","c"))
+map(l, `[`, c("a", "c"))
+map(l, h, c("a", "c"))
 
 # extract "a" and "c"
-h  <- as_mapper(`[`, .default=NULL)
-map(l, h, c("a","c"))
+h <- as_mapper(`[`, .default = NULL)
+map(l, h, c("a", "c"))
 
 ###
 ## unpack a list of env, return function to capture.output of each
-l  <- list(current_env(), caller_env())
-g  <- as_mapper(~ capture.output(.x))
+l <- list(current_env(), caller_env())
+g <- as_mapper(~ capture.output(.x))
 
 g(l)
 
-# BETTER: returns chr[], not list	
-map_chr(l,g)
+# BETTER: returns chr[], not list
+map_chr(l, g)
 
 
 # =====
 
-	###
-f  <- purrr::as_mapper(~ .x + 1)
+###
+f <- purrr::as_mapper(~ .x + 1)
 f(2)
 
-f  <- purrr::as_mapper(sin)
+f <- purrr::as_mapper(sin)
 f(0)
-f(3.14/2)
-# 
-
+f(3.14 / 2)
+#
 ```
 
 ####  example:  report on env
@@ -146,15 +144,14 @@ f(3.14/2)
 # knitr's global... so expect unusual output.
 # BUT,  knitr env still show hierarachy.
 
-y  <- 1
+y <- 1
 current_env()
-f  <- function() {
-	info()
+f <- function() {
+  info()
 }
 
 info()
 
 f()
-
 ```
 

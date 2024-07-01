@@ -21,10 +21,12 @@ TAGS:  microbench
 ~/code/MASTER_INDEX.md
 
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,
-                      comment = "      ##",
-                      error = TRUE,
-                      collapse = T   ) # T easier to read
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = T
+) # T easier to read
 ```
 
 
@@ -35,34 +37,34 @@ library(microbenchmark)
 
 ### Two ways to multiple 
 ```{r  two_ways}
+x <- 12345
+32 * x
+bitwShiftL(x, 5) # base 2, 32= 2^5
 
-x  <- 12345
-32*x
-bitwShiftL(x, 5)  # base 2, 32= 2^5
-
-## but which is faster?  
+## but which is faster?
 ## (To compare N ways:   each gets 1 its own line in function below)
 
-res  <-   microbenchmark( 32*x,
-                 bitwShiftL(x, 5)
-                 )
-## multiplication!  
+res <- microbenchmark(
+  32 * x,
+  bitwShiftL(x, 5)
+)
+## multiplication!
 res
 ```
 
 ```{r skeleton, include=F, eval=F}
-file="/home/jim/.config/nvim/templates/skeleton.Rmd"
+file <- "/home/jim/.config/nvim/templates/skeleton.Rmd"
 ```
 
 ```{r render, eval=FALSE, include=FALSE 	} 
-output_dir  <- Sys.getenv("OUTPUT_DIR")
+output_dir <- Sys.getenv("OUTPUT_DIR")
 output_dir
 
 {
-file  <- "" 
-file  <- basename(file)
-file  <- here("rmd", file)
-file
+  file <- ""
+  file <- basename(file)
+  file <- here("rmd", file)
+  file
 }
 
 
@@ -70,9 +72,7 @@ file
 
 ## replacement for here
 if (F) {
-  the_dir  <- dirname(file)
-  file  <- file.path(the_dir, file)
+  the_dir <- dirname(file)
+  file <- file.path(the_dir, file)
 }
-
-
 ```

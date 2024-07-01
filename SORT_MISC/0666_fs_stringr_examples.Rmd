@@ -13,14 +13,14 @@ editor_options:
 
 #### 000_setup
 ```{r setup, include=FALSE }
-knitr::opts_chunk$set(echo = TRUE, comment="        ...##")
+knitr::opts_chunk$set(echo = TRUE, comment = "        ...##")
 library(tidyverse)
 library(fs)
 ```
 #### 000_fs:: basics
 ```{r}
 # linux home
-fs::path_home()  #/home/jim
+fs::path_home() # /home/jim
 
 # working dir
 fs::path_wd() # /home/jim/r_try_things_here
@@ -32,23 +32,23 @@ fs::dir_ls() # char vector, file & dir names
 fs::dir_info() # tibble with 18 fields of info
 
 # ls -l *.html
-fs::dir_info(".", glob="*.html")
+fs::dir_info(".", glob = "*.html")
 
 # construct "path" to ./plots
-p <-fs::path("/","home","jim","code","r_try_things_here","plots")
+p <- fs::path("/", "home", "jim", "code", "r_try_things_here", "plots")
 fs::dir_ls(p)
 
 # dir_info, capture as_tibble
-t <- as_tibble(dir_info()) %>% 
-	select(path, size, modification_time )
-print(t, n=200)
+t <- as_tibble(dir_info()) %>%
+  select(path, size, modification_time)
+print(t, n = 200)
 ```
 
 #### 010_fs: more complicated:  tmp file system/move files
 ```{r populate}
-# clean	
+# clean
 # create path
-p <- fs::path("tmp") 
+p <- fs::path("tmp")
 
 # if exists, remove
 if (fs::is_dir(p)) fs::dir_delete(p)
@@ -56,16 +56,16 @@ if (fs::is_dir(p)) fs::dir_delete(p)
 # create dir
 fs::dir_create(p)
 
-# add files	
-fs::file_touch(path(p,"000001_testA"))
-fs::file_touch(path(p,"000002_testB"))
-fs::file_touch(path(p,"000003_testC"))
-fs::file_touch(path(p,"000004_testD"))
-fs::file_touch(path(p,"000005_testE"))
+# add files
+fs::file_touch(path(p, "000001_testA"))
+fs::file_touch(path(p, "000002_testB"))
+fs::file_touch(path(p, "000003_testC"))
+fs::file_touch(path(p, "000004_testD"))
+fs::file_touch(path(p, "000005_testE"))
 
 # fs
-if (fs::is_file(path(p,"000001_testA"))) print ("passes")
-if (!fs::is_file(path(p,"junk"))) print ("passes")
+if (fs::is_file(path(p, "000001_testA"))) print("passes")
+if (!fs::is_file(path(p, "junk"))) print("passes")
 ```
 
 ### 09_put file names into tibble & move them
@@ -79,58 +79,56 @@ t
 t <- t %>% mutate(new = name)
 t
 
-fs::file_move(path(p,t$name), path(p,t$new))
+fs::file_move(path(p, t$name), path(p, t$new))
 ```
 
 #### 011_fs, need stringr, remove prefix numbers
 ```{r}
-
-t  <- NULL
+t <- NULL
 new_name <- function(name) {
   x <- stringr::str_remove(name, "^[:digit:]{4,6}")
 }
 
-# store file name in tibble	
+# store file name in tibble
 files <- fs::dir_ls(p)
 t <- tibble(name = fs::path_file(files))
 t %>% head()
 
-t <- t %>% mutate(new = stringr::str_remove(name,  "^[:digit:]{4,6}"))
+t <- t %>% mutate(new = stringr::str_remove(name, "^[:digit:]{4,6}"))
 
 t %>% head()
 
 # rename files on  disk!
-fs::file_move(path(p,t$name), path(p,t$new))
-
+fs::file_move(path(p, t$name), path(p, t$new))
 ```
 ####012_renumber_files
 ```{r renumber}
 # verify t columns are "clean"
 t
 
-# list by padded number 
-s <-  t %>% mutate(rank = dplyr::row_number()) %>% 
-	mutate(id = stringr::str_pad(rank, side="left", width=5,"0"))
+# list by padded number
+s <- t %>%
+  mutate(rank = dplyr::row_number()) %>%
+  mutate(id = stringr::str_pad(rank, side = "left", width = 5, "0"))
 s
 
 # create NEW filename
-t  <- s %>% mutate(NEW = str_c(id,new))
+t <- s %>% mutate(NEW = str_c(id, new))
 t
 
 # MOVE
-fs::file_move(path(p,t$name), path(p,t$NEW))
-
+fs::file_move(path(p, t$name), path(p, t$NEW))
 ```
 
 #### 007A_mark_play_files to delete
 ```{r}
-file_jr_proposed_delete <- function(OLD){
-	OLD <- fs::path(p,OLD)
-	TEMP <- stringr::str_c(OLD,".DELETE")
-	fs::file_move(OLD,TEMP)
+file_jr_proposed_delete <- function(OLD) {
+  OLD <- fs::path(p, OLD)
+  TEMP <- stringr::str_c(OLD, ".DELETE")
+  fs::file_move(OLD, TEMP)
 }
-	
-#2	remove TEMP
+
+# 2	remove TEMP
 # clean, pooof:  all gone.
 file_jr_proposed_delete("000001_test")
 ```
@@ -139,17 +137,17 @@ file_jr_proposed_delete("000001_test")
 ```{r eval= FALSE}
 # verify p
 p
-fs::file_delete(path(p,new))
+fs::file_delete(path(p, new))
 fs::dir_delete(p)
 ```
 
 #### 012_fs: glob, file Lengths
 ```{r}
 # file list
-v <- dir_ls(glob = "*.Rmd")  # returns character vector
+v <- dir_ls(glob = "*.Rmd") # returns character vector
 length(v)
 #
-t <- dir_ls(glob="*.Rmd") %>% map_df(length, .id="file")
+t <- dir_ls(glob = "*.Rmd") %>% map_df(length, .id = "file")
 t
 ```
 ###99-force knitr to end

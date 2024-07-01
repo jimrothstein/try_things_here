@@ -10,7 +10,7 @@
 
 
 ```{r}
-L = list(1, c(2,3), list(4, list(5))) 
+L <- list(1, c(2, 3), list(4, list(5)))
 
 ##  count number of elements
 length(L) # [1] 3
@@ -28,47 +28,47 @@ unlist(L) # [1] 1 2 3 4 5
 L[[3]]
 # [[1]]
 # [1] 4
-# 
+#
 # [[2]]
 # [[2]][[1]]
 # [1] 5
-# 
-# 
+#
+#
 ##  Correct, but not very helpful to me.  Try this:
-L = list(1, c(2,3), list(4, list(5))) 
+L <- list(1, c(2, 3), list(4, list(5)))
 L
 # [[1]]
 # [1] 1
-# 
+#
 # [[2]]
 # [1] 2 3
-# 
+#
 # [[3]]
 # [[3]][[1]]
 # [1] 4
-# 
+#
 # [[3]][[2]]
 # [[3]][[2]][[1]]
 # [1] 5
-# 
-# 
+#
+#
 dput(L)
 # list(1, c(2, 3), list(4, list(5)))
 # [[1]]
 # [1] 1
-# 
+#
 # [[2]]
 # [1] 2 3
-# 
+#
 # [[3]]
 # [[3]][[1]]
 # [1] 4
-# 
+#
 # [[3]][[2]]
 # [[3]][[2]][[1]]
 # [1] 5
-# 
-# 
+#
+#
 dput(L[[3]]) # list(4, list(5))
 
 ##  dput makes much easier to follow, I think.
@@ -86,19 +86,21 @@ dput(mtcars)
 ##		-----------------------------------
 ```{r}
 library(tibble)
-library(constructive)   # alternative to dput, experimental:  see  remotes::install_github("cynkra/constructive")
+library(constructive) # alternative to dput, experimental:  see  remotes::install_github("cynkra/constructive")
 ```
 
 ##	atomic, data.frame
 
 ```{r}
-v  <- letters[1:10] #  [1] "a" "b" "c" "d" "e" "f" "g" "h" "i" "j"
+v <- letters[1:10] #  [1] "a" "b" "c" "d" "e" "f" "g" "h" "i" "j"
 str(v) #  chr [1:10] "a" "b" "c" "d" "e" "f" "g" "h" "i" "j"
 
 
-df  <- data.frame(x=v,
-									y=v,
-									z=v)
+df <- data.frame(
+  x = v,
+  y = v,
+  z = v
+)
 
 df
 str(df)
@@ -110,37 +112,37 @@ str(df)
 
 ##  Probe
 ```{r}
-probe = function(x, max.depth=1, list.len=3, vec.len=1) str(x, max.depth, list.len, vec.len)
+probe <- function(x, max.depth = 1, list.len = 3, vec.len = 1) str(x, max.depth, list.len, vec.len)
 
 #   even simple gets messy
-L = list(1, c(2), list(3, list(4,list(5))))
+L <- list(1, c(2), list(3, list(4, list(5))))
 probe(L)
-probe(L, max.depth=2)
-probe(L, max.depth=3)
+probe(L, max.depth = 2)
+probe(L, max.depth = 3)
 ```
 
 ##  dput (control = ??)
 
 ##  Pop off outer list
 ```{r}
-L[1]  # subset
+L[1] # subset
 # [[1]]
 # [1] 1
-# 
-dput(L[1])   # get suppress line2 , 3?
+#
+dput(L[1]) # get suppress line2 , 3?
 # list(1)
 # [[1]]
 # [1] 1
-# 
-# 
-# 
+#
+#
+#
 ## easier way to see effect of [[]]
-dput(L[[1]], control=NULL)  # remove line 2
+dput(L[[1]], control = NULL) # remove line 2
 # 1
 # [1] 1
-# 
-# 
-# 
+#
+#
+#
 dput(as.data.frame(L[[1]]))
 # structure(list(`L[[1]]` = 1), row.names = c(NA, -1L), class = "data.frame")
 #   L[[1]]
@@ -152,7 +154,6 @@ dput(tibble(L[[1]]))
 #   `L[[1]]`
 #      <dbl>
 # 1        1
-
 ```
 
 
