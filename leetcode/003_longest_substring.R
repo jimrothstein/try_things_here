@@ -1,6 +1,10 @@
-https://leetcode.com/problems/longest-substring-without-repeating-characters/description/
+# https://leetcode.com/problems/longest-substring-without-repeating-characters/description/
 # TODO
 # - REGEX?
+
+## TODO:
+## This file should contain code to find longest substring.
+## For code related to varius character vector manipulations:  SEE BASE/503_
 
 # -----------------
   ##  String verbs
