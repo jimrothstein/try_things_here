@@ -1,4 +1,4 @@
-##  Purpose:  
+##  Purpose:
 ##  BASE:  For simple vector, find element positions, repeats,  matches etc.
 
 ## 503_base_simple_vectors.R
@@ -11,14 +11,17 @@
 # HELPER
 
 #' create simple character vector, individual characters
-create_s = function() {
-  v=c(letters[1:10], "a")
-  unlist(strsplit(v, split=""))
+library(styler)
+styler::style_file("~/code/try_things_here/BASE/503_base_simple_vectors.R")
+
+create_s <- function() {
+  v <- c(letters[1:10], "a")
+  unlist(strsplit(v, split = ""))
 }
-s = create_s()         
+s <- create_s()
 s
 
-        
+
 
 # -------------------
 ## strsplit  - break up 'words' into individual charcters
@@ -35,7 +38,7 @@ s[s == s[1]] # [1] "a" "a"
 identical(x[x == x[1]], x[x == x[[1]]])
 
 
-x[x == x[c(1,2)]] # [1] "a" "b"
+x[x == x[c(1, 2)]] # [1] "a" "b"
 x[x > "b"] # [1] "c" "d" "e"
 
 # logical
@@ -56,9 +59,9 @@ which(x == "b")
 which(x == c("a", "b"))
 
 # error, not for char
-which(x == "a"|"b")
+which(x == "a" | "b")
 
-## insert 
+## insert
 
 # https://leetcode.com/
 
@@ -178,3 +181,15 @@ any(X == "a")
 all(X == "a")
 
 X[X == "a"]
+
+### Distance bet same character
+X <- create_s()
+N <- length(X)
+
+for (i in 1:(N - 1)) {
+  for (j in (i + 1):N) {
+    if (X[[i]] == X[[j]]) {
+      print(paste0("i= ", i, " j= ", j, "distance = ", j - i))
+    }
+  }
+}
