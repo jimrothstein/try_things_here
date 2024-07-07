@@ -1,10 +1,3 @@
-
----
-title: skeleton.qmd
-date: last-modified
-# Quarto requires title, if want date to appear
-# ~/.config/kickstart/skeleton/skeleton.qmd
----
 #   TAGS:   
 https://ivelasq.rbind.io/blog/not-so-basic-base-r-functions/
 
