@@ -1,25 +1,25 @@
----
-title: "`r knitr::current_input()`"
-date: "`r paste('last updated', 
-    format(lubridate::now(), ' %d %B %Y'))`"
-output:   
-  html_document:  
-        code_folding: show
-        toc: true 
-        toc_depth: 2
-        toc_float: true
-  pdf_document:   
-    latex_engine: xelatex  
-    toc: true
-    toc_depth:  2   
-fontsize: 11pt   
-geometry: margin=0.4in,top=0.25in   
-TAGS:  sprintf, glue, paste0, vectorize, sQuote, eval, quote, today
----
-
--	GLUE:	examples
--	REF:	[Glue](https://www.r-bloggers.com/2019/07/glue-magic-part-i/)
-
+# ---
+# title: "`r knitr::current_input()`"
+# date: "`r paste('last updated', 
+#     format(lubridate::now(), ' %d %B %Y'))`"
+# output:   
+#   html_document:  
+#         code_folding: show
+#         toc: true 
+#         toc_depth: 2
+#         toc_float: true
+#   pdf_document:   
+#     latex_engine: xelatex  
+#     toc: true
+#     toc_depth:  2   
+# fontsize: 11pt   
+# geometry: margin=0.4in,top=0.25in   
+# TAGS:  sprintf, glue, paste0, vectorize, sQuote, eval, quote, today
+# ---
+# 
+# -	GLUE:	examples
+# -	REF:	[Glue](https://www.r-bloggers.com/2019/07/glue-magic-part-i/)
+# 
 ```{r setup, include=FALSE		}
 knitr::opts_chunk$set(echo = TRUE,
                       comment = "      ##",
@@ -33,6 +33,7 @@ https://twitter.com/cararthompson/status/1550475986210361347
 ---
 
 ####  PURPOSE:  glue prints as regular text (not as char[])
+  ### Interpreted Sting Literals - SEE glue.tidyverse.org
 
 ####	Example of glue and purrr::walk
 ```{r a_glue_purrr_example}
@@ -43,6 +44,18 @@ library(purrr)
 
 
 # Compare 2 print statements
+greet = "Hello!"
+
+# as string
+print(glue::glue(greet))
+print(quote(greet))
+
+# But all these print as char[1]
+print(greet) # vector
+paste0(greet) # vector
+print(paste0(greet))
+
+
 penguin_salute <- function(penguin) {  
   
 	#	Glue:  simple string
@@ -62,15 +75,16 @@ for(penguin in penguins) {
 
 # FAILS
 Map(glue::glue, penguins)
+
 #	FAILS: compare with vapply (TODO: remove final line of output, atomic vector)
 vapply(penguins, 
-			 function(x) {print(glue::glue("Hi, {x}!"))},
-	#			invisible("a") }
-			 
-			 FUN.VALUE = character(length=1),
-			 USE.NAMES = F)
-				
-			 
+function(x) {print(glue::glue("Hi, {x}!"))},
+#			invisible("a") }
+
+FUN.VALUE = character(length=1),
+.NAMES = F)
+
+
 
 # Using purrr
 purrr::walk(penguins, penguin_salute)
