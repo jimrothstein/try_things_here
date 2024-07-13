@@ -10,7 +10,7 @@
 # SEE https://tidyr.tidyverse.org/articles/tidy-data.html
 - non-tidy
 - tidy
-- pivot_longer
+- pivot_longer:  normalizes when repetitve columns (wk1 wk2 ...)
 - pivot_wider
 - separate (one combo column, split into two)
 # 

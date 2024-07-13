@@ -7,6 +7,7 @@
 
 # Confused, seems that both work
 # Author seems to suggest mutate sometimes WILL NOT work, must review  SQL
+# dplyr::summarize creates a NEW df, 1 row for each grouping
 
 # Tags: summarize vs mutate
 
