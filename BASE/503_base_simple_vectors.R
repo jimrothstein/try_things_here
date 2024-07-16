@@ -61,6 +61,9 @@ which(x == c("a", "b"))
 # error, not for char
 which(x == "a" | "b")
 
+# return index with min
+which.min(x=c(8,1,3,9))
+
 ## insert
 
 # https://leetcode.com/
@@ -193,3 +196,16 @@ for (i in 1:(N - 1)) {
     }
   }
 }
+### 
+x <- c(8, 1,3,9)
+
+x <- sort(x)
+x
+
+x |>
+  diff()
+
+# returns index of min diff (here: index=3)
+x |> diff() |> which.min()
+
+# And this index(3) corres to positions 3,4 in original sorted x (values 8,9)
