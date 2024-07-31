@@ -21,8 +21,6 @@ create_s <- function() {
 s <- create_s()
 s
 
-
-
 # -------------------
 ## strsplit  - break up 'words' into individual charcters
 # -------------------
@@ -144,6 +142,27 @@ find <- function(s, X) s %in% X # dup found
 find("a", X)
 find("z", X)
 
+
+?`in`
+for (x in c("blue", "green", "yellow")){
+  print(x)
+  }
+v1 = c("blue", "green", "yellow")
+v2 = c("blue", "red")
+
+## %in% allows TWO vectors to be compared
+v1 %in% v2
+
+
+
+# in and a list ! works
+for (y in list("blue", "green", "yellow")){
+  print(y)
+  }
+
+for (y in list("blue", list("red", "green"), "yellow")){
+  print(y)
+  }
 
 # stops after 1st match
 match("a", X)
