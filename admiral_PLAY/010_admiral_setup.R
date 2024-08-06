@@ -19,6 +19,15 @@ data("vs")
 data("admiral_adsl")
 
 
+# structure of dm?   has attribute: label
+str(dm, max.level=1)
+attributes(dm)
+
+# structure of admiral_adsl
+dim(admiral_adsl)
+str(admiral_adsl)
+
+
 
 ##  Add variables, 2
 ##  TODO:   show new variables 
