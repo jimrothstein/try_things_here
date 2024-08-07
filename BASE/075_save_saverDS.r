@@ -16,14 +16,20 @@ print(y)
 
 
 # ---- save vs saveRDS(preferred)----
+#  *.rda is short for .RDATA
 
 x <- 3
 save(x, file = "temp.RDATA")
+
+# remove from env
+rm(x)
+x
 
 # check
 system("ls") # dir() also works
 dir()
 
+# load object x
 x <- 0
 load("temp.RDATA")
 print(x) # x=3 !
@@ -51,4 +57,17 @@ dir()
 save.image() # if no name, ".RData"
 system("rm .RData")
 
-#
+#  save object, remove from env, then load it back
+
+X = mtcars
+# save object X
+save(X, file="df.rda") 
+dir()
+
+rm(X)
+X
+
+
+# load object X into env
+load("df.rda")
+X
