@@ -1,0 +1,112 @@
+---
+title: "R4DS Chapter 19 - Joins"
+format: revealjs
+editor: visual
+date:  August 8, 2024
+---
+
+##    Talking Points
+  -   Class sees the book
+  -   I talk from these slides (to say focused)
+  
+##    19.1 Introduction
+
+::: incremental
+-   Useful to work with 2 (or more) tibbles ( or data.frames, tables, database ). For today, these all mean the SAME thing, a tibble.
+
+-   Today, learn some of ways to merge or combine the information
+
+-   Ex: Bank: 1 table for customers (name, account #, address ..) and 1 table for monthly transactions. With joins, the bank can create monthly statement.
+
+-   SQL is popular language for doing joins. Tidyverse, esp dplyr, has done this for us.
+
+:::
+
+## Be practical, useful
+
+::: incremental
+-   DB people like venn diagrams, logic and complexity
+
+-   Today: simple.
+
+-   When you are pros, you can learn advanced features of joins.
+:::
+
+## Different take on a tibble
+
+Data Science vs Database
+
+::: incremental
+-   Key fields (Ex: bank account)
+
+-   Relationships based on Key fields.
+
+-   Not so interested in number of records, number of columns. Zero in on the Key fields.
+
+-   "metadata" - anything describe the key field (name, address, or even how much money ... these are not key fields)
+
+-    Datascience you see str(airline)
+
+-    Database sees:      
+*airline* |  * carrier  |name
+:::
+
+## 19.1.1 Prerequisites
+
+Please install tidyverse and nycflights13.
+
+print airlines
+
+
+## 19.2.1 Primary Key, single or compound columns. Goal is unique
+::: incremental
+-   Unique field in airlines?
+-   airports?
+-   weather?
+:::
+
+## Foreign Key
+::: incremental
+-   Foreign Key (primary key in another table)
+-   Study columns in flights and planes?   Common ?
+-   Common: flights & carriers?
+-   Building relationships between tables.
+-   Here is my cheat sheet for tables.
+:::
+
+## 19.2.2 Primary Keys -  UNIQUE
+
+## 19.2.3 Create Your Own Primary Key (surrogate)
+
+## 19.2.4 Exercises
+
+(pick 1 or 2 for class)
+
+## 19.3 Basic Joins
+- Several kinds of joins. Use different logic (not exactly like sets union, disjoint, but in that direction)
+- Don't memorize.  
+- When you Need material, you should read the sections.
+
+
+## 19.3.1 Mutating Joins
+-   Here we ADD columns, ie more information.
+-   Copy & run :   flights2 |> left_join(airlines).  
+    How many rows in flights2, airlines?  and in the result?
+-   Now examine columns in result.  What is the pattern?
+-  All rows in x, columns are augmented 
+
+## 19.3.2 Specifying Join Keys 
+-  Help dplyr link on the correct columns, use join_by.
+-  Good practice to always include it.
+-  **flights2 |> left_join(airlines, join_by(carrier == carrier))**
+
+## 19.3.3 Filtering Joins
+-   Introduce a rule:  Instead of all rows of x, include row of x ONLY if match exist in y  (a filter) 
+
+## 19.3.4 Exercises
+
+## 19.4 How do joins work
+## 19.4.1 Row matching
+## 19.4.2 Filtering joins
+
+## Thanks to Gabriele for driving safely !

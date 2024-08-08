@@ -3,9 +3,11 @@
 
 ## 503_base_simple_vectors.R
 
-#' verbs included:
-#' strsplit, unlist, match, unique, any, all, which, in
+#' strsplit, unlist, match, unique, any, duplicated, all, which, in, seq_along(see #503)
+#' `[` , `[[`
+#' &, &&   |, ||
 
+#' Note:  %in% is not base, matches x from left plus y from right
 ### simple, ordered
 
 # HELPER

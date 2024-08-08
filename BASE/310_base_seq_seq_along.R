@@ -1,11 +1,11 @@
----
----
-
 REF:    see  Index card #142
         see  https://stackoverflow.com/questions/49911087/r-nested-list-to-tibble 
 
 ##  PURPOSE:    sequences (1, 2, 3, ...)
-#   NOTE:       Recommended to USE seq_along, seq_len; primitives  not seq(),  a generic which has bug related to 1:0
+#   NOTE:       USE seq_along, seq_len;  primitives  not seq(),  a generic which has bug related to 1:0
+
+- seq
+- seq_along()
 
 ##  seq is a bit inconsistent, sometimes `from` to `and` sometimes sequence based
 ##  upon length of input  , it is generic
