@@ -18,7 +18,7 @@ data("ex")
 data("vs")
 data("admiral_adsl")
 
-
+ls()
 # structure of dm?   has attribute: label
 str(dm, max.level=1)
 attributes(dm)

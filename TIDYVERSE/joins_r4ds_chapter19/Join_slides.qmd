@@ -5,21 +5,29 @@ editor: visual
 date:  August 8, 2024
 ---
 
-##    Talking Points
-  -   Class sees the book
-  -   I talk from these slides (to say focused)
-  
-##    19.1 Introduction
+## Talking Points
+
+-   Class sees the book
+-   I talk from these slides (to say focused)
+
+## 19.1 Introduction
 
 ::: incremental
--   Useful to work with 2 (or more) tibbles ( or data.frames, tables, database ). For today, these all mean the SAME thing, a tibble.
+-   Useful to work with 2 (or more) tibbles ( or data.frames, tables, database ).
 
--   Today, learn some of ways to merge or combine the information
+-   (For today, these all mean the SAME thing, a tibble.)
 
 -   Ex: Bank: 1 table for customers (name, account #, address ..) and 1 table for monthly transactions. With joins, the bank can create monthly statement.
 
--   SQL is popular language for doing joins. Tidyverse, esp dplyr, has done this for us.
+-   Ex: One tibble with every state and its population. Second tibble, with education budget for state. Goal: Calculate budget per capita, for top 10 states vs bottom 10 states.
 
+-   Common field in education ex?
+
+-   Goal: Somehow merge information, ie fields from 2 tables.
+
+-   OR, Select rows of table x, based on condition in table y
+
+-   Note: SQL is popular language for doing joins. Tidyverse, esp dplyr, has done this for us.
 :::
 
 ## Be practical, useful
@@ -27,7 +35,7 @@ date:  August 8, 2024
 ::: incremental
 -   DB people like venn diagrams, logic and complexity
 
--   Today: simple.
+-   Today: focus on a few important ideas.
 
 -   When you are pros, you can learn advanced features of joins.
 :::
@@ -45,10 +53,10 @@ Data Science vs Database
 
 -   "metadata" - anything describe the key field (name, address, or even how much money ... these are not key fields)
 
--    Datascience you see str(airline)
+-   Datascience you see str(airline)
 
--    Database sees:      
-*airline* |  * carrier  |name
+-   Database ppl see:\
+    *airline* \| \* carrier \|name
 :::
 
 ## 19.1.1 Prerequisites
@@ -57,56 +65,73 @@ Please install tidyverse and nycflights13.
 
 print airlines
 
-
 ## 19.2.1 Primary Key, single or compound columns. Goal is unique
+
 ::: incremental
+-   Ask
 -   Unique field in airlines?
 -   airports?
 -   weather?
 :::
 
 ## Foreign Key
+
 ::: incremental
--   Foreign Key (primary key in another table)
--   Study columns in flights and planes?   Common ?
+-   Foreign Key (primary key - but now it is data in another table)
+-   Study columns in flights and planes? Common ?
 -   Common: flights & carriers?
 -   Building relationships between tables.
 -   Here is my cheat sheet for tables.
 :::
 
-## 19.2.2 Primary Keys -  UNIQUE
+## 19.2.2 Primary Keys - UNIQUE, no dups
 
-## 19.2.3 Create Your Own Primary Key (surrogate)
+-   Other db systems, have command to make a field key.
+-   Error, if duplicates. (R does not do this)
+
+## 19.2.3 Create Your Own Primary Key ('surrogate', account number, studentID, ...)
+
+-   For flights, make up a key by using row numbers.
 
 ## 19.2.4 Exercises
 
 (pick 1 or 2 for class)
 
 ## 19.3 Basic Joins
-- Several kinds of joins. Use different logic (not exactly like sets union, disjoint, but in that direction)
-- Don't memorize.  
-- When you Need material, you should read the sections.
 
+-   Several kinds of joins. Use different logic (not exactly like sets union, disjoint, but in that direction)
+-   Think 2 buckets. Mix and match many ways.\
+-   Don't memorize.\
+-   When you Need material, you should read the sections.
 
 ## 19.3.1 Mutating Joins
--   Here we ADD columns, ie more information.
--   Copy & run :   flights2 |> left_join(airlines).  
-    How many rows in flights2, airlines?  and in the result?
--   Now examine columns in result.  What is the pattern?
--  All rows in x, columns are augmented 
 
-## 19.3.2 Specifying Join Keys 
--  Help dplyr link on the correct columns, use join_by.
--  Good practice to always include it.
--  **flights2 |> left_join(airlines, join_by(carrier == carrier))**
+-   Here we ADD columns, ie more information.
+-   Copy & run : flights2 \|\> left_join(airlines).\
+-   Show textbook examples. (left-join) How many rows in flights2, airlines? and in the result?
+-   Now examine columns in result. What is the pattern?
+-   All rows in x, columns are augmented
+
+## 19.3.2 Specifying Join Keys
+
+-   Help dplyr link the correct columns, use join_by.
+-   Good practice to always include it.
+-   **flights2 \|\> left_join(airlines, join_by(carrier == carrier))**
 
 ## 19.3.3 Filtering Joins
--   Introduce a rule:  Instead of all rows of x, include row of x ONLY if match exist in y  (a filter) 
+
+-   Introduce a rule: Instead of all rows of x, include row of x ONLY if match exist in y (a filter)
 
 ## 19.3.4 Exercises
 
 ## 19.4 How do joins work
-## 19.4.1 Row matching
-## 19.4.2 Filtering joins
+
+-   Do read \## 19.4.1 Row matching \## 19.4.2 Filtering joins
+
+## References
+
+-   dplyr cheat sheet: https://dplyr.tidyverse.org/
+-   https://mine-cetinkaya-rundel.github.io/r4ds-solutions/
+-   Solutions (v.1) https://jrnold.github.io/r4ds-exercise-solutions/relational-data.html#introduction-7
 
 ## Thanks to Gabriele for driving safely !

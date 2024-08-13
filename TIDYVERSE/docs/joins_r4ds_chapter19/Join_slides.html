@@ -350,10 +350,14 @@ jim
 <h2>19.1 Introduction</h2>
 <div>
 <ul>
-<li class="fragment"><p>Useful to work with 2 (or more) tibbles ( or data.frames, tables, database ). For today, these all mean the SAME thing, a tibble.</p></li>
-<li class="fragment"><p>Today, learn some of ways to merge or combine the information</p></li>
+<li class="fragment"><p>Useful to work with 2 (or more) tibbles ( or data.frames, tables, database ).</p></li>
+<li class="fragment"><p>(For today, these all mean the SAME thing, a tibble.)</p></li>
 <li class="fragment"><p>Ex: Bank: 1 table for customers (name, account #, address ..) and 1 table for monthly transactions. With joins, the bank can create monthly statement.</p></li>
-<li class="fragment"><p>SQL is popular language for doing joins. Tidyverse, esp dplyr, has done this for us.</p></li>
+<li class="fragment"><p>Ex: One tibble with every state and its population. Second tibble, with education budget for state. Goal: Calculate budget per capita, for top 10 states vs bottom 10 states.</p></li>
+<li class="fragment"><p>Common field in education ex?</p></li>
+<li class="fragment"><p>Goal: Somehow merge information, ie fields from 2 tables.</p></li>
+<li class="fragment"><p>OR, Select rows of table x, based on condition in table y</p></li>
+<li class="fragment"><p>Note: SQL is popular language for doing joins. Tidyverse, esp dplyr, has done this for us.</p></li>
 </ul>
 </div>
 </section>
@@ -362,7 +366,7 @@ jim
 <div>
 <ul>
 <li class="fragment"><p>DB people like venn diagrams, logic and complexity</p></li>
-<li class="fragment"><p>Today: simple.</p></li>
+<li class="fragment"><p>Today: focus on a few important ideas.</p></li>
 <li class="fragment"><p>When you are pros, you can learn advanced features of joins.</p></li>
 </ul>
 </div>
@@ -377,7 +381,7 @@ jim
 <li class="fragment"><p>Not so interested in number of records, number of columns. Zero in on the Key fields.</p></li>
 <li class="fragment"><p>“metadata” - anything describe the key field (name, address, or even how much money … these are not key fields)</p></li>
 <li class="fragment"><p>Datascience you see str(airline)</p></li>
-<li class="fragment"><p>Database sees:<br>
+<li class="fragment"><p>Database ppl see:<br>
 <em>airline</em> | * carrier |name</p></li>
 </ul>
 </div>
@@ -391,6 +395,7 @@ jim
 <h2>19.2.1 Primary Key, single or compound columns. Goal is unique</h2>
 <div>
 <ul>
+<li class="fragment">Ask</li>
 <li class="fragment">Unique field in airlines?</li>
 <li class="fragment">airports?</li>
 <li class="fragment">weather?</li>
@@ -401,7 +406,7 @@ jim
 <h2>Foreign Key</h2>
 <div>
 <ul>
-<li class="fragment">Foreign Key (primary key in another table)</li>
+<li class="fragment">Foreign Key (primary key - but now it is data in another table)</li>
 <li class="fragment">Study columns in flights and planes? Common ?</li>
 <li class="fragment">Common: flights &amp; carriers?</li>
 <li class="fragment">Building relationships between tables.</li>
@@ -409,11 +414,18 @@ jim
 </ul>
 </div>
 </section>
-<section id="primary-keys---unique" class="slide level2">
-<h2>19.2.2 Primary Keys - UNIQUE</h2>
+<section id="primary-keys---unique-no-dups" class="slide level2">
+<h2>19.2.2 Primary Keys - UNIQUE, no dups</h2>
+<ul>
+<li>Other db systems, have command to make a field key.</li>
+<li>Error, if duplicates. (R does not do this)</li>
+</ul>
 </section>
-<section id="create-your-own-primary-key-surrogate" class="slide level2">
-<h2>19.2.3 Create Your Own Primary Key (surrogate)</h2>
+<section id="create-your-own-primary-key-surrogate-account-number-studentid" class="slide level2">
+<h2>19.2.3 Create Your Own Primary Key (‘surrogate’, account number, studentID, …)</h2>
+<ul>
+<li>For flights, make up a key by using row numbers.</li>
+</ul>
 </section>
 <section id="exercises" class="slide level2">
 <h2>19.2.4 Exercises</h2>
@@ -423,6 +435,8 @@ jim
 <h2>19.3 Basic Joins</h2>
 <ul>
 <li>Several kinds of joins. Use different logic (not exactly like sets union, disjoint, but in that direction)</li>
+<li>Think 2 buckets. Mix and match many ways.<br>
+</li>
 <li>Don’t memorize.<br>
 </li>
 <li>When you Need material, you should read the sections.</li>
@@ -433,7 +447,8 @@ jim
 <ul>
 <li>Here we ADD columns, ie more information.</li>
 <li>Copy &amp; run : flights2 |&gt; left_join(airlines).<br>
-How many rows in flights2, airlines? and in the result?</li>
+</li>
+<li>Show textbook examples. (left-join) How many rows in flights2, airlines? and in the result?</li>
 <li>Now examine columns in result. What is the pattern?</li>
 <li>All rows in x, columns are augmented</li>
 </ul>
@@ -441,7 +456,7 @@ How many rows in flights2, airlines? and in the result?</li>
 <section id="specifying-join-keys" class="slide level2">
 <h2>19.3.2 Specifying Join Keys</h2>
 <ul>
-<li>Help dplyr link on the correct columns, use join_by.</li>
+<li>Help dplyr link the correct columns, use join_by.</li>
 <li>Good practice to always include it.</li>
 <li><strong>flights2 |&gt; left_join(airlines, join_by(carrier == carrier))</strong></li>
 </ul>
@@ -457,12 +472,17 @@ How many rows in flights2, airlines? and in the result?</li>
 </section>
 <section id="how-do-joins-work" class="slide level2">
 <h2>19.4 How do joins work</h2>
+<ul>
+<li>Do read ## 19.4.1 Row matching ## 19.4.2 Filtering joins</li>
+</ul>
 </section>
-<section id="row-matching" class="slide level2">
-<h2>19.4.1 Row matching</h2>
-</section>
-<section id="filtering-joins-1" class="slide level2">
-<h2>19.4.2 Filtering joins</h2>
+<section id="references" class="slide level2">
+<h2>References</h2>
+<ul>
+<li>dplyr cheat sheet: https://dplyr.tidyverse.org/</li>
+<li>https://mine-cetinkaya-rundel.github.io/r4ds-solutions/</li>
+<li>Solutions (v.1) https://jrnold.github.io/r4ds-exercise-solutions/relational-data.html#introduction-7</li>
+</ul>
 </section>
 <section id="thanks-to-gabriele-for-driving-safely" class="slide level2">
 <h2>Thanks to Gabriele for driving safely !</h2>
