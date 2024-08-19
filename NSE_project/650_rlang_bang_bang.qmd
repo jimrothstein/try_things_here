@@ -80,3 +80,18 @@ ast(x=a+b+c)
 identical(`!!` x, {{x}})
 ```
 
+## Pass a tibble and expr containing criteria (to filter row)
+Admiral has this kind of function
+```{r}
+f = function(ds,
+             criteria)
+{
+  # uncomment to change the criteria !
+  # criteria = expr(cyl == 8)
+
+  # apply criteria user specified, unless modified in line above 
+    ds |> dplyr::filter(!!criteria)  # unquote
+  }
+
+f(mtcars, criteria=expr(mpg <20))
+```

@@ -15,14 +15,11 @@ TODO:
 
 ```{r}
 library(glue)
-
 ```
 ```{r}
+name = "jim"
 glue("my name is {name}")
 
-a <- 2
-bquote(a == .(a)) " fails for strings
-# a == 2
 ```
 
 mult-line glue
@@ -47,6 +44,19 @@ glue(" {param1} my name " ,
      param1="Hello",
      param2="jim")
 ```
+
+## compare bquote, may LOOK the same; but not identical
+```{r}
+a <- 2
+bquote(a == .(a)) # 
+glue("a == {a}")
+
+identical(bquote(a == .(a)), glue("a == {a}"))
+
+b = "hello"
+bquote(a == .(b)) # 
+```
+
 ## include literal {  (CSS needs literal brackets)
 ```{r}
 # Can do  with ' and quote, but hard on eyes.
@@ -57,8 +67,29 @@ glue("}") # YES
 ```
 
 
+## glue to create list, F
+```{r}
+## list(A = "one", B = "two")
 
 
+param1 = "one"
+w = list(A = {param1})
+w
+is.list(w)
+
+
+```
+```{r}
+library(cli)
+param1 = ", or " 
+param2 = " or "
+
+q = list("vec-last" = {param1}, "vec_sep2" =  {param2})
+list("vec-last" = {param1}, "vec_sep2" =  {param2})
+
+divid <- cli_div(theme = list(.val = list("vec-last" = ", or ", "vec_sep2" = " or ")))
+divid <- cli_div(theme = list(.val = list("vec-last" = {param1}, "vec_sep2" = {param2} )))
+```
 
 
 vim:linebreak:nospell:nowrap:cul tw=78 fo=tqlnrc foldcolumn=1 cc=+1
