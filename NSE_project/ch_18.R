@@ -5,19 +5,32 @@ library(lobstr)
 rlang::is_syntactic_literal(1) #T
 rlang::is_syntactic_literal(c(1,2)) #F
 
-identical(expr(T), T) #T
+# self-quote (logical, string (char[1]), number)
+identical(expr(TRUE), TRUE)
+identical(expr("a"), "a") #  T
+identical(expr(1), 1) #  T
+
+# careful....
+identical(expr(T), T) #F
 identical(expr(T), TRUE) # F
 
-identical(expr(a), a) # error a not found
-a=2
-identical(expr(a), a) #  F  (var a is not-self quote)
 
-identical(expr("a"), "a") #  T
 
 ------------------------ 18.3.2
-# mtcars is  a ??
-is.symbol(mtcars)  # F
-ast(mtcars)
+# TWO Ways to create symbol
+is.symbol(expr(mtcars)) #T variable to symbol
+is.symbol(sym("x")) # T   string to symbol
+x=expr(mtcars)   # x is symbol
+
+# TEST is.symbol
+
+# BUT, mtcars itself is list, not a symbol 
+is.expression(expr(mtcars))   # F
+is.expression(x)   # F,  x is symbol, beter to use hadly
+
+# Hadley is consistent
+is_expression(expr(mtcars))   # T
+is_expression(x) #T
 
 x = expr(mtcars)
 is.symbol(x)    # YES
@@ -25,6 +38,11 @@ is.symbol(x)    # YES
 expr(f(x,"y",1))
 ast(f(x,"y",1))
 ast(f(mtcars))
+
+# Base::expression
+expression(a+b+c)
+expression("a" + b +c)
+is.expression(expression(1)) #T
 
 ------------------------ 18.3.3 call objects
 ast(f(mtcars, "a"))

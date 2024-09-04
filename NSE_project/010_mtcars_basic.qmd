@@ -19,12 +19,45 @@ envir=mtcars and enclosure
 ## Problem:  Try to access directly columns inside a data.frame.
 ```{r}
 # TODO: use option()
-head <- function(df = NULL, n = 3) utils::head(df, n)
+
 library(tibble)
 ```
 
-Using just unquoted col name fails.
+### x is call object
 ```{r}
+x=expr(f(mtcars))
+z=expression(f(mtcars))
+
+identical(x,z) #F
+is.call(z) #T
+is.call(x) #T
+str(z)
+str(x)
+typeof(x) # language
+typeof(z) # expression
+
+typeof(c(x,z)) # expression
+
+is.call(x)
+is_call(x)
+
+## NOTE: does not see inside the call object
+lobstr::ast(x)
+## Now you do
+lobstr::ast(!!x)
+
+```
+
+# works, no suprises
+```{r}
+
+head <- function(df = NULL, n = 3) utils::head(df, n)
+head(mtcars)
+head(iris)
+```
+
+Using just unquoted col name fails.
+```
 # works
 mtcars[1:5, c("hp")]
 

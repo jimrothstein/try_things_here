@@ -45,3 +45,21 @@ print(y)
 # --------------------------------------------------------------------
 identical(x, y)
 # [1] FALSE
+
+library(rlang)
+x=2
+
+paste0("AVAL.", x)
+sym(paste0("AVAL.", x))
+
+
+# evaluate sym("cyl") in context or environ of mtcars
+?sym
+eval(sym("cyl"), mtcars)
+eval(as.name("cyl"), mtcars) # base R
+eval(expr= as.name("cyl"), envir= mtcars) # base R
+
+
+# thinks "cyl" is just a string
+eval("cyl", mtcars)
+
