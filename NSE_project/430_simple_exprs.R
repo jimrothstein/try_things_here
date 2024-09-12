@@ -1,66 +1,91 @@
 library(rlang)
+
+# TODO:
+# g_  use stand eval
+# g   use NSE
+
+#  quote()
+quote(x) |> class()            # name
+quote(mean(1:10)) |> class()    # call
+
+
+#  expr()
+
+# NOTES:  class = high level object type
+# typeof = low-level object type
+# do not use base::expression (confusing)
 a = 10
 b = 20
-# video uses exprs, which will not evaluate correctly
-quote1 = expr(a+b)
-quote1  # not evalu
 
-
-# here theQuote is paramater, not exactly the source code
-iQuote = function(theQuote){
-  exprQuote=enexpr(theQuote)
-  print(exprQuote)
-  }
-iQuote(a+b)
-
-
-# https://www.youtube.com/watch?v=IaGU2UYeYOU
-# Part 4 (evaluation
-
-base::eval(quote1)
-rlang::eval_tidy(quote1)
-
-# error
-try(!!y)
+quote1 = expr(a+b)    # a + b
+quote1 |> class()     # call
+is.call(quote1)       # T
 
 
 
+eval(quote1)  #  30
+
+# surprise
+bquote(.(a) + b)   # list(10) + b
+
+expr(!!a + b)  # 10 + b
+expr(!!a + !!b)   # 10 + 20  no eval
+
+eval(expr(a+b))  # 30
+eval(expr(!!a+b))  # 30
 
 
-#
-a=10
-b=100
+# deparse, return unevalu string
+quote(x + y) |> class()   # class
+deparse(quote(x+y)) # "x + y"    # string
 
-x = a + b
+deparse(expr(x))  # "x"
+deparse(expr(1+2)) # "1 + 2"
 
-y = exprs(x)
-eval(y)
-!!y```{r}xixixix
 
-a = exprs(10)
-b = exprs(100)
-x= a+b
-x
-y= exprs(x)
 
-# Video 5
-# https://www.youtube.com/watch?v=a6AC8LMxKvo
+# if arg is name, print name and its value
+# if arg is call, print call and its evaluation
+f  <- function(arg){
+  paste0("value of ", deparse(arg), "is ", eval(arg))
+ } 
 
-# This Works
-subset(mtcars, hp > 100, hp)
+x = 3
+f(expr(x))  # value of x is 3
+f(expr(sin(pi)))   # value of sin(pi) is  0 (almost)
 
-# But, make column (hp) a variable:  Pattern = quasiquotation. 
 
-# 1) make eveything expression
-# 2) before expression for subset is evaluated, use !! (unquote) to insert/expand/substitute a value for column
-# 3) then run/evaluate entire expression
+#  pass a quote to a function, without eval
+g = function(q) {q}
+g(quote(x))   # x
+g(quote(2+3)) # 2 + 3
+g(quote(sin(pi + pi))) # sin(pi+pi)
 
-myColumn = expr(hp)
-# !!hp will substitute (eval) myColumn *before* myExpr is run; aka quasiquotation
 
-myExpr = expr(subset(mtcars, hp > 100, !!myColumn))
-myExpr
-# subset(mtcars, hp > 100, hp)
+# Do the same WITHOUT quote ?
 
-# run
-eval(myExpr)
+h = function(q) {substitute(q)}
+h(x)   # x
+h(2+3) # 2 + 3
+
+# OR use rlang::enexpr
+
+# PROBLEM:  inside a function, expr
+# returns x, regardless of what user sent
+f <- function(x) {
+  expr(x)
+}
+
+f(3) # returns x
+
+
+# another fix without quote(), use enexpr
+g_ <- function(x) {
+  enexpr(x)
+}
+
+g_(3) # returns 3
+g_(a + b) # a+b, even though not defined.
+a <- 4
+g_(a + b)
+g_(!!a + b)

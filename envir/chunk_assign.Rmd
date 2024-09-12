@@ -1,4 +1,6 @@
 ```{r assign}
+# assign does what expect
+
 ls()
 
 ## x must be quoted
@@ -13,8 +15,8 @@ ls(E1)
 assign("x", "goodbye", envir = E1)
 ls(E1)
 
-print(x)
-print(E1$x)
+print(x)   # "hello" 
+print(E1$x) # "goodbye"
 ```
 
 
@@ -29,3 +31,12 @@ environment(f) <- E1
 f()
 ```
 
+## grab stats:: (3 pkg on search)
+```{r}
+search()
+e3 = as.environment(3)
+e3  # <environment: package:stats>
+
+(.packages())
+
+```

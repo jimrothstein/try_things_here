@@ -12,9 +12,9 @@ f <- function() {
   print(x)
 }
 environment(f) <- E2
-f()
+f()   # 10
 
 
 environment(f) <- E1
-f()
+f()   # 0
 ```

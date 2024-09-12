@@ -1,8 +1,139 @@
+	 
+ ##  Namespaces
+ ##  Collect examples here
+
 #
 ##-------------------------------------
 ## NAMESPACES - See Ch 7.4.3
 ##-------------------------------------
 
+### getNamespace, returns environment
+```{r}
+?help.start
+?getAnywhere
+argsAnywhere(derive_params)
+getAnywhere(filter)
+getAnywhere(ae)
+
+library(pkgload)
+getNamespace("admiral")   # namespace::admiral
+```
+### objects in NameSpace
+```{r} 
+ls(getNamespace("dplyr"))
+ls(getNamespace("admiral"))
+
+```
+### test, is object in ns?
+```{r}
+z=ls(getNamespace("admiral"))
+
+c("slice_derivation") %in% z   # TRUE
+```
+
+
+### ds in pkg
+```{r}
+data()   # all loaded ds
+
+data(package = "admiral")  # load ds in this pkg
+search()
+
+c("admiral_adlb") %in% z
+
+library(admiral)
+
+### char[] loaded namespaces
+```{r}
+loadedNamespaces()
+?loadedNamespaces
+requireNamespace("teal")
+
+```
+### unloadNamespace
+
+```{r}
+unloadNamespace("teal")  # and removes search()
+unloadNamespace("teal.slice")
+loadedNamespaces()
+search()
+
+
+# put it back in.
+library(teal)
+
+
+```
+### Given a ds, find package,  pkg must be at least loaded
+```{r}
+?pharmaversesdtm
+?admiral
+
+loadNamespace("pharmaversesdtm")
+search()
+loadedNamespaces()
+data(package = "pharmaversesdtm")   # loads
+
+?ae
+help(ae)
+findAnywhere("ae")
+
+unloadNamespace("pharmaversesdtm")
+```
+
+
+### Given a package
+```{r}
+
+library(pharmaversesdtm)
+help("ae")
+data(package="pharmaversesdtm")  # many
+data(package="pharmaversesdtm") |> class()   # packageIQR?
+
+ls(getNamespace("pharmaversesdtm"))
+
+
+```
+
+?getNamespaceExports()
+getNamespaceExports("dplyr") # 285
+getNamespaceExports("admiral") # 285
+
+"db_commit" %in% getNamespaceExports("admiral") # 285
+
+get
+
+?getNamespace
+# returns named data.frame x, freq
+getNamespaceExports("dplyr") %>% length()
+
+## ?
+root <- rprojroot::is_r_package
+root
+root$find_file()
+root$find_file("DESCRIPTION")
+root$find_file("09009_namespace_example.Rmd")
+```
+
+# PURPOSE:  misc tools for env, NS  (namespace)
+-   getAnywhere()
+-   exists()
+-   makeActiveBinding
+-   assign()    
+
+
+##    Given an object, base::getAnywhere() finds pkg, NS, and code
+```{r}
+
+
+utils::getAnywhere(aes)
+getAnywhere(vapply)
+getAnywhere(getAnywhere)
+getAnywhere(.rs.restart)
+getAnywhere(ae)
+getAnywhere(sv)
+
+```
 ##  Code to probe namespace
 REF: R-pkg  v2 
 NAMESPACE
@@ -20,28 +151,28 @@ compare search() before/after adding package.
 old  <- search()
 old
 
-# :: loads pkg tinytest (not attach)
-tinytest::expect_equal(1,1)
-
-# no change, tinytest:: not attached
+# will not attach admiral
+admiral::ae_event
+search()
 base::setdiff(search(),old)
 
 ##-------------------------------------
-# load AND attach
+# To load AND attach
 ##-------------------------------------
 library(tinytest)
 new <- search()
-new
-setdiff(new, old)   # observe "package:tinytest"
 ```
 ```{r namespaces}
 # show loaded 
+?loadedNamespaces
 loadedNamespaces()
+isNamespaceLoaded("admiral")
 
-# show loadd AND attached
-search()
-# remove prefix `package:`
+
+# search vs attached?   same?
 attached_pkgs  <- sub(pattern="package:", replacement="", x=search())
+attached_pkgs
+search()
 
 setdiff(attached_pkgs, loadedNamespaces())
 ```

@@ -1,29 +1,8 @@
 
-## TAGS:  tools, namespace, rlang, environment
 
 
-# PURPOSE:  misc tools for env, NS  (namespace)
--   getAnywhere()
--   exists()
--   makeActiveBinding
--   assign()    
-
----
 
 
-##    Given an object, base::getAnywhere() finds pkg, NS, and code
-```{r}
-
-library(pkgload)
-library(rlang)
-library(ggplot2)
-
-utils::getAnywhere(aes)
-getAnywhere(vapply)
-getAnywhere(getAnywhere)
-getAnywhere(.rs.restart)
-
-```
 
 ##-----------------------------------------
 ##  Given a package, list All objects :

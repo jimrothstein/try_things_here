@@ -1,38 +1,4 @@
 
-	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
-	 
---- 
-title: Template for .Rmd 
-date: "`r paste('last updated', 
-    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
-output: 
-  pdf_document: 
-    latex_engine: xelatex
-toc: TRUE 
-toc_depth:  1 
-fontsize: 12pt 
-geometry: margin=0.5in,top=0.25in 
-TAGS:  rlang,typeof 
----
-
-REF:   See Rlang Cheatsheet
-REF:   Advr v2  Chaptr 17+
-REF:  (defuse)[https://rlang.r-lib.org/reference/nse-defuse.html]
-
-practice for:
-* expr()
-* enexpr()
-* plural forms: exprs(), enexprs()
-* sym()
-
-
-```{r setup, include=FALSE		}
-knitr::opts_chunk$set(
-  echo = TRUE,
-  comment = "      ##",
-  error = TRUE,
-  collapse = TRUE
-)
 ```
 
 
@@ -64,26 +30,7 @@ b <- 2
 eval(e)
 ```
 
-rlang::enexpr
-```{r enexpr}
-# PROBLEM:  inside a function, expr
-# returns x, regardless of what user sent
-f <- function(x) {
-  expr(x)
-}
-
-f(3) # returns x
-
-
-# fix, use enexpr
-g <- function(x) {
-  enexpr(x)
-}
-
-g(3) # returns 3
-g(a + b) # a+b, even though not defined.
-a <- 4
-g(a) # still get a
+(a) # still get a
 ```
 a few properties of expr()
 ```{r expr_are_lists}
