@@ -1,6 +1,15 @@
-	 
+---
+title: 9009_namespace
+format:
+  html:
+    embed-resources: true
+execute:
+  enabled: true
+--- 
  ##  Namespaces
  ##  Collect examples here
+ 
+\footnotesize
 
 #
 ##-------------------------------------

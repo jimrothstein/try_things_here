@@ -36,18 +36,42 @@ TODO:       Clean up !   Make coherent
 ##  USE CASE:  Write one function to accept any of several   functions
 ###  Pass mean, mode, max, min, sd to single function
 
-Create function accepts basename of another function (`mean, max, etc`)
-Returns basename, but as a call??
+Create function accepts base name of another function (`mean, max, etc`)
+Returns base name, but as a call??
+
+
+Example: substitute - return unevaluated args in call
 ```{r}
-f <- function(fun, args = NULL) {
-  deparse(substitute(fun))
-  # cat(as.character(typeof(new)), "\n")     ## symbol
+#| eval: false 
+
+f <- function(x) {
+  deparse(substitute(x))
 }
 
-f(mean) ## [1] "mean"
-typeof(f(mean)) ## character
+f(mean) ## [1] "mean" as character
+f(a+b)  ##  "a + b" as char
+f(1+b)  ## " "1 + b"
+f(1+2) ## "1 + 2"
+```
 
+Example: without deparse, substitute - returns call
+```{r}
+f <- function(x) substitute(x)
+f("a+b")
+f(a+b)
+f(a+b) |> class()   # call
+f(a+b) |> lobstr::ast()   # diagram of the call
+f(1+2) |> class()   # call
+f(sin(x) + sin(y)) # call
+```
+
+## NEXT:
+#### do.call
+```{r}
 ##  USAGE
+do.call("mean", list(1:10))  ## 5.5
+do.call(mean, list(1:10))   ## 5.5  
+
 do.call(f(mean), list(1:10)) ##  5.5
 do.call(f(max), list(1:10)) ##  10
 do.call(f(length), list(1:10)) ##  10
@@ -117,7 +141,7 @@ f(suppliedArgX)
 
 ##  Compare substitute with/without depars
 ```{r}
-##  Use deparse to convert to stirng
+##  Use deparse to convert to string
 g <- function(arg) deparse(substitute(arg))
 
 g(1:10) # "1:10"
@@ -150,11 +174,11 @@ g1(x)
 g1(2 * 5 + x)
 
 ## do not understand
-h(x) # errror
+h(x) # error
 h(2 * 5) # arg)
 eval(h(2 * 5))
 
-## do not undrestand
+## do not understand
 play <- function(x) cat(x)
 play(2)
 play(z)
@@ -267,7 +291,7 @@ e1 <- create_expr("x + 1")
 # expression(x + 1)
 
 
-## eval fail becasue no x
+## eval fail because no x
 x <- NULL
 if (!is.null(x)) {
   if (exists("x")) eval(e1)
@@ -415,7 +439,7 @@ g(x + y^2 / z + exp(a + sin(b)))
 ```{r advanced}
 f <- function(a, ...) {
   # browser()
-  # substitue(a) returns x, unquoted, ie symbol
+  # substitute(a) returns x, unquoted, ie symbol
   # arg is "x", dots is NULL,
   arg <- deparse(substitute(a))
   dots <- substitute(list(...))[-1]

@@ -1,18 +1,30 @@
 on:
-    push:
-        branches:
-            - main
+  push:
+    branches: main
 
 jobs:
-    contrib-readme-job:
-        runs-on: ubuntu-latest
-        name: A job to automate contrib in readme
-        permissions:
-          contents: write
-          pull-requests: write
-        steps:
-            - name: Contribute List
-              uses: akhilmhdh/contributors-readme-action@v2.3.10
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-# github actions looks for contributors
+  import-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+
+      - name: Install packages
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::tidyverse
+            any::googlesheets4
+
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Import data
+        run: Rscript -e 'source("actions_print.R")'
+
+      - name: Commit results
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git commit -m 'Data updated' || echo "No changes to commit"
+          git push origin || echo "No changes to commit"
