@@ -7,6 +7,13 @@
 ## NAMESPACES - See Ch 7.4.3
 ##-------------------------------------
 
+
+## all attached packages vs search()
+```{r}
+(.packages())
+search()
+```
+
 ### getNamespace, returns environment
 ```{r}
 ?help.start
@@ -46,6 +53,8 @@ library(admiral)
 ### char[] loaded namespaces
 ```{r}
 loadedNamespaces()
+sort(loadedNamespaces())
+
 ?loadedNamespaces
 requireNamespace("teal")
 
@@ -120,6 +129,26 @@ root$find_file("09009_namespace_example.Rmd")
 -   exists()
 -   makeActiveBinding
 -   assign()    
+
+##  assign variable x value in current env()
+```{r}
+ls()
+assign("x", 10)   # x must be quoted
+ls()  # x in envi
+x    # 10
+search()
+
+
+```
+## now assign higher in search()
+## does not work
+```{r}
+
+x=10
+assign("x", 100, "ESSR", inherits=T)
+ls(parent.env(environment()))
+getAnywhere(x)
+search()
 
 
 ##    Given an object, base::getAnywhere() finds pkg, NS, and code
