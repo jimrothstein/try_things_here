@@ -21,6 +21,7 @@ execute:
 ```{r}
 apropos("environment")
 apropos("namespace")
+apropos("getNamespace")
 ```
 
 ### all installed packages
@@ -30,7 +31,7 @@ installed.packages() |> class()
 ls()
 ```
 
-## all attached packages vs search()
+### attached packages vs search()
 ```{r}
 (.packages()) #22
 search()  #24
@@ -43,6 +44,14 @@ search()[!z %in% search()]
 base::setdiff(z, search())
 ```
 
+### is pkg loaded?
+```{r}
+"stats" %in% loadedNamespaces()  # TRUE
+"admiral" %in% loadedNamespaces()   # T
+"admiraldev" %in% loadedNamespaces()  # T
+"broom" %in% loadedNamespaces()  # F
+
+```
 ### getAnywhere (examine all loaded NS)
 ```{r}
 ?getAnywhere
@@ -62,6 +71,12 @@ getAnywhere(ae)
 getAnywhere("count_vals")
 getAnywhere(count_vals)
 
+# dataset in pkg (must be loaded)
+library(pharmaversesdtm)
+getAnywhere("ae")   # finds in package:pharamaversesdtm
+
+# but will not find if unloaded
+unloadNamespace("pharmaversesdtm")
 ```
 
 ## getNamespace, returns environment
@@ -81,7 +96,7 @@ ls(getNamespace("admiral")) == "count_vals"  # T
 getAnywhere("count_vals")
 
 ```
-### test, is object in ns?
+### is object in ns?
 ```{r}
 z=ls(getNamespace("admiral"))
 
@@ -106,12 +121,17 @@ isNamespaceLoaded("broom") # F
 ```{r}
 ```
 
+### package versions?
+```{r}
+sessionInfo()   # uses package version from disk, not memory
+getNamespaceVersion("admiral")  # better
+```
 
-### ds in pkg
+### ds in pkg;   NOT 'exported', put into data/
 ```{r}
 data()   # all loaded ds
 data(package = "admiral")  # ds in package admiral; will NOT load NS admiral
-ls(getNamespace("admiral"))   # will load NS admiral
+ls(getNamespace("admiral"))   # will load NS admiral, ~ 176 objects
 
 
 isNamespaceLoaded("admiral")
@@ -119,3 +139,50 @@ unloadNamespace("admiral")
 data("admiral_adsl")   # not found
 data("ae")  # not found
 ls(getNamespace("pharmaversesdtm"))
+
+
+
+# ae is dataset in pharmaversesdtm, in /data
+library(pharmaversesdtm)  # must be loaded
+ae   # found it
+getAnywhere("ae")   # works
+
+## pharamaversesdtm does NOT export much;  data/ is not called 'exported'
+c("ae") %in% getNamespaceExports("pharmaversesdtm") # F
+
+# but "ae" is in data/
+str(data(package = "pharmaversesdtm"))
+c("ae") %in% data(package = "pharmaversesdtm")$results
+
+# because uses IQR format
+z=data(package = "pharmaversesdtm")
+z |> class()   # packageIQR
+"ae" %in% z   # WHY FALSE?
+"ae" %in% z$result   # NOW it is true!
+
+
+ls(package:stats)
+ls(package:admiral)
+
+
+ls(ns:stats)
+ls(namespace:stats)
+ns:stats
+namespace("stats")
+ls(imports:stats)
+
+z=getNamespaceImports("admiral")
+class(z)
+```
+
+## probe package, imports, exports (seems to match file NAMESPACE)
+```{r}
+getNamespaceImports("stats")   # list
+getNamespaceExports("stats")
+
+
+
+getNamespaceImports("admiral")
+getNamespaceExports("admiral")
+
+```
