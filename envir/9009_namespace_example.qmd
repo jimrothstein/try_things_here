@@ -3,28 +3,53 @@ title: 9009_namespace
 format:
   html:
     embed-resources: true
+    toc: true
 execute:
-  enabled: true
---- 
- ##  Namespaces
- ##  Collect examples here
- 
-\footnotesize
+  enabled: false   # do not execute chunks
+---
 
-#
-##-------------------------------------
-## NAMESPACES - See Ch 7.4.3
-##-------------------------------------
+Namespaces Collect examples here
 
+::: very_small
+very small?
+:::
+
+::: small
+small?
+:::
+
+# NAMESPACES - See Ch 7.4.3
+
+## REF
+
+-   how R finds - https://blog.thatbuthow.com/how-r-searches-and-finds-stuff/
+-   SEE R packages book
+-   **Note** that lazy-loaded datasets are not in the package’s namespace so need to be accessed via ::, e.g. survival::survexp.us.
+-   **Note** never use @export ds; put in data/
+
+## Loop through ds?
+
+use `::`(pkg, ds)
+
+```{r}
+
+f = function(ds){ deparse(substitute(ds))
+  }
+  
+```
 
 ## HELP
+
 ```{r}
 apropos("environment")
 apropos("namespace")
 apropos("getNamespace")
 ```
 
+## Packages (Mostly)
+
 ### all installed packages
+
 ```{r}
 installed.packages()
 installed.packages() |> class()
@@ -32,6 +57,7 @@ ls()
 ```
 
 ### attached packages vs search()
+
 ```{r}
 (.packages()) #22
 search()  #24
@@ -45,6 +71,7 @@ base::setdiff(z, search())
 ```
 
 ### is pkg loaded?
+
 ```{r}
 "stats" %in% loadedNamespaces()  # TRUE
 "admiral" %in% loadedNamespaces()   # T
@@ -52,7 +79,16 @@ base::setdiff(z, search())
 "broom" %in% loadedNamespaces()  # F
 
 ```
-### getAnywhere (examine all loaded NS)
+
+### package versions?
+
+```{r}
+sessionInfo()   # uses package version from disk, not memory
+getNamespaceVersion("admiral")  # better
+```
+
+## getAnywhere (examine all loaded NS)
+
 ```{r}
 ?getAnywhere
 argsAnywhere(derive_params)
@@ -75,35 +111,88 @@ getAnywhere(count_vals)
 library(pharmaversesdtm)
 getAnywhere("ae")   # finds in package:pharamaversesdtm
 
+# load = error
+if (F) load("mtcars")  # errro
+
 # but will not find if unloaded
 unloadNamespace("pharmaversesdtm")
 ```
 
-## getNamespace, returns environment
+## Namespace (mostly)
+
+### get pkg namespace
+
+-   asNamespace , returns \<environtment: namespace:stats\>
+-   as.environment, must include package: , returns \<environment: package:stats\> + attrs
+
+```{r}
+asNamespace("stats")  # do not prefix with "package:"
+
+as.environment("package:stats")
+```
+
+### getNamespace, returns environment
+
 ```{r}
 ?help.start
 library(pkgload)
 getNamespace("admiral")   # Loads NS for admiral
 isNamespaceLoaded("admiral")
 unloadNamespace("admiral")
+
+# fake notation, do not use
+if (F) {
+namespace:base
+package:base
+}
+
 ```
+
 ### objects in NameSpace
-```{r} 
-ls(getNamespace("dplyr"))
+
+When lazyLoad on, datasets DO NOT appear in NS
+
+```{r}
+ls(getNamespace("dplyr"))  # works, getNameSPace returns environment
 
 ## Need better way ...
 ls(getNamespace("admiral")) == "count_vals"  # T
 getAnywhere("count_vals")
 
 ```
+
 ### is object in ns?
+
 ```{r}
 z=ls(getNamespace("admiral"))
 
 c("slice_derivation") %in% z   # TRUE
 ```
 
-### Find data(), class packageIRQ
+## unload NS
+
+unloadNamespace- forces; first it detach(NS)
+
+```{r}
+
+?pkgload::unload   # NS, pkg
+
+?unloadNamespace
+unloadNamespace("stats")   # error, b/c needed by others
+
+
+loadNamespace("admiral")
+unloadNamespace("admiral")
+"admiral" %in% loadedNamespaces()  # check
+
+?pkgload::unload
+
+```
+
+## Datasets (mostly)
+
+### Find datasets data(), class packageIRQ
+
 ```{r}
 # returns obj of class packageIRQ
 data() |> class()
@@ -117,17 +206,55 @@ data(package = "broom")
 isNamespaceLoaded("broom") # F
 ```
 
-### Find all 'loaded' ds?   means ...?
+### Find all 'loaded' ds? means ...?
+
+so far, only getAnywhere("ae") finds ds 'ae' in pkg (pharamaversesdtm)
+
 ```{r}
+?getAnywhere
+getAnywhere("mtcars")$where   # where won't print the ds
+getAnywhere("ae")$where
+getAnywhere("ae")$visible
+
 ```
 
-### package versions?
+### compare: data("ae") vs pharamaversdtm::ae
+
+if pkg loaded and attached, easy to find "ae"
+
 ```{r}
-sessionInfo()   # uses package version from disk, not memory
-getNamespaceVersion("admiral")  # better
+search()
+library("pharmaversesdtm")  # makes it easy
+isNamespaceLoaded("pharmaversesdtm")
+unloadNamespace("pharmaversesdtm")
+
+ae
+
+# is in environment
+"ae" %in% ls(as.environment("package:pharmaversesdtm")) #T
+
+"ae" %in% ls(as.environment("package:pharmaversesdtm"))  #T
+
+## but if you unload
+unloadNamespace("pharmaversesdtm")
+search()
+pharmaversesdtm::ae   # loads, not attach pkg;  still works
+z = pharmaversesdtm::ae
+z
+
+ae   # error
+"ae" %in% ls(as.environment("package:pharmaversesdtm"))  # error
+
 ```
 
-### ds in pkg;   NOT 'exported', put into data/
+## unload pkg
+
+```{r}
+
+```
+
+### ds in pkg; NOT 'exported', put into data/
+
 ```{r}
 data()   # all loaded ds
 data(package = "admiral")  # ds in package admiral; will NOT load NS admiral
@@ -138,7 +265,6 @@ isNamespaceLoaded("admiral")
 unloadNamespace("admiral")
 data("admiral_adsl")   # not found
 data("ae")  # not found
-ls(getNamespace("pharmaversesdtm"))
 
 
 
@@ -162,7 +288,7 @@ z |> class()   # packageIQR
 
 
 ls(package:stats)
-ls(package:admiral)
+ls(package:admiral)   # admiral must be on search()
 
 
 ls(ns:stats)
@@ -175,14 +301,53 @@ z=getNamespaceImports("admiral")
 class(z)
 ```
 
+## attach ds to search path; to see all its columns
+
+```{r}
+search()
+base::attach(mtcars)
+search()
+```
+
 ## probe package, imports, exports (seems to match file NAMESPACE)
+
 ```{r}
 getNamespaceImports("stats")   # list
 getNamespaceExports("stats")
 
-
-
 getNamespaceImports("admiral")
 getNamespaceExports("admiral")
+
+```
+
+## CASE: pharmaversesdtm
+
+```{r}
+sdtm = "pharmaversesdtm"   # I can't spell
+library("pharmaversesdtm")
+
+getAnywhere("ae")$where
+getAnywhere("ae")$visible  # T
+
+search()
+as.environment("package:pharmaversesdtm")   # package req'd
+ls(as.environment("package:pharmaversesdtm"))  # lists "ae"
+"ae" %in% ls(as.environment("package:pharmaversesdtm"))  #T
+
+
+getNamespace("pharmaversesdtm")  # no "package:", returns envir)
+ls(getNamespace("pharmaversesdtm")) # get_terms
+ls(envir=getNamespace("pharmaversesdtm"))
+get_terms
+
+
+getNamespaceExports("pharmaversesdtm") # no exports  character(0)
+
+# easy way to get NS
+asNamespace("pharmaversesdtm")
+as.env
+# WHY FALSE?
+"ae" %in% ls(getNamespace("pharmaversesdtm")) #F
+
 
 ```
