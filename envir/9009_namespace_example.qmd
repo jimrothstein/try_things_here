@@ -18,6 +18,18 @@ very small?
 small?
 :::
 
+### Todo:
+- Import (load only)
+- Depends (loads & attaches, so use sparsely; like library)
+- detach(pkg) - 1st step when unloadNS is called.
+- Dreaming?
+ls(R_BaseEnv)
+R_BaseNamespace
+namespace:R_BaseNamespace
+  
+namespace:base
+package:base
+- 
 # NAMESPACES - See Ch 7.4.3
 
 ## REF
@@ -25,6 +37,7 @@ small?
 -   how R finds - https://blog.thatbuthow.com/how-r-searches-and-finds-stuff/
 -   SEE R packages book
 -   **Note** that lazy-loaded datasets are not in the package’s namespace so need to be accessed via ::, e.g. survival::survexp.us.
+-   R-internals
 -   **Note** never use @export ds; put in data/
 
 ## Loop through ds?
@@ -35,7 +48,7 @@ use `::`(pkg, ds)
 
 f = function(ds){ deparse(substitute(ds))
   }
-  
+
 ```
 
 ## HELP
@@ -44,6 +57,8 @@ f = function(ds){ deparse(substitute(ds))
 apropos("environment")
 apropos("namespace")
 apropos("getNamespace")
+apropos("namespace")
+
 ```
 
 ## Packages (Mostly)
@@ -325,6 +340,47 @@ getNamespaceExports("admiral")
 ```{r}
 sdtm = "pharmaversesdtm"   # I can't spell
 library("pharmaversesdtm")
+
+##  remove pkg and its NS ------------------------ 
+unloadNamespace("pharmaversesdtm")
+search()
+isNamespaceLoaded("pharmaversesdtm")
+ae  # not found
+vs
+
+##  ------------------------ 
+
+##  loads , does not attach pkg ----------------------------
+pharmaversesdtm::ae
+
+# works
+`::`(pharmaversesdtm, ae)
+?`::`
+
+# fails
+`::`(pharmaversesdtm, ae, ts)
+sapply(c("ae", "ts"), `::`pharmaversesdtm)
+
+data(package = "pharmaversesdtm")  # no attach
+
+##  ------------------------ 
+##  fails, functional form?
+
+f = function(x) {
+  cat(enexpr(x))
+  `::`(pharmaversesdtm,!!x)
+  }
+
+sapply(c("ae", "vs"), f)
+
+f(expr(ae))
+f("ae")
+
+## call ------------------------ fails
+call("`::`", "pharmaversesdtm", "ae")
+
+
+
 
 getAnywhere("ae")$where
 getAnywhere("ae")$visible  # T
