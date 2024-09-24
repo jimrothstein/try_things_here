@@ -40,9 +40,8 @@ package:base
 -   R-internals
 -   **Note** never use @export ds; put in data/
 
-## Loop through ds?
 
-use `::`(pkg, ds)
+
 
 ```{r}
 
@@ -335,27 +334,95 @@ getNamespaceExports("admiral")
 
 ```
 
-## CASE: pharmaversesdtm
 
+## CASE: pharmaversesdtm
+Recently, we switched from data(ds) to pharmaversdtm::ds.
+I wanted understand how datasets get made available.
+What follows may be orthogonal (no overlap, useless) to what we do, but perhaps might be reference for future.
+
+
+First,  using library or devtools::load_all places makes datasets (in data/) available for use.
+So we do not really need to do more.
 ```{r}
-sdtm = "pharmaversesdtm"   # I can't spell
 library("pharmaversesdtm")
+ae
+dm
+```
+
+Before go further, here are tools that will useful.
 
 ##  remove pkg and its NS ------------------------ 
+```{r}
 unloadNamespace("pharmaversesdtm")
 search()
 isNamespaceLoaded("pharmaversesdtm")
 ae  # not found
 vs
+```
 
 ##  ------------------------ 
 
+##  Now that pharamversdtm is not present
 ##  loads , does not attach pkg ----------------------------
+```{r}
 pharmaversesdtm::ae
+```
 
-# works
+# if you like functional form, works
 `::`(pharmaversesdtm, ae)
 ?`::`
+
+## Before using pharamversesdtm::ae, we used data(ae)
+```{r}
+unloadNamespace("pharamversdtm")
+data(ae)
+
+# ae available
+head(ae)
+```
+
+## Functional approach
+```{r}
+ds = "ae"
+ds = "dm"
+
+call("`::`", "pharmaversesdtm", sym(ds))
+
+eval(call(`::`, "pharmaversesdtm", sym(ds)))
+
+```
+
+## Break it down
+# Assemble a symbol from a string
+```{r}
+var <- "foo"
+sym(var)   # foo
+
+# Assemble a call from strings, symbols, and constants
+call("mean", sym(var), na.rm = TRUE)
+
+ds = "ae"
+ds = "dm"
+# works
+
+call("print", sym(ds))
+eval(call("print", sym(ds)))
+```
+
+## Vectorize
+```{r}
+?`::`
+call("::", "pharmaversedtm", sym(ds))
+eval(call("::", "pharmaversesdtm", sym(ds)))
+
+
+f = function(ds) { call("::", "pharmaversesdtm", ds)}
+eval(f("ae"))
+
+z=eval(lapply(c("ae", "dm"), f))
+eval(z[[1]])
+eval(z)
+
 
 # fails
 `::`(pharmaversesdtm, ae, ts)
@@ -364,24 +431,9 @@ sapply(c("ae", "ts"), `::`pharmaversesdtm)
 data(package = "pharmaversesdtm")  # no attach
 
 ##  ------------------------ 
-##  fails, functional form?
 
-f = function(x) {
-  cat(enexpr(x))
-  `::`(pharmaversesdtm,!!x)
-  }
-
-sapply(c("ae", "vs"), f)
-
-f(expr(ae))
-f("ae")
-
-## call ------------------------ fails
-call("`::`", "pharmaversesdtm", "ae")
-
-
-
-
+## continue with  ------------------------ 
+```{r}
 getAnywhere("ae")$where
 getAnywhere("ae")$visible  # T
 
@@ -404,6 +456,5 @@ asNamespace("pharmaversesdtm")
 as.env
 # WHY FALSE?
 "ae" %in% ls(getNamespace("pharmaversesdtm")) #F
-
 
 ```
