@@ -458,3 +458,8 @@ as.env
 "ae" %in% ls(getNamespace("pharmaversesdtm")) #F
 
 ```
+
+## Useful?
+```{r}
+
+```
