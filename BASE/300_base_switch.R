@@ -20,3 +20,13 @@ end
 # [1] "1"        "1"        "0"        "bad data"
 
 
+
+z=expression("a")
+
+switch(EXPR, "a"  = "one", "b"="two", stop("not valid choice"))
+switch(z, "a"  = "one", "b"="two", stop("not valid choice"))
+# FAIL res= switch(z, "a"  = "one", "b"="two", stop("not valid choice"))
+res= switch(eval(z), "a"  = "one", "b"="two", stop("not valid choice"))
+res
+
+switch("a", "a"  = "one", "b"="two", stop("not valid choice"))
