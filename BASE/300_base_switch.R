@@ -1,32 +1,28 @@
 #### switch()
 ###
-###
-###
-```
-Since I never remember the `switch` code, here is an example:
-
-```
 
 ##  convert yes/no answers to 1,0
 
 start = c("yes", "yes", "no", "")
 
-end = sapply(start, function(e) switch(e, 
-                                       yes = 1, 
-                                       no = 0, 
-                                       "bad data"), 
-                                 USE.NAMES=F)
-end
-# [1] "1"        "1"        "0"        "bad data"
+end = sapply(start, function(e) switch(e,
+                                  yes = 1,
+                                  no = 0,
+                                       "bad data")
+             )
 
 
 
-z=expression("a")
 
-switch(EXPR, "a"  = "one", "b"="two", stop("not valid choice"))
-switch(z, "a"  = "one", "b"="two", stop("not valid choice"))
-# FAIL res= switch(z, "a"  = "one", "b"="two", stop("not valid choice"))
-res= switch(eval(z), "a"  = "one", "b"="two", stop("not valid choice"))
-res
 
-switch("a", "a"  = "one", "b"="two", stop("not valid choice"))
+EXPR <- "c"
+switch(EXPR,
+  "a" = "one",
+  "b" = "two",
+  "c" = "three",
+  "d" = 2 + 3,
+  stop("not valid choice")
+)
+
+styler::style_file("~/code/try_things_here/BASE/300_base_switch.R")
+lintr::lint(filename = "~/code/try_things_here/BASE/300_base_switch.R")
