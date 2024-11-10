@@ -1,16 +1,21 @@
 ---
 title: "Date Imputation"
 format: html
+editor_options: 
+  chunk_output_type: console
 ---
 
+### Background
 
-SEE: https://advance.hub.phuse.global/wiki/spaces/WEL/pages/26807243/Imputing+Partial+Dates
-SEE: https://stefvanbuuren.name/fimd/
-SEE: https://advance.hub.phuse.global/wiki/spaces/WEL/pages/26805267/Good+Programming+Practice+-+Standard+Program+Process+Supporting+Documentation 
+-   Admiral vignette: imputation <https://pharmaverse.github.io/admiral/articles/imputation.html>
+-   SEE: <https://advance.hub.phuse.global/wiki/spaces/WEL/pages/26807243/Imputing+Partial+Dates>
+-   SEE: <https://stefvanbuuren.name/fimd/>
+-   SEE: https://advance.hub.phuse.global/wiki/spaces/WEL/pages/26805267/Good+Programming+Practice+-+Standard+Program+Process+Supporting+Documentation
+
 "Program documentation can contain only a roadmap linking the different piece of code with input and output to each other. This is usually difficult to see when reading the program code and it does add value rather than just being descriptive. Program documentation must communicate what is central and subtle that cannot be reengineer from the source code and document rational for important design decisions.
 
-
 ## Break dtc into pieces, capture groups
+
 ```{r}
 library(stringr)
  dtc = "2024-04-01"
@@ -25,11 +30,13 @@ partialdate
 ```
 
 ## Why Impute?
-```
+
+```         
 ```
 
-## How to Impute, ie RULES !    
-```
+## How to Impute, ie RULES !
+
+```         
 "How you impute often depends on the type of date."
 
 Given date 2009, you might insist on a day.
@@ -37,10 +44,10 @@ Is 2009-01-01 right choice?   Or would mid-year be better:   2009-06-30?   Or do
 -not about format;  it is about precision.
 
 Likewise, if starting a new drug on 2009-02-15 and an Adverse Event( AE) follows but is given as 2009-02 how you impute matters.
-
 ```
-Explain the two min dates
-## Example: Adverse Event/Concommittant Medication. 
+
+Explain the two min dates \## Example: Adverse Event/Concommittant Medication.
+
 ```{r}
 # Medication begun 2020-11-11, but AE given as 2020-11
 library(admiral)
@@ -67,12 +74,12 @@ impute_dtc_dtm(   #  [1] "2020-11-11T11:11:11"
 )
 ```
 
+## 
 
-##
 In {admiral} we don't allow users to pick any single part of the date/time to impute, we only enable to impute up to a highest level, i.e. you couldn't choose to say impute months, but not days.
 
+Try to impute month for "2020----", won't do it
 
- Try to impute month for "2020----", won't do it
 ```{r}
 impute_dtc_dtm(   #  [1] "2020-11-11T11:11:11"
   "2020-11",
@@ -92,3 +99,40 @@ impute_dtc_dt(
   )
 ```
 
+PHUSE ( 1 page)
+do not understand, how many dates??
+Partial/Missing *Start* day - Impute the 1st of the month unless month is same as month of first dose of study drug then impute first dose date
+Given AE date of 2024-11-12
+Given Start date of 2024-11, impute
+
+```{r}
+dtc="2024-10"
+impute_dtc_dt(
+  dtc = dtc,
+  highest_imputation = "D"
+)
+
+```
+
+Example:  Vignette, dtc, 
+Q:  D or M - no difference
+Q:  Date imputation, "00-30" (no error??), 08-30" or "10-30" no difference
+```{r}
+impute_dtc_dtm(    # 2019-10-01T00:00:00
+  "2019-10",
+  highest_imputation = "M",
+  date_imputation = "00-30",
+  time_imputation = "00:00:00"
+)
+```
+
+Example:   Vignette, dtc
+```{r}
+impute_dtc_dtm(
+  "2019-02",
+  highest_imputation = "D",
+  date_imputation = "last",
+  time_imputation = "00:00:00"
+)
+
+```
