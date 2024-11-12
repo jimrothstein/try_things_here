@@ -1,19 +1,68 @@
 ---
-title: "Date Imputation"
+title: "Date Imputation (Jim's Notes)"
 format: html
 editor_options: 
   chunk_output_type: console
 ---
 
-### Background
+::: {style="color: red; border: solid black;"}
+Jim's Misc Notes, Thoughts, Misunderstandings on Date, DateTime Imputation
+:::
 
+### Background Reading
+
+#### For Code:
 -   Admiral vignette: imputation <https://pharmaverse.github.io/admiral/articles/imputation.html>
--   SEE: <https://advance.hub.phuse.global/wiki/spaces/WEL/pages/26807243/Imputing+Partial+Dates>
--   SEE: <https://stefvanbuuren.name/fimd/>
--   SEE: https://advance.hub.phuse.global/wiki/spaces/WEL/pages/26805267/Good+Programming+Practice+-+Standard+Program+Process+Supporting+Documentation
+-   Admiral testthat
+
+#### For understanding
+-   CDISC KnowledgeBase has useful articles (Ex: https://www.cdisc.org/kb)  (Ex:   domain vs dataset: <https://www.cdisc.org/kb/articles/domain-vs-dataset-whats-difference>)
+
+#### Confusing
+-   SEE: <https://advance.hub.phuse.global/wiki/spaces/WEL/pages/26807243/Imputing+Partial+Dates>  see comments below.
+
+
+-   OTHER: Flexible Imputation of Missing Data (book) <https://stefvanbuuren.name/fimd/>
+
+-   SEE: <https://advance.hub.phuse.global/wiki/spaces/WEL/pages/26805267/Good+Programming+Practice+-+Standard+Program+Process+Supporting+Documentation>
 
 "Program documentation can contain only a roadmap linking the different piece of code with input and output to each other. This is usually difficult to see when reading the program code and it does add value rather than just being descriptive. Program documentation must communicate what is central and subtle that cannot be reengineer from the source code and document rational for important design decisions.
 
+### My obstacles
+-   Naming convention for variables, prefix, suffix is what it is, but drives me up wall.
+-   Context.   Without clinical trials background, find it difficult to piece together all dates used in AE (Adverse Event)
+- 
+
+```{r setup}
+#| eval: true
+#| echo: false
+
+colorize <- function(x, color) {
+  if (knitr::is_latex_output()) {
+    sprintf("\\textcolor{%s}{%s}", color, x)
+  } else if (knitr::is_html_output()) {
+    sprintf("<span style='color: %s;'>%s</span>", color,
+      x)
+  } else x
+}
+
+## create custom hook `get_label`
+knitr::knit_hooks$set(get_label = local({
+  function(before, options) {
+    if (before) {
+      #paste(":::", "{style=color:blue}", "\n")
+      colorize("hi", "red")
+      paste("LABEL: ", colorize(options$label, "red"), "\n", "***", "\n")
+#      paste(":::", "\n")
+    }
+  }
+})
+)
+
+## Add hook to gobal options
+knitr::opts_chunk$set(get_label = TRUE)
+
+```
 ## Break dtc into pieces, capture groups
 
 ```{r}
@@ -31,7 +80,8 @@ partialdate
 
 ## Why Impute?
 
-```         
+```     
+Missing data.  Enforce standarization.
 ```
 
 ## How to Impute, ie RULES !
@@ -56,13 +106,15 @@ impute_dtc_dtm(   #  [1] "2020-11-11T11:11:11"
   "2020-11",
   min_dates = list(
    ymd_hms("2020-12-06T12:12:12"),
-   
    ymd_hms("2020-11-12T11:11:11"),
    ymd_hms("2020-11-11T11:11:11")
   ),
   highest_imputation = "M"
 )
+```
 
+
+```{r}
 # no diff D or M?
 impute_dtc_dtm(   #  [1] "2020-11-11T11:11:11"
   "2020-11",
@@ -94,19 +146,19 @@ impute_dtc_dtm(   #  [1] "2020-11-11T11:11:11"
 impute_dtc_dt(
   dtc = "2020",
  # date_imputation = NULL,
- date_imputation = "NULL",
+ #date_imputation = "NULL",
   highest_imputation = "D"
   )
 ```
 
 PHUSE ( 1 page)
-do not understand, how many dates??
+Need:   add context to dates, how many dates?
 Partial/Missing *Start* day - Impute the 1st of the month unless month is same as month of first dose of study drug then impute first dose date
 Given AE date of 2024-11-12
 Given Start date of 2024-11, impute
 
 ```{r}
-dtc="2024-10"
+dtc = "2024-10"
 impute_dtc_dt(
   dtc = dtc,
   highest_imputation = "D"
@@ -131,8 +183,19 @@ Example:   Vignette, dtc
 impute_dtc_dtm(
   "2019-02",
   highest_imputation = "D",
-  date_imputation = "last",
+  date_imputation = "first",
   time_imputation = "00:00:00"
 )
+```
 
+## Why not an error/bug?   Telling R to impute based on M  I expect 2019-01-25T23:59:59
+```{r}
+impute_dtc_dtm(
+  "2019-02",
+  highest_imputation = "M",
+  date_imputation = "last",
+  time_imputation = "last",
+  #max_dates = list(ymd("2019-01-14"), ymd("2019-02-25"))
+  max_dates = list(ymd("2019-01-25"))
+)
 ```

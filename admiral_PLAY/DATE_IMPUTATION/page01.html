@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Date Imputation</title>
+<title>Date Imputation (Jim’s Notes)</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -79,7 +79,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Date Imputation</h1>
+<h1 class="title">Date Imputation (Jim’s Notes)</h1>
 </div>
 
 
@@ -96,19 +96,46 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="background" class="level3">
-<h3 class="anchored" data-anchor-id="background">Background</h3>
+<div style="color: red; border: solid black;">
+<p>Jim’s Misc Notes, Thoughts, Misunderstandings on Date, DateTime Imputation</p>
+</div>
+<section id="background-reading" class="level3">
+<h3 class="anchored" data-anchor-id="background-reading">Background Reading</h3>
+<section id="for-code" class="level4">
+<h4 class="anchored" data-anchor-id="for-code">For Code:</h4>
 <ul>
 <li>Admiral vignette: imputation <a href="https://pharmaverse.github.io/admiral/articles/imputation.html" class="uri">https://pharmaverse.github.io/admiral/articles/imputation.html</a></li>
-<li>SEE: <a href="https://advance.hub.phuse.global/wiki/spaces/WEL/pages/26807243/Imputing+Partial+Dates" class="uri">https://advance.hub.phuse.global/wiki/spaces/WEL/pages/26807243/Imputing+Partial+Dates</a></li>
-<li>SEE: <a href="https://stefvanbuuren.name/fimd/" class="uri">https://stefvanbuuren.name/fimd/</a></li>
-<li>SEE: https://advance.hub.phuse.global/wiki/spaces/WEL/pages/26805267/Good+Programming+Practice+-+Standard+Program+Process+Supporting+Documentation</li>
+<li>Admiral testthat</li>
+</ul>
+</section>
+<section id="for-understanding" class="level4">
+<h4 class="anchored" data-anchor-id="for-understanding">For understanding</h4>
+<ul>
+<li>CDISC KnowledgeBase has useful articles (Ex: https://www.cdisc.org/kb) (Ex: domain vs dataset: <a href="https://www.cdisc.org/kb/articles/domain-vs-dataset-whats-difference" class="uri">https://www.cdisc.org/kb/articles/domain-vs-dataset-whats-difference</a>)</li>
+</ul>
+</section>
+<section id="confusing" class="level4">
+<h4 class="anchored" data-anchor-id="confusing">Confusing</h4>
+<ul>
+<li><p>SEE: <a href="https://advance.hub.phuse.global/wiki/spaces/WEL/pages/26807243/Imputing+Partial+Dates" class="uri">https://advance.hub.phuse.global/wiki/spaces/WEL/pages/26807243/Imputing+Partial+Dates</a> see comments below.</p></li>
+<li><p>OTHER: Flexible Imputation of Missing Data (book) <a href="https://stefvanbuuren.name/fimd/" class="uri">https://stefvanbuuren.name/fimd/</a></p></li>
+<li><p>SEE: <a href="https://advance.hub.phuse.global/wiki/spaces/WEL/pages/26805267/Good+Programming+Practice+-+Standard+Program+Process+Supporting+Documentation" class="uri">https://advance.hub.phuse.global/wiki/spaces/WEL/pages/26805267/Good+Programming+Practice+-+Standard+Program+Process+Supporting+Documentation</a></p></li>
 </ul>
 <p>“Program documentation can contain only a roadmap linking the different piece of code with input and output to each other. This is usually difficult to see when reading the program code and it does add value rather than just being descriptive. Program documentation must communicate what is central and subtle that cannot be reengineer from the source code and document rational for important design decisions.</p>
+</section>
+</section>
+<section id="my-obstacles" class="level3">
+<h3 class="anchored" data-anchor-id="my-obstacles">My obstacles</h3>
+<ul>
+<li>Naming convention for variables, prefix, suffix is what it is, but drives me up wall.</li>
+<li>Context. Without clinical trials background, find it difficult to piece together all dates used in AE (Adverse Event)</li>
+<li></li>
+</ul>
 </section>
 <section id="break-dtc-into-pieces-capture-groups" class="level2">
 <h2 class="anchored" data-anchor-id="break-dtc-into-pieces-capture-groups">Break dtc into pieces, capture groups</h2>
 <div class="cell">
+<p>LABEL: <span style="color: red;">unnamed-chunk-1</span> ***</p>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a> dtc <span class="ot">=</span> <span class="st">"2024-04-01"</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a> two <span class="ot">&lt;-</span> <span class="st">"(</span><span class="sc">\\</span><span class="st">d{2}|-?)"</span></span>
@@ -127,7 +154,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="why-impute" class="level2">
 <h2 class="anchored" data-anchor-id="why-impute">Why Impute?</h2>
-<pre><code></code></pre>
+<pre><code>Missing data.  Enforce standarization.</code></pre>
 </section>
 <section id="how-to-impute-ie-rules" class="level2">
 <h2 class="anchored" data-anchor-id="how-to-impute-ie-rules">How to Impute, ie RULES !</h2>
@@ -140,6 +167,7 @@ Is 2009-01-01 right choice?   Or would mid-year be better:   2009-06-30?   Or do
 Likewise, if starting a new drug on 2009-02-15 and an Adverse Event( AE) follows but is given as 2009-02 how you impute matters.</code></pre>
 <p>Explain the two min dates ## Example: Adverse Event/Concommittant Medication.</p>
 <div class="cell">
+<p>LABEL: <span style="color: red;">unnamed-chunk-2</span> ***</p>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Medication begun 2020-11-11, but AE given as 2020-11</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(admiral)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -156,15 +184,17 @@ Attaching package: 'lubridate'</code></pre>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"2020-11"</span>,</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">min_dates =</span> <span class="fu">list</span>(</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>   <span class="fu">ymd_hms</span>(<span class="st">"2020-12-06T12:12:12"</span>),</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>   </span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>   <span class="fu">ymd_hms</span>(<span class="st">"2020-11-12T11:11:11"</span>),</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>   <span class="fu">ymd_hms</span>(<span class="st">"2020-11-11T11:11:11"</span>)</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">highest_imputation =</span> <span class="st">"M"</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>   <span class="fu">ymd_hms</span>(<span class="st">"2020-11-12T11:11:11"</span>),</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>   <span class="fu">ymd_hms</span>(<span class="st">"2020-11-11T11:11:11"</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">highest_imputation =</span> <span class="st">"M"</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "2020-11-12T11:11:11"</code></pre>
 </div>
+</div>
+<div class="cell">
+<p>LABEL: <span style="color: red;">unnamed-chunk-3</span> ***</p>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># no diff D or M?</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">impute_dtc_dtm</span>(   <span class="co">#  [1] "2020-11-11T11:11:11"</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"2020-11"</span>,</span>
@@ -184,6 +214,7 @@ Attaching package: 'lubridate'</code></pre>
 <p>In {admiral} we don’t allow users to pick any single part of the date/time to impute, we only enable to impute up to a highest level, i.e.&nbsp;you couldn’t choose to say impute months, but not days.</p>
 <p>Try to impute month for “2020—-”, won’t do it</p>
 <div class="cell">
+<p>LABEL: <span style="color: red;">unnamed-chunk-4</span> ***</p>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">impute_dtc_dtm</span>(   <span class="co">#  [1] "2020-11-11T11:11:11"</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"2020-11"</span>,</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">min_dates =</span> <span class="fu">list</span>(</span>
@@ -199,16 +230,17 @@ Attaching package: 'lubridate'</code></pre>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">impute_dtc_dt</span>(</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">dtc =</span> <span class="st">"2020"</span>,</span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a> <span class="co"># date_imputation = NULL,</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a> <span class="at">date_imputation =</span> <span class="st">"NULL"</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a> <span class="co">#date_imputation = "NULL",</span></span>
 <span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">highest_imputation =</span> <span class="st">"D"</span></span>
 <span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] NA</code></pre>
 </div>
 </div>
-<p>PHUSE ( 1 page) do not understand, how many dates?? Partial/Missing <em>Start</em> day - Impute the 1st of the month unless month is same as month of first dose of study drug then impute first dose date Given AE date of 2024-11-12 Given Start date of 2024-11, impute</p>
+<p>PHUSE ( 1 page) Need: add context to dates, how many dates? Partial/Missing <em>Start</em> day - Impute the 1st of the month unless month is same as month of first dose of study drug then impute first dose date Given AE date of 2024-11-12 Given Start date of 2024-11, impute</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>dtc<span class="ot">=</span><span class="st">"2024-10"</span></span>
+<p>LABEL: <span style="color: red;">unnamed-chunk-5</span> ***</p>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>dtc <span class="ot">=</span> <span class="st">"2024-10"</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">impute_dtc_dt</span>(</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">dtc =</span> dtc,</span>
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">highest_imputation =</span> <span class="st">"D"</span></span>
@@ -217,16 +249,47 @@ Attaching package: 'lubridate'</code></pre>
 <pre><code>[1] "2024-10-01"</code></pre>
 </div>
 </div>
-<p>Example: Vignette, dtc,</p>
+<p>Example: Vignette, dtc, Q: D or M - no difference Q: Date imputation, “00-30” (no error??), 08-30” or “10-30” no difference</p>
 <div class="cell">
+<p>LABEL: <span style="color: red;">unnamed-chunk-6</span> ***</p>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">impute_dtc_dtm</span>(    <span class="co"># 2019-10-01T00:00:00</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"2019-10"</span>,</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">highest_imputation =</span> <span class="st">"M"</span>,</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">date_imputation =</span> <span class="st">"08-30"</span>,</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">date_imputation =</span> <span class="st">"00-30"</span>,</span>
 <span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">time_imputation =</span> <span class="st">"00:00:00"</span></span>
 <span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "2019-10-30T00:00:00"</code></pre>
+</div>
+</div>
+<p>Example: Vignette, dtc</p>
+<div class="cell">
+<p>LABEL: <span style="color: red;">unnamed-chunk-7</span> ***</p>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">impute_dtc_dtm</span>(</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"2019-02"</span>,</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">highest_imputation =</span> <span class="st">"D"</span>,</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">date_imputation =</span> <span class="st">"first"</span>,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">time_imputation =</span> <span class="st">"00:00:00"</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "2019-02-01T00:00:00"</code></pre>
+</div>
+</div>
+</section>
+<section id="why-not-an-errorbug-telling-r-to-impute-based-on-m-i-expect-2019-01-25t235959" class="level2">
+<h2 class="anchored" data-anchor-id="why-not-an-errorbug-telling-r-to-impute-based-on-m-i-expect-2019-01-25t235959">Why not an error/bug? Telling R to impute based on M I expect 2019-01-25T23:59:59</h2>
+<div class="cell">
+<p>LABEL: <span style="color: red;">unnamed-chunk-8</span> ***</p>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">impute_dtc_dtm</span>(</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"2019-02"</span>,</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">highest_imputation =</span> <span class="st">"M"</span>,</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">date_imputation =</span> <span class="st">"last"</span>,</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">time_imputation =</span> <span class="st">"last"</span>,</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">#max_dates = list(ymd("2019-01-14"), ymd("2019-02-25"))</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_dates =</span> <span class="fu">list</span>(<span class="fu">ymd</span>(<span class="st">"2019-01-25"</span>))</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "2019-02-28T23:59:59"</code></pre>
 </div>
 </div>
 </section>
