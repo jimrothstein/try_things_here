@@ -1,22 +1,21 @@
 ### Chapter 6.5
 
-<!-- 6.5 Lazy -->
-<!-- promises -->
+## <!-- 6.5 Lazy -->
+## <!-- promises -->
 
 
-### 6.5 Lazy Evaluation#  
+### 6.5 Lazy Evaluation#
 In R, objects bind to a `symbol`.
 Humans like names.   So we assign a name like `f`.
 
-Promises, **are not R code**,  so can not be maniuplated with R code.  
+Promises, **are not R code**,  so can not be maniuplated with R code.
 Chapter 20:  convert promises to `quosures` (ie objects)
-# 
-
+```{r}
 h01 <- function(x) {
   10
 }
 h01(stop("This is an error!")) #> [1] 10
-
+```
 # ---------------
 ## ASIDE:  Lazy
 # ---------------
@@ -24,6 +23,7 @@ h01(stop("This is an error!")) #> [1] 10
   *  REF: https://rfordatascience.slack.com/archives/C01SHS2Q9HV/p1635341136017800
   *  Ask:  why \code{.} ?
   *  Trigger for evaluation is ?
+```{r}
 {
 
     first  <- function() {
@@ -45,31 +45,31 @@ h01(stop("This is an error!")) #> [1] 10
 }
 
 # new version of R
-    first() |> second() |> third() 
+    first() |> second() |> third()
 
 # tidyverse magrittr
-    first() %>% second() %>% third() 
-
+    first() %>% second() %>% third()
+```
 # ---------------
-#6.5.1 Promises 
+#6.5.1 Promises
     # expression
     # environment
 # ---------------
- 
+
 
 3rd criteria for promise is a value that:
 is computed, just once, cached, and in its own env.
 
-
+```
 double  <- function(x) {
 	message("Calculating ...")
 	x*2
 }
 
 h03  <- function(x) {
-	c(x,x)                                # only looks up x ONCE 
+	c(x,x)                                # only looks up x ONCE
 }
-h03(double(20))                        # evaluated before h03 runs 
+h03(double(20))                        # evaluated before h03 runs
 
 # --------------
 # compare to :
@@ -91,9 +91,9 @@ h03B  <- function(x) {
 # why twice?
 h03B(20)
 
-# 
+#
 
-
+```
 # ----------------------------
 #### 6.5.2 Default arguments
 # ----------------------------
@@ -105,7 +105,7 @@ h05  <- function(x=ls()) {
 	#ls(envir=env_parent())
 }
 
-# compare 
+# compare
 h05() # inside function
 h05(ls()) # global
 h05(ls(envir=env_parent())) # 1 above global!
@@ -127,7 +127,7 @@ exists(x)
 missing(x)
 ```
 
-````
+```
 #   #### 6.5.3 missing
 Who supplied x value?  inside function or outside?
 ````
@@ -142,13 +142,13 @@ h06 <- function(x = 10) {
 str(h06(y)) # ERROR
 
 str(h06()) # TRUE
-str(h06(1)) # FALSE	
+str(h06(1)) # FALSE
 
 y  <- 100
-str(h06(y)) # FALSE	 
+str(h06(y)) # FALSE
 
 rm(y)
-str(h06(y  <- 3))  #FALSE	
+str(h06(y  <- 3))  #FALSE
 
 
 # BUT
@@ -164,7 +164,7 @@ args(sample)
 
 5 %||% NULL
 NULL %||% 5
-#  
+#
 
 ```
 <!-- BEGIN HERE -->
@@ -176,7 +176,7 @@ Surprise!  In  g, R calcs x lazy... x looks for values in enclosed env(Global)
 
 ```{r}
 f  <- function(x) x
-g  <- function(x) {a <- 20; b <- 30; x 
+g  <- function(x) {a <- 20; b <- 30; x
 }
 a  <- 3
 b  <- 5
@@ -198,14 +198,14 @@ g  <- function(x) {
   cat(	env_names(env_parent()), "\n")
 	rlang::env_bind(env_parent(), a=200)
 	print(pryr::promise_info(x))
-	a <- 20; b <- 30; x 
+	a <- 20; b <- 30; x
 }
 a  <- 3
 b   <- 5
 g(a+b) #205
 ```
 ```{r 1002 }
-SAME as above, but check env; use <<-  
+SAME as above, but check env; use <<-
 ```
 ```{r}
 g  <- function(x) {
@@ -213,7 +213,7 @@ g  <- function(x) {
   cat(	env_names(env_parent()), "\n")
 	#env_bind(env_parent(), a=200)
 	a <<- 200
-	a <- 20; b <- 30; x 
+	a <- 20; b <- 30; x
 }
 g(a+b) #205
 ```
@@ -228,7 +228,7 @@ g  <- function(x) {
   cat(	env_names(env_parent()), "\n")
 	set_env(current_env())
 	cat(env_names(current_env()), "\n")
-	a <- 20; b <- 30; x 
+	a <- 20; b <- 30; x
 }
 x  <- NULL
 a  <- 3
@@ -270,7 +270,7 @@ f1  <- function(x= {y  <- 1; 2}, y=0) {
 }
 
 # no promise here.
-f1() # 
+f1() #
 y  # 10
 
 # a promise?
@@ -299,9 +299,9 @@ h <- function(x) {
 	print(e$evaled)
 }
 h(2 + 1)
-# 
+#
 ```
-####simplest promise?  
+####simplest promise?
 ```{r simplest}
 y  <- 10
 h000  <- function(x){
@@ -311,8 +311,8 @@ h000  <- function(x){
 }
 h000() # note:  `x is <missing>`, user did not provide
 ```
-### order printed 
-```{r two} 
+### order printed
+```{r two}
 # Why does rlang::env_print() appear first?
 y <- 10
 h02 <- function(x) {
@@ -325,8 +325,49 @@ h02 <- function(x) {
 h02(y)
 h02(y+1)
 
-# 
+#
 
 ```
 
-````	
+```
+## missing()
+## SEE https://stackoverflow.com/questions/9877271/how-to-check-existence-of-an-input-argument-for-r-functions
+
+```{r}
+# example from admirial
+
+## 3 mhtods
+### dep_x, dep_y, dep_z are DEPRECATED;  users should use x, y or z
+### need to throw error
+f = function(x,y,z, dep_x, dep_y, dep_z) {
+  if  (!missing(dep_x) || !missing(dep_y)) stop("DEPRECATED ")
+}
+f(dep_x) # no error?
+f(dep_x = ) #no error?
+f(dep_x = NULL)
+f(dep_x=5)
+f(dep_x=expr(5))
+
+g = function(x,y,z, dep_x, dep_y, dep_z, ...) {
+  myargs = match.call()
+  names(myargs)
+}
+
+g(dep_x) # no error?
+g(dep_x = ) #no error?
+g(dep_x = NULL)
+g(dep_x=5)
+g(x=1, dep_x=5)
+g(dep_x=expr(5))
+
+h = function(x,y,z, dep_x, dep_y, dep_z, ...) {
+  hasArg(dep_x)
+}
+
+h(x=2, y=3)
+h(x)
+h(dep_x)
+h(dep_x=)
+h(dep_x=5)
+
+```
