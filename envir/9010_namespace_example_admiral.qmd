@@ -1,14 +1,16 @@
 ---
-title: 9009_namespace
+title: 9010_namespace_example_admiral
 format:
   html:
     embed-resources: true
     toc: true
 execute:
   enabled: false   # do not execute chunks
+editor_options: 
+  chunk_output_type: console
 ---
 
-Namespaces Collect examples here
+Admiral Namespaces Collect examples here
 
 ::: very_small
 very small?
@@ -18,148 +20,76 @@ very small?
 small?
 :::
 
-### Todo:
-- Import (load only)
-- Depends (loads & attaches, so use sparsely; like library)
-- detach(pkg) - 1st step when unloadNS is called.
-- Dreaming?
-ls(R_BaseEnv)
-R_BaseNamespace
-namespace:R_BaseNamespace
-  
-namespace:base
-package:base
-- 
-# NAMESPACES - See Ch 7.4.3
-
-## REF
-
--   how R finds - https://blog.thatbuthow.com/how-r-searches-and-finds-stuff/
--   SEE R packages book
 -   **Note** that lazy-loaded datasets are not in the package’s namespace so need to be accessed via ::, e.g. survival::survexp.us.
--   R-internals
--   **Note** never use @export ds; put in data/
 
 
 
 
+## List all datasets in `pharmaversesdtm`
 ```{r}
-
-f = function(ds){ deparse(substitute(ds))
-  }
+data(package = "pharmaversesdtm")
 
 ```
 
-## HELP
 
+# NOTE:   "pharmaversesdtm"  is attached, not loaded. 
 ```{r}
-apropos("environment")
-apropos("namespace")
-apropos("getNamespace")
-apropos("namespace")
+search()
+(.packages())   # currently attached
+"pharmaversesdtm" %in% loadedNamespaces()   # FALSE
 ```
 
-## Packages (Mostly)
-
-### list all installed packages
-
+### Check the version (in memory)
 ```{r}
-installed.packages()
-installed.packages() |> class()
-ls()
+getNamespaceVersion("admiral")  # v 1.1.1
 ```
 
-### list attached packages vs search()
 
+## Reverse question:   given a dataset, find the package ?    (Without loading, attaching?)
+
+getAnywhere() fails because pkg is not yet loaded.
 ```{r}
-(.packages()) #22
-search()  #24
 
-# To compare, add prefix `package:` 
-z=paste0("package:", .packages())
-
-z %in% search()
-search()[!z %in% search()]
-
-search()[!z %in% search()]
-base::setdiff(z, search())
-```
-
-### is pkg loaded?
-
-```{r}
-"stats" %in% loadedNamespaces()  # TRUE
-"admiral" %in% loadedNamespaces()   # T
-"admiraldev" %in% loadedNamespaces()  # T
-"broom" %in% loadedNamespaces()  # F
+getAnywhere(ae)   # no object
 
 ```
 
-### package versions?
-
+### I can't spell pharmaversdtm
 ```{r}
-sessionInfo()   # uses package version from disk, not memory
-getNamespaceVersion("admiral")  # better
+ns = as.symbol("pharmaversesdtm")
+
+# easier to type
+isNamespaceLoaded(ns)     # FALSE
+isNamespaceLoaded("pharmaversesdtm")   # FALSE
 ```
 
-## getAnywhere (examine all loaded NS)
 
-```{r}
-?getAnywhere
-argsAnywhere(derive_params)
-getAnywhere(filter)
-getAnywhere(ae)
 
-# fct in pkg admiral
-getAnywhere("count_vals")
-getAnywhere(count_vals)
-
-argsAnywhere(derive_params)
-getAnywhere(filter)
-getAnywhere(ae)
-
-# fct in pkg admiral
-getAnywhere("count_vals")
-getAnywhere(count_vals)
-
-# dataset in pkg (must be loaded)
-library(pharmaversesdtm)
-getAnywhere("ae")   # finds in package:pharamaversesdtm
-
-# load = error
-if (F) load("mtcars")  # errro
-
-# but will not find if unloaded
-unloadNamespace("pharmaversesdtm")
-```
-
-## Namespace (mostly)
-
+###  Is `ae` exported?  Is `ae` inside the NS?   in associated environment?
 ### get pkg namespace
 
 -   asNamespace , returns \<environtment: namespace:stats\>
 -   as.environment, must include package: , returns \<environment: package:stats\> + attrs
 
 ```{r}
-asNamespace("stats")  # do not prefix with "package:"
+asNamespace(ns)
 
+as.environment(ns)
 as.environment("package:stats")
 ```
 
 ### getNamespace, returns environment
 
 ```{r}
-?help.start
 library(pkgload)
-getNamespace("admiral")   # Loads NS for admiral
-isNamespaceLoaded("admiral")
-unloadNamespace("admiral")
+ls(getNamespace("pharmaversesdtm"))   # no ae in ns
 
-# fake notation, do not use
-if (F) {
-namespace:base
-package:base
-}
+# exported?  # error, not on search list
+ls(package:pharmaversesdtm)
+
+# imported?
+getNamespaceImports("pharmaversesdtm")   # not here
+
 
 ```
 
