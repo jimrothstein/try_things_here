@@ -1,0 +1,200 @@
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 3
+        toc_float: true
+        mathjax:  default
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  3   
+    extra_dependencies: ["amssymb", "bbm", "threeparttable", "forest"]
+fontsize: 10pt   
+geometry: margin=0.4in,top=0.25in   
+TAGS:  conditions,errors,simpleCondition, simpleError,handler
+---
+
+
+\begin{forest}
+  for tree={
+    fit=band,% spaces the tree out a little to avoid collisions
+  }
+  [condition, text=red  % a comment
+    [simpleCondition, tier=condition ]
+    [error, tier=abstract 
+      [simpleError, tier=error
+         [divisonError, tier=custom]
+      ]
+    ]
+    [warning, tier=abstract 
+      [simpleWarning, tier=warning]
+        [divisonError, tier=custom]
+      ]
+  ]
+\end{forest}
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = FALSE   ) # easier to read
+library(jimTools)
+library(rlang)
+```
+
+
+  *  This file for my notes: basic try-catch/conditions.
+  *  Second file is for custom conditions and uses S3 tools. 
+
+
+## Topics to include:
+  * basic try/catch/finally
+  * gotchas 
+  * traceback 
+  * throwing with stop, warning and signalCondition
+  * catching:  with handlers
+  * adding class=
+  * decomposing thrown conditions
+
+### Notes on R `condition system`
+  *  overall mechanism to handle conditions (aka: exceptions, errors, warnings)
+  *  **code** signals (or throws) a condition.
+  *  `condition system` matches condition and invokes the best handler function.
+
+
+**Condition** 
+
+  *  S3 object, constructor is simpleCondition()
+    minimal contains 2 char[1] (strings): "message" and "call"
+  *  message is for user, call refers to function where condition occurred.  
+  *  Hadley prefers to not include call.
+  *  Hierarchy:  condition; subclasses:  simpleCondition, exception, warning
+    ... Each can subclassed, such as simpleException.
+  *  Built-in simple*() constructors
+
+  *  More details in code.
+
+**Handler**   (aka error handling)
+
+  *  a regular R function, with at least one arg for condition object.
+  *  Two flavors:
+      *  Exiting handler (mostly for errors) does not allow code to continue.
+      *  Calling handler (mostly for non-errors) handles (aka modify or
+        swallow) the condition and allows code to continue, just a regular
+        function returns control.
+
+
+### start basic
+```{r basic}
+
+## blunt
+  sqrt("abc")
+
+## better
+  tryCatch( sqrt("abc"),
+    error = function(e) e
+  )
+
+```
+ 
+
+
+### simpleCondition:  built-in subclass of condition object
+  *  not much in book.
+```{r simpleCondition}
+formals(simpleCondition)
+args(simpleCondition)
+
+# create one
+s  <- base::simpleCondition("jim")
+
+# examine s
+s
+str(s, max.depth=1)
+class(s)
+inherits(s, "condition")  # T
+typeof(s)  # boring list
+conditionMessage(s) # jim
+conditionCall(s)   # call where occured?
+
+# simpleError 
+e  <- simpleError("jim1")
+e
+str(e, max.depth=1)
+
+# see how it work, first base:
+tryCatch( {stop("jim1")
+          print("never gets here")
+    },
+
+         error = function(e) e )
+
+#  This creates an error, but does not signal (or throw it) 
+tryCatch( {simpleError("jim1")
+          print("never gets here")
+    },
+
+         error = function(e) e )
+
+#  Ahh, bbut this thows error, then catches, and never return to print line.
+tryCatch( {signalCondition(errorCondition("jim1", call="I made this up"))
+          print("never gets here")
+    },
+
+         error = function(e) e )
+
+# Examine the object returned.
+r  <- tryCatch( {signalCondition(errorCondition("jim1", call="I made this up"))
+          print("never gets here")
+    },
+
+         error = function(e) e )
+
+# we have the condition, it is r
+str(r)
+inherits(r, "condition")  # T
+conditionCall(r)
+```
+
+### So far, focused on simpleCondition and none of other classes.   Before
+proceeding, now examine handlers
+```{r handlers}
+```
+
+
+```{r knit_exit(), include = FALSE  , eval=FALSE } 
+# knitr::knit_exit()
+```
+
+
+
+
+```{r render, eval=FALSE, include=FALSE 	} 
+
+{
+file  <- "008_basic_conditions.Rmd" 
+file  <- basename(file)
+file  <- here("ADVANCED_R", "R", file)   # in this repo using `R`, not `rmd`
+file
+}
+
+output_dir  <- Sys.getenv("OUTPUT_DIR")
+output_dir
+
+
+rmarkdown::render(file,
+                  output_format = "pdf_document",
+                  output_dir = output_dir)
+
+    #output_format = "pdf_document",
+    #output_format = "html_document",
+    #output_format=c("html_document", "md_document"),
+    output_dir = "out",
+    output_file = "out")
+
+```

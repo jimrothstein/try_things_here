@@ -1,0 +1,90 @@
+---
+output: 
+  html_document:  
+    keep_md: yes
+    number_sections: yes
+    toc: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+## 051_jennybc_what_they_forgot.R
+## https://whattheyforgot.org/index.html
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE, error = TRUE)
+```
+
+
+#### 01_ show .libPaths()
+```{r}
+library(devtools)
+## current active paths
+## paths[1] is location of default library (or what I set it to)
+## paths[2:4] refer to site libraries
+paths <- .libPaths()
+```
+
+
+#### 02_use_course()
+```{r}
+library(usethis)
+use_course("rstd.io/forgot_1", destdir = ".")
+32
+3
+```
+
+#### 03 debug
+```{r}
+## 	Chapter 11 - Debug
+options(error = browser)
+var <- 5 / x
+browser()
+
+f <- function(x) {
+  x + 1
+}
+g <- function(x) {
+  f(x)
+}
+g("a")
+```
+
+#### 04_test_that()
+```{r}
+library(devtools)
+library(testthat)
+
+# "quiet" is good - no error
+x <- test_that("Math works", {
+  expect_equal(1 + 1, 2)
+  expect_equal(1 + 2, 3)
+  expect_equal(1 + 3, 4)
+})
+x
+
+# throws error
+y <- test_that("Math works", {
+  expect_equal(1 + 1, 2)
+  expect_equal(1 + 2, 3)
+  expect_equal(1 + 3, 5)
+})
+print(y)
+```
+
+#### 05_work-flow:  if change function, re-run automated tests
+```{r}
+f <- function(x = 2) x^2
+
+y <- 4
+test_that(
+  "test function f",
+  {
+    expect_equal(f(-1), 1)
+    expect_equal(f(0), 0)
+    expect_equal(f(y), 16)
+    # 		expect_equal(f("a"), 0)
+    expect_equal(f(not_defined), 0)
+  }
+)
+```

@@ -1,0 +1,135 @@
+---
+title: "070_dplyr_simple_summaries_examples"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+```{r}
+```
+
+1-quick look, same, 32 x 11
+```{r}
+mtcars %>% str()
+mtcars %>% dplyr::glimpse()
+mtcars %>% dplyr::count() # 32
+mtcars %>% dplyr::tally() # 32
+mtcars
+```
+
+2-examine "mpg"
+```{r}
+mtcars %>%
+  arrange(desc(mpg)) %>%
+  head(12)
+
+# gives same
+mtcars %>%
+  group_by(cyl) %>%
+  arrange(desc(mpg)) %>%
+  head(12)
+mtcars %>% group_vars() # character(0)
+
+# count for each group
+mtcars %>%
+  group_by(cyl) %>%
+  dplyr::summarize(count = n())
+
+# 3 distinct cyl
+mtcars %>% summarize(distinct = n_distinct(cyl)) # 3 distinct cyl
+
+# quantile 50% (median); same
+mtcars %>% summarize(q50 = median(mpg))
+stats::quantile(mtcars$mpg, 0.50)
+
+# quantile n% ; same
+mtcars %>% summarize(q10 = quantile(mpg, 0.10))
+stats::quantile(mtcars$mpg, 0.10)
+
+mtcars %>% summarize(
+  q10 = quantile(mpg, 0.10),
+  first = min(mpg),
+  last = max(mpg)
+)
+
+
+# TODO	;error
+mtcars %>%
+  group_by(cyl, vs) %>%
+  summarize(distinct = distinct())
+
+
+# same - shortcut (no need group_by)
+mtcars %>% count(cyl)
+
+# each gear, number of carb
+mtcars %>%
+  group_by(gear) %>%
+  count(carb)
+
+# add_tally, mutates
+mtcars %>%
+  group_by(cyl) %>%
+  add_tally() # 32 x 12
+
+# TODO
+mtcars %>% summarize()
+mtcars %>% summarize(avg = mean(mpg))
+```
+
+3- (TODO) mpg,  90th percentile?
+
+```{r}
+mtcars %>% stats::quantile(c(50, 100) / 100)
+
+# seem to work
+mtcars %>% dplyr::filter(cume_dist(mpg) > .90)
+mtcars %>% dplyr::filter(cume_dist(mpg) < .90)
+mtcars %>% dplyr::filter(cume_dist(mpg) < .10)
+```
+
+4- EXAMPLES: dplyr::case_when v base::switch
+```{r}
+x <- -4
+dplyr::case_when(
+  x < 0 ~ "negative",
+  x == 0 ~ "zero",
+  x > 0 ~ "positive"
+)
+
+s <- "10,000 .. 20,000"
+dplyr::case_when(
+  s == "10,000 .. 20,000" ~ "10000",
+  s == 0 ~ "zero",
+  s > 0 ~ "positive",
+  TRUE ~ NA
+)
+
+x <- 2
+base::switch(x,
+  "first",
+  "second"
+)
+
+y <- "10,000 .. 20,000"
+y <- "0 .. 10,000"
+switch(y,
+  "0 .. 10,000" = 3,
+  "10,000 .. 20,000" = 4
+)
+
+arg <- 2
+f <- function(arg, name_arg) {
+  switch(name_arg, # name_arg can be one of many
+    value = arg,
+    value1 = arg * 2,
+    value2 = arg * 3
+  )
+}
+f(arg, "value2")
+```

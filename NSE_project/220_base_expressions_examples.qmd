@@ -1,0 +1,80 @@
+---
+title: "Untitled"
+format: html
+editor: source
+editor_options: 
+  chunk_output_type: console
+TAGS: expression
+---
+
+##    Expression quotes, does not evaluate 
+```{r}
+(e <- expression(x + y)) ## expression(x+y)
+
+(e <- expression(2 + 2)) ## expression(2+2)
+
+x <- a
+(e <- expression(x + y)) ## expression(x+y)
+as.expression(e) ## expression(x+y)
+
+
+is.expression(e) ## TRUE
+as.expression(e) ## expression(2+2)
+
+
+expression(a + b) ## expression(a+b)
+expression("a+b") ## expression("a+b")
+expression("a" + b) ## expression("a" +b )
+```
+
+##    Not a function(closure)
+```{r}
+f <- function(x) x^2
+is.expression(f) ## FALSE
+(e <- as.expression(f)) ## Error  (closure -> expression, no-no, why?)
+
+## but works
+expression(f)
+```
+
+##    as list?
+```{r}
+x <- a
+(e <- expression(x + y)) ## expression(x+y)
+
+is.list(e) ## FALSE
+is.expression(e)
+
+is.list(e) ## FALSE
+(as.list(e))
+# [[1]]
+# x + y
+```
+
+
+##    Compare expression()  to as.expression()
+```{r}
+rm(x)
+as.expression(2 + 2)
+expression(2 + 2)
+
+as.expression(2 + x)
+expression(2 + x)
+
+(as.expression(sin(x))) ## error 'x' not found
+(as.expression(sin(x = pi / 2))) ## looks evaluated to me
+y <- pi / 2
+as.expression(sin(y)) ## expression(1)
+
+expression(sin(x))
+expression(sin(x = pi / 2))
+y <- pi / 2
+expression(sin(y))
+
+?as.expression
+```
+
+
+
+
+

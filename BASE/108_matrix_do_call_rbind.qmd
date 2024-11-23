@@ -1,0 +1,138 @@
+## /home/jim/code/try_things_here/BASE/108_matrix_do_call_rbind.qmd
+
+## PURPOSE:   convert list to df or matrix; how rbind, do.call work
+
+REF:    https://stackoverflow.com/questions/37459677/what-is-equivalent-to-do-callrbind-list
+*REF:  https://stackoverflow.com/questions/35074200/why-do-rbind-and-do-callrbind-return-different-results
+*       (Sanderson) https://www.r-bloggers.com/2023/05/the-do-call-function-in-r-unlocking-efficiency-and-flexibility/
+
+TAGS: do.call, matrix,rbind 
+
+##      Use rbind(vector) to form single row
+##      Use do.call(rbind, vector) to apply rbind to EACH element in vector
+### matrix fill by column (default)
+```{r}
+n = c(2, 3, 5,4) 
+n1 = c(2, 7, 4,6) 
+n2 = c(NA, NA, NA,NA) 
+(x = list(n, n1, n2))
+```
+
+### Explain do.call(rbind, x) vs rbind(x)
+```{r}
+# with do.call, "rbind" operates on EACH elment of list
+# with rbind(list) "rbind" sees entire list as single entity
+
+## Right
+(dat <- do.call("rbind", x))             # matrix  of rows
+#      [,1] [,2] [,3] [,4]
+# [1,]    2    3    5    4
+# [2,]    2    7    4    6
+# [3,]   NA   NA   NA   NA
+
+
+## "Wrong"
+# 1 row, 3 elemnts, each has 4 entries !
+# Works like this: rbind(x[1], x[2], x[3])  ; matix with  x[1] is a row (as single unit)
+(dat2  <- rbind(x))                      # matrix:  1x 3, each el is collapsed row
+
+#   [,1]      [,2]      [,3]     
+# x numeric,4 numeric,4 logical,4
+
+dat2[1,1]
+dat2[1,2]
+dat2[1,3]
+```
+
+
+Examples of !so
+```{r}
+letters
+sample(letters, 20)
+list(sample(letters, 20))
+l <- replicate(10,list(sample(letters, 20)))  # list of 10,each char[20] letters
+l
+L = l
+
+do.call(rbind, l)  # 10 x 20 matrix
+
+#   EXPLAIN
+x= do.call(rbind.data.frame, l)  # MESS
+# but
+names(x)  <- NULL
+x                                      # 10 x 20 df 
+
+(a  <- lapply(l[1:10],data.frame))   # list of 10 df, each df 20 x 1
+do.call("rbind", a)    200 x 1 df
+```
+do.call(rbind.data.frame, L) L is list
+
+```{r}
+## create lists
+L  <- list(letters[1:5])
+L  <- list(sample(letters, 20))
+L
+
+## compare, df
+(df = do.call(rbind.data.frame, L))
+
+## matrix
+do.call(rbind, L)
+```
+
+### From slack, WANT:  1 df, x & y columns
+```{r}
+tl <- list(list_1 = list(list_1_1 = data.frame(x = c(1, 2, 3), y = c('A', 'A', 'B')),
+                         list_1_2 = data.frame(x = c(1, 2, 3), y = c('A', 'A', 'B'))),
+           list_2 = list(list_2_1 = data.frame(x = c(10, 45, 47), y = c('B', 'B', 'C')),
+                         list_2_2 = data.frame(x = c(7, 99, 78), y = c('B', 'B', 'C'))),
+           list_3 = list(list_1_1 = data.frame(x = c(1, 2, 3), y = c('A', 'A', 'B')),
+                         list_1_2 = data.frame(x = c(1, 2, 3), y = c('A', 'A', 'B'))))
+
+
+x = do.call(rbind, tl)
+do.call(rbind.data.frame, x)
+identical(do.call(rbind, x ), do.call(rbind.data.frame, x)) #T 
+
+## And this is not the right way
+rbind(tl)   # rbind operates on lis1, list2, ... separately, ie 3 
+
+```
+
+
+### list of char
+```{r}
+ch  <- letters[1:4]
+replicate(4, list(ch))                 # list of 4 char vectors 
+
+do.call(rbind, replicate(4, list(ch)))    # matrix 4x 4
+```
+
+### list of matrix
+```{r}
+m  <- matrix(1:9, nrow=3)
+
+replicate(4, m ) # array
+replicate(4, list(m))  # list of 4
+replicate(4, m, simplify="list")
+replicate(4, m, simplify="matrix")
+```
+
+### list of df
+```{r}
+df  <- data.frame(x=1:5,
+                  y=LETTERS[1:5])
+
+replicate(4, list(df))  # list of 4 df
+```
+
+### rbind list of TWO into one matrix
+```{r}
+L1  <- letters[1:5]
+L2  <- LETTERS[1:5]
+L  <- list(L1, L2)
+do.call(rbind,L)
+
+
+```
+

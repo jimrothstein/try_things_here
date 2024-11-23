@@ -1,0 +1,131 @@
+---
+title:  "00097_basic_trace_debug.Rmd"
+output: 
+  pdf_document:
+    toc: TRUE 
+    toc_depth: 1
+    latex_engine: xelatex
+fontsize: 10pt
+geometry: margin=0.5in,top=0.25in
+TAGS:  trace, debug, trace
+---
+#### basic trace, debug
+
+#### Debug:   c vs f
+  *  https://stackoverflow.com/questions/36914393/what-is-the-difference-between-finish-and-continue-in-browser/37126663#37126663
+  *  c exits browser and continues
+  *  f maintains browser and continues, tracking `context stack`
+
+
+#### `c` vs `f` in debug()
+```{r c_f}
+test <- function() {
+  browser()
+  browser()
+}
+
+test()
+
+# Called from: test()
+# Browse[1]> c
+# Called from: test()
+# Browse[1]> c
+#
+# > test()
+# Called from: test()
+# Browse[1]> f
+# Browse[2]> f
+```
+
+
+#### loops:  Why `c` does not appear to work?
+  *   https://stackoverflow.com/questions/13663043/exit-current-browser-return-one-level  
+```{r }
+FUN <- function() {
+  browser() # first one
+
+
+  # each loop is single level, press `c` to exit browser and next loop puts you
+  # right back in.
+  lapply(1:10, function(x) {
+    browser() # second one
+    print(x)
+  })
+}
+
+FUN()
+```
+
+####  ---------------------------
+#### trace
+  *  REF:  R Blogger 4/2013
+#### ---------------------------
+```
+trace(what = yourFunction,       tracer = some R expression,        at = code line)
+```
+
+#### create
+```{r trace1}
+create_f <- function() {
+  a <- 1
+  b <- 2
+  a + b
+}
+
+create_f()
+```
+
+#### facts
+  *  observer .doTrace added
+```{r facts}
+trace(
+  what = create_f,
+  tracer = recover
+)
+
+body(create_f)
+# {
+#     .doTrace(recover(), "on entry")
+#     {
+#         a <- 1
+#         b <- 2
+#         a + b
+#     }
+# }
+
+
+##  see line numbers
+as.list(body(create_f))
+# [[1]]
+# `{`
+#
+# [[2]]
+# .doTrace(recover(), "on entry")
+#
+# [[3]]
+# {
+#     a <- 1
+#     b <- 2
+#     a + b
+# }
+#
+```
+#### 
+```{r recover}
+create_f()
+
+untrace(create_f)
+```
+
+
+```{r browser}
+trace(
+  what = create_f,
+  tracer = browser
+)
+create_f()
+```
+
+
+
+

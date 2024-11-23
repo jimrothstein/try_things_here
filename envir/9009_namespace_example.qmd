@@ -1,0 +1,466 @@
+---
+title: 9009_namespace
+format:
+  html:
+    embed-resources: true
+    toc: true
+execute:
+  enabled: false   # do not execute chunks
+---
+
+Namespaces Collect examples here
+
+::: very_small
+very small?
+:::
+
+::: small
+small?
+:::
+
+### Todo:
+- Import (load only)
+- Depends (loads & attaches, so use sparsely; like library)
+- detach(pkg) - 1st step when unloadNS is called.
+- Dreaming?
+ls(R_BaseEnv)
+R_BaseNamespace
+namespace:R_BaseNamespace
+  
+namespace:base
+package:base
+- 
+# NAMESPACES - See Ch 7.4.3
+
+## REF
+
+-   how R finds - https://blog.thatbuthow.com/how-r-searches-and-finds-stuff/
+-   SEE R packages book
+-   **Note** that lazy-loaded datasets are not in the package’s namespace so need to be accessed via ::, e.g. survival::survexp.us.
+-   R-internals
+-   **Note** never use @export ds; put in data/
+
+
+
+
+```{r}
+
+f = function(ds){ deparse(substitute(ds))
+  }
+
+```
+
+## HELP
+
+```{r}
+apropos("environment")
+apropos("namespace")
+apropos("getNamespace")
+apropos("namespace")
+```
+
+## Packages (Mostly)
+
+### list all installed packages
+
+```{r}
+installed.packages()
+installed.packages() |> class()
+ls()
+```
+
+### list attached packages vs search()
+
+```{r}
+(.packages()) #22
+search()  #24
+
+# To compare, add prefix `package:` 
+z=paste0("package:", .packages())
+
+z %in% search()
+search()[!z %in% search()]
+
+search()[!z %in% search()]
+base::setdiff(z, search())
+```
+
+### is pkg loaded?
+
+```{r}
+"stats" %in% loadedNamespaces()  # TRUE
+"admiral" %in% loadedNamespaces()   # T
+"admiraldev" %in% loadedNamespaces()  # T
+"broom" %in% loadedNamespaces()  # F
+
+```
+
+### package versions?
+
+```{r}
+sessionInfo()   # uses package version from disk, not memory
+getNamespaceVersion("admiral")  # better
+```
+
+## getAnywhere (examine all loaded NS)
+
+```{r}
+?getAnywhere
+argsAnywhere(derive_params)
+getAnywhere(filter)
+getAnywhere(ae)
+
+# fct in pkg admiral
+getAnywhere("count_vals")
+getAnywhere(count_vals)
+
+argsAnywhere(derive_params)
+getAnywhere(filter)
+getAnywhere(ae)
+
+# fct in pkg admiral
+getAnywhere("count_vals")
+getAnywhere(count_vals)
+
+# dataset in pkg (must be loaded)
+library(pharmaversesdtm)
+getAnywhere("ae")   # finds in package:pharamaversesdtm
+
+# load = error
+if (F) load("mtcars")  # errro
+
+# but will not find if unloaded
+unloadNamespace("pharmaversesdtm")
+```
+
+## Namespace (mostly)
+
+### get pkg namespace
+
+-   asNamespace , returns \<environtment: namespace:stats\>
+-   as.environment, must include package: , returns \<environment: package:stats\> + attrs
+
+```{r}
+asNamespace("stats")  # do not prefix with "package:"
+
+as.environment("package:stats")
+```
+
+### getNamespace, returns environment
+
+```{r}
+?help.start
+library(pkgload)
+getNamespace("admiral")   # Loads NS for admiral
+isNamespaceLoaded("admiral")
+unloadNamespace("admiral")
+
+# fake notation, do not use
+if (F) {
+namespace:base
+package:base
+}
+
+```
+
+### objects in NameSpace
+
+When lazyLoad on, datasets DO NOT appear in NS
+
+```{r}
+ls(getNamespace("dplyr"))  # works, getNameSPace returns environment
+
+## Need better way ...
+ls(getNamespace("admiral")) == "count_vals"  # T
+getAnywhere("count_vals")
+
+```
+
+### is object in ns?
+
+```{r}
+z=ls(getNamespace("admiral"))
+
+c("slice_derivation") %in% z   # TRUE
+```
+
+## unload NS
+
+unloadNamespace- forces; first it detach(NS)
+
+```{r}
+
+?pkgload::unload   # NS, pkg
+
+?unloadNamespace
+unloadNamespace("stats")   # error, b/c needed by others
+
+
+loadNamespace("admiral")
+unloadNamespace("admiral")
+"admiral" %in% loadedNamespaces()  # check
+
+?pkgload::unload
+
+```
+
+## Datasets (mostly)
+
+### Find datasets data(), class packageIRQ
+
+```{r}
+# returns obj of class packageIRQ
+data() |> class()
+
+# data in one package
+data(package = "tidyr")
+
+# data in one package (not loaded)
+isNamespaceLoaded("broom")  # F
+data(package = "broom")
+isNamespaceLoaded("broom") # F
+```
+
+### Find all 'loaded' ds? means ...?
+
+so far, only getAnywhere("ae") finds ds 'ae' in pkg (pharamaversesdtm)
+
+```{r}
+?getAnywhere
+getAnywhere("mtcars")$where   # where won't print the ds
+getAnywhere("ae")$where
+getAnywhere("ae")$visible
+
+```
+
+### compare: data("ae") vs pharamaversdtm::ae
+
+if pkg loaded and attached, easy to find "ae"
+
+```{r}
+search()
+library("pharmaversesdtm")  # makes it easy
+isNamespaceLoaded("pharmaversesdtm")
+unloadNamespace("pharmaversesdtm")
+
+ae
+
+# is in environment
+"ae" %in% ls(as.environment("package:pharmaversesdtm")) #T
+
+"ae" %in% ls(as.environment("package:pharmaversesdtm"))  #T
+
+## but if you unload
+unloadNamespace("pharmaversesdtm")
+search()
+pharmaversesdtm::ae   # loads, not attach pkg;  still works
+z = pharmaversesdtm::ae
+z
+
+ae   # error
+"ae" %in% ls(as.environment("package:pharmaversesdtm"))  # error
+
+```
+
+## unload pkg
+
+```{r}
+
+```
+
+### ds in pkg; NOT 'exported', put into data/
+
+```{r}
+data()   # all loaded ds
+data(package = "admiral")  # ds in package admiral; will NOT load NS admiral
+ls(getNamespace("admiral"))   # will load NS admiral, ~ 176 objects
+
+
+isNamespaceLoaded("admiral")
+unloadNamespace("admiral")
+data("admiral_adsl")   # not found
+data("ae")  # not found
+
+
+
+# ae is dataset in pharmaversesdtm, in /data
+library(pharmaversesdtm)  # must be loaded
+ae   # found it
+getAnywhere("ae")   # works
+
+## pharamaversesdtm does NOT export much;  data/ is not called 'exported'
+c("ae") %in% getNamespaceExports("pharmaversesdtm") # F
+
+# but "ae" is in data/
+str(data(package = "pharmaversesdtm"))
+c("ae") %in% data(package = "pharmaversesdtm")$results
+
+# because uses IQR format
+z=data(package = "pharmaversesdtm")
+z |> class()   # packageIQR
+"ae" %in% z   # WHY FALSE?
+"ae" %in% z$result   # NOW it is true!
+
+
+ls(package:stats)
+ls(package:admiral)   # admiral must be on search()
+
+
+ls(ns:stats)
+ls(namespace:stats)
+ns:stats
+namespace("stats")
+ls(imports:stats)
+
+z=getNamespaceImports("admiral")
+class(z)
+```
+
+## attach ds to search path; to see all its columns
+
+```{r}
+search()
+base::attach(mtcars)
+search()
+```
+
+## probe package, imports, exports (seems to match file NAMESPACE)
+
+```{r}
+getNamespaceImports("stats")   # list
+getNamespaceExports("stats")
+
+getNamespaceImports("admiral")
+getNamespaceExports("admiral")
+
+```
+
+
+## CASE: pharmaversesdtm
+Recently, we switched from data(ds) to pharmaversdtm::ds.
+I wanted understand how datasets get made available.
+What follows may be orthogonal (no overlap, useless) to what we do, but perhaps might be reference for future.
+
+
+First,  using library or devtools::load_all places makes datasets (in data/) available for use.
+So we do not really need to do more.
+```{r}
+library("pharmaversesdtm")
+ae
+dm
+```
+
+Before go further, here are tools that will useful.
+
+##  remove pkg and its NS ------------------------ 
+```{r}
+unloadNamespace("pharmaversesdtm")
+search()
+isNamespaceLoaded("pharmaversesdtm")
+ae  # not found
+vs
+```
+
+##  ------------------------ 
+
+##  Now that pharamversdtm is not present
+##  loads , does not attach pkg ----------------------------
+```{r}
+pharmaversesdtm::ae
+```
+
+# if you like functional form, works
+`::`(pharmaversesdtm, ae)
+?`::`
+
+## Before using pharamversesdtm::ae, we used data(ae)
+```{r}
+unloadNamespace("pharamversdtm")
+data(ae)
+
+# ae available
+head(ae)
+```
+
+## Functional approach
+```{r}
+ds = "ae"
+ds = "dm"
+
+call("`::`", "pharmaversesdtm", sym(ds))
+
+eval(call(`::`, "pharmaversesdtm", sym(ds)))
+
+```
+
+## Break it down
+# Assemble a symbol from a string
+```{r}
+var <- "foo"
+sym(var)   # foo
+
+# Assemble a call from strings, symbols, and constants
+call("mean", sym(var), na.rm = TRUE)
+
+ds = "ae"
+ds = "dm"
+# works
+
+call("print", sym(ds))
+eval(call("print", sym(ds)))
+```
+
+## Vectorize
+```{r}
+?`::`
+call("::", "pharmaversedtm", sym(ds))
+eval(call("::", "pharmaversesdtm", sym(ds)))
+
+
+f = function(ds) { call("::", "pharmaversesdtm", ds)}
+eval(f("ae"))
+
+z=eval(lapply(c("ae", "dm"), f))
+eval(z[[1]])
+eval(z)
+
+
+# fails
+`::`(pharmaversesdtm, ae, ts)
+sapply(c("ae", "ts"), `::`pharmaversesdtm)
+
+data(package = "pharmaversesdtm")  # no attach
+
+##  ------------------------ 
+
+## continue with  ------------------------ 
+```{r}
+getAnywhere("ae")$where
+getAnywhere("ae")$visible  # T
+
+search()
+as.environment("package:pharmaversesdtm")   # package req'd
+ls(as.environment("package:pharmaversesdtm"))  # lists "ae"
+"ae" %in% ls(as.environment("package:pharmaversesdtm"))  #T
+
+
+getNamespace("pharmaversesdtm")  # no "package:", returns envir)
+ls(getNamespace("pharmaversesdtm")) # get_terms
+ls(envir=getNamespace("pharmaversesdtm"))
+get_terms
+
+
+getNamespaceExports("pharmaversesdtm") # no exports  character(0)
+
+# easy way to get NS
+asNamespace("pharmaversesdtm")
+as.env
+# WHY FALSE?
+"ae" %in% ls(getNamespace("pharmaversesdtm")) #F
+
+```
+
+## Useful?
+```{r}
+
+```

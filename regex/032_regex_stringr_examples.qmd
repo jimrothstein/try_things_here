@@ -1,0 +1,648 @@
+---
+title: "032_regex_stringr_examles.Rmd"
+output:  
+  html_document:
+    toc: yes
+    toc_depth:  1
+    number_sections: no 
+  pdf_document:
+    toc: yes
+geometry: margin=0.5in, bottom=.75in
+editor_options:
+  chunk_output_type: console
+TAGS:  regex, grepl,ifelse, sub
+---
+
+==========================================================
+R:  CONSOLIDATE here:   regex,stringr (+ related testthat)
+BUT ... ~/code/zsh_project/REGEX is really best place to test and DOCUMENT regex
+==========================================================
+*  For ADVANCED see 2nd regex Rmd file.
+*  some REQUIREs  X11 
+*  SEE:   
+    * stringr & regex cheatsheet (rstudio)
+    * stat545.com/block028_character-data.html JENNYBC
+    * !so [r] regex has examples, using forward, backward;  groupings
+*  FOR fs::   see 066_
+*  blob to regex?  use glob2rx()
+*  Which regex flavor?    stringr, stringi use  ICI, which uses **PERL**
+
+##  TODO
+*  Clean up
+*  need mp3 stuff ?  
+ =====================================
+
+`?` match prior character 0, 1
+`+` match 1, n
+`*` match 0,1,n
+
+### 000_setup
+```{r setup, include=FALSE}
+# collapse=TRUE, combines code and output one block
+knitr::opts_chunk$set(echo = TRUE, 
+												comment="        ...##",
+												collapse=TRUE)
+library(stringr)
+library(tibble)
+library(purrr)
+library(testthat)
+library(here)
+library(jimTools)
+```
+
+#### USE:  base::trimws()
+```{r}
+x <- c(" hello", " hello ", "hello ")
+base::trimws(x)
+```
+
+#### Glob to regex !
+```{r blogr2x}
+glob2rx("*.R")
+```
+
+#### 002_basics_ str_view uses using HTML (see stringr cheat)
+```{r basics, eval=FALSE, echo=FALSE, include=FALSE}
+# from cheatsheet, render as html (cute!)
+
+see <- function(rx) stringr::str_view_all("abc ABC 123\t.!?\\(){}\n", pattern = rx)
+
+see("a") # a
+see("\\.")
+see("[[:blank:]]")
+see("[[:space:]]")    # note!   \n  is a 'space' charcter, 
+```
+
+#### 003_string_is_a_string  !# 
+```{r}
+info  <- function(x) {
+
+	# bug .. what is 'TRUENULL'
+	print(
+				cat(is.character(x), 
+						"|", 
+						is.vector(x)	)
+	)
+	length(x) }
+
+# all TRUE
+info("a")
+info("aa")
+info(c("a","aa"))
+``` 
+
+
+
+
+str_detect returns t/f
+more regex, from http::url.r
+```{r}
+# When FALSE?
+pat  <- ";(.*)$"
+x  <- c("a;", ";b", "b;c", ";", " ; ")
+stringr::str_detect(x, pat)
+
+stringr::str_match(x, pat)
+```
+
+
+#### Greedy vs non-Greedy,   Role of ?
+```{r greedy}
+s  <- "XabcXabcXabcX"
+pat  <- "X.*X"   # any char, repeated 0,1,n times
+stringr::str_extract(s, pat)   # Greed ... whole thing returned
+
+# Here, ? is turning OFF greedy, ie lazy
+pat  <- "X.*?X"
+stringr::str_extract(s, pat)   # smallest possible match 
+```
+
+#### example from docs
+```{r from_docs}
+library(stringr)
+     shopping_list <- c("apples x4", "bag of flour", "bag of sugar", "milk x2")
+     str_extract(shopping_list, "\\d")
+     str_extract(shopping_list, "[a-z]+")
+     str_extract(shopping_list, "[a-z]{1,4}")
+     str_extract(shopping_list, "\\b[a-z]{1,4}\\b")
+     
+     # Extract all matches
+     str_extract_all(shopping_list, "[a-z]+")
+     str_extract_all(shopping_list, "\\b[a-z]+\\b")
+     str_extract_all(shopping_list, "\\d")
+```
+
+#### 002A-stringr, detect META char
+```{r}
+s <- "abc^def^^" 
+stringr::str_detect(s, "\\^+") # TRUE
+stringr::str_detect(s, "\\*") # FALSE
+
+# WORKS
+stringr::str_replace_all(s, "\\^+", "_")
+```
+
+#### str_match returns matrix
+```{r str_match}
+#  (.*?)  the `?` turns off GREEDY (see example above)
+
+     x <- c( "<a> <b>", "<a> <>", "<a>", "<axxxxa> <b>", "<a>  <b>","", NA)
+
+     x  <- c("<aaa> <b>", "<abbbabab> <c>")  
+     stringr::str_match(x, "<(.*?)> <(.*?)>")
+     stringr::str_match(x, "<(.*)> <(.*)>")
+```
+
+#### 0004_find_replace_spaces
+```{r}
+s <- "one      two three "
+stringr::str_view_all(s, "[[:blank:]]+")
+
+# works!
+stringr::str_replace_all(s, "[[:blank:]]+", "_")
+```
+
+#### 0005_find_replace_lead_digits
+```{r}
+s <- "012345_junk_99"
+stringr::str_replace_all(s, "^[[:digit:]]{4,6}", "")
+```
+
+####0006_test_that
+```{r}
+s <- "012345_junk_99"
+stringr::str_replace_all(s, "^[[:digit:]]{4,6}", "")
+
+
+f <- function(string="abc",
+			  pattern="[[:alpha:]]", 
+			  with="!"){
+					stringr::str_replace_all(string, pattern, with)
+}
+
+f()
+testthat::test_that("remove leading digits", {
+	expect_equal(f(string="012345_junk_99",
+				   pattern = "^[[:digit:]]{4,6}",
+				   with = ""),
+				 
+				   "_junk_99")
+	
+	expect_equal(f(string="012345_junk_012345",
+				   pattern = "^[[:digit:]]{4,6}",
+				   with = ""),
+				   "_junk_012345")
+}
+)
+```
+
+#### 010_regex_in_R_help
+```{r}
+help.search("^geom_[abcd]",
+			package="ggplot2")
+```
+
+#### 007_replace_multiple_dashes
+```{r}
+# replace one or more, 
+s <- "a____b_c__d_"
+s1  <- stringr::str_replace_all(s, "_+","_")  # a_b_c_d_   (_ after d, yes)
+
+stringr::str_replace_all(s1, "_$","")  # a_b_c_d   
+
+
+s <- "a'b'c"
+stringr::str_replace_all(s, "'","_")  # a_b_c   
+
+s <- 'a"b"c'
+stringr::str_replace_all(s, '"',"_")  # a_b_c   
+
+s <- "a'b'c"
+writeLines("'")
+writeLines('"')
+
+# not quite
+stringr::str_replace_all(s, "'",'"')  # "a\"b\"c"   is what R displays
+
+# remove NA, unless followed by alphanumeric
+s <- "one_NA_two_NAME"
+stringr::str_replace_all(s, "NA[^[[:alnum:]]]","")  # "one_two_NAME"
+```
+
+
+
+#### 0010.tidyr::extract.with regex
+```{r tidry::extract}
+t <- tribble(
+			 ~code, 
+			 "S01E01",
+			 "S02E01",
+			 "S03E02"
+			 )
+t %>% tidyr::extract(code, c("season","number"), 
+					 regex="S(.*)E(.*)",convert=TRUE,
+			  			remove=FALSE)  
+```
+
+#### misc stringr:: practice 
+```{r eval=FALSE}
+commas <- function(...) stringr::str_c(..., collapse = ", ")
+commas1 <- function(...) stringr::str_c(...)
+what_is_it(letters)
+print (letters)  # vector of 26 letters
+commas1(letters)
+commas1(letters, collapse = ", ")
+what_is_it(commas(letters))	# char vector of length 1, ie string
+
+commas1(letters, collapse = "-")	# works
+
+# char vector becomes 1 string
+letters # vector, 26
+paste(letters, collapse = "+")
+
+# remove 1 layer, list of lists, into simple vector
+?purrr::flatten_dbl
+
+# z is list containing 2 lists, each of these is single list
+z = list(a = list(as.double(c(1,2))), 
+	 b = list(as.double(c(10,11)))
+	 )
+	 
+z[["a"]][[1]][2]	# 2
+what_is_it(z[[1]])	# list of 1 elemnt, a list
+what_is_it(z["a"])
+z["a"]
+what_is_it(z[a]) # fails
+what_is_it(z)
+y <- flatten(z["a"])
+what_is_it(y)
+y
+str(y)
+
+#############
+# ---- fruit ----
+#############
+fruit    # character vector
+what_is_it(fruit)  # returns char vector, size 80
+stringr::str_detect(string=fruit, pattern="fruit") # returns logical 
+what_is_it ( stringr::str_detect(string=fruit, pattern="fruit") )# logical
+
+# returns character vector
+(my_fruit<-stringr::str_subset(string=fruit, pattern="fruit"))
+what_is_it (my_fruit)  # character vector, length 8
+
+(z<-str_split(my_fruit, pattern=" "))
+what_is_it (z) # a list of char vectors,  fruits containing space, get split
+
+(z1 <-str_split_fixed(my_fruit, pattern=" ", n=2))
+what_is_it(z1)  # vector of typke character, length = 16
+
+# collapse
+str_c(my_fruit,collapse= " ")
+str_c(my_fruit,collapse= ".")
+str_c(my_fruit,collapse= "|")
+```
+#### 0009_EXPERIMENTS,  NASTY string replacements
+```{r nasty}
+
+{
+	remove_weird  <- function(v) { 
+	step2 <- stringr::str_replace_all(v,"[:punct:]+","_") 
+	return (step2)
+	}
+}
+# Works
+	expr = "!@#%*-?,'"
+	remove_weird(expr)
+
+# Fails
+	# ^$.()
+	remove_weird("^")  # FAILS
+
+
+```
+#### Given ....
+```{r given...}
+## Given ... remove find "."
+    x  <- c("12.3.", "23.5.")
+    # [.]  also \\.
+    as.numeric(sub("[.]$", "", x))   # note:  not greedy, just going thru
+    vector
+
+## Given .... return  1st word
+  Brand = c('Channel clothes',
+                            'Gucci perfume',
+                            'Channel shoes',
+                            'LV purses',
+                            'LV scarves')
+
+  sub('(^\\w+)\\s.+','\\1',Brand)
+
+##
+    test = c("Pierre-Pomme","Jean-Poire","Michel-Fraise")
+    ## Want: c("Pomme","Poire","Fraise")
+    ##
+    sub('.*-', '', test)  # '.*' remove everything till -
+##
+x <- 'xxx aaa xxx aaa zzz xxx bbb xxx ccc zzz'
+
+unlist(regmatches(x, gregexpr("xxx(?:(?!xxx|zzz).)*zzz", x, perl = TRUE)))
+
+```
+#### stringr, grepl (need X11, html)
+```{r from_cheat}
+val <- function(r) stringr::str_view_all("1.11.111.011", r)
+val("[1]{2}")
+val("^1{2}")
+val("^[1]{2}")
+val("[1]{2}")
+# render as html
+val <- function(r) stringr::str_view_all("1.11.111.011", r)
+val("[1]{2}")
+val("^1{2}")
+val("^[1]{2}")
+# render as html
+val <- function(r) stringr::str_view_all("1.11.111.011", r)
+val("^[1]{2}")
+val("[1]{2}")
+val("^1{2}")
+val("^[1]{2}")
+val("a")
+# render as html
+val <- function(r) stringr::str_view_all("1.11.111.011.a1", r)
+val("a")
+# render as html
+val <- function(r) stringr::str_view_all(c("1.11.111.011.a1"), r)
+val("[1]{2}")
+# render as html
+val <- function(r) { stringr::str_view_all(
+c("1.11.111.011", "a1"), r)
+}
+val("[1]{2}")
+val("^1{2}")
+val("a")
+val("^a")
+grepl(pattern="[01]+", c(1,"2","a1","1",00,01,11,000,010,011))
+grepl(pattern="^[0,1]{2,3}", c(1,"2","a1","1",00,01,11,000,010,011))
+grepl(pattern="^[01]{2,3}", c(1,"2","a1","1","00",01,11,000,010,011))
+grepl(pattern="^[0,1]{2,3}", as_character(c(1,"2","a1","1",00,01,11,000,010,011)))
+grepl(pattern="^[0,1]{2,3}", c(1,"2","a1","1",00,01,11,000,010,011))
+grepl(pattern="^[0,1]{2,3}", as.character(c(1,"2","a1","1",00,01,11,000,010,011)))
+grepl(pattern="^[01]{2,3}", c(1,"2","a1","1","00",01,11,000,010,011))
+as.character(c("1",1,9))
+grepl(pattern="^[01]{2,3}", as.character(c(1,"2","a1","1",00,01,11,000,010,011)))
+grepl(pattern="^[01]{2,3}", c(1,"2","a1","1","00",01,11,000,010,011))
+as.character(c(1,"2","a1","1",00,01,11,000,010,011))
+
+
+
+#### Find matches in long string.  grepl(matches, long_string)
+```{r create_long}
+##
+##  Begin:
+    matches  <- c("dog", "cat")
+    long_str  <- c("a dog",  "a cat" , " a zebra", "a lion is a cat")
+
+##
+##  Regex uses `|` for OR:  create from character vector 
+    matches  <- paste(matches, collapse = "|")
+    # [1] "dog|cat"
+
+##
+##  Results
+    ifelse(grepl(matches, long_str),T, F)
+
+
+
+```
+
+### STRINGR
+
+ 001-stringr, regex:  find patterns
+```{r}
+
+# view matches (needs browser, html)
+s <- "a.aa.aaa.aaa"
+stringr::str_view_all(s, "a{3}")
+
+# or TRUE or FALSE
+stringr::str_detect(s,"a{3}")
+```
+
+
+#### 002A-stringr, detect META char
+```{r}
+s <- "abc^def^^" 
+stringr::str_detect(s, "\\^+") # TRUE
+stringr::str_detect(s, "\\*") # FALSE
+
+# WORKS
+stringr::str_replace_all(s, "\\^+", "_")
+
+```
+
+#### 003 stringr, remove number
+```{r}
+# remove prefix
+s <- "00001_file"
+s <- stringr::str_remove(s,pattern = "^[:digit:]{4,6}")
+s
+
+```
+#### add a prefix to string, prepend
+```{r prepend}
+
+# prepend prefix
+s <- stringr::str_c("00001",s)
+s
+
+
+# Prefix: Exammple 2
+old <- "old_name"
+prefix  <- "0"
+stringr::str_c(prefix, old)
+```
+
+
+
+#### Extract D from string "Suzanne Bonimizi (D)"
+```{r}
+party  <- function(str=NULL, pat="\\(.\\)"){
+  # extract "(.)", single char surrounded by paratheses
+ x  <-  stringr::str_extract(str,pat)
+
+# from x, extract the upper case letter D, R , I ...
+y  <- stringr::str_extract(x, "[:upper:]")
+return(y)
+}
+
+
+str = "Suzanne Bonimizi (D)"
+party(str)
+party(str, pat)
+
+str = "Bernie (I)"
+
+# fail, 2 letters
+str = "Justin A (LI)"
+
+str = "mark meadows (R)"
+party(str,pat)
+
+```
+
+#### 010_older_regex_examples (using ryanstutorials for regex)
+```{r, eval=FALSE, echo=FALSE}
+
+# Ref:
+# https://ryanstutorials.net/regular-expressions-tutorial/regular-expressions-basics.php
+
+
+# ---- skip ----
+text1 <- "The current year is 2016"
+my_pattern = "[0-9]" # find any 1 digit
+
+grepl(pattern = my_pattern, x = text1) # T
+(string_position <- gregexpr(pattern=my_pattern,text = text1)) # 21,22,23,24
+
+#3 1 digit AND 1 upper case alphanumeric
+my_pattern="[[:digit:][:upper:]]" # 
+grepl(pattern = my_pattern, x = text1) # T
+
+# ---- 001-begin ----
+
+# ---- -----
+t <- c("The", "there")
+s <- grep(pattern = "th", x =t, value = TRUE) # T, return string
+
+txt <- c("arm","foot","lefroo", "bafoobar","Foot","fool")
+i <- grep("foo", txt)
+i # returns positions that match
+```
+
+
+###  BELOW:   Development work for pkg_mp3_files
+```{r dev_mp3}
+
+# 0001_function
+# What does terminal think?
+get_terminal_dir <- function(){ list(proj_path(), proj_get() )}
+get_terminal_dir()
+
+# 0010_simple cleaning example ----
+# =============================
+t <- tibble::tibble(original = c("one_two____three", "NA_john_denver"))
+t
+t<- t %>% dplyr::mutate(col2 = stringr::str_replace_all(original, "_+", "_") ) 
+t
+
+# BEGIN
+# =======
+
+#	remove_comma
+# ==============
+remove_comma  <- function(v){  stringr::str_replace_all(v,",+","_") }
+remove_comma(c("abc,def,,ghi", ",,,",",jim,"))
+
+remove_underscore <- function(v){  
+  stringr::str_replace_all(v,"_+","_") }
+
+# remove_appostrope
+# ===================
+remove_appostrope  <- function(v){stringr::str_replace_all(v,"'+","_")}
+remove_appostrope(c("abc'def'ghi", "'''","'jim'"))
+
+# remove_caret (special META)
+# ==============
+remove_caret  <- function(v){stringr::str_replace_all(v,"\\^+", "_")}
+s <- "abc^def^^" 
+remove_caret(s)
+
+remove_dash  <- function(v){stringr::str_replace_all(v,"\\-+", "_")}
+
+
+# example: str_detect
+# =====================
+s <- "abc^def^^" 
+stringr::str_detect(s, "\\^+") # TRUE
+stringr::str_detect(s, "\\*") # FALSE
+
+
+# PUT it together?   (try glue?   fancier way to concatinate multiple regex?)
+v  <- "-abc__d-ef^^_gh'_^,'"
+remove_underscore(remove_dash(remove_caret (remove_appostrope(remove_comma(v)))))
+
+
+# remove_multiple
+# =================
+# any 1 or more of _ ' , ^ - <space>     Last 3 are META, so esccape
+remove_multiple  <- function(v){
+  stringr::str_replace_all(v, "[_',\\^\\-]+","_")
+}
+remove_multiple(v)
+
+# Add error checking
+# ====================
+
+# even handles a char[]
+remove_multiple1  <- function(v){
+	if(is.null(v)) stop("please supply a string")
+	if(!is.character(v)) stop("please supply a character string")
+	stringr::str_replace_all(v,"[_',\\^\\-\\s]+","_")
+}
+
+v  <- c("-abc__d-ef^^_gh'_^,'","'''"," 3    ")
+remove_multiple1 (v)
+
+# Testing (move to test folder)
+# =========
+test_that("remove_comma removes ','", {
+						expect_equal(remove_comma("abc,def,,ghi"),"abc_def_ghi") })
+
+test_that("remove_appostrope removes '", {
+						expect_equal(remove_appostrope("abc'def''ghi"),"abc_def_ghi")
+						expect_equal(remove_appostrope("abc'''def''ghi'"), "abc_def_ghi_")
+						})
+
+
+
+test_that("str_length is number of characters", {
+  expect_equal(str_length("a"), 1)
+  expect_equal(str_length("ab"), 2)
+  expect_equal(str_length("abc"), 3)
+	expect_equal(str_length("abcd"),4)
+})
+```
+
+
+
+```{r render, include=F, eval=F}
+output_dir  <- Sys.getenv("OUTPUT_DIR")
+output_dir
+
+{
+file <- "/home/jim/code/try_things_here/rmd/00032_regex_stringr_examples.Rmd"
+the_dir  <- dirname(file)
+file  <- basename(file)
+# instead of here
+
+file  <- file.path(the_dir, file)
+file
+}
+
+rmarkdown::render(file,
+                  output_format = "html_document",
+                  output_dir = output_dir)
+
+```
+#### X.Y  - remove .Y
+#### \\.   literal dot
+```{r}
+remove_right <- function(s = NULL) { sub(x = s, "\\..*$", "")}
+
+remove_right("X.Y") # [1] "X"
+remove_right("X.Y.Z") # [1] "X"
+remove_right("abc") # [1] "abc"
+
+```
+

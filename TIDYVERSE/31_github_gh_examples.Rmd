@@ -1,0 +1,351 @@
+---
+title: "079_lists_tidyr_purrr_unpack_nested_lists.Rmd"
+output:
+  html_document:
+    df_print: paged
+editor_options:
+  chunk_output_type: console
+---
+
+## Study github with gh:: package, uses github API
+* REF:  https://github.com/r-lib/gh
+* gh() returns JSON in R format, ie lists of lists
+* First, find endpoint (url for search you want)
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  
+											comment="      ##",  
+											error=TRUE, 
+											collapse=TRUE) 
+```
+
+<!--  RENDER:  see bottom -->
+
+```{r library, include=FALSE		}
+library(jimTools) 
+library(gh)
+library(magrittr)
+library(purrr)
+library(dplyr)
+library(tibble)
+```
+
+basic 
+```{r simple}
+users <- gh("/users", .limit = 50)  # 50 elements in root; each has 18 elem
+
+users
+length(users)
+
+gh("/licenses")
+
+gh("/users/jimrothstein")
+gh("/users/jimrothstein/repos")
+# Useful!
+gh("/rate_limit")
+```
+basic  GET /repos/owner/repo/pulls
+```{r ex1 }
+# GITHUB_PAT is set in ~/.Renviron
+# to retrieve it:
+gh::gh_token()
+Sys.getenv("GITHUB_PAT")
+
+owner <- "hadley"
+repo <- "r-pkgs"
+pr_list <-
+  gh("/repos/:owner/:repo/pulls", owner = owner, repo = repo,
+     .token=Sys.getenv("GITHUB_PAT"),
+     state = "all", .limit = Inf)
+length(pr_list)   #503
+```
+GET /users/owner/repos
+```{r query}
+# This is endpoint:  https://api.github.com/repos
+
+# limit to 10 records
+# q is search query
+
+res  <- gh("/users/jimrothstein/repos")
+gh("/users/jimrothstein/repos", q="function")
+
+# stolen from:  https://github.com/xvrdm/ghhelper/blob/master/R/backend.R
+
+gh_response_to_tibble <- function(gh_res) {
+  tibble::tibble(data_col = unclass(gh_res)) %>%
+    tidyr::unnest_wider(col = "data_col")
+}
+gh_response_to_tibble(res)  # 26 x73
+```
+GET /repos/owner/repo/issues
+```{r issues }
+
+# This is endpoint:  https://api.github.com/repos
+gh("/repos/jimrothstein/yt_api/issues")
+x  <- gh("/repos/jimrothstein/try_things_here/issues")
+
+
+#######   sep post processing
+str(x, max.level=1)  # list of 9 (issues)
+
+l  <- x %>% pluck(1)  # 1 of n(issues)
+length(l)  #list of 25
+l
+
+type  <- map_chr(l, ~typeof(.))
+type
+length(type)
+
+t  <- tibble(name=names(type),
+             type=type)
+
+t  <- t %>% mutate(value=unlist(l))
+t
+
+```
+
+GET /search/code
+```{r search}
+# This is endpoint:  https://api.github.com/search/code
+# limit to 10 records
+# q is search query
+
+# response has passed through fromJSO
+res  <- gh("/search/code", 
+   q="dplyr+language:r")
+
+res$total_count
+length(res$items) #30
+
+length(res$items[1]) #1
+res$items[[1]]   # 1 of 30
+res$items[[1]]$name
+
+
+
+```
+
+GET /issues  is for ASSIGNED USER
+```{r get_issues}
+q=paste0("tibble+language:R", "+labels:'help wanted'")
+q
+
+# NULL
+res  <- gh("/issues", 
+   q="tibble")
+res
+```
+
+
+GET search/issues
+```{r}
+
+res  <- gh("/search/issues", 
+   q="language:'R'+labels:'help wanted'", 
+   .limit=10)
+
+res  <- gh("/search/issues", 
+   q="language:R+labels:'help wanted'", 
+   .limit=10)
+
+# POST
+# ==================================
+str(res, max.level=1)  # list of 3
+
+res[1]  # total count 
+res[2]  # incommplete?
+str(res[3], max.level=1) # list of 1 with 30 items
+
+# first of 30 lists
+x  <- purrr::pluck(res, 3, 20)
+names(x )
+x[["comments_url"]]
+x[["title"]]
+x[["comments"]]
+x[["body"]]
+unlist(x)
+```
+
+
+FAILS:
+GET /search/labels
+```{r labels}
+# must give specific repo?
+# documentation says NO quantifiers in q ???
+res  <- gh("/search/labels", q="help wanted")
+
+```
+
+
+  
+GET /search/issues
+ignoring language:R ???
+```{r issues}
+# response has passed through fromJSO
+
+res  <- gh("/search/issues", 
+   q="language:'R'+labels:'help wanted'", 
+   limit=10)
+
+str(res, max.level=1)  # list of 3
+
+res[1]  # total count 
+res[2]  # incommplete?
+str(res[3], max.level=1) # list of 1 with 30 items
+res[[3]]
+rres[[3]][[1]]  # 1st fo 30
+res[[3]][[1]]$body  # 1st fo 30
+
+
+# first of 30 lists
+x  <- purrr::pluck(res, 3, 10)
+names(x )
+x[["comments_url"]]
+x[["title"]]
+x[["comments"]]
+x[["body"]]
+unlist(x)
+```
+
+
+```{r errors}
+# Error
+gh("GET /users/{username}/repos", username= "jimrothstein")
+my_repos <- gh("GET /users/{username}/repos", username = "gaborcsardi")
+```
+
+```{r my_repos}
+owner <- "jimrothstein"
+# repo <- "r-pkgs"
+
+# error
+pr_list <- gh("/repos/:owner", owner = owner, 
+     .token=Sys.getenv("GITHUB_PAT"),
+     state = "all", .limit = Inf)
+length(pr_list)   #503
+```
+
+GET /users/user/repos
+```{r}
+
+x  <- gh("/users/:username/repos", username = "jimrothstein")
+typeof(x)
+str(x, max.level=1, vec.len=1  )
+
+purrr::pluck(x, 1)  # first in list  of 26
+l  <- purrr::pluck(x, 1) # list of 74
+names(l)
+
+
+jsonlite converts to dataframe
+```{r json}
+jim_repos  <- jsonlite::fromJSON("https://api.github.com/users/jimrothstein/repos")
+jim_repos
+t  <- tibble::as_tibble(jim_repos)
+dim(t)  # 26 x 73
+head(t)
+str(jim_repos, max.level=1, vec.len=1)
+```
+
+GET /search/code
+```{r}
+
+res  <- gh("/search/code", 
+   q="dplyr+language:r+labels:'help wanted'", 
+   limit=10)
+
+# 1st of 30
+res[[3]][[2]]$name
+res[[3]][[2]]$repository$description
+res[[3]][[2]]$repository$html_url
+
+head(as_tibble(res[[3]][[2]]$repository))
+
+jsonlite::fromJSON("https://api.github.com/search/code?q=tibble")
+
+```
+
+GET /repos/user/repo/issue
+```{r json_search}
+
+jim_issues  <- jsonlite::fromJSON(
+         "https://api.github.com/repos/jimrothstein/try_things_here/issues?q=tibble")
+t  <- as_tibble(jim_issues)
+t
+head(t[11], n=1L)
+names(t)
+# one row
+t[1,]
+
+t[1,][11]
+
+pluck(t[1,], 11)
+length(pluck(t[1,], 11)) # 18
+
+head(t)   # 6 x 25
+names(t)
+```
+gh::has_name()
+```{r has_name}
+# component by component
+# for list, only 1 level
+has_name  <- function(x) {
+  nms  <- names(x)
+  if (is.null(nms)){
+    rep_len(FALSE, length(x))
+  } else {
+    !( is.na(nms) | nms=="")
+}
+  }
+
+
+has_name("")
+has_name(c(a=1, b=2))
+has_name(c(1, b=2))
+has_name(list(1,2))
+has_name(list(a=1,2))
+has_name(list("", b="", c=3))
+has_name(list(NULL, b="", 3))
+has_name(list(a=1, 2, c=list(1,2)))
+has_name(x=NULL)
+
+```
+
+gh::has_no_names()
+```{r has_no_names}
+has_no_names  <- function(x) all(!has_name(x))
+has_no_names( c(a=1, 2))
+has_no_names( c(1, 2))
+```
+vapply(X, FUN, FUN.VALUE)
+```{r vapply}
+x  <- list("a", 2, TRUE )
+vapply(x, is.character, logical(1))
+vapply(x, is.character, logical(1))
+```
+
+#### 14_tidyr - easier
+```{r}
+
+# hoist(<tibble>, <list-column>, <specifc name>) -> <tibble> with <list_c
+
+repos <- tibble(repo = gh_repos)
+
+# each user has up to 30 repos, we want list of all the repos
+unnest_longer(repos, repo)
+
+repos %>% unnest_longer(repo) %>% 
+  hoist(repo, 
+  login = c("owner", "login"), 
+  name = "name",
+  homepage = "homepage",
+  watchers = "watchers_count")
+
+repos %>% 
+  hoist(repo, owner = "owner")
+```
+
+```{r}
+knitr::knit_exit()
+
+```

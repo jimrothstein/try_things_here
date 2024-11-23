@@ -1,0 +1,136 @@
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 4
+        toc_float: true
+        mathjax: default
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  4   
+fontsize: 11pt   
+geometry: margin=0.4in,top=0.25in   
+TAGS:  ymlthis
+---
+~/code/MASTER_INDEX.md
+
+
+
+### ymlthis::
+NOT FINISHED.   yml object means S3(?), list with class = yml.
+'yml string'  is string (character vector, length=1) that has CR formattted as "\n" or is written with CR to appear as multiline
+
+ymlthis:: is wrapper yaml:: package, which I have not included here (yet)
+
+Example below:  create yml with the functions ymlthis provides and THEN tack on
+custom `TAGS: tag1, tag2`
+```
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = T
+) # T easier to read
+library(tinytest)
+library(ymlthis)
+library(magrittr)
+library(yaml)
+```
+
+#### yml object
+```{r playing}
+## create .yml object
+y <- yml()
+is_yml(y)
+# [1] TRUE
+{
+  str(y)
+  ls.str(y)
+  class(y)
+  y
+}
+
+##  as_yml(.yml) is generic S3 function
+methods(as_yml)
+
+##  ad-hoc, create a yml object (here single string, yml string?)
+z <- as_yml("
+                TAG: tag1, tag2
+                ")
+is_yml(z)
+# [1] TRUE
+
+
+## append ad-hoc to bottom of existing .yml (y)
+args(yml_toplevel)
+yml_toplevel(y, z)
+
+##  tree
+draw_yml_tree()
+```
+
+#### yml_empty
+```{r empty}
+yml_empty()
+```
+
+```{r explain}
+Z <- yml() %>%
+  yml_output(pdf_document(toc = TRUE, toc_depth = 4)) %>%
+  yml_latex_opts(
+    fontfamily = "Fira Sans Thin",
+    fontsize = "11pt",
+    links_as_notes = TRUE
+  ) %>%
+  # adds suffix `:` to LHS
+  yml_toplevel(list(TAGS = "the_tags_line")) %>%
+  yml()
+Z
+is_yml(Z)
+```
+```{r distill}
+distill_listing()
+
+yml_distill_opts(y,
+  categories = c("R", "envir", "DT")
+)
+```
+
+```{r site}
+yml_site_opts(y)
+```
+
+
+
+
+
+```{r render, eval=FALSE, include=FALSE 	} 
+output_dir <- Sys.getenv("OUTPUT_DIR")
+output_dir
+
+{
+  file <- ""
+  file <- basename(file)
+  file <- here("rmd", file)
+  file
+}
+
+rmarkdown::render(file,
+  output_format = "html_document",
+  output_dir = "."
+)
+
+
+## replacement for here
+if (F) {
+  the_dir <- dirname(file)
+  file <- file.path(the_dir, file)
+}
+```

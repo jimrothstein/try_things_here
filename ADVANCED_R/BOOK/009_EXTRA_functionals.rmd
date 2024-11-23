@@ -1,0 +1,323 @@
+---
+title:  "009_EXTRA_functionals.rmd  "
+output:  	
+  pdf_document:
+    toc: TRUE 
+    toc_depth: 4
+    latex_engine: xelatex
+fontsize: 10pt
+geometry: margin=0.5in,top=0.25in
+#  md_document:
+#  html_document:
+#  github_document:
+#   toc: true
+#  	toc_float: true
+#    css: styles.css
+---
+4JUNE2023
+- pluck:  SEE TIDYVERSE/
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,  
+                      comment="      ##",  
+                      error=TRUE, 
+                      collapse=TRUE)
+library(purrr)
+library(jimTools)
+```
+
+```{r render, eval=FALSE,	 include=FALSE, echo=FALSE	}
+
+# this code will use YAML above
+rmarkdown::render(
+									here( dir, file), 
+									output_format="pdf_document",
+									output_dir="~/Downloads/print_and_delete") 
+)
+
+file="009_EXTRA_functionals.rmd"
+dir="R"
+ren_pdf(file,dir)
+ren_github(file, dir)
+
+#knitr::knit_exit()
+```
+### Aside:  
+#### EXAMPLE:  sleepy operator modifies function f
+```{r sleepy}
+sleepy <- function(f, n){
+  force(f)
+
+# modify
+  function(...){
+    cat(
+      glue::glue('Sleeping for {n} second{ifelse(n != 1, "s", "")}.'), 
+      sep = '\n'
+    )
+
+    Sys.sleep(n)
+    f(...)  # run the original
+  }
+
+}
+
+sleepy_print <- sleepy(print, 1.5)
+n <- 10   # no effect,  where is n evaluated/forced in sleepy?
+sleepy_print('hello world')
+```
+
+
+***
+QUESTION
+```r
+I was toying with function `sleepy` from `Companion:  Chapter 11.1`
+URL:https://r4ds.github.io/bookclub-Advanced_R/QandA/book/function-operators.html
+
+I created two versions of sleepy, one for fixed delay of 1.5 sec and one for variable
+delay of n secs.
+
+My original goal was introduce a `bug` into sleepy_print_fixed, along the lines
+of Chapter 10.... (and not use tools like fn_env()$n to make a change in
+enclosing env)
+
+HOWEVER, __this question is about promises_.   Please examine the results of the
+two functions (below). NOTE the TRUE/FALSE.  TRUE means a promise exits and it
+has NOT been evaluated.  FALSE means it has evaluated.
+
+I am interested in how promise for `n` propogates to the
+anoymous function or not.  Where - exactly - is n evaluated and promise ends?
+
+BONUS:  can you come up a little `bug` either in the functions or Global that
+tricks sleepy_print_fixed into lazy evaluation? (no rlang::)
+```
+
+```{r sleepy1}
+rm(n)
+sleepy1 <- function(f, n){
+	# force(f)
+		if(pryr::is_promise(n)) cat("in sleepy1: ",pryr::promise_info(n)$evaled, '\n')
+
+
+# modify
+  function(...){
+		# cat(
+		#     glue::glue('Sleeping for {n} second{ifelse(n != 1, "s", "")}.'), 
+		#     sep = '\n'
+		# )
+		if(pryr::is_promise(n)) cat("in anonymous: ",pryr::promise_info(n)$evaled, '\n')
+    Sys.sleep(n + 0)
+		#cat(pryr::promise_info(n)$evaled, '\n')
+    f(...)
+  }
+
+}
+
+# create 2 qunctions
+sleepy_print_fixed  <- sleepy1(print, 1.5)
+sleepy_print_variable  <- sleepy1(print,n)
+
+# code
+sleepy_print_fixed
+sleepy_print_variable
+
+# value for n?
+fn_env(sleepy_print_fixed)$n
+fn_env(sleepy_print_variable)$n  #error, no `n`
+
+n <- 5   # what effect?
+
+sleepy_print_fixed('hello world')
+sleepy_print_variable('hello world')
+
+```
+***
+
+#### CLEAN UP, SIMPLEST FORM
+```{r pryr}
+
+wrapper <- function(f, n){
+	# force(f)
+		if(pryr::is_promise(n)) cat("in wrapper: ","promise exists! evaluated? : ",pryr::promise_info(n)$evaled, '\n')
+
+
+  function(...){
+    cat(
+      glue::glue('Sleeping for {n} second{ifelse(n != 1, "s", "")}.'), 
+      sep = '\n'
+    )
+
+    Sys.sleep(n)
+    f(...)
+  }
+
+sleepy_print1 <- sleepy1(print, 1.5)
+n <- 8   # no effect,  where is n evaluated/forced in sleepy?
+sleepy_print1('hello world')
+}
+
+sleepy_print <- sleepy(print, 1.5)
+sleepy_print('hello world')
+}
+```
+
+```{r more}
+		if(pryr::is_promise(n)) cat("in anonymous: ","promise exists! evaluated? : ",pryr::promise_info(n)$evaled, '\n')
+
+    print(n + 0)
+    f(...)
+  }
+
+}
+f  <-  function() cat("DONE: ", n)
+wrap1  <- wrapper(f, 1.5)
+wrap2   <- wrapper(f, n)
+
+n  <- 10
+
+sleepy_print1 <- sleepy1(print, 1.5)
+n <- 8   # no effect,  where is n evaluated/forced in sleepy?
+sleepy_print1('hello world')
+wrap1()
+n  <- 100
+wrap2()
+```
+
+### 9.2.2  (PLUCK ... moved to ~/code/try_things_here/TIDYVERSE/)
+
+TODO:  (bug)purrr::as_mapper() translate FORMULA to function
+```{r as_mapper}
+# simplest:  turn formula into function
+add_two  <- as_mapper(~ . + 2)
+
+#   it is vectorized
+add_two(c(2,3))
+add_two(2:5)
+add_two(list(1:3))  # error
+
+
+# Instead of 
+x <- map(1:3, ~ runif(2))
+x
+
+# Make function 1st 
+g  <- as_mapper( ~ runif(2))
+g(1:3)  # bug, s/d be list of 3
+g(list(1,2,3))
+
+
+# Instead of ...
+l  <- map(list(a=list(1,2,3,1), b=list(1,1)), ~length(unique(.x)) )
+l
+
+# Make function 1st 
+length_FUN  <- as_mapper(~ length(unique(.x)))
+
+length_FUN(list(1,2,3,1))
+length_FUN(list(1,2,3, "hello"))
+# bug!   not doing it element-by-element
+length_FUN(list(a= list(1,2),
+                b = list(3,4,5),
+                c = list(3,3))
+)
+
+
+## If LIST
+## SHORTCUTS, to extract from list;
+# map_dbl(<list>, "x") # extract named elment x
+```
+
+#### purrr::as_mapper()
+```{r as_mapper_jennybc}
+# REF: https://jennybc.github.io/purrr-tutorial/ls01_map-name-position-shortcuts.html
+
+# 
+map_dbl(mtcars, ~ length(unique(.x)))
+
+# STEP 1, take formula, return function (g)
+g  <- as_mapper( ~ length(unique(.x)))
+g
+
+# STEP 2
+map_dbl(mtcars, g)
+# but this differs
+g(mtcars)
+
+## NeXT, LISTS with as_mapper()
+
+# one way
+l  <- list(a="one", b="two", c="three")
+pluck(l, "a")
+
+# another
+getter  <- function(x, letter) x[[letter]]
+getter(l,"a")
+
+
+# create function to extract "c"
+# study
+as_mapper("c", .default=NULL)
+
+g  <- as_mapper("c", .default=NULL)
+g(l)
+
+## ??
+map(l, g) # as list
+map_chr(l, g) #as chr[]
+
+
+# example, extract a & c:  one way:
+map(l, `[`, c("a","c"))
+
+# with as_mapper,  extract elements named "a" and "c"
+# NOTE:  in this form, values to be extracted are arbitrary!
+h  <- as_mapper(`[`, .default=NULL)
+map(l, h, c("a","c"))
+map(l, h, c("b"))
+
+
+# same l (list of lists)
+l[[2]][["b"]]
+
+as_mapper(list(2,"b"))  # x[[2]][["b"]]
+
+
+g  <-  as_mapper(list(2,"b"))
+g(l)
+
+# =====
+# more FORMULA to function, with as_mapper
+
+f  <- purrr::as_mapper(~ .x + 1)
+f(2)
+
+f  <- purrr::as_mapper(sin)
+f(0)
+f(3.14/2)
+
+
+# 2 or more arguements?
+x  <- 0:3
+y   <- 10:13
+z   <- 20:23
+
+f  <- as_mapper(~ ..1 + ..2 + ..3)
+f(x,y,z)
+```
+
+```{r stop_if_not}
+# doesn't fit, but ....
+rm(x)
+x <- 1000
+x  <- "a"
+
+base::stopifnot( exprs= {
+									is.numeric(x)
+								x > 0
+							x < 100
+						is.numeric(x)	
+		}
+)
+
+```
+
+

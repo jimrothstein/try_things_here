@@ -1,0 +1,191 @@
+
+```
+
+
+```{r library, include=FALSE		}
+get_typeof <- function(x) typeof(x)
+``` 
+
+#### expr()  `capture code`
+  *  Confused:  relation to R expression?
+  *  R expression is NOT a typeof
+  *  Expression can use any of `call`, `symbol`, `constant`, `pairlist` 
+  *  Each of these is `typeof`
+```{r begin}
+# a, b are undefined
+# expr() simply stores expression (typeof is "language") for future evaluation
+e <- expr(a + b)
+# a + b
+is.expression(e)
+# [1] FALSE
+typeof(e)
+# [1] "language"
+```
+
+
+#### evaluate e 
+```{r evaluat}
+a <- 1
+b <- 2
+eval(e)
+```
+
+(a) # still get a
+```
+a few properties of expr()
+```{r expr_are_lists}
+f <- expr(f(x = 1, y = 2))
+f
+get_typeof(f) # language
+
+# add element
+f$z <- 3
+names(f)
+
+f[[1]] # name of the call
+f[[2]]
+```
+
+love the ast tree
+```{r tree}
+lobstr::ast(f("a", "b"))
+lobstr::ast(a * 2 + b)
+lobstr::ast(b + a * 2)
+```
+17.4 create a funcction call
+```{r call2}
+rlang::call2("f", 1, 2, 3)
+rlang::call2(f, 1, 2, 3)
+```
+shortcut, !!a (use expression a)
+```{r bang-bang}
+a <- expr(x + y)
+b <- expr(x - y)
+
+# Build a new expression from 2 simpler expressions.
+expr(sin(!!a))
+call2("sin", a)
+
+expr(sin(!!a / !!b))
+# getting longer ....
+call2("sin", call2("/", a, b))
+
+expr(!!a / !!b)
+expr(!!a + !!b)
+```
+
+example, build new expression, from simpler ones.
+```{r exampl}
+# calc sd()/mean()
+
+cv <- function(x) {
+  var <- enexpr(x) # capture user's input
+  expr(sd(!!var) / mean(!!var))
+}
+cv(x + y)
+```
+
+
+
+expressions
+```{r b}
+expr(log(e)) # log(e)
+expr(log(!!e)) # log(a + b)
+
+
+expr(log(!!a + b)) # log(10 + b)
+expr(log(!!(a + b))) # log(21)
+
+# use with care...
+log(!!(a + b)) #   0
+eval(log(!!(a + b))) # 0
+eval(3) # 3
+```
+
+use eval to get number, result
+```{r get-result}
+log(eval(e)) # 1.1
+
+
+# error:
+log(eval(!!e))
+eval(log(e))
+eval(log(!!e))
+```
+more fun with expr() symbol
+```{r symbol}
+s <- expr(syb)
+get_typeof(s) # symbol
+
+s <- expr(x)
+typeof(s) # symbol
+typeof(expr(x)) # symbol
+
+get_typeof(expr(5)) # double
+
+get_typeof(d <- expr(5)) # double
+get_typeof(d) # double
+
+get_typeof(c <- expr("5")) # character
+
+get_typeof(s <- expr(c(x, y))) # language
+x <- 2
+y <- 3
+eval(s) # 2 3
+```
+```{r plurals}
+z <- exprs(several, such, symbols)
+get_typeof(z) # language
+get_typeof(z[[1]]) # symbol
+```
+
+capture expr PLUS env
+```{r quo}
+quo(letters)
+q <- quo(x)
+x <- 1
+eval(!!q)
+```
+create sym and call 
+```{r call}
+# create sym for y
+expr(y)
+sym("y")
+
+c <- expr(mean(y))
+c
+
+get_typeof(c)
+c <- expr(f(1, 2, 3))
+c
+get_typeof(c)
+
+c <- call("mean", y, na.rm = TRUE)
+get_typeof(c)
+```
+
+base:: 
+```{r enquo}
+code <- base::expression(a + b)
+base::is.expression(code)
+a <- 1
+b <- 4
+base::eval(code)
+
+# same code,
+e <- environment()
+e$a <- 10
+e$b <- 40
+base::eval(code, envir = e)
+```
+
+
+
+```{r render, eval=FALSE	} 
+file <- ""
+file <- basename(file)
+dir <- "rmd"
+
+jimTools::ren_pdf(file, dir)
+jimTools::ren_github(file, dir)
+```

@@ -1,0 +1,67 @@
+---
+---
+
+PURPOSE:  compare to 0200_tidyr
+-   HERE tidyr::hoist to extract from ROWS in list-column, slightly more complex
+-   df now has 3rd (fake) list added to  orginal 
+-   study how names in this 3rd named list affect hoist output!
+-   This example reveals much of hoist.
+
+```{r}
+library(tidyr)
+
+df <- tibble(
+  character = c("Toothless", "Dory", "Fake"),
+  metadata = list(
+    list(
+      species = "dragon",
+      color = "black",
+      films = c(
+        "How to Train Your Dragon",
+        "How to Train Your Dragon 2",
+        "How to Train Your Dragon: The Hidden World"
+      )
+    ),
+    list(
+      species = "blue tang",
+      color = "blue",
+      films = c("Finding Nemo", "Finding Dory")
+    ),
+    ## add 3rd fake list        
+    list( species = "fake1",     -- change to `A` and hoist ignores
+          B  = "fake2",
+          films = c("fake3",     --  change to `C`  ...
+                "fake4"
+            )
+  )
+))
+
+df
+
+##  Compare films
+    str(df)
+    str(df, vec.len =1 )    ## examine `films` entry
+    str(df, list.len=2)     ## change list.len = 3
+
+
+# Extract only specified components
+z = (df %>% hoist(metadata,
+  "species",
+  first_film = list("films", 1L),   ## 1st films entry in EACH list
+  third_film = list("films", 3L)    ## 3rd entry, if any
+))
+z
+str(z)              ## examine:  most of new fake list, put in metadata
+
+dput(z)
+```
+
+# structure(list(character = c("Toothless", "Dory", "Fake"), 
+species = c("dragon", # "blue tang", "fake1"), 
+first_film = c("How to Train Your Dragon", # "Finding Nemo", "fake3"), 
+third_film = c("How to Train Your Dragon: The Hidden World",  NA, NA), 
+metadata = list(list(color = "black", films = "How to Train Your Dragon 2"), 
+#           list(color = "blue", films = "Finding Dory"), 
+            list(B = "fake2",   films = "fake4"))), 
+class = c("tbl_df", "tbl", "data.frame" # ), row.names = c(NA, -3L))
+

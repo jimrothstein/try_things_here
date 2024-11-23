@@ -1,0 +1,36 @@
+
+---
+title: skeleton.qmd
+date: last-modified
+# Quarto requires title, if want date to appear
+# ~/.config/kickstart/skeleton/skeleton.qmd
+---
+#   TAGS:   
+
+### In call to function, now have choice of evaluating or quoting arguments
+
+#### ensyms appears to concatinate and quote args
+```{r}
+library(rlang)
+cement <- function(...) {
+  args <- rlang::ensyms(...)
+  cat(typeof(args))
+  cat("\n")
+  paste(purrr::map(args, as_string), collapse = " ")
+}
+
+cement(a, b, c)
+cement(jim)
+```
+
+#### evaluate 1st, then quote 
+```{r}
+greet <- "hi"
+name <- "jim"
+cement(name) # [1] "name", oops quoted
+cement(!!name) # [1] "jim", force evaluation before quoting
+cement(!!greet, !!name) # [1] "hi jim"
+```
+
+
+vim:linebreak:nospell:nowrap:cul tw=78 fo=tqlnrc foldcolumn=1 cc=+1

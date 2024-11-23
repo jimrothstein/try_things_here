@@ -1,0 +1,256 @@
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+--- 
+title: "title"
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
+TAGS:  data.table,example,vignette,normalize
+---
+
+
+TODO:   Clean up; merge into 0291
+PURPOSE:  simple, reference examples :
+    * nest, unnest, normalize, list-column etc.
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  
+											comment="      ##",  
+											error=TRUE, 
+											collapse=TRUE) 
+library(data.table)
+```
+
+### create dt (note:  ID)
+```{r begin}
+# practice dt,  use function so easy to re-create
+create_dt  <- function() {
+  data.table(ID = rep(c("b", "a", "c"), each = 3),
+                  x = c(1, 3, 6),
+                  y = 1:9)
+}
+dt  <- create_dt()
+dt
+```
+
+#### normalize DT by concatenating TWO columns into ONE new
+```{r normalize}
+dt[,.SD, by=ID]
+
+# `concatinate two chr[] for each ID` (into new variable)
+dt[, .(c(x,y)), by = ID]
+dt
+```
+
+#### compact:  into list-column
+```{r}
+dt  <- create_dt()
+dt[,.(list(x,y))      , by=ID]
+```
+
+### group and head()
+```{r}
+# 3lines for each grouping
+dt[,.SD, by=ID]
+
+
+# for each ID, choose max y
+dt[, .SD[which.max(y)], by = ID]
+
+# here limit to 2 lines (not 3), for each grouping
+dt[,head(.SD, 2), by =ID]
+
+# break out by ID
+dt[,print(.SD), by =ID]
+
+# for each grouping, show val
+dt[, .(val = y), by =ID]
+
+```{r list_column}
+# THINK
+dt[, .(val = c(x,y)), by=ID]
+
+# THINK
+dt[, .(val = list(x,y)), by=ID]
+dt[, .(val = list(c(x,y))), by=ID]
+```
+
+
+### Group on ID, display list-column of data.tables!
+  *   make list of each SD,  then list all the results
+```{r data.table}
+
+dt  <- create_dt()
+dt
+
+# 3 the SAME
+dt[, list(dt.xy=list(.SD)), by=ID]
+dt[, .(dt.xy=list(.SD)), by=ID]
+dt[, .(dt.xy=.(.SD)), by=ID]
+
+
+# FAILS b/c do not have every subset
+if (F) dt[, .(dt.xy=.SD), by=ID]
+```
+
+### undo/unwind list-column
+```{r un}
+
+dt2  <- dt[, .(dt.xy=.(.SD)), by=ID]
+dt2
+
+# each ID, pop off 1st entry (there is only 1)
+dt3  <- dt2[, dt.xy[[1]], by = ID]
+identical(dt,dt3)
+```
+
+
+
+
+```{r select}
+dt[,c("ID","x","y")]
+
+# SAME, easier!
+dt[, .(ID,x,y)]
+
+# shortcut?
+col  <- c("ID","x","y")
+dt[, ..col]
+
+# FAIL
+if (F) {
+  dt[, col]
+  dt[, .col]
+}
+
+dt[, .(col)]
+```
+
+
+### normalize example3
+  * ONE column contain SINGLE character vector: c("a, b, c")
+  * UNSPLIT and normalize so each element put on separate ROW (normaliz)
+  * Study NA, NULL
+  * Here we will several situations to solve
+  * Unpack ONE column of muliptle strings; PUT each string inseparate ROW
+    (normalize)
+```{r normalize2}
+#
+dt3  <- function() {
+  data.table( ID = c(1,2,3,4,5,6),
+      tags= list(
+                 "a,b,c",
+                 NULL,    # blank
+                 NA,      # NA
+                 x,       # NA
+                 "x",
+                 "y,z,NULL,NA")
+      )
+}
+
+dt  <- dt3()
+dt
+
+
+# Step 1 (cleanup:: remove blank)
+f  <- function(e) ifelse(is.null(e), return(NA), return(e))
+dt  <- dt[,.(ID, tags = lapply(tags, f)) ]
+dt
+dt[is.na(dt$tags)]
+dt[is.na(tags)]
+
+
+# Step 2  more cleanup: use NA_character_ version of NA
+#base::strsplit() works with NA_character_, but not NA
+f  <- function(e) ifelse(is.character(e),return(e), return(c(NA_character_)))
+dt  <- dt[, .(ID, tags = lapply(tags, f)) ]
+dt
+
+
+# Step 3, split and normalized (must cleanup step 1,2 or will bauk)
+split_up  <- function(e) base::strsplit(e, split="[,]")
+
+# remove unneeded list
+unlist(split_up("a,b,c"))
+}
+
+#### do it ... normalize
+{
+dt[, .(tags = unlist(lapply(tags, split_up) )), by=ID]
+
+dt
+    }
+
+#### Just DETAILS below, of normalization.
+
+{
+  # test 
+# list, with chr[]
+split_up(c("a,b,c"))
+# same
+split_up("a,b,c")
+
+split_up(c(NA, "b"))
+split_up(c(NA, NA, NA, "b"))
+split_up(NA_character_)
+split_up(c(NA_character_))
+
+
+# error
+if (F){
+split_up(NA)
+split_up(c(NA))
+split_up(c(NA, NA))
+}
+
+
+
+# Line by Line, check
+# normalized! unlist
+dt[ID == "1",.(ID, tags = unlist(lapply(tags, split_up) ))]
+
+#  compare
+dt[ID == "1",.(ID, tags = lapply(tags, split_up) )]
+
+
+
+
+dt[ID == "2",.(ID, tags = unlist(lapply(tags, split_up) ))]
+dt[ID == "3",.(ID, tags = unlist(lapply(tags, split_up) ))]
+dt[ID == "4",.(ID, tags = unlist(lapply(tags, split_up) ))]
+dt[ID == "5",.(ID, tags = unlist(lapply(tags, split_up) ))]
+dt[ID == "6",.(ID, tags = unlist(lapply(tags, split_up) ))]
+
+dt[, .(tags = unlist(lapply(tags, split_up) )), by=ID]
+
+dt
+```
+
+```{r knit_exit()} 
+knitr::knit_exit() 
+```
+
+\newpage
+
+```{r render, eval=FALSE	} 
+args(rmarkdown::render)
+file  <- "/home/jim/code/try_things_here/rmd/00298_DT_normalize.Rmd"
+file  <- basename(file)
+file  <- here("rmd", file)
+
+
+
+rmarkdown::render(input = file,
+                  #output_format = "pdf_document",
+                  #output_format = "html_document",
+                  output_format=c("html_document",    # if want both
+                                  "md_document"),
+                  output_dir = "md",
+                  output_file = "out")
+
+```

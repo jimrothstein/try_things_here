@@ -1,0 +1,153 @@
+PURPOSE: match call: basic examples.
+
+TAGS: match.call, match.arg
+
+#### Call: Unevaluted function, where args ARE evaluated. Function is NOT a
+call.
+```{r intro_call}
+f <- function(x) {
+  x^2
+}
+
+# create a call
+(cl <- call("f", 3))
+# f(3)
+
+##  Test for call.
+sapply(list(f, "f", cl), is.call) # [1] FALSE FALSE  TRUE
+##  To evaluate a call.
+eval(cl) # [1] 9
+```
+
+
+
+### match.call() 
+* returns object call (unevaluated function, but with arguments evaluated.)
+* match function's arguments (formals) and values in call
+* use: inside a function.
+* use: as.list.
+* [1] is name of function.
+* [2:n] are UNevaluated args.  (ie symbols are ok)
+
+One use:  find str() /symbols of a call
+```{r useful match.call}
+f = function(dataset, field) str(as.list(match.call()))
+f(mtcars, cyl)
+```
+```{r match.call}
+g <- function(x, y, z) {
+  return(match.call())
+}
+# Ex1
+g(1, 2, 3) # g(x = 1, y = 2, z = 3)
+is.call(g(1, 2, 3)) # [1] TRUE
+
+# Ex2
+a <- 4
+g(a, 2, 3) # g(x = a, y = 2, z = 3)
+
+eval(g(a, 2, 3)) # g(x = a, y = 2, z = 3)
+eval(g(2 * a, 2, 3)) # g(x = 2 * a, y = 2, z = 3)
+
+# but g (alone) is function
+is.call(g) # [1] FALSE
+is.function(g) # [1] TRUE
+
+## OR, with as.list
+g <- function(x, y, z) {
+  return(as.list(match.call()))
+}
+
+
+# Examples
+g(1, 2, 3)
+eval(g(1 + 2, 2, 3)) # g(x = 1 + 2, y = 2, z = 3)
+
+# drop 1st element
+g(1, 2, 3)[-1]
+
+g(a, b, c)
+
+# note:  unevaluated, exactly as presented
+g(1 + 1, 2 + 2, 3 + zzz) # g(x = 1 + 1, y = 2 + 2, z = 3 + zzz)
+
+# Study
+l <- g(a, b, c)
+l
+str(l)
+
+# Example
+l <- g(1 + 3, b, c + 0)
+l
+str(l)
+```
+
+# file <- "4010_match_call_examples.Rmd"
+
+#### if call uses an abbrevation, return with a call using full argument names
+```{r example2}
+f <- function(abc = 1, xyz = 0) match.call()
+f(a = 1, x = 1)
+# f(abc = 1, xyz = 1)
+
+# SAME, but verify call
+if (is.call(f(a = 1, x = 1))) {
+  f(a = 1, x = 1)
+}
+## f(abc = 1, xyz = 1)
+
+##  NOTE:  Still a valid `call`
+f(r, s)
+# f(abc = r, xyz = s)
+
+f(a = 1)
+# f(abc = 1)
+
+f()
+# f()
+
+## returns error
+if (F) f(y = 1)
+
+is.call(f())
+# [1] TRUE
+typeof(f())
+# [1] "language"
+```
+
+
+### match.call , in real life
+  *  use case:
+  *  do.call(what, args), where `what` is function, args is list
+  *  here:  match.call()[-1] drops 1st element (function) 
+
+```{r begin}
+f <- function(x, y, z) {
+  do.call("sum", as.list(match.call()[-1]))
+}
+
+f(1, 2, 3)
+```
+
+### match.arg, 
+  *   limit possible input values
+
+```{r match.arg}
+f <- function(type = c("a", "b")) {
+  type <- match.arg(type)
+}
+
+(f("b")) # chr[]   "b"
+(f("c")) # Error, not "a" or "b"
+```
+
+### Unicode:
+  *   How to use unicode!
+```{r random}
+letters <- c(1, 2, 3, 4)
+names(letters) <- c("a", "b", "c", "\U1F409")
+letters
+```
+
+
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 

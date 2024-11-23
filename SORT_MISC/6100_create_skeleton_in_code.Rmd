@@ -1,0 +1,95 @@
+
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 4
+        toc_float: true
+        mathjax: default
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  4   
+fontsize: 11pt   
+geometry: margin=0.4in,top=0.25in   
+TAGS:  skeleton, yaml, ymlthis::
+---
+~/code/MASTER_INDEX.md
+
+
+####  Create .Rmd skeleton in code; modify yaml; save the file.
+  * REF:  https://github.com/tgerke/rmd-with-ci#how-this-was-set-up
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = T
+) # T easier to read
+library(glue)
+library(rmarkdown)
+```
+
+
+#### Method:   One long string.
+```{r create_skeleton}
+## need glue?
+skeleton <- glue::glue('
+---
+title: "My document"
+output:
+  github_document: default
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+Introduction
+---
+
+Some highly informative text.
+
+')
+```
+
+
+
+
+```{r create_file}
+## dir (use ./rmd)
+# dir.create(here::here("my-document"))
+
+## write to file
+cat(skeleton, file = here::here("rmd", "test_skeleton_document.Rmd"))
+try <- '
+---
+title:  "FAKE"
+---
+'
+cat(try, file = here("rmd", "fake"))
+```
+
+
+#### ymlthis::  So much easier !
+```{r ymlthis}
+library(ymlthis)
+yml() %>% yml_output(
+  pdf_document(
+    keep_tex = TRUE
+  )
+)
+```
+
+
+```{r render, eval=F, include=F}
+{
+  file <- ""
+  file <- basename(file)
+  file <- here("rmd", file)
+  file
+}
+```

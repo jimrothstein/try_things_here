@@ -1,0 +1,47 @@
+---
+title: 
+date: last-modified
+# Quarto requires title, if want date to appear
+# ~/.config/kickstart/skeleton/skeleton.qmd
+TAGS:   rlang, expr, enexpr, ast, lobstr
+---
+### Chapter 17.2, Code is data
+
+expr(), captured code is expression; composed of ~4 kinds of R language 
+expression is NOT a string (use str())
+```{r}
+library(rlang)
+
+rlang::expr(mean(x, na.rm = TRUE)) # aka defuse
+#> mean(x, na.rm = TRUE)
+
+## again, expression, not string, str(return ) shows language
+expr(10 + 100 + 1000)
+#> 10 + 100 + 1000
+```
+To capture code in function, use enexpr (to get what user typed)
+```{r}
+capture_it <- function(x) {
+  enexpr(x)
+}
+capture_it(a + b + c)
+# a + b + c
+```
+
+expression have list properties, can use $ or [[ 
+
+
+Use ast to probe inside expression
+```{r}
+library(lobstr)
+z <- rlang::expr(mean(x, na.rm = TRUE)) # aka defuse
+
+# hmm, z is expression, right?
+lobstr::ast(rlang::expr(mean(x, na.rm = TRUE))) # aka defuse
+
+lobstr::ast(capture_it(a + b + c))
+# but not ...
+z <- capture_it(a + b + c)
+lobstr::ast(z)
+```
+

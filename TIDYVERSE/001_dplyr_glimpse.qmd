@@ -1,0 +1,49 @@
+
+##  compare dplyr::glimpse to str
+```{r}
+library(dplyr)
+library(pillar)
+mtcars |> dplyr::glimpse()
+``` 
+```{r}
+#   vec.len is multiplied by factor
+str(mtcars, vec.len=2) 
+```
+
+##  compare print
+```{r}
+print(mtcars) |> head()
+
+### debug
+```{r}
+mtcars |> 
+  dplyr::glimpse() |>
+  select(c(mpg, cyl)) |>
+  glimpse()
+``` 
+```
+##  compare pillar  
+```{r}
+?dplyr::glimpse
+pillar::pillar
+?pillar
+```
+```{r}
+```{r}
+mtcars |> glimpse() |> invisible() |> select(c(cyl, mpg))
+f <- function(x) invisible(x)
+
+
+g <- function(x) invisible( glimpse(x))
+                           
+mtcars |> f() |> g() 
+mtcars |> f() |> g() |> select(c(cyl))
+```
+
+```{r}
+```{r}
+mtcars |> pillar() |> head()
+```
+
+
+

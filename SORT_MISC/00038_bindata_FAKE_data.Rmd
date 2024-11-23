@@ -1,0 +1,94 @@
+
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+--- 
+# Spaces, no Tabs
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
+---
+
+---
+othercomments
+---
+
+<!-- 
+set cul   "cursorline
+cc=+1			"colorcolumn is 1 more than tw
+-->
+
+<!--  commments -->
+
+SEE:  https://stackoverflow.com/questions/16089178/how-to-simulate-correlated-binary-data-with-r/16089734#16089734
+
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = TRUE
+)
+library(jimTools)
+library(bindata)
+```
+
+```{r begin}
+## Construct a binary correlation matrix
+rho <- 0.7905694 # correlation
+m <- matrix(c(1, rho, rho, 1), ncol = 2)
+m
+
+## Simulate 10000 x-y pairs, and check that they have the specified
+## correlation structure
+## margprob = marginal probably = 1
+x <- rmvbin(1e5, margprob = c(0.5, 0.5), bincorr = m)
+head(x, n = 30)
+cor(x)
+```
+
+Heads  & Tails?
+```{r binary}
+rho <- -1
+m <- matrix(c(1, rho, rho, 1), ncol = 2)
+m
+
+x <- rmvbin(1e5, margprob = c(0.5, 0.5), bincorr = m)
+head(x, n = 30)
+cor(x)
+```
+x, y are never same value
+```{r binary}
+x <- rbinom(30, size = 1, prob = .5)
+x
+y <- abs(x - 1)
+y
+
+m <- tibble::tibble(x = x, y = y)
+print(m, n = 30L)
+# head(m, n = 300L)
+cor(m)
+```
+
+***
+
+```{r knit_exit()} 
+knitr::knit_exit()
+```
+
+/newpage
+
+```{r render, eval=FALSE	} 
+file <- ""
+file <- basename(file)
+dir <- "rmd"
+
+jimTools::ren_pdf(file, dir)
+jimTools::ren_github(file, dir)
+```

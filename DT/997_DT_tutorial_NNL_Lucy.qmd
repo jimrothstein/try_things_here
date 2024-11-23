@@ -1,0 +1,544 @@
+---
+title: "Data Manipulation with data.table in R"
+author: "Njoki Njuki Lucy" 
+date: "March 19, 2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  eval = FALSE
+)
+```
+
+**Learning Objectives:**
+
+- Assessing the **structure** of a data.table object.
+  - **Printing** data.table objects
+  - Use `head()` and `tail()` to view the **first (and last) five rows**.
+  - Use `str()` to view the structure of data.table object.
+  - Use `tables()` to show all loaded data.table objects.
+- Sorting and ordering rows using `setorder()` and `order()`.
+- How to remove information:
+  - Selecting rows: `DT[i,j, by]`
+  - Selecting rows based on a **condition satisfied by column(s)**
+  - Selecting rows using **helper functions**: `%like%` and `%between%`
+  - Selecting columns: `DT[i, j, by]`
+    - **Renaming** columns
+- How to add information:
+  - Making new columns while preserving the existing ones using `:=`
+  - Making new columns while dropping existing ones.
+- How to reduce information:
+  - Summarising rows: `DT[i, j, by]`
+  - Grouping by one or more variables
+- How to combine information:
+  - Joining two data.table objects using `merge()` and `data.table` syntax.
+    - **Full join**; **Inner join**; **Left join**; **Right join**
+  
+## Assessing the structure of a data.table object
+
+Recap:
+
+```{r install_package, eval=FALSE}
+install.packages("data.table")
+```
+
+```{r load_package, eval=FALSE}
+library(data.table) # Extension of `data.frame`, CRAN v1.14.2
+library(palmerpenguins) # Palmer Archipelago (Antarctica) Penguin Data, CRAN v0.1.0
+```
+
+- Let's create `data.table` objects using `as.data.table()` and `data.table()`:
+
+```{r create_datatable, eval=FALSE}
+# to convert a dataframe obj to a data.table obj
+(penguinsDT <- as.data.table(penguins))
+# OR
+penguinsDT
+
+(exampleDT <- data.table(x = c(1, 2), y = 4, z = c("banana", "mango")))
+```
+
+Note: `data.table` gives the col type (similar property of tibbles)!
+
+- Using `head()` and `tail()` functions, we view the first 5 rows of the data.table object:
+
+```{r head_DT, eval=FALSE}
+head(penguinsDT)
+# head(pengiunsDT, n = 3)
+```
+
+```{r tail_DT, eval=FALSE}
+tail(penguinsDT)
+# tail(penguinsDT, n = 3)
+```
+
+- To view the structure of the  `data.table` object, use the function `str()`.
+
+```{r str_datatable, eval=FALSE}
+str(penguinsDT)
+```
+
+And the type of the object:
+
+```{r type_of_DT, eval=FALSE}
+class(penguinsDT)
+```
+
+- To show all `data.table`s loaded:
+
+```{r show_loaded_datatables, eval=FALSE}
+tables()
+```
+
+### Sorting and ordering rows
+
+- We will use the functions `setorder(data.table, ...)` and `order` to sort rows.
+  - `-:` to sort a variable in descending order.
+  
+An example,
+
+```{r ordering_rows-setorder, eval=FALSE}
+setorder(penguinsDT, bill_length_mm)
+penguinsDT
+```
+
+```{r ordering_rows-order, eval=FALSE}
+penguinsDT[order(-bill_length_mm)] # ordering in descending order
+```
+
+- Also, we can sort based on multiple columns:
+
+```{r multiple_ordering_rows-setorder, eval=FALSE}
+setorder(penguinsDT, bill_length_mm, bill_depth_mm)
+penguinsDT
+```
+
+```{r multiple_ordering_rows-order, eval=FALSE}
+penguinsDT[order(-island, bill_length_mm)]
+penguinsDT
+```
+
+
+## Removing information
+
+### Selecting rows
+
+`DT[i,j, by]`
+
+- `i`: on which rows?
+
+An example:
+
+```{r selecting_rows_eg(1), eval=FALSE}
+penguinsDT[3:4] # selects the 3rd and 4th rows
+```
+
+```{r selecting_rows_eg(2), eval=FALSE}
+penguinsDT[3:4, ] # selects the 3rd and 4th rows plus all the columns
+```
+
+Let's deselect some of the rows:
+
+```{r selecting_rows_eg(3), eval=FALSE}
+penguinsDT[-(1:5)] # deselects rows 1 to 5
+```
+
+OR
+
+```{r selecting_rows_eg(4), eval=FALSE}
+penguinsDT[!(1:5)] # deselects rows 1 to 5
+```
+
+- We can select the last row as follows:
+
+```{r select_last_row, eval=FALSE}
+penguinsDT[.N] # selecting the last row
+```
+
+- Let's select all rows except the last 5 rows:
+
+```{r select_all_rows_except_last_5rows, eval=FALSE}
+# select all rows except the last 5 rows
+penguinsDT[1:(.N - 5)]
+```
+
+- We can also select rows based on a condition fulfilled in column:
+
+```{r select_rows_based_condition}
+# select adelie species
+penguinsDT[species == "Adelie"]
+```
+
+- The **helper** functions can also be used to select rows:
+  - `%like%` looks for a pattern in a character or a factor vector.
+  
+```{r select_rows_helper_fn_like}
+# select rows - island with a letter D in them
+penguinsDT[island %like% "D"]
+```
+
+  - `%between%` looks for values in a closed interval [val1, val2].
+
+```{r select_rows_helper_fn_between}
+# select rows - penguins with body mass between 4000 and 5000
+penguinsDT[body_mass_g %between% c(4000, 5000)]
+```
+
+### Selecting columns
+
+`DT[i, j, by]`
+
+- `j`: what to do? -> select columns
+
+An example:
+
+```{r select_cols_eg(1)}
+# select island col
+penguinsDT[, island]
+```
+
+Note: Character vector is returned.
+
+```{r select_cols_eg(2)}
+# select island col
+penguinsDT[, "island"]
+```
+
+Note: A column is returned not a vector.
+
+- Let's deselect column `species`:
+
+```{r deselect_cols1}
+# select all cols expect species col
+penguinsDT[, -c("species")]
+```
+
+OR; 
+
+```{r deselect_cols2}
+# select all cols expect species col
+penguinsDT[, !c("species")]
+```
+
+- We can also select and rename columns at the same time: `DT[, list(new_name = old_name)]`.
+
+```{r select_and_rename_cols1}
+# selects col and rename
+penguinsDT[, list(island, bill_length = bill_length_mm)]
+```
+    
+  - Instead of `list()`, we can also use `.()`. Example:
+  
+```{r select_and_rename_cols2}
+# selects col and rename
+penguinsDT[, .(island, bill_length = bill_length_mm)]
+```
+  
+- We can do the above simultaneously. For example,
+
+```{r multiple_Selecting_rows_cols}
+# select rows, and creating new cols
+penguinsDT[
+  species == "Adelie" &
+    bill_length_mm < 50 &
+    body_mass_g > 4500,
+  !c("island")
+]
+```
+
+## Adding information
+
+### Making new columns while preserving existing one
+
+`DT[i, j, by]`
+
+- `j`: what to do? -> computing new columns while preserving existing ones.
+- The operator `:=` adds/updates/deletes columns following the `by` reference.
+
+Option 1:
+
+```{r new_cols_preserving_old_op1}
+# creating new cols maintaining existing cols
+penguinsDT[, propBillLength := bill_length_mm / sum(bill_length_mm, na.rm = F)][
+  ,
+  propFlipperLength := flipper_length_mm / sum(flipper_length_mm)
+]
+penguinsDT
+```
+
+Option 2: **LHS := RHS form**
+
+```{r new_cols_preserving_old_op2}
+# creating new cols maintaining existing cols
+penguinsDT[, c("propBillLength", "propFlipperLength") := list(
+  bill_length_mm / sum(bill_length_mm), flipper_length_mm / sum(flipper_length_mm)
+)]
+penguinsDT
+```
+
+Option 3: **Functional form**
+
+```{r new_cols_preserving_old_op3}
+# creating new cols maintaining existing cols
+penguinsDT[, `:=`(propBillLength = bill_length_mm / sum(bill_length_mm), propFlipperLength = flipper_length_mm / sum(flipper_length_mm))]
+penguinsDT
+```
+
+### Making new columns while dropping existing ones
+
+`DT[i, j, by]`
+- `j`: what to do? -> computing new columns while dropping existing ones.
+
+```{r new_cols_not_preserving_old_eg1}
+# new cols
+penguinsDT[, .(
+  maxLength = pmax(bill_length_mm, flipper_length_mm),
+  minLength = pmin(bill_length_mm, flipper_length_mm)
+)]
+```
+
+Let's create a new data.table object:
+
+```{r new_cols_not_preserving_old_eg2}
+# creating new cols dropping existing cols
+(newPenguinsDT <- penguinsDT[, .(body_mass_kg = body_mass_g / 1000, bill_depth_cm = bill_depth_mm / 10)])
+```
+ 
+## Reducing information
+
+### Summarising rows
+
+`DT[i,j, by]`
+
+- `j`: what to do? -> summarise
+
+An example:
+
+```{r smmarise_rows}
+# creating new cols dropping existing ones
+# mean of flipper length, bill length and bill depth (in mm)
+
+penguinsDT[, .(
+  meanFlipperLength = mean(flipper_length_mm, na.rm = T),
+  meanBillLength = mean(bill_length_mm, na.rm = T),
+  meanBillDepth = mean(bill_depth_mm, na.rm = T)
+)]
+```
+```{r count_factor}
+# count of species and islands; our sample size
+penguinsDT[, .(
+  nSamples = .N,
+  nSpecies = uniqueN(species),
+  nIslands = uniqueN(islands)
+)]
+```
+
+### Summarising rows with filtering
+
+- Let's input a condition. An example:
+
+```{r summarise_by_filtering}
+# creating new cols but filtering the data first by species -> Adelie
+penguinsDT[
+  species == "Adelie",
+  .(
+    meanFlipperLength = mean(flipper_length_mm, na.rm = T),
+    meanBillLength = mean(bill_length_mm, na.rm = T),
+    meanBillDepth = mean(bill_depth_mm, na.rm = T)
+  )
+]
+
+penguinsDT[species == "Gentoo", ] # filter data based on species -> Gentoo
+```
+
+### Grouping by one or more variables
+
+`DT[i, j, by]`
+- by: group by what? An example:
+
+```{r group_by_col}
+# finding mean grouped by species
+penguinsDT[, .(
+  meanFlipperLength = mean(flipper_length_mm, na.rm = T),
+  meanBillLength = mean(bill_length_mm, na.rm = T),
+  meanBillDepth = mean(bill_depth_mm, na.rm = T)
+), by = "species"]
+```
+
+```{r count_by_grouping}
+# count of species by islands
+penguinsDT[, .(nSamples = .N, nSpecies = uniqueN(species)), by = .(island)]
+```
+
+```{r count_by_grouping_plus_rename}
+# count of species by islands plus rename the island to islands
+penguinsDT[, .(nSamples = .N, nSpecies = uniqueN(species)), by = .(islands = island)]
+```
+
+## Combining information
+
+### Joining two data.tables 
+
+- Suppose we have two data.tables `x` and `y`.
+  - **Inner join**: return all rows from `x` where there are matching values in y and all columns from `x` and `y`. *In case of multiple matches between x and y, all combinations of the matches are returned*.
+ - **Full join**: return all rows and columns from both `x` and `y`.
+  - **Left join**: return all rows from `x` and all columns from `x` and `y`. If there are multiple matches between `x` and `y`, all combinations of the matches are returned.
+  - **Right join**: return all rows from `y` and all columns from `x` and `y`. If there are multiple matches between `x` and `y`, all combinations of the matches are returned.
+  - **Anti join**: return all rows from `x` where there are no matching values in `y`,keeping just columns from `x`.
+  
+#### Joining two data.tables - merge
+
+`merge(x, y, by, by.x, by.y, all.x, all.y, all)`
+- `x`, `y`: data.tables
+- `by`: vector of shared column names in x and y
+- `by.x`, by.y: vector of column names in x and y to merge
+- `all.x`: logical (if TRUE consider all rows from x)
+- `all.y`: logical (if TRUE consider all rows from y)
+- `all`: logical (if TRUE all.x = TRUE and all.y = TRUE)
+
+#### Joining two data.tables - `data.table` syntax
+
+`DT[i, on]`
+
+- `i` -> join to which data.table?
+- `on` -> join key columns?
+
+An example:
+
+
+```{r join_two_DT_using_data.table_syntax}
+# create two data.tables: x & y
+(x <- data.table(id = c(1, 2, 4, 5, 6), x = c(45, 67, 90, 54, 8)))
+
+(y <- data.table(id = c(1, 3, 4, 6, 6), y = c(8, 14, 19, 2, 4)))
+```
+
+- Let's join the two data.tables - inner join using base R `merge` function.
+
+```{r inner_join_merge}
+x$id
+y$id
+
+merge(x = x, y = y, by = "id")
+```
+
+- Let's do an inner join the two data.tables now using `data.table` syntax
+
+```{r inner_join_data.table_syntax}
+y[x, on = .(id), nomatch = 0]
+```
+
+- Let's do left and full join the two data.tables now using the base R `merge` function:
+
+```{r full_join_merge}
+# id of x
+x$id
+
+# id of y
+y$id
+
+# full join
+merge(x = x, y = y, by = "id", all = TRUE)
+```
+
+```{r right_join_merge}
+# right join
+merge(x = x, y = y, by = "id", all.y = TRUE)
+```
+
+- Now, let's use the `data.table` syntax to do the full and right join:
+
+```{r right_join_data.table_syntax}
+# id of x
+x$id
+
+# id of y
+y$id
+
+# right join
+x[y, on = .(id)]
+```
+
+Lastly, let's join the two data.tables - anti join using `data.table` syntax:
+
+```{r anti_join_data.table_syntax}
+# id of x
+x$id
+
+# id of y
+y$id
+
+# anti join
+x[!y, on = .(id)]
+```
+
+### Keys
+
+- With keys, no need to put the `on` argument when performing a join.
+- Keys sort the `data.table` in memory by the key column(s).
+- Also, multiple columns can be set and used as keys.
+- Useful functions include:
+  - `setkey(DT, ...)` or `setkeyv(DT, keys)`: make particular col(s) of the DT a key.
+ - `haskey(DT)`: does DT have key col(s)?
+ - `key(DT)`: which col of the DT is the key?
+ 
+An example:
+
+```{r setkey_DT}
+# make x and y cols of DT x and y respectively as keys
+setkey(x, id)
+setkey(y, "id")
+```
+
+
+```{r haskey_xDT}
+# a logical statement T/F
+# does x has a key?
+haskey(x)
+```
+
+
+```{r haskey_yDT}
+# does y has a key?
+haskey(y)
+```
+
+
+```{r key_xDT}
+# the col used as key in x DT
+key(x)
+```
+
+```{r key_yDT}
+# the col used as key in y DT
+key(y)
+```
+
+- Okay, so let's a inner, right and left joins x and y:
+
+```{r join_x_y_with_keys}
+# Inner join x and y
+x[y, nomatch = 0]
+
+# Right join x and y
+x[y]
+
+# Left join x and y
+y[x]
+```
+
+## Hands-on session
+
+1. Load the starwars data from the dplyr package and convert to data.table.
+  1. Filter the observations which have NA for species.
+  2. Compute the average weight per species
+  3. Consider the females with information concerning height and mass.
+    1. Compute the BMI.
+2. Load the band_members and band_instruments data from the dplyr package and convert to data.table.
+  1. Combine all information from the members and the instruments.
+  
+## References
+
+1. (Open Analytics)[https://www.openanalytics.eu/jobs/]: data.table class

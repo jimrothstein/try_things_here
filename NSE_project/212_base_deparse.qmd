@@ -1,0 +1,180 @@
+--- 
+title: "212_deparse" 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: lualatex
+    toc: TRUE 
+    toc_depth:  4 
+fontsize: 10pt 
+geometry: margin=0.4in,top=0.25in 
+TAGS:  deparse, substitute
+---
+PURPOSE:    base::deparse examples
+
+#### REF: 
+https://stackoverflow.com/questions/46834655/whats-the-difference-between-substitute-and-quote-in-r
+https://statisticsglobe.com/parse-deparse-expression-r-function
+
+
+#### deparse:   R expression --> string (actually structure, not an inverse)
+NOT a usual USE CASE
+
+```{r}
+string <- "2^2"
+typeof(string) # [1] "character"
+
+res <- parse(text = string)
+res # expression(2^2)
+
+is.expression(res) # [1] TRUE
+is.character(res) # FALSE,  trivial, but take note.
+as.list(res)
+typeof(res) # [1] "expression"
+```
+```{r}
+string <- "2^2"
+typeof(string) # [1] "character"
+
+res2 <- quote(string)
+res2 # call, not expression
+```
+
+
+```{r deparse}
+d <- deparse(res)
+d
+# [1] "structure(expression(2^2), srcfile = <environment>, wholeSrcref = structure(c(1L, "
+# [2] "0L, 2L, 0L, 0L, 0L, 1L, 2L), srcfile = <environment>, class = \"srcref\"))"
+
+typeof(d)
+# [1] "character"
+
+## guarantees character of length=1
+deparse1(d)
+```
+
+#### substitute --> 
+```{r basics}
+x <- 1
+y <- 2
+z <- 3
+
+
+## substitute
+substitute(x) # returns what ever was in the call; in this case just x.
+# x
+
+
+is.symbol(substitute(x))
+# [1] TRUE
+
+substitute(2)
+# [1] 2
+
+substitute(x + y)
+# x + y
+
+is.expression(substitute(x + y))
+# [1] FALSE
+
+
+## deparse(substitute)
+deparse(substitute(x))
+# [1] "x"
+
+deparse(substitute(x + y))
+# [1] "x + y"
+
+
+is.character(deparse(substitute(x)))
+# [1] TRUE
+```
+
+#### Adv-R, 1st Editiion, 
+  *  Roughly:  substitute returns code
+  *  deparse returns string
+```{r hadley}
+f <- function(x) deparse(x)
+g <- function(x) f(substitute(x))
+
+g(1:10)
+# [1] "1:10"
+unlist(strsplit("1 + 2", split = ""))
+# [1] "1" " " "+" " " "2"
+g(x)
+# [1] "x"
+
+g(x + y^2 / z + exp(a + sin(b)))
+# [1] "x + y^2/z + exp(a + sin(b))"
+```
+
+
+
+```{r advanced}
+f <- function(a, ...) {
+  # browser()
+  # substitue(a) returns x, unquoted, ie symbol
+  # arg is "x", dots is NULL,
+  arg <- deparse(substitute(a))
+  dots <- substitute(list(...))[-1]
+  c(arg, sapply(dots, deparse))
+}
+
+x <- 1
+y <- 2
+z <- 3
+
+substitute(x)
+# x
+is.symbol(substitute(x))
+# [1] TRUE
+
+
+deparse(substitute(x))
+# [1] "x"
+
+is.character(deparse(substitute(x)))
+# [1] TRUE
+
+f(x)
+# [[1]]
+# [1] "x"
+#
+
+f(x, y, z)
+# [1] "x" "y" "z"
+```
+
+Return the unevaluated expression, deparsed (not a call?)
+```{r}
+f <- function(x = {
+                2 * x
+              }) {
+  as.character(rlang::enexpr(x))
+}
+
+
+
+f(2 + 2)
+f(sin(2))
+f(sin(2) + cos(2))
+f(sin(x))
+```
+
+
+```{r knit_exit()} 
+knitr::knit_exit()
+```
+
+```{r render, eval=FALSE, include = F	} 
+file <- "0210_base_deparse_substitute_examples.Rmd"
+file <- normalizePath(file)
+
+
+rmarkdown::render(file,
+  output_format = "pdf_document",
+  output_dir = "~/Downloads/print_and_delete"
+)
+```

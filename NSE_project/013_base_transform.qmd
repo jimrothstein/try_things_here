@@ -1,0 +1,66 @@
+---
+title: "transform"
+format: html
+editor: visual
+---
+
+\footnotesize
+
+###   ToDo
+  -   Read Advanced R (first version) on NSE and how to use df in transform, or with, or ...
+  -   Convert df to environment, why as.environment fails
+
+
+You can add options to executable code like this
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+
+base::transform
+  -   allows unquoted operations on column in data.frame
+```{r}
+args(transform)
+transform
+transform.default
+transform(mtcars, twice = hp * 2)
+```
+
+However, I am still stuck with how df can be  used instead of envir
+same as with , examine first line of transform.data.frame
+eval(expr, envir, enclos)
+for expr, uses substitute(list(...))
+for envir uses df
+for enclo uses parent.frame
+```{r}
+# debug(f)
+f <- function(`_data`, ...) {
+  expr <- substitute(list(...))
+  envir <- `_data`
+  enclos <- parent.frame()
+}
+debug(f)
+f(mtcars, twice = hp * 2)
+# undebug(f)
+```
+##   Create Environemnt -- convert to data.frame
+```{r}
+e <- new.env(hash = TRUE, size = 3)
+assign(x = "a", value = 10, envir = e)
+assign(x = "b", value = 100, envir = e)
+assign(x = "c", value = 1000, envir = e)
+e
+ls(e)
+df <- data.frame(setNames(lapply(ls(e), get, envir = e), ls(e)))
+```
+use that data.frame
+```{r}
+transform(df, twice = 2 * b)
+```
+
+##      Reverse:   data.frame to environment
+```{r}
+```
+

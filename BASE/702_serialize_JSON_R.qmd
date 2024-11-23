@@ -1,0 +1,8 @@
+2023-06-06
+
+602_serialize_JSON_R.qmd
+This file is placeholder for examples, notes re: serialize R code.
+
+-   RDS, Rda ...
+-   JSON also has tools:   serialize_json ...
+-   SEE ALSO: https://webfakes.r-lib.org/ (light server to test JSON)

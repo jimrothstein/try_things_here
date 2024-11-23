@@ -1,0 +1,89 @@
+
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+--- 
+# Spaces, no Tabs
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
+---
+
+<!-- 
+set cul   "cursorline
+cc=+1			"colorcolumn is 1 more than tw
+
+vim: to format all urls for md
+s/https.*/[&]()/g
+-->
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = TRUE
+)
+```
+
+<!--  RENDER:  see bottom -->
+
+```{r library, include=FALSE		}
+library(jimTools)
+library(httr)
+``` 
+
+
+```{r begin}
+library(httr)
+
+# 1. Find OAuth settings for google:
+#    https://developers.google.com/accounts/docs/OAuth2InstalledApp
+oauth_endpoints("google")
+
+# 2. Register an application at https://cloud.google.com/console#/project
+#    Replace key and secret below.
+myapp <- oauth_app("google",
+  key = "254..XXX...apps.googleusercontent.com",
+  secret = "OjE...XX..oo4K07tkp7_B"
+)
+# google calls this key as "Client ID"
+myapp
+
+# This creates .httr-oauth (binary) in project root
+# run this in st (X11) b/c need to approve
+# 3. Get OAuth credentials
+google_token <- oauth2.0_token(oauth_endpoints("google"), myapp,
+  scope = "https://www.googleapis.com/auth/userinfo.profile"
+)
+
+# 4. Use API
+req <- GET(
+  "https://www.googleapis.com/oauth2/v1/userinfo",
+  config(token = google_token)
+)
+stop_for_status(req)
+content(req)
+```
+
+***
+
+```{r knit_exit()} 
+knitr::knit_exit()
+```
+
+/newpage
+
+```{r render, eval=FALSE	} 
+file <- ""
+file <- basename(file)
+dir <- "rmd"
+
+jimTools::ren_pdf(file, dir)
+jimTools::ren_github(file, dir)
+```

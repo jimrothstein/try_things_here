@@ -1,0 +1,64 @@
+--- 
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output:  html_notebook
+---
+
+DELETE This file?
+"html_notebook" seems same as regular .Rmd
+
+<!-- 
+set cul   "cursorline
+cc=+1			"colorcolumn is 1 more than tw
+
+vim: to format all urls for md
+s/https.*/[&]()/g
+-->
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = TRUE
+)
+library(glue)
+```
+```{r}
+```
+
+<!--  RENDER:  see bottom -->
+```{r glue}
+x <- 3
+y <- 4
+
+glue("x= {x}\n")
+```
+
+```{r invisible}
+f <- function(x) {
+  invisible(list(x = x, a = 2 * x))
+}
+
+f(2) # nothing prints!
+ans <- f(2)
+ans
+```
+
+
+
+```{r knit_exit()} 
+knitr::knit_exit()
+```
+
+/newpage
+
+```{r render, eval=FALSE	} 
+file <- "00900_html_notebook.Rmd"
+file <- basename(file)
+dir <- "rmd"
+
+jimTools::ren_pdf(file, dir)
+jimTools::ren_github(file, dir)
+```

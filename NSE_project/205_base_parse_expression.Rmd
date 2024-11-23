@@ -1,0 +1,259 @@
+--- 
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: lualatex
+    toc: TRUE 
+    toc_depth:  4 
+    keep_tex:  true
+#    hightlight:  tango
+  html_document:
+    toc: TRUE
+    toc_depth:  4
+  header-includes:  
+    -  \usepackage{helvet}  
+    -  \renewcommand{\familydefault}{\sfdefault}  
+    -  \usepackage{ulem}
+    -   \usepackage{xcolor}
+# Add to header-includes: (for smaller kable tables)
+#  \AtBeginEnvironment{longtable}{\tiny}
+# mainfont:  Computer Modern Dunhill Roman  
+fontsize: 10pt 
+geometry: margin=0.4in,top=0.25in 
+TAGS:  deparse, substitute
+---
+\footnotesize{this is footnotesize}
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = T
+) # T easier to read
+```
+
+```{r, results = 'asis',echo = T }
+htmltools::h3("Test big font")
+htmltools::h4("Test medium font")
+htmltools::h5("Test smaller font")
+```
+`r htmltools::h3("Outside chunck")`
+
+***
+
+~/code/MASTER_INDEX.md
+
+\textcolor{red}{red}
+
+#### REF: 
+```
+https://statisticsglobe.com/parse-deparse-expression-r-function
+Murdoch, RJournal, Dec 2010
+https://journal.r-project.org/archive/2010/RJ-2010-010/index.html
+https://stackoverflow.com/questions/46834655/whats-the-difference-between-substitute-and-quote-in-r
+```
+
+
+#### parse:  string  -->    expression
+```{r parse}
+# args(parse)
+e <- parse(text = "2^2")
+e
+
+##  e is expression, which is based on list
+is.expression(e)
+
+
+## Rmk:  a is unknown, but fine for expression.
+e2 <- parse(text = "2*a")
+
+## Rmk2:  However, this fails because `2a` is not valid expression.
+
+tryCatch(
+  {
+    e3 <- parse(text = "2a")
+  },
+  error = function(e) e
+)
+
+
+##  An expression can have attributes.
+attributes(e)
+```
+
+````
+####    expression, more details
+```{r more_detail}`r ''`
+
+length(e)
+
+e[[1]]
+
+## Using character vector, sapply will provide name 
+    l  <- c("class", "typeof", "attributes","is.language", "is.expression", "is.pairlist")
+    sapply(l, do.call, args=list(e))
+    sapply(l, do.call, args=list(e[[1]]))
+
+##  also works
+{
+    if (F) {
+    l  <- list(class, typeof, attributes, is.pairlist)
+    lapply(l, do.call, args=list(e))
+    } 
+}
+
+```
+````
+
+
+####  parse, deparse  are not exact inverses.  Attributes are added.
+
+```{r inverse}
+e <- parse(text = "a   <-  sin(x)")
+
+
+identical(e, deparse(e))
+
+f <- function() {
+  x
+}
+e <- parse(text = "f")
+
+
+
+x <- quote(5 + 5)
+x
+is.call(x) # T
+typeof(x) # language
+is.pairlist(x) # F
+as.list(x) # breaks the code
+
+
+z <- quote(x + y)
+is.call(z) # T
+
+
+e <- quote({
+  print(x)
+
+  x + y
+
+  x <- 3
+})
+
+as.list(e)
+```
+
+####    eval:  Takes a string, returns R expression
+An expression is unevaluated and is not a character vector (string).
+An error is returned if eval can not find a value.
+eval does NOT apply quote.   So if x has a value, R considers x+1 to be double, not expression.
+```{r eval}
+args(eval)
+
+
+x <- 10
+eval(x)
+
+##  e is not string
+e <- expr(x)
+is.character(e)
+e
+eval(e)
+
+##
+eval(expr(x))
+
+##  An error
+y <- 20
+rm(y)
+if (F) eval(expr(x + y))
+
+
+##
+y <- 12
+eval(x + y)
+eval(expr(x + y))
+
+##  expr is cummulative
+eval(expr(expr(x + y)))
+eval(expr(expr(expr(x + y))))
+
+##  observe,  a character vector makes no sense to evaluate, it just is what it
+##  is. But quote(x) is an expression and is evaluated.
+eval("x")
+eval("5+5")
+eval(quote(x))
+
+##  observe quote delays lookup for x
+
+eval(quote(x + 1), env(x = 1000))
+
+
+##  Explain this: (hint:  eval takes an "expression")
+eval(x, env(x = 1000))
+eval(x + 1, env(x = 1000))
+eval((x + 1), env(x = 1000))
+eval(eval(x + 1), env(x = 1000))
+eval(print(x + 1), env(x = 1000))
+eval(eval(x + 1), env(x = 1000))
+
+##
+eval(expr(x + 1), env(x = 1000))
+eval(quote(x + 1), env(x = 1000))
+eval(quote(x + 1), env(x = 1000))
+```
+
+
+```{r knit_exit(), include=F, eval=F} 
+knitr::knit_exit()
+```
+
+```{r render, eval=FALSE, include = F	} 
+{
+  file <- "/home/jim/code/try_things_here/BASE/0205_base_parse_expression.Rmd"
+  file <- normalizePath(file)
+  file
+}
+
+rmarkdown::render(file,
+  output_format = "pdf_document",
+  # output_format="html_document",
+  output_dir = "~/Downloads/print_and_delete"
+)
+```
+# z is 'expression'
+
+added 5 MAY
+```{r}
+z
+x <- 4
+# now eval the expression
+base::eval(z)
+y
+```
+
+##    basic NSE
+```{r}
+a <- 2
+b <- 10
+z <- quote(a + b)
+eval(z) # 12
+
+z
+(zz <- as.list(z))
+```
+# change
+```{r}
+zz[[1]] <- `*`
+zz
+
+## but zz is list
+(as.call(zz))
+eval(as.call(zz)) # 20
+```
+##    Quote can return.... (SEE Lionell)
+https://rpubs.com/lionel-/programming-draft

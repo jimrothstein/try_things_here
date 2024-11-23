@@ -1,0 +1,95 @@
+---
+title: /home/jim/code/try_things_here/TIDYVERSE/510_glue_examples.qmd
+date: last-modified
+# Quarto requires title, if want date to appear
+# ~/.config/kickstart/skeleton/skeleton.qmd
+#   TAGS:   glue
+---
+REF: https://glue.tidyverse.org/index.html
+
+
+TODO:
+- glue_data (examples)
+- glue-transform ??
+- paste0 (never looks inside brackets)
+
+```{r}
+library(glue)
+```
+```{r}
+name = "jim"
+glue("my name is {name}")
+
+```
+
+mult-line glue
+```{r}
+country = "US"
+glue("my name is {name} " ,
+     "and my country is {country} ",
+     "and I code in R")
+
+
+## not what I expected
+glue(" my name is   
+     and my country is  //
+    and I code.
+     ")
+```
+
+## include params, in glue statement
+```{r}
+glue(" {param1} my name " ,
+     "is {param2} ",
+     param1="Hello",
+     param2="jim")
+```
+
+## compare bquote, may LOOK the same; but not identical
+```{r}
+a <- 2
+bquote(a == .(a)) # 
+glue("a == {a}")
+
+identical(bquote(a == .(a)), glue("a == {a}"))
+
+b = "hello"
+bquote(a == .(b)) # 
+```
+
+## include literal {  (CSS needs literal brackets)
+```{r}
+# Can do  with ' and quote, but hard on eyes.
+glue("Enclosed in side of brackets {{name}}")
+glue("{{ a }}")
+glue("{{ { }}") # NO
+glue("}") # YES
+```
+
+
+## glue to create list, F
+```{r}
+## list(A = "one", B = "two")
+
+
+param1 = "one"
+w = list(A = {param1})
+w
+is.list(w)
+
+
+```
+```{r}
+library(cli)
+param1 = ", or " 
+param2 = " or "
+
+q = list("vec-last" = {param1}, "vec_sep2" =  {param2})
+list("vec-last" = {param1}, "vec_sep2" =  {param2})
+
+divid <- cli_div(theme = list(.val = list("vec-last" = ", or ", "vec_sep2" = " or ")))
+divid <- cli_div(theme = list(.val = list("vec-last" = {param1}, "vec_sep2" = {param2} )))
+```
+
+
+vim:linebreak:nospell:nowrap:cul tw=78 fo=tqlnrc foldcolumn=1 cc=+1

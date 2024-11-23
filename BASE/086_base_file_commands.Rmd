@@ -1,0 +1,220 @@
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+
+--- 
+# Spaces, no Tabs
+title: "`r knitr::current_input()`" 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
+TAGS:  base,sprint,gsub,regex
+---
+
+### base:: files and dir commands
+
+### Includes, base commands to rename files in directory.
+### base:: files and dir commands
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  
+											comment="      ##",  
+											error=TRUE, 
+											collapse=TRUE) 
+library(jimTools) 
+```
+
+```{r print_labels}
+this_file  <- knitr::current_input() 
+
+output_file  <- paste0("'", this_file, "'")
+print(output_file)
+print(knitr::all_labels())
+```
+
+### base:: commands (why use fs:: ?)
+```{r begin}
+##  patterns are regex
+
+# the_dir  <- "~/mp3/from_youtube/"
+the_dir  <- "~/mp3_files"
+pat  <-  "^_[:digit:]{5}"
+
+# mp3 files only, R requires \\ to create literal
+pat  <- "\\.mp3$"
+list.files(the_dir, pattern=pat)
+
+
+# files in this project
+list.files("./rmd", pattern="*.Rmd")
+list.files("./rmd", full.names = TRUE ,pattern="*.Rmd")
+
+if (FALSE)
+  # file.rename()
+  # file.create()
+  # basename()
+  # dirname()
+  #
+  # file.copy(from, to, overwrite = recursive, recursive = FALSE,
+  #               copy.mode = TRUE, copy.date = FALSE)
+  # list.dirs()
+  # dir()
+```
+
+```{r examples_regex}
+
+if (FALSE ) {
+  pat  <-  "^_[[:digit:]]{4,6}"
+  pat  <-  "^_"
+  pat <- `"^_00056"`
+
+  pat <- "^_[[:digit:]]{5}"
+}
+
+```
+
+
+### base::find.package()
+```{r find.package}
+find.package("jimTools")
+find.package("purrr")
+
+
+path.package("jimTools")
+```
+
+### prepend "0" to file names (put into jimTools)
+```{r prepend_file_name, eval=F}
+prepend  <- "0"
+old  <- list.files("./rmd", pattern="*.Rmd")
+old
+new  <- paste0(prepend, old)
+new
+file.rename(here("rmd", old), here("rmd", new))
+```
+
+
+regex, sub(), gsub will work
+stringr is easier?
+```{r}
+the_dir  <- "./rmd"
+the_files  <- list.files(the_dir)
+the_files
+library(stringr)
+# regex
+the_prefixes  <- stringr::str_extract(the_files, "^[0-9]*[A-Z]?_" )
+the_prefixes
+```
+
+ToDO
+Propose new numbering prefix for all files
+```{r examle, eval=F}
+
+OLD_NAMES  <- list.files("./rmd", pattern="^[0-9]*")
+OLD_NAMES
+the_files   <- OLD_NAMES
+N  <- length(the_files)
+N
+
+# remove current prefix
+the_files  <- base::sub(pattern = "^[0-9]*","", the_files)
+the_files
+
+# propose new prefix, min of 5 digits
+
+
+the_prefixs  <- sprintf("%05i", 1:N)
+the_prefixs
+
+# glue together 
+NEW_NAMES  <- paste0("./rmd/",the_prefixs, the_files)
+
+OLD_NAMES  <- paste0("./rmd/", OLD_NAMES)
+
+# change on disk
+OLD_NAMES
+NEW_NAMES
+base::file.rename( OLD_NAMES, NEW_NAMES)
+
+```
+
+
+### Example:  Use gsub to rename mp3 files
+```{r special, eval=F,  include=F}
+
+the_dir  <- "~/mp3_files"
+the_dir
+list.files(path = the_dir)
+
+pattern = "^The"
+list.files(path = the_dir, pattern = pattern )
+
+old <- list.files(path = the_dir, pattern = pattern)
+old
+
+## create new
+  new  <- sub(pattern = pattern, replace="***", x = old)
+  new
+
+## prepend dir (just playing)
+  new2 <- paste0(the_dir,"/", new)
+  new2
+
+
+new
+
+## do not run
+  if (FALSE) {
+  #file.rename(
+              from = old,
+              to = new)
+  }
+
+```
+
+
+
+```{r}
+
+regex, sub(), gsub will work
+stringr is easier?
+```{r}
+the_dir  <- "./rmd"
+the_files  <- list.files(the_dir)
+the_files
+library(stringr)
+# regex
+the_prefixes  <- stringr::str_extract(the_files, "^[0-9]*[A-Z]?_" )
+the_prefixes
+
+```
+
+
+```{r knit_exit()} 
+knitr::knit_exit() 
+```
+
+\newpage
+
+```{r render, eval=FALSE	} 
+file  <- "rmd/0086_base_file_commands.Rmd"
+file
+
+
+## Want github to display nicely rendered output?
+##  *  include md_format
+#   *  include output_dir = "out"
+#   *  if .gitignore balks,  then add !out/**   to close .github
+rmarkdown::render(file,
+                  #output_format = "pdf_document",
+                  #output_format = "html_document",
+                  output_format=c("html_document",    # if want both
+                                  "md_document"),
+                  output_dir = "out",
+                  output_file = output_file)
+                  #output_file = "out")
+```
+

@@ -1,0 +1,121 @@
+---
+title: skeleton.qmd
+date: last-modified
+# Quarto requires title, if want date to appear
+# ~/.config/kickstart/skeleton/skeleton.qmd
+TAGS:   rlang, inject, !!, .env, Ch 19, 
+---
+### Chapter 19.2, Quasiquotation
+
+Purpose:  Does a function quote or evaluate its arguments?
+          Compare:   paste(a,b,c) to cement(a,b,c) (below)
+
+#### paste(a,b,c) when a, b, c are not defined b/c paste tries to evaluate.
+Compare cement to paste.
+First, I used tryCatch, then same thing but simpler ways
+```{r}
+
+tryCatch( paste(a,b,c), 
+  error = function(e) e,
+  finally = {
+    cat("FAILS, because paste evaluates args 1st\n")
+  }
+)
+paste(a,b,c)   # ERROR, evaluates instead of quote
+paste("a", "b", "c") # we must quote # [1] "a b c"
+
+
+try( paste(a,b,c))
+try( { paste(a,b,c)})
+```
+
+#### cement(a,b,c) quotes for us( ensyms)
+```{r}
+rlang::ensyms(a,b)   # evaluats
+
+#   as_string takes symbol and returns char[]
+cement <- function(...) {
+#  browser()
+  args <- ensyms(...) # returns list of symbols
+  paste(purrr::map(args, as_string), collapse = " ")
+}
+
+cement(a,b,c) # [1] "a b c"
+```
+
+```{r}
+library(rlang)
+MASS                                   # ERRor 
+# so library must QUOTE its argument
+library(MASS)
+
+
+1:5                                    # NO ERROR 
+sum(1:5)                               # sum evaluates arg 
+
+x=1:5
+x
+sum(x)                                 # evaluates arg 
+```
+#### Exercise 1
+```{r}
+library(MASS)
+
+mtcars2 <- subset(mtcars, cyl == 4)
+
+with(mtcars2, sum(vs))
+sum(mtcars2$am)
+
+rm(mtcars2)
+```
+
+```{r}
+nl  <- as.list(seq_along(mtcars))
+names(nl)  <- names(mtcars)
+nl
+
+substitute(cyl==4)    # quotes
+eval(substitute(cyl==4), nl)
+a # ERROR
+paste(a,b,c) # evaluates its arg
+
+
+name = "jim"
+paste("jim")
+paste(jim)
+paste(name) # evaluates
+paste(!!name) # error
+paste(rlang::inject(name)) # works !
+
+```
+#### Exercise 2 
+```{r}
+library(dplyr)                         # quoted 
+library(ggplot2)                       # quoted 
+
+by_cyl <- mtcars %>%
+  group_by(cyl) %>%                    # cyl quoted 
+  dplyr::summarise(mean = mean(mpg))   # mean would evaluates mpg, BUT summarize
+quotes its args 
+
+##  in aes(), cyl, mean quoted 
+##  in ggplot(), all quoted
+ggplot(by_cyl, aes(cyl, mean)) + geom_point()
+```
+
+```{r}
+library(testthat)
+f  <- function(x,y){x/y}
+testthat::expect_no_error(f(1,0))
+testthat::expect_no_error(1/0)
+testthat::expect_false(2 == 3)
+testthat::expect_error(paste(a,b))
+  
+
+
+x = testthat::expect_error(a)
+str(x)
+
+```
+
+vim:linebreak:nospell:nowrap:cul tw=78 fo=tqlnrc foldcolumn=1 cc=+1
