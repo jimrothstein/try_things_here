@@ -1,5 +1,8 @@
 #### My tutorial on functions, env, rlang (~ Ch6 & Ch7)
 
+#  NOV 24, 2024 -- DO NOT USE
+#  go to 007_env_rlang.qmd
+
 # REF: rlang: https://rlang.r-lib.org/reference/search_envs.html
 # REF: from adv-r v2 Chapter 7
 
@@ -22,14 +25,14 @@ rlang::env_print()
 rlang::env_names(rlang::current_env())
 
 # env just created
-rlang::env_print(env)                  # much  more info! 
+rlang::env_print(env)                  # much  more info!
 
 
 # ---------------------------
 #	Ch 7.2
-# Where am I?   Global_env 
+# Where am I?   Global_env
 # NOTE:   env are NOT vectors
-# 
+#
 rlang::global_env()
 rlang::current_env()
 identical(global_env(), current_env())
@@ -43,7 +46,7 @@ identical(global_env(), current_env())
 rlang::env(a=1)                        #default:   current_env is parent of new env
 rlang::env_parent(rlang::env(a=1))     # here parent  is global_env
 
-j=rlang::env(emptyenv(), a=2)          # j is child of TOP parent emptyenv() 
+j=rlang::env(emptyenv(), a=2)          # j is child of TOP parent emptyenv()
 env_parent(j) # <environment: R_EmptyEnv>
 j$a
 
@@ -69,7 +72,7 @@ env_has(env, "foo")
 ```
 
 #### reference symantecs - how ref work - modify-in-place
-```{r ref_sym }# 
+```{r ref_sym }#
 e  <- env(a=1)
 f  <- e
 g   <- e
@@ -108,7 +111,7 @@ with_env  <- function(f, e=env_parent()){
 	# set environment for f to evaluate in
 	environment(f)  <- e
 	f
-} 
+}
 # create 2 new environments
 a  <- env(x=10)
 b  <- env(x=20)
@@ -125,7 +128,7 @@ from 1st ed  (Environments)
 
 h <- function() {
   x <- 10
-  function() {   
+  function() {
     x          # what env ?
   }
 }
@@ -134,14 +137,14 @@ x <- 20
 i()
 ```
 Notation:
-parent.frame = CALLING ENVIRONMENT 
-We can access this environment using the unfortunately named parent.frame(). This function returns the environment where the function was called. 
+parent.frame = CALLING ENVIRONMENT
+We can access this environment using the unfortunately named parent.frame(). This function returns the environment where the function was called.
 ```{r env_where_fun_called}
 f2 <- function() {
   x <- 10
   function() {
     def <- get("x", environment())   # x in env where executing
-    name  <- environment() 
+    name  <- environment()
     cll <- get("x", parent.frame())   # x in env where anony function called
     list(defined = def, name = name, called = cll)
   }
@@ -154,38 +157,38 @@ str(g2())
 
 # don' undrestand.
 f  <- function() {
-  def  <- environment() 
+  def  <- environment()
   cll  <- parent.frame()
-  list (defined = def, called = cll) 
+  list (defined = def, called = cll)
     function( ){
-      list (defined = def, called = cll, anony_defined = environment()) 
+      list (defined = def, called = cll, anony_defined = environment())
     }
 }
 inner  <- f()
 inner
 inner()
 
-	enclosing_env# 
+	enclosing_env#
 # ```{r enclosing_env}
 Environment(f) == enclosing env (where created)
 # env_print()
-# 
+#
 # sd()  always :environment(sd) (stats)
-# 
+#
 # environment(sd) #namespace::stats
-# 
-find("sd")  
-# 
+#
+find("sd")
+#
 actually making copy
 # environment(sd)  <- global_env()
 # environment(sd)  #Global
 # env_names(current_env()
-# 
-find("sd") 
+#
+find("sd")
 rm("sd")
 
 
-#### parent.frame()# 
+#### parent.frame()#
 
 ```{r frame}
 ## TODO   .... use rlang::
@@ -203,7 +206,7 @@ where_am_i()
 parent_ls()
 
 # in R, a functions env depends where it was called
-# COMPARE: a() to .G variable a 
+# COMPARE: a() to .G variable a
 a <- function(){
 	x  <- 5
 	#parent_ls()
@@ -212,7 +215,7 @@ a <- function(){
 a()
 
 
-## begin here -- TODO	
+## begin here -- TODO
 
 b   <- function() {
 	z  <- 10
@@ -233,13 +236,13 @@ b
 
 rlang::env_print()
 
-# 
+#
 
 ```
 
-::: Review basics, repeat of Examples in rlang Ref :::# 
+::: Review basics, repeat of Examples in rlang Ref :::#
 
-#### base::search()	--> char[], 
+#### base::search()	--> char[],
 #### all env names, beginning with lowest, .GlobalEnv
 base::search()
 
@@ -274,12 +277,12 @@ search_env(formal)
 
 #### problems with pkg_env_name("rlang")
 #### Should Return  ERROR,  not F?
-#### arg must be 'search name' or 'package environment' 
+#### arg must be 'search name' or 'package environment'
 
 ```{r what_is_this, eval=FALSE	 }
 
 # note is attched ? F, T, T
-rlang::is_attached("rlang") 
+rlang::is_attached("rlang")
 rlang::is_attached("package::rlang")
 rlang::is_attached("formal")
 
@@ -296,7 +299,7 @@ is.package("tidyverse") #F
 
 rlang::pkg_env("base")
 
-#### function's env depends upon ????? ToDo# 
+#### function's env depends upon ????? ToDo#
 parent_ls  <- function() {
 	ls (parent.frame())
 }
@@ -326,9 +329,9 @@ b()
 b
 
 rlang::env_print()
-``` 
+```
 
-7.2.3 - create env(), env_parents()# 
+7.2.3 - create env(), env_parents()#
 Note:  use of last=   and subsetting the returned list
 ```{r 7.2.3}
 e1  <- rlang::env(a=1)
@@ -353,7 +356,7 @@ N <- length(env_parents(e2d,last=empty_env()))
 N
 
 
-# env can point to itsefl! 
+# env can point to itsefl!
 e  <- env()
 env_names(current_env())
 env_names(e)
@@ -362,7 +365,7 @@ e$self  <- e
 env_names(e)
 ref(e)
 
-``` 
+```
 
 #### 7.2.4 <<- SUPER
 ```{r 7.2.4}
@@ -385,9 +388,9 @@ f02()
 x
 
 ## What is value for x, AFTER f03 is run?
-## Run as is, x will be NULL 
+## Run as is, x will be NULL
 ## Comment out x  <- 0 (in outer),  x will be 1
-##  Ans:  when x <<- 1 runs, R will search for for x; 
+##  Ans:  when x <<- 1 runs, R will search for for x;
 ##  if it find x in a parent, it will replace value with 1, and stop
 ##  if R does NOT find, it will create  one at .Global
 rm(x)
@@ -404,7 +407,7 @@ f03  <- function() {
 }
 f03()
 cat("global_env(), x= ", x, "\n")
-``` 
+```
 
 7.2.5   `env` -- not exactly `list`
 - no subset
@@ -436,7 +439,7 @@ e1 <- env()
 e1$loop <- e1
 env_print()
 
-#3 
+#3
 e1 <- env()
 e2  <- env(e1)
 
@@ -475,7 +478,7 @@ f(x) #0 ??
 # BETTER:
 # env where a function can keep its state variables.
 
-f  <- function(x) g(x) 
+f  <- function(x) g(x)
 g   <- function(y) {fn_env(g)}
 
 h  <- function(x) {
@@ -497,7 +500,7 @@ library(rlang)
 y <- 1
 f1 <- function(x) x+y
 rlang::fn_env(f1)
-env_names(current_env()) 
+env_names(current_env())
 f2 <- function(x) env_parent(current_env())
 f2()
 rlang::fn_env(f2)
@@ -515,7 +518,7 @@ env_names(e)
 my_str  <- function(f) {
 	if (!is.function(f)) abort(" f must be a function")
 	where(f)	# find f
-	fn_env(f)  # enclosing 
+	fn_env(f)  # enclosing
 	str(f)
 }
 my_str("mean")
@@ -547,20 +550,20 @@ c <- function(x) {
 	print(paste0("inside c", y))
 	print(current_env())
 	print(env_parent()) # Global,  not b!
-	x 
+	x
 	#cst()
 }
 y  <- 3
 # also nice stack trace
 a(x <- 2)
 
-# Explain:   c must evaluate x, 
+# Explain:   c must evaluate x,
 # combine, 2 branches!
 a(f())
-``` 
+```
 
 
-#### 7.5.5 EXERCISE 
+#### 7.5.5 EXERCISE
 ```{r 7.5.5_exercise}
 # list all objects in caller_env()
 f  <- function(){
@@ -571,9 +574,9 @@ f  <- function(){
 environment()
 f()
 ls()
-``` 
+```
 
-#### most env have no intrinsic name; setting attr(., "name") is different#  
+#### most env have no intrinsic name; setting attr(., "name") is different#
 ```{r env.name, eval=FALSE	 }
 C  <- current_env() # TRUE
 identical(C, current_env())
@@ -586,10 +589,10 @@ attributes(C)
 
 attr(C, "name")  <- "env_C"
 
-env_get_list(env = C, nms= "name") 
+env_get_list(env = C, nms= "name")
 fn_env(C)
 f  <- function() {}
-fn_env(f)# 
+fn_env(f)#
 
 
 e1  <- C
@@ -597,10 +600,10 @@ e2  <- C
 e3  <- C
 identical(C, e1)
 # attr(e3, "name")
-``` 
+```
 
 
-#### 7.6 get(), set() env  Maintain `state`# 
+#### 7.6 get(), set() env  Maintain `state`#
 ```{r 7.6}
 # temp change value of a, then return to original
 env  <- env()
@@ -618,10 +621,10 @@ x <- set_a(12)
 get_a()
 set_a(x)
 get_a()
-``` 
+```
 
 
-#### report all env f_report(env)# 
+#### report all env f_report(env)#
 ```{r report_all}
 r  <- function(f, env) {
 	lobstr::cst()
@@ -629,25 +632,25 @@ r  <- function(f, env) {
 			 Parent  = env_parent(env),
 			 B  = "binding env",
 			 Env = environment(f), # env of f
-			 Cl =  fn_env(f), 
+			 Cl =  fn_env(f),
 			 Caller = caller_env()
 			 )
 }
 f  <- function(x) {
-	r(f,current_env()) 
+	r(f,current_env())
 }
 
 
 
 e1  <- env(empty_env())
-e1$g  <- function(z=0) r(e1$g,current_env()) 
+e1$g  <- function(z=0) r(e1$g,current_env())
 (e1$g)(1)
 environment(f)
-``` 
+```
 
 ```{r}
 reprex({
-	#' HEADING	
+	#' HEADING
 
   #+ setup, include = FALSE
   knitr::opts_chunk$set(outdir = "output_is", comment = "#####" )

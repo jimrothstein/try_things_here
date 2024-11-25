@@ -87,7 +87,18 @@ f = function(env=NULL)
   env_parents(env , last=empty_env())
 f(current_env())   # omits global (current_env)
 ```
-## recurse oveer environments
+
+## 7.3
+
+### call_env() returns an env
+```{r}
+a = 10
+f = function() caller_env()
+rlang::env_print(f())
+
+```
+
+### where:  recurse oveer environments
 ```{r}
 where <- function(name, env = caller_env()) {
   if (identical(env, empty_env())) {
@@ -101,15 +112,37 @@ where <- function(name, env = caller_env()) {
     where(name, env_parent(env))
   }
 }
+
+# env where "lm" found
+env_print(where(name = "lm"))  # use string
 ```
 
 
-## Compare names vs env themself
+## 7.4 Special Environments
+
+
+### Compare names vs env themself
 ```{r}
-search()
-search_envs()
+search() # returns strings
+search_envs()  # returns envs, in a list?  rlang_env
+class(search_envs())  # "rlang_envs" 
+
+one = search_envs()[1]  # returns chain  
+search_envs()[[1]]   # return <env>
+
+
+is_environment(one[1])  # F
+is_environment(one[[1]])  # T 
+
+class(search_envs()[1])  # rlang_envs, chain
+str(search_envs()[1])
 ```
+
+
+## 7.4.2 fn env
+
 What value for x prints?
+```{r}
 # value of x depends upon <env> sent to f
 f  <- function(env = global_env()){
 	env$x
@@ -128,7 +161,7 @@ env <- child_env(parent, bar = "bar")
 env_has(env, "foo")
 ```
 
-#### reference symantecs - how ref work - modify-in-place
+## reference symantecs - how ref work - modify-in-place
 ```{r ref_sym }#
 e  <- env(a=1)
 f  <- e
@@ -483,7 +516,7 @@ gc() + sideeffects
 lobstr::mem_used() wrapper for gc()
 
 
-7.2.6 Advanced
+## 7.2.6 Advanced
 env_bind_lazy(env)
 env_bind_active()
 
@@ -552,6 +585,7 @@ current_env()
 h(x)
 ```
 
+## 7.4.2
 ```{r 7.4.2 }
 library(rlang)
 y <- 1
@@ -569,7 +603,7 @@ fn_env(e$g)
 env_names(current_env())
 env_names(e)
 ```
-#### 7.4.5 Exercises
+### 7.4.5 Exercises
 ```{r 7.4.5, error=TRUE}
 # my_str()
 my_str  <- function(f) {
@@ -581,7 +615,7 @@ my_str  <- function(f) {
 my_str("mean")
 ```
 
-#### 7.5.2 call stack, lazy, lobstr::cst()
+## 7.5.2 call stack, lazy, lobstr::cst()
 ```{r 7.5.2}
 
 # nice stack trace, in order
