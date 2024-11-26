@@ -138,12 +138,23 @@ unloadNamespace("pharmaversesdtm")
 ### get pkg namespace
 
 -   asNamespace , returns \<environtment: namespace:stats\>
+-   a namespace is an *environment*
 -   as.environment, must include package: , returns \<environment: package:stats\> + attrs
+-   ns1, ns2 are both environments, but not the same
 
 ```{r}
-asNamespace("stats")  # do not prefix with "package:"
+# <environment: namespace:stats>
+ns1 =asNamespace("stats")  # do not prefix with "package:"
+ns1
+is.environment(ns1) # T 
 
-as.environment("package:stats")
+
+# package environment PLUS attributes
+ns2 = as.environment("package:stats")
+ns2
+is.environment(ns2)   #T
+
+identical(ns1,ns2)   # F
 ```
 
 ### getNamespace, returns environment
