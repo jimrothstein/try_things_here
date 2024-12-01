@@ -1,0 +1,108 @@
+---
+title: "300_chapter01_metaprogramming_"
+format: html
+editor_options: 
+  chunk_output_type: console
+---
+
+###
+Notation. x,y,z are `formal paramaters`, 1 is default value for z
+str() uses correct terms (I  think) `symbol`
+```{r}
+library(rlang)
+f = function(x) x
+  
+  
+formals(f)
+body(f)
+environment(f)
+
+## formals does NOT evaluate arguments, or l would error for next g
+g = function(x, y, z=1)x
+g = function(x, y, z=x + y)x
+w=2
+g = function(x, y, z=x + y, w)x
+rm(w)
+
+l = formals(g)
+l
+names(l)
+body(g)
+environment(g)
+
+is.list(l)
+l |> class()   # pairlist ( list of argumnets)
+attributes(l)  # names attributes
+str(l)
+```
+
+
+### an expression
+```{r}
+
+h = function(x, y, z=1){
+  e1 = x
+  e2 = x + y
+  e3 = x + y + z
+}
+
+
+# important
+h
+is_expression(h)    # F
+
+res = body(h)
+res
+is_expression(res)   # T
+is_expression( x + y + z + w)  # error
+
+
+x=2
+is_symbolic(x)
+is_symbolic(`x`)
+is_symbolic(2)
+```
+
+### expressions (see ?rlang::is_expression)
+careful .. R's definitions
+```{r}
+q1 = quote(1)
+is_expression(q1)  # T
+is_syntactic_literal(q1) #T
+
+# BUT
+is_symbol(q1)  # F
+
+
+q2=quote(x)
+is_expression(q2)  # T
+is_symbol(q2)  #T
+is_call(q2 )   #  F
+
+q3 = quote(x + 1)
+is_expression(q3) #T
+is_symbol(q3)   # F
+is_call(q3)  #T
+
+is_expression(x+y)
+is_expression(h(x,y) + x)
+
+
+# Other expressions
+q = quote(sin(pi)) 
+is_expression(q)  # T
+
+q = quote(sin())
+  is_expression(q)  # T
+  is_call(q)  # T
+
+q = quote(xx + yy)
+  is_expression(q)  # T
+
+q = quote(x +
+            y +
+            z +
+            w)
+  is_expression(q) # T
+```   
+
