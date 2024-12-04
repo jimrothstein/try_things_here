@@ -6,12 +6,12 @@ editor_options:
 ---
 
 ###
+SEE:  310_R_notes (are up-to-date)
 Notation. x,y,z are `formal paramaters`, 1 is default value for z
 str() uses correct terms (I  think) `symbol`
 ```{r}
 library(rlang)
 f = function(x) x
-  
   
 formals(f)
 body(f)
