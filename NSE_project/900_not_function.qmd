@@ -1,0 +1,68 @@
+---
+title: "not function"
+format: html
+---
+
+Operator Precedence came up in today's discussion of this code from Advanced R 18.4.1 [https://adv-r.hadley.nz/expressions.html?q=%in%#operator-precedence](https://adv-r.hadley.nz/expressions.html?q=%in%#operator-precedence){.uri}
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE,  
+                      comment="      ##", 
+                      collapse=TRUE)
+
+lobstr::ast(!x %in% y)
+```
+
+The reason this works, if I followed the discussion correctly, is due to "operator precedence", %in% is evaluated before !
+
+SEE <https://rdrr.io/r/base/Syntax.html>
+
+I want to suggest another way to see this.
+
+`!` is a function and, of course, functions take arguments, in this case exactly one argument. **If you mentally parse functions as lists,  the function is first, followed by arguments.** lobstr::ast shows this.
+
+If you remember `!` is a function, then it's argument must be what remains: x %in% y.
+
+# Background !not function
+
+```{r two}
+library(lobstr)
+
+## usage examples
+x = TRUE
+!x
+! x    # spacing not important
+
+`!` (x)
+`!`(x)
+
+## class
+`!` |> class()   # function
+
+## structure
+lobstr::ast(!x)
+
+## source code
+`!`
+
+#error
+# `!` x
+ 
+```
+
+```{r call}
+
+## first argument, as string
+## 2nd arugment as expression (otherwise, call will try to evaluate this argument)
+call("!", quote(x %in% y))
+
+call("`!`", quote(x %in% y))
+call("`!`", "x %in% y")
+
+
+rlang::call2(`!`, quote(x))
+```
+
+```{r}
+lobstr::ast(! x)
+```
