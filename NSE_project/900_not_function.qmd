@@ -6,9 +6,14 @@ format: html
 Operator Precedence came up in today's discussion of this code from Advanced R 18.4.1 [https://adv-r.hadley.nz/expressions.html?q=%in%#operator-precedence](https://adv-r.hadley.nz/expressions.html?q=%in%#operator-precedence){.uri}
 
 ```{r}
+#| echo: FALSE
+
 knitr::opts_chunk$set(echo = TRUE,  
                       comment="      ##", 
                       collapse=TRUE)
+
+```
+```{r}
 
 lobstr::ast(!x %in% y)
 ```

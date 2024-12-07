@@ -3,7 +3,7 @@
 #TAGS:  pivot, nest, tidyr
 #---
 # ------------------------------------
-# Simple Examples of the Messy Data 
+# Simple Examples of the Messy Data
 #     NOTES
 # ------------------------------------
 # SEE r4ds Chapter 12
@@ -13,7 +13,7 @@
 - pivot_longer:  normalizes when repetitve columns (wk1 wk2 ...)
 - pivot_wider
 - separate (one combo column, split into two)
-# 
+#
 # -----------------------------
 # Libraries & setup sample data
 # -----------------------------
@@ -49,10 +49,10 @@ classroom |> head()
 # # A tibble: 4 × 4
 #   name   quiz1 quiz2 test1
 #   <chr>  <chr> <chr> <chr>
-# 1 Billy  <NA>  D     C    
-# 2 Suzy   F     <NA>  <NA> 
-# 3 Lionel B     C     B    
-# 4 Jenny  A     A     B    
+# 1 Billy  <NA>  D     C
+# 2 Suzy   F     <NA>  <NA>
+# 3 Lionel B     C     B
+# 4 Jenny  A     A     B
 
 
 # ---------------------------
@@ -65,15 +65,14 @@ classroom |> head()
 # assessment*
 # grade
 # --------
-(classroom2 <- classroom %>% 
-  tidyr::pivot_longer(cols = quiz1:test1, 
-    names_to = "assessment", 
-    values_to = "grade") %>% 
+(classroom2 <- classroom %>%
+  tidyr::pivot_longer(cols = quiz1:test1,
+    names_to = "assessment",
+    values_to = "grade") %>%
   arrange(name, assessment))
 
-##  inverse !  returns to orginal 
+##  inverse !  returns to orginal
 (classroom3  <- classroom  %>%  unnest_longer(name))
-
 
 
 
