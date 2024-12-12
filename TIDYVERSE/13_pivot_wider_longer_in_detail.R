@@ -1,5 +1,9 @@
+## pivot wider
+## EXAMPLE from `admiral` package, but should be self-contained
 
+   library(dplyr)
    library(tibble)
+   library(tidyr)
 
    cm <- tribble(
      ~STUDYID,  ~USUBJID,       ~CMGRPID, ~CMREFID,  ~CMDECOD,
@@ -31,24 +35,54 @@
      "STUDY01", "BP40257-1002", "1",      "2791596", "CMATC4CD", "C03DA"
    )
 
-   derive_vars_atc(cm, facm)
+## simplest possible !
 
-library(dplyr)
+## will need these
+by_vars = exprs(USUBJID, CMREFID = FAREFID)
+id_vars = exprs(FAGRPID)
+
+# for uniqueness
+(id_cols = c(as.character(by_vars), as.character(id_vars)))
+
+wide = tidyr::pivot_wider(data = facm,
+                   names_from = FATESTCD, ,
+                   values_from = FASTRESC,
+                   id_cols =c("USUBJID", "FAREFID", "FAGRPID"))
+
+wide
+
+# check
+wide |> group_by(USUBJID) |> count()
+wide |> group_by(USUBJID, FAREFID) |> count()
+wide |> group_by(USUBJID, FAREFID, FAGRPID) |> count()
+cm
+
+
+
+# join
+dplyr::left_join(x = cm,
+                 y = wide1,
+                 by = join_by(USUBJID, CMREFID ==  FAREFID),
+                 relationship = "one-to-one"
+                 )
+
+## add duplicate row to wide
+dup = tibble(
+       USUBJID = "BP40257-1001",
+       FAREFID = "1192056",
+       FAGRPID = "1"
+       )
+wide1 = bind_rows(wide, dup)
+wide1
+#####
+   ###
 
 data_transposed = function(
     dataset_merge,
-    #jby_vars,
-    #id_vars = NULL,
     key_var,
     value_var
-    #filter = NULL,
-    #relationship = NULL
     ) {
-#browser()
-#  key_var = enquote(key_var)
-#  value_var = enquote(value_var)
   dataset_merge %>%
-#    filter_if(filter) %>%
     pivot_wider(
       names_from = !!key_var,
       values_from = !!value_var,
@@ -57,20 +91,25 @@ data_transposed = function(
 }
 
 # the call
-data_transposed(
+dataset_merge_wider = data_transposed(
   dataset_merge = facm,
 #  by_vars = exprs(USUBJID, CMREFID = FAREFID),
 #  id_vars = exprs(FAGRPID),
   key_var = expr(FATESTCD),
   value_var = expr(FASTRESC)
-
-#  filter,
-#  relationship = NULL
-)
 )
 
+## result
+dataset_merge_wider
+dataset_merge_wider |> names()
 
-)
+# USUBJID,
+names(cm) %in% names(dataset_merge_wider)
+dataset_merge_wider |> select(USUBJID, CMDECOD, starts_with("CMATC"))
+
+
+## save ??
+if (F) dput(dataset_merge_wider)
 
 #' cm %>%
 #'   derive_vars_transposed(
@@ -82,3 +121,10 @@ data_transposed(
 #'   ) %>%
 #'   select(USUBJID, CMDECOD, starts_with("CMATC"))
 
+by = join_by(STUDYID, CMREFID == FAREFID)
+
+left_join(x = cm,
+          y = dataset_merge_wider,
+          by = by
+          )
+J =  capture.output(mtcars)
