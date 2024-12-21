@@ -10,10 +10,10 @@ K <- 3
 get <- seq(from = 1, to = K + 1)
 s[get]
 
-
+```R
 get <- seq(from = 4, to = K + 4)
 s[get]
-
+```
 
 
 piece <- function(s, K = 3, start = 1) {
