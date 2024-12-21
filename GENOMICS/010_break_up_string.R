@@ -2,8 +2,8 @@
 
 # PURPOSE:   Given string s, break in pieces of length K+1, begin at from=
 #        
- [!NOTE]
-Highlights information that users should take into account, even when skimming.
+>[!NOTE]
+>Highlights information that users should take into account, even when skimming.
 
 Note:  R count begins at 1
 library(testthat)
