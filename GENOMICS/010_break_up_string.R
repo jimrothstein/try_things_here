@@ -1,7 +1,11 @@
 # 010_break_up_string.R
 
 # PURPOSE:   Given string s, break in pieces of length K+1, begin at from=
-#             Note:  R count begins at 1
+#        
+ [!NOTE]
+> Highlights information that users should take into account, even when skimming.
+
+Note:  R count begins at 1
 library(testthat)
 s <- LETTERS
 L <- length(s)
