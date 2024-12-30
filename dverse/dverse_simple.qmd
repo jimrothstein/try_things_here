@@ -1,0 +1,31 @@
+---
+title: "dverse_example"
+format: html
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r}
+library(dverse)
+
+library(glue)
+library(tibble)
+```
+
+```{r}
+universe <- c("glue", "tibble")
+manual <- "https://{package}.tidyverse.org/reference/{topic}.html"
+
+document_universe(universe, url_template = manual)
+```
+
+
+```{r}
+
+vignettes <- "https://{package}.tidyverse.org/articles/{topic}.html"
+docs <- document_universe(universe, url_template = c(manual, vignettes))
+knitr::kable(docs)
+```
+
+

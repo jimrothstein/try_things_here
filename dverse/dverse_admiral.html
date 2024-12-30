@@ -1,0 +1,2283 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>admiral</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="dverse_admiral_files/libs/clipboard/clipboard.min.js"></script>
+<script src="dverse_admiral_files/libs/quarto-html/quarto.js"></script>
+<script src="dverse_admiral_files/libs/quarto-html/popper.min.js"></script>
+<script src="dverse_admiral_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="dverse_admiral_files/libs/quarto-html/anchor.min.js"></script>
+<link href="dverse_admiral_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="dverse_admiral_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="dverse_admiral_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="dverse_admiral_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="dverse_admiral_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">admiral</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="dverse---simple-example" class="level1">
+<h1>dverse - simple example</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(admiral)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># universe ----------------------------------------------------------------</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>universe <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"admiral"</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">document_universe</span>(universe)   <span class="co"># 186 x 7</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 186 × 7
+   topic                      alias          title concept type  keyword package
+   &lt;chr&gt;                      &lt;chr&gt;          &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;  
+ 1 %&gt;%                        %&gt;%            Pipe… reexpo… help  &lt;NA&gt;    admiral
+ 2 admiral-package            admiral, admi… admi… intern… help  intern… admiral
+ 3 admiral_adlb               admiral_adlb   Lab … datase… help  datase… admiral
+ 4 admiral_adlb               admiral_adlb   Lab … Datase… help  datase… admiral
+ 5 admiral_adsl               admiral_adsl   Subj… datase… help  datase… admiral
+ 6 admiral_adsl               admiral_adsl   Subj… Datase… help  datase… admiral
+ 7 adsl                       adsl           Crea… &lt;NA&gt;    vign… &lt;NA&gt;    admiral
+ 8 assert_parameters_argument assert_parame… Asse… &lt;NA&gt;    help  intern… admiral
+ 9 atoxgr_criteria_ctcv4      atoxgr_criter… Meta… metada… help  &lt;NA&gt;    admiral
+10 atoxgr_criteria_ctcv5      atoxgr_criter… Meta… metada… help  &lt;NA&gt;    admiral
+# ℹ 176 more rows</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># manual ------------------------------------------------------------------</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>manual <span class="ot">&lt;-</span> <span class="st">"https://pharmaverse.github.io/{package}/reference/{topic}.html"</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">document_universe</span>(universe, <span class="at">url_template =</span> manual)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 186 × 7
+   topic                               alias title concept type  keyword package
+   &lt;chr&gt;                               &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;  
+ 1 &lt;a href=https://pharmaverse.github… %&gt;%   Pipe… reexpo… help  &lt;NA&gt;    admiral
+ 2 &lt;a href=https://pharmaverse.github… admi… admi… intern… help  intern… admiral
+ 3 &lt;a href=https://pharmaverse.github… admi… Lab … datase… help  datase… admiral
+ 4 &lt;a href=https://pharmaverse.github… admi… Lab … Datase… help  datase… admiral
+ 5 &lt;a href=https://pharmaverse.github… admi… Subj… datase… help  datase… admiral
+ 6 &lt;a href=https://pharmaverse.github… admi… Subj… Datase… help  datase… admiral
+ 7 &lt;a href=https://pharmaverse.github… adsl  Crea… &lt;NA&gt;    vign… &lt;NA&gt;    admiral
+ 8 &lt;a href=https://pharmaverse.github… asse… Asse… &lt;NA&gt;    help  intern… admiral
+ 9 &lt;a href=https://pharmaverse.github… atox… Meta… metada… help  &lt;NA&gt;    admiral
+10 &lt;a href=https://pharmaverse.github… atox… Meta… metada… help  &lt;NA&gt;    admiral
+# ℹ 176 more rows</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># vignette ----------------------------------------------------------------</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Adding an explicit template for vignettes</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>vignettes <span class="ot">=</span> <span class="st">"https://pharmaverse.github.io/{package}/articles/{topic}.html"</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>docs <span class="ot">&lt;-</span> <span class="fu">document_universe</span>(universe, <span class="at">url_template =</span> <span class="fu">c</span>(manual, vignettes))</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(docs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 37%">
+<col style="width: 22%">
+<col style="width: 6%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 1%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">topic</th>
+<th style="text-align: left;">alias</th>
+<th style="text-align: left;">title</th>
+<th style="text-align: left;">concept</th>
+<th style="text-align: left;">type</th>
+<th style="text-align: left;">keyword</th>
+<th style="text-align: left;">package</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/%">%.html&gt;%&gt;%</a></td>
+<td style="text-align: left;">%&gt;%</td>
+<td style="text-align: left;">Pipe operator</td>
+<td style="text-align: left;">reexport</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/admiral-package.html">admiral-package</a></td>
+<td style="text-align: left;">admiral, admiral-package</td>
+<td style="text-align: left;">admiral: ADaM in R Asset Library</td>
+<td style="text-align: left;">internal</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">internal</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/admiral_adlb.html">admiral_adlb</a></td>
+<td style="text-align: left;">admiral_adlb</td>
+<td style="text-align: left;">Lab Analysis Dataset</td>
+<td style="text-align: left;">datasets</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">datasets</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/admiral_adlb.html">admiral_adlb</a></td>
+<td style="text-align: left;">admiral_adlb</td>
+<td style="text-align: left;">Lab Analysis Dataset</td>
+<td style="text-align: left;">Datasets available by data()</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">datasets</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/admiral_adsl.html">admiral_adsl</a></td>
+<td style="text-align: left;">admiral_adsl</td>
+<td style="text-align: left;">Subject Level Analysis Dataset</td>
+<td style="text-align: left;">datasets</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">datasets</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/admiral_adsl.html">admiral_adsl</a></td>
+<td style="text-align: left;">admiral_adsl</td>
+<td style="text-align: left;">Subject Level Analysis Dataset</td>
+<td style="text-align: left;">Datasets available by data()</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">datasets</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/articles/adsl.html">adsl</a></td>
+<td style="text-align: left;">adsl</td>
+<td style="text-align: left;">Creating ADSL</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">vignette</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/assert_parameters_argument.html">assert_parameters_argument</a></td>
+<td style="text-align: left;">assert_parameters_argument</td>
+<td style="text-align: left;">Asserts ‘parameters’ Argument and Converts to List of Expressions</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">internal</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/atoxgr_criteria_ctcv4.html">atoxgr_criteria_ctcv4</a></td>
+<td style="text-align: left;">atoxgr_criteria_ctcv4</td>
+<td style="text-align: left;">Metadata Holding Grading Criteria for NCI-CTCAEv4</td>
+<td style="text-align: left;">metadata</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/atoxgr_criteria_ctcv5.html">atoxgr_criteria_ctcv5</a></td>
+<td style="text-align: left;">atoxgr_criteria_ctcv5</td>
+<td style="text-align: left;">Metadata Holding Grading Criteria for NCI-CTCAEv5</td>
+<td style="text-align: left;">metadata</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/atoxgr_criteria_daids.html">atoxgr_criteria_daids</a></td>
+<td style="text-align: left;">atoxgr_criteria_daids</td>
+<td style="text-align: left;">Metadata Holding Grading Criteria for DAIDs</td>
+<td style="text-align: left;">metadata</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/basket_select.html">basket_select</a></td>
+<td style="text-align: left;">basket_select</td>
+<td style="text-align: left;">Create a ‘basket_select’ object</td>
+<td style="text-align: left;">source_specifications</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/articles/bds_exposure.html">bds_exposure</a></td>
+<td style="text-align: left;">bds_exposure</td>
+<td style="text-align: left;">Creating a BDS Exposure ADaM</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">vignette</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/articles/bds_finding.html">bds_finding</a></td>
+<td style="text-align: left;">bds_finding</td>
+<td style="text-align: left;">Creating a BDS Finding ADaM</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">vignette</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/articles/bds_tte.html">bds_tte</a></td>
+<td style="text-align: left;">bds_tte</td>
+<td style="text-align: left;">Creating a BDS Time-to-Event ADaM</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">vignette</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/call_derivation.html">call_derivation</a></td>
+<td style="text-align: left;">call_derivation</td>
+<td style="text-align: left;">Call a Single Derivation Multiple Times</td>
+<td style="text-align: left;">high_order_function</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/call_user_fun.html">call_user_fun</a></td>
+<td style="text-align: left;">call_user_fun</td>
+<td style="text-align: left;">Calls a Function Provided by the User</td>
+<td style="text-align: left;">utils_help</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/censor_source.html">censor_source</a></td>
+<td style="text-align: left;">censor_source</td>
+<td style="text-align: left;">Create a ‘censor_source’ Object</td>
+<td style="text-align: left;">source_specifications</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/chr2vars.html">chr2vars</a></td>
+<td style="text-align: left;">chr2vars</td>
+<td style="text-align: left;">Turn a Character Vector into a List of Expressions</td>
+<td style="text-align: left;">utils_quo</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/compute_age_years.html">compute_age_years</a></td>
+<td style="text-align: left;">compute_age_years</td>
+<td style="text-align: left;">Compute Age in Years</td>
+<td style="text-align: left;">com_date_time</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/compute_bmi.html">compute_bmi</a></td>
+<td style="text-align: left;">compute_bmi</td>
+<td style="text-align: left;">Compute Body Mass Index (BMI)</td>
+<td style="text-align: left;">com_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/compute_bsa.html">compute_bsa</a></td>
+<td style="text-align: left;">compute_bsa</td>
+<td style="text-align: left;">Compute Body Surface Area (BSA)</td>
+<td style="text-align: left;">com_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/compute_dtf.html">compute_dtf</a></td>
+<td style="text-align: left;">compute_dtf</td>
+<td style="text-align: left;">Derive the Date Imputation Flag</td>
+<td style="text-align: left;">com_date_time</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/compute_duration.html">compute_duration</a></td>
+<td style="text-align: left;">compute_duration</td>
+<td style="text-align: left;">Compute Duration</td>
+<td style="text-align: left;">com_date_time</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/compute_egfr.html">compute_egfr</a></td>
+<td style="text-align: left;">compute_egfr</td>
+<td style="text-align: left;">Compute Estimated Glomerular Filtration Rate (eGFR) for Kidney Function</td>
+<td style="text-align: left;">com_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/compute_framingham.html">compute_framingham</a></td>
+<td style="text-align: left;">compute_framingham</td>
+<td style="text-align: left;">Compute Framingham Heart Study Cardiovascular Disease 10-Year Risk Score</td>
+<td style="text-align: left;">com_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/compute_map.html">compute_map</a></td>
+<td style="text-align: left;">compute_map</td>
+<td style="text-align: left;">Compute Mean Arterial Pressure (MAP)</td>
+<td style="text-align: left;">com_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/compute_qtc.html">compute_qtc</a></td>
+<td style="text-align: left;">compute_qtc</td>
+<td style="text-align: left;">Compute Corrected QT</td>
+<td style="text-align: left;">com_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/compute_qual_imputation.html">compute_qual_imputation</a></td>
+<td style="text-align: left;">compute_qual_imputation</td>
+<td style="text-align: left;">Function to Impute Values When Qualifier Exists in Character Result</td>
+<td style="text-align: left;">com_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/compute_qual_imputation_dec.html">compute_qual_imputation_dec</a></td>
+<td style="text-align: left;">compute_qual_imputation_dec</td>
+<td style="text-align: left;">Compute Factor for Value Imputations When Character Value Contains &lt; or &gt;</td>
+<td style="text-align: left;">com_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/compute_rr.html">compute_rr</a></td>
+<td style="text-align: left;">compute_rr</td>
+<td style="text-align: left;">Compute RR Interval From Heart Rate</td>
+<td style="text-align: left;">com_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/compute_scale.html">compute_scale</a></td>
+<td style="text-align: left;">compute_scale</td>
+<td style="text-align: left;">Compute Scale Parameters</td>
+<td style="text-align: left;">com_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/compute_tmf.html">compute_tmf</a></td>
+<td style="text-align: left;">compute_tmf</td>
+<td style="text-align: left;">Derive the Time Imputation Flag</td>
+<td style="text-align: left;">com_date_time</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/articles/concepts_conventions.html">concepts_conventions</a></td>
+<td style="text-align: left;">concepts_conventions</td>
+<td style="text-align: left;">Programming Concepts and Conventions</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">vignette</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/consolidate_metadata.html">consolidate_metadata</a></td>
+<td style="text-align: left;">consolidate_metadata</td>
+<td style="text-align: left;">Consolidate Multiple Meta Datasets Into a Single One</td>
+<td style="text-align: left;">create_aux</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/convert_blanks_to_na.html">convert_blanks_to_na</a></td>
+<td style="text-align: left;">convert_blanks_to_na</td>
+<td style="text-align: left;">Convert Blank Strings Into NAs</td>
+<td style="text-align: left;">utils_fmt</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/convert_date_to_dtm.html">convert_date_to_dtm</a></td>
+<td style="text-align: left;">convert_date_to_dtm</td>
+<td style="text-align: left;">Convert a Date into a Datetime Object</td>
+<td style="text-align: left;">com_date_time</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/convert_dtc_to_dt.html">convert_dtc_to_dt</a></td>
+<td style="text-align: left;">convert_dtc_to_dt</td>
+<td style="text-align: left;">Convert a Date Character Vector into a Date Object</td>
+<td style="text-align: left;">com_date_time</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/convert_dtc_to_dtm.html">convert_dtc_to_dtm</a></td>
+<td style="text-align: left;">convert_dtc_to_dtm</td>
+<td style="text-align: left;">Convert a Date Character Vector into a Datetime Object</td>
+<td style="text-align: left;">com_date_time</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/convert_na_to_blanks.html">convert_na_to_blanks</a></td>
+<td style="text-align: left;">convert_na_to_blanks</td>
+<td style="text-align: left;">Convert NAs Into Blank Strings</td>
+<td style="text-align: left;">utils_fmt</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/count_vals.html">count_vals</a></td>
+<td style="text-align: left;">count_vals</td>
+<td style="text-align: left;">Count Number of Observations Where a Variable Equals a Value</td>
+<td style="text-align: left;">utils_fil</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/country_code_lookup.html">country_code_lookup</a></td>
+<td style="text-align: left;">country_code_lookup</td>
+<td style="text-align: left;">Country Code Lookup</td>
+<td style="text-align: left;">metadata</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/create_period_dataset.html">create_period_dataset</a></td>
+<td style="text-align: left;">create_period_dataset</td>
+<td style="text-align: left;">Create a Reference Dataset for Subperiods, Periods, or Phases</td>
+<td style="text-align: left;">create_aux</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/create_query_data.html">create_query_data</a></td>
+<td style="text-align: left;">create_query_data</td>
+<td style="text-align: left;">Creates a queries dataset as input dataset to the ‘dataset_queries’ argument in ‘derive_vars_query()’</td>
+<td style="text-align: left;">create_aux</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/create_single_dose_dataset.html">create_single_dose_dataset</a></td>
+<td style="text-align: left;">create_single_dose_dataset</td>
+<td style="text-align: left;">Create dataset of single doses</td>
+<td style="text-align: left;">create_aux</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/date_source.html">date_source</a></td>
+<td style="text-align: left;">date_source</td>
+<td style="text-align: left;">Create a ‘date_source’ object</td>
+<td style="text-align: left;">superseded</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/death_event.html">death_event</a></td>
+<td style="text-align: left;">death_event, lastalive_censor, ae_event, ae_ser_event, ae_gr1_event, ae_gr2_event, ae_gr3_event, ae_gr4_event, ae_gr5_event, ae_gr35_event, ae_sev_event, ae_wd_event</td>
+<td style="text-align: left;">Pre-Defined Time-to-Event Source Objects</td>
+<td style="text-align: left;">source_specifications</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/default_qtc_paramcd.html">default_qtc_paramcd</a></td>
+<td style="text-align: left;">default_qtc_paramcd</td>
+<td style="text-align: left;">Get Default Parameter Code for Corrected QT</td>
+<td style="text-align: left;">der_prm_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derivation_slice.html">derivation_slice</a></td>
+<td style="text-align: left;">derivation_slice</td>
+<td style="text-align: left;">Create a ‘derivation_slice’ Object</td>
+<td style="text-align: left;">high_order_function</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_basetype_records.html">derive_basetype_records</a></td>
+<td style="text-align: left;">derive_basetype_records</td>
+<td style="text-align: left;">Derive Basetype Variable</td>
+<td style="text-align: left;">der_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_expected_records.html">derive_expected_records</a></td>
+<td style="text-align: left;">derive_expected_records</td>
+<td style="text-align: left;">Derive Expected Records</td>
+<td style="text-align: left;">der_prm_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_extreme_event.html">derive_extreme_event</a></td>
+<td style="text-align: left;">derive_extreme_event</td>
+<td style="text-align: left;">Add the Worst or Best Observation for Each By Group as New Records</td>
+<td style="text-align: left;">der_prm_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_extreme_records.html">derive_extreme_records</a></td>
+<td style="text-align: left;">derive_extreme_records</td>
+<td style="text-align: left;">Add the First or Last Observation for Each By Group as New Records</td>
+<td style="text-align: left;">der_prm_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_locf_records.html">derive_locf_records</a></td>
+<td style="text-align: left;">derive_locf_records</td>
+<td style="text-align: left;">Derive LOCF (Last Observation Carried Forward) Records</td>
+<td style="text-align: left;">der_prm_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_param_bmi.html">derive_param_bmi</a></td>
+<td style="text-align: left;">derive_param_bmi</td>
+<td style="text-align: left;">Adds a Parameter for BMI</td>
+<td style="text-align: left;">der_prm_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_param_bsa.html">derive_param_bsa</a></td>
+<td style="text-align: left;">derive_param_bsa</td>
+<td style="text-align: left;">Adds a Parameter for BSA (Body Surface Area) Using the Specified Method</td>
+<td style="text-align: left;">der_prm_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_param_computed.html">derive_param_computed</a></td>
+<td style="text-align: left;">derive_param_computed</td>
+<td style="text-align: left;">Adds a Parameter Computed from the Analysis Value of Other Parameters</td>
+<td style="text-align: left;">der_prm_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_param_doseint.html">derive_param_doseint</a></td>
+<td style="text-align: left;">derive_param_doseint</td>
+<td style="text-align: left;">Adds a Parameter for Dose Intensity</td>
+<td style="text-align: left;">der_prm_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_param_exist_flag.html">derive_param_exist_flag</a></td>
+<td style="text-align: left;">derive_param_exist_flag</td>
+<td style="text-align: left;">Add an Existence Flag Parameter</td>
+<td style="text-align: left;">der_prm_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_param_exposure.html">derive_param_exposure</a></td>
+<td style="text-align: left;">derive_param_exposure</td>
+<td style="text-align: left;">Add an Aggregated Parameter and Derive the Associated Start and End Dates</td>
+<td style="text-align: left;">der_prm_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_param_extreme_record.html">derive_param_extreme_record</a></td>
+<td style="text-align: left;">derive_param_extreme_record</td>
+<td style="text-align: left;">Adds a Parameter Based on First or Last Record from Multiple Sources</td>
+<td style="text-align: left;">superseded</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_param_framingham.html">derive_param_framingham</a></td>
+<td style="text-align: left;">derive_param_framingham</td>
+<td style="text-align: left;">Adds a Parameter for Framingham Heart Study Cardiovascular Disease 10-Year Risk Score</td>
+<td style="text-align: left;">der_prm_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_param_map.html">derive_param_map</a></td>
+<td style="text-align: left;">derive_param_map</td>
+<td style="text-align: left;">Adds a Parameter for Mean Arterial Pressure</td>
+<td style="text-align: left;">der_prm_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_param_qtc.html">derive_param_qtc</a></td>
+<td style="text-align: left;">derive_param_qtc</td>
+<td style="text-align: left;">Adds a Parameter for Corrected QT (an ECG measurement)</td>
+<td style="text-align: left;">der_prm_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_param_rr.html">derive_param_rr</a></td>
+<td style="text-align: left;">derive_param_rr</td>
+<td style="text-align: left;">Adds a Parameter for Derived RR (an ECG measurement)</td>
+<td style="text-align: left;">der_prm_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_param_tte.html">derive_param_tte</a></td>
+<td style="text-align: left;">derive_param_tte</td>
+<td style="text-align: left;">Derive a Time-to-Event Parameter</td>
+<td style="text-align: left;">der_prm_tte</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_param_wbc_abs.html">derive_param_wbc_abs</a></td>
+<td style="text-align: left;">derive_param_wbc_abs</td>
+<td style="text-align: left;">Add a parameter for lab differentials converted to absolute values</td>
+<td style="text-align: left;">der_prm_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_summary_records.html">derive_summary_records</a></td>
+<td style="text-align: left;">derive_summary_records</td>
+<td style="text-align: left;">Add New Records Within By Groups Using Aggregation Functions</td>
+<td style="text-align: left;">der_prm_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_var_age_years.html">derive_var_age_years</a></td>
+<td style="text-align: left;">derive_var_age_years</td>
+<td style="text-align: left;">Derive Age in Years</td>
+<td style="text-align: left;">der_adsl</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_var_analysis_ratio.html">derive_var_analysis_ratio</a></td>
+<td style="text-align: left;">derive_var_analysis_ratio</td>
+<td style="text-align: left;">Derive Ratio Variable</td>
+<td style="text-align: left;">der_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_var_anrind.html">derive_var_anrind</a></td>
+<td style="text-align: left;">derive_var_anrind</td>
+<td style="text-align: left;">Derive Reference Range Indicator</td>
+<td style="text-align: left;">der_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_var_atoxgr.html">derive_var_atoxgr</a></td>
+<td style="text-align: left;">derive_var_atoxgr</td>
+<td style="text-align: left;">Derive Lab High toxicity Grade 0 - 4 and Low Toxicity Grades 0 - (-4)</td>
+<td style="text-align: left;">der_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_var_atoxgr_dir.html">derive_var_atoxgr_dir</a></td>
+<td style="text-align: left;">derive_var_atoxgr_dir</td>
+<td style="text-align: left;">Derive Lab Toxicity Grade 0 - 4</td>
+<td style="text-align: left;">der_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_var_base.html">derive_var_base</a></td>
+<td style="text-align: left;">derive_var_base</td>
+<td style="text-align: left;">Derive Baseline Variables</td>
+<td style="text-align: left;">der_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_var_chg.html">derive_var_chg</a></td>
+<td style="text-align: left;">derive_var_chg</td>
+<td style="text-align: left;">Derive Change from Baseline</td>
+<td style="text-align: left;">der_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_var_dthcaus.html">derive_var_dthcaus</a></td>
+<td style="text-align: left;">derive_var_dthcaus</td>
+<td style="text-align: left;">Derive Death Cause</td>
+<td style="text-align: left;">superseded</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_var_extreme_dt.html">derive_var_extreme_dt</a></td>
+<td style="text-align: left;">derive_var_extreme_dt</td>
+<td style="text-align: left;">Derive First or Last Date from Multiple Sources</td>
+<td style="text-align: left;">superseded</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_var_extreme_dtm.html">derive_var_extreme_dtm</a></td>
+<td style="text-align: left;">derive_var_extreme_dtm</td>
+<td style="text-align: left;">Derive First or Last Datetime from Multiple Sources</td>
+<td style="text-align: left;">superseded</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_var_extreme_flag.html">derive_var_extreme_flag</a></td>
+<td style="text-align: left;">derive_var_extreme_flag</td>
+<td style="text-align: left;">Add a Variable Flagging the First or Last Observation Within Each By Group</td>
+<td style="text-align: left;">der_gen</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_var_joined_exist_flag.html">derive_var_joined_exist_flag</a></td>
+<td style="text-align: left;">derive_var_joined_exist_flag</td>
+<td style="text-align: left;">Derives a Flag Based on an Existing Flag</td>
+<td style="text-align: left;">der_gen</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_var_merged_ef_msrc.html">derive_var_merged_ef_msrc</a></td>
+<td style="text-align: left;">derive_var_merged_ef_msrc</td>
+<td style="text-align: left;">Merge an Existence Flag From Multiple Sources</td>
+<td style="text-align: left;">der_gen</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_var_merged_exist_flag.html">derive_var_merged_exist_flag</a></td>
+<td style="text-align: left;">derive_var_merged_exist_flag</td>
+<td style="text-align: left;">Merge an Existence Flag</td>
+<td style="text-align: left;">der_gen</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_var_merged_summary.html">derive_var_merged_summary</a></td>
+<td style="text-align: left;">derive_var_merged_summary</td>
+<td style="text-align: left;">Merge Summary Variables</td>
+<td style="text-align: left;">der_gen</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_var_obs_number.html">derive_var_obs_number</a></td>
+<td style="text-align: left;">derive_var_obs_number</td>
+<td style="text-align: left;">Adds a Variable Numbering the Observations Within Each By Group</td>
+<td style="text-align: left;">der_gen</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_var_ontrtfl.html">derive_var_ontrtfl</a></td>
+<td style="text-align: left;">derive_var_ontrtfl</td>
+<td style="text-align: left;">Derive On-Treatment Flag Variable</td>
+<td style="text-align: left;">der_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_var_pchg.html">derive_var_pchg</a></td>
+<td style="text-align: left;">derive_var_pchg</td>
+<td style="text-align: left;">Derive Percent Change from Baseline</td>
+<td style="text-align: left;">der_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_var_relative_flag.html">derive_var_relative_flag</a></td>
+<td style="text-align: left;">derive_var_relative_flag</td>
+<td style="text-align: left;">Flag Observations Before or After a Condition is Fulfilled</td>
+<td style="text-align: left;">der_gen</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_var_shift.html">derive_var_shift</a></td>
+<td style="text-align: left;">derive_var_shift</td>
+<td style="text-align: left;">Derive Shift</td>
+<td style="text-align: left;">der_bds_findings</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_var_trtdurd.html">derive_var_trtdurd</a></td>
+<td style="text-align: left;">derive_var_trtdurd</td>
+<td style="text-align: left;">Derive Total Treatment Duration (Days)</td>
+<td style="text-align: left;">der_date_time</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_var_trtdurd.html">derive_var_trtdurd</a></td>
+<td style="text-align: left;">derive_var_trtdurd</td>
+<td style="text-align: left;">Derive Total Treatment Duration (Days)</td>
+<td style="text-align: left;">der_gen</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_var_trtemfl.html">derive_var_trtemfl</a></td>
+<td style="text-align: left;">derive_var_trtemfl</td>
+<td style="text-align: left;">Derive Treatment-emergent Flag</td>
+<td style="text-align: left;">der_occds</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_aage.html">derive_vars_aage</a></td>
+<td style="text-align: left;">derive_vars_aage</td>
+<td style="text-align: left;">Derive Analysis Age</td>
+<td style="text-align: left;">der_adsl</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_atc.html">derive_vars_atc</a></td>
+<td style="text-align: left;">derive_vars_atc</td>
+<td style="text-align: left;">Derive ATC Class Variables</td>
+<td style="text-align: left;">der_occds</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_computed.html">derive_vars_computed</a></td>
+<td style="text-align: left;">derive_vars_computed</td>
+<td style="text-align: left;">Adds Variable(s) Computed from the Analysis Value of one or more Parameters</td>
+<td style="text-align: left;">der_gen</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_dt.html">derive_vars_dt</a></td>
+<td style="text-align: left;">derive_vars_dt</td>
+<td style="text-align: left;">Derive/Impute a Date from a Date Character Vector</td>
+<td style="text-align: left;">der_date_time</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_dt.html">derive_vars_dt</a></td>
+<td style="text-align: left;">derive_vars_dt</td>
+<td style="text-align: left;">Derive/Impute a Date from a Date Character Vector</td>
+<td style="text-align: left;">der_gen</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_dtm.html">derive_vars_dtm</a></td>
+<td style="text-align: left;">derive_vars_dtm</td>
+<td style="text-align: left;">Derive/Impute a Datetime from a Date Character Vector</td>
+<td style="text-align: left;">der_date_time</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_dtm.html">derive_vars_dtm</a></td>
+<td style="text-align: left;">derive_vars_dtm</td>
+<td style="text-align: left;">Derive/Impute a Datetime from a Date Character Vector</td>
+<td style="text-align: left;">der_gen</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_dtm_to_dt.html">derive_vars_dtm_to_dt</a></td>
+<td style="text-align: left;">derive_vars_dtm_to_dt</td>
+<td style="text-align: left;">Derive Date Variables from Datetime Variables</td>
+<td style="text-align: left;">der_date_time</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_dtm_to_dt.html">derive_vars_dtm_to_dt</a></td>
+<td style="text-align: left;">derive_vars_dtm_to_dt</td>
+<td style="text-align: left;">Derive Date Variables from Datetime Variables</td>
+<td style="text-align: left;">der_gen</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_dtm_to_tm.html">derive_vars_dtm_to_tm</a></td>
+<td style="text-align: left;">derive_vars_dtm_to_tm</td>
+<td style="text-align: left;">Derive Time Variables from Datetime Variables</td>
+<td style="text-align: left;">der_date_time</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_dtm_to_tm.html">derive_vars_dtm_to_tm</a></td>
+<td style="text-align: left;">derive_vars_dtm_to_tm</td>
+<td style="text-align: left;">Derive Time Variables from Datetime Variables</td>
+<td style="text-align: left;">der_gen</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_duration.html">derive_vars_duration</a></td>
+<td style="text-align: left;">derive_vars_duration</td>
+<td style="text-align: left;">Derive Duration</td>
+<td style="text-align: left;">der_date_time</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_duration.html">derive_vars_duration</a></td>
+<td style="text-align: left;">derive_vars_duration</td>
+<td style="text-align: left;">Derive Duration</td>
+<td style="text-align: left;">der_gen</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_dy.html">derive_vars_dy</a></td>
+<td style="text-align: left;">derive_vars_dy</td>
+<td style="text-align: left;">Derive Relative Day Variables</td>
+<td style="text-align: left;">der_date_time</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_dy.html">derive_vars_dy</a></td>
+<td style="text-align: left;">derive_vars_dy</td>
+<td style="text-align: left;">Derive Relative Day Variables</td>
+<td style="text-align: left;">der_gen</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_extreme_event.html">derive_vars_extreme_event</a></td>
+<td style="text-align: left;">derive_vars_extreme_event</td>
+<td style="text-align: left;">Add the Worst or Best Observation for Each By Group as New Variables</td>
+<td style="text-align: left;">der_adsl</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_joined.html">derive_vars_joined</a></td>
+<td style="text-align: left;">derive_vars_joined</td>
+<td style="text-align: left;">Add Variables from an Additional Dataset Based on Conditions from Both Datasets</td>
+<td style="text-align: left;">der_gen</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_merged.html">derive_vars_merged</a></td>
+<td style="text-align: left;">derive_vars_merged</td>
+<td style="text-align: left;">Add New Variable(s) to the Input Dataset Based on Variables from Another Dataset</td>
+<td style="text-align: left;">der_gen</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_merged_lookup.html">derive_vars_merged_lookup</a></td>
+<td style="text-align: left;">derive_vars_merged_lookup</td>
+<td style="text-align: left;">Merge Lookup Table with Source Dataset</td>
+<td style="text-align: left;">der_gen</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_period.html">derive_vars_period</a></td>
+<td style="text-align: left;">derive_vars_period</td>
+<td style="text-align: left;">Add Subperiod, Period, or Phase Variables to ADSL</td>
+<td style="text-align: left;">der_adsl</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_query.html">derive_vars_query</a></td>
+<td style="text-align: left;">derive_vars_query</td>
+<td style="text-align: left;">Derive Query Variables</td>
+<td style="text-align: left;">der_occds</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_transposed.html">derive_vars_transposed</a></td>
+<td style="text-align: left;">derive_vars_transposed</td>
+<td style="text-align: left;">Derive Variables by Transposing and Merging a Second Dataset</td>
+<td style="text-align: left;">der_gen</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/desc.html">desc</a></td>
+<td style="text-align: left;">desc</td>
+<td style="text-align: left;">dplyr desc</td>
+<td style="text-align: left;">reexport</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/dose_freq_lookup.html">dose_freq_lookup</a></td>
+<td style="text-align: left;">dose_freq_lookup</td>
+<td style="text-align: left;">Pre-Defined Dose Frequencies</td>
+<td style="text-align: left;">metadata</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/dt_level.html">dt_level</a></td>
+<td style="text-align: left;">dt_level</td>
+<td style="text-align: left;">Create a ‘dt_level’ object</td>
+<td style="text-align: left;">utils_impute</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">internal</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/dthcaus_source.html">dthcaus_source</a></td>
+<td style="text-align: left;">dthcaus_source</td>
+<td style="text-align: left;">Create a ‘dthcaus_source’ Object</td>
+<td style="text-align: left;">superseded</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/dtm_level.html">dtm_level</a></td>
+<td style="text-align: left;">dtm_level</td>
+<td style="text-align: left;">Create a ‘dtm_level’ object</td>
+<td style="text-align: left;">utils_impute</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">internal</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/event.html">event</a></td>
+<td style="text-align: left;">event</td>
+<td style="text-align: left;">Create a ‘event’ Object</td>
+<td style="text-align: left;">source_specifications</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/event_joined.html">event_joined</a></td>
+<td style="text-align: left;">event_joined</td>
+<td style="text-align: left;">Create a ‘event_joined’ Object</td>
+<td style="text-align: left;">source_specifications</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/event_source.html">event_source</a></td>
+<td style="text-align: left;">event_source</td>
+<td style="text-align: left;">Create an ‘event_source’ Object</td>
+<td style="text-align: left;">source_specifications</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/ex_single.html">ex_single</a></td>
+<td style="text-align: left;">ex_single</td>
+<td style="text-align: left;">Single Dose Exposure Dataset</td>
+<td style="text-align: left;">datasets</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">datasets</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/ex_single.html">ex_single</a></td>
+<td style="text-align: left;">ex_single</td>
+<td style="text-align: left;">Single Dose Exposure Dataset</td>
+<td style="text-align: left;">Datasets available by data()</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">datasets</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/example_qs.html">example_qs</a></td>
+<td style="text-align: left;">example_qs</td>
+<td style="text-align: left;">Example ‘QS’ Dataset</td>
+<td style="text-align: left;">datasets</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">datasets</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/example_qs.html">example_qs</a></td>
+<td style="text-align: left;">example_qs</td>
+<td style="text-align: left;">Example ‘QS’ Dataset</td>
+<td style="text-align: left;">Datasets available by data()</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">datasets</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/exprs.html">exprs</a></td>
+<td style="text-align: left;">exprs</td>
+<td style="text-align: left;">rlang exprs</td>
+<td style="text-align: left;">reexport</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/extract_duplicate_records.html">extract_duplicate_records</a></td>
+<td style="text-align: left;">extract_duplicate_records</td>
+<td style="text-align: left;">Extract Duplicate Records</td>
+<td style="text-align: left;">internal</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">internal</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/extract_unit.html">extract_unit</a></td>
+<td style="text-align: left;">extract_unit</td>
+<td style="text-align: left;">Extract Unit From Parameter Description</td>
+<td style="text-align: left;">utils_help</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/filter_exist.html">filter_exist</a></td>
+<td style="text-align: left;">filter_exist</td>
+<td style="text-align: left;">Returns records that fit into existing by groups in a filtered source dataset</td>
+<td style="text-align: left;">utils_fil</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/filter_extreme.html">filter_extreme</a></td>
+<td style="text-align: left;">filter_extreme</td>
+<td style="text-align: left;">Filter the First or Last Observation for Each By Group</td>
+<td style="text-align: left;">utils_fil</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/filter_joined.html">filter_joined</a></td>
+<td style="text-align: left;">filter_joined</td>
+<td style="text-align: left;">Filter Observations Taking Other Observations into Account</td>
+<td style="text-align: left;">utils_fil</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/filter_not_exist.html">filter_not_exist</a></td>
+<td style="text-align: left;">filter_not_exist</td>
+<td style="text-align: left;">Returns records that don’t fit into existing by groups in a filtered source dataset</td>
+<td style="text-align: left;">utils_fil</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/filter_relative.html">filter_relative</a></td>
+<td style="text-align: left;">filter_relative</td>
+<td style="text-align: left;">Filter the Observations Before or After a Condition is Fulfilled</td>
+<td style="text-align: left;">utils_fil</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/flag_event.html">flag_event</a></td>
+<td style="text-align: left;">flag_event</td>
+<td style="text-align: left;">Create a ‘flag_event’ Object</td>
+<td style="text-align: left;">source_specifications</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/format.basket_select.html">format.basket_select</a></td>
+<td style="text-align: left;">format</td>
+<td style="text-align: left;">Returns a Character Representation of a ‘basket_select()’ Object</td>
+<td style="text-align: left;">internal</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">internal</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/articles/generic.html">generic</a></td>
+<td style="text-align: left;">generic</td>
+<td style="text-align: left;">Generic Derivations</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">vignette</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/get_admiral_option.html">get_admiral_option</a></td>
+<td style="text-align: left;">get_admiral_option</td>
+<td style="text-align: left;">Get the Value of an Admiral Option</td>
+<td style="text-align: left;">admiral_options</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/get_duplicates_dataset.html">get_duplicates_dataset</a></td>
+<td style="text-align: left;">get_duplicates_dataset</td>
+<td style="text-align: left;">Get Duplicate Records that Led to a Prior Error</td>
+<td style="text-align: left;">utils_ds_chk</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/get_flagged_records.html">get_flagged_records</a></td>
+<td style="text-align: left;">get_flagged_records</td>
+<td style="text-align: left;">Create an Existence Flag</td>
+<td style="text-align: left;">utils_help</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/get_hori_data.html">get_hori_data</a></td>
+<td style="text-align: left;">get_hori_data</td>
+<td style="text-align: left;">Creating Temporary Parameters and <variable>.<parameter> Variables</parameter></variable></td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">internal</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/get_imputation_target_date.html">get_imputation_target_date</a></td>
+<td style="text-align: left;">get_imputation_target_date</td>
+<td style="text-align: left;">Get Date Imputation Targets</td>
+<td style="text-align: left;">utils_impute</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">internal</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/get_imputation_target_time.html">get_imputation_target_time</a></td>
+<td style="text-align: left;">get_imputation_target_time</td>
+<td style="text-align: left;">Get Time Imputation Targets</td>
+<td style="text-align: left;">utils_impute</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">internal</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/get_joined_data.html">get_joined_data</a></td>
+<td style="text-align: left;">get_joined_data</td>
+<td style="text-align: left;">Join Data for “joined” functions</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">internal</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/get_many_to_one_dataset.html">get_many_to_one_dataset</a></td>
+<td style="text-align: left;">get_many_to_one_dataset</td>
+<td style="text-align: left;">Get Many to One Values that Led to a Prior Error</td>
+<td style="text-align: left;">utils_ds_chk</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/get_not_mapped.html">get_not_mapped</a></td>
+<td style="text-align: left;">get_not_mapped</td>
+<td style="text-align: left;">Get list of records not mapped from the lookup table.</td>
+<td style="text-align: left;">utils_help</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/get_one_to_many_dataset.html">get_one_to_many_dataset</a></td>
+<td style="text-align: left;">get_one_to_many_dataset</td>
+<td style="text-align: left;">Get One to Many Values that Led to a Prior Error</td>
+<td style="text-align: left;">utils_ds_chk</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/get_partialdatetime.html">get_partialdatetime</a></td>
+<td style="text-align: left;">get_partialdatetime</td>
+<td style="text-align: left;">Parse DTC variable and Determine Components</td>
+<td style="text-align: left;">utils_impute</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">internal</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/get_summary_records.html">get_summary_records</a></td>
+<td style="text-align: left;">get_summary_records</td>
+<td style="text-align: left;">Create Summary Records</td>
+<td style="text-align: left;">superseded</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/get_terms_from_db.html">get_terms_from_db</a></td>
+<td style="text-align: left;">get_terms_from_db</td>
+<td style="text-align: left;">Get Terms from the Queries Database</td>
+<td style="text-align: left;">der_occds</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/get_vars_query.html">get_vars_query</a></td>
+<td style="text-align: left;">get_vars_query</td>
+<td style="text-align: left;">Get Query Variables</td>
+<td style="text-align: left;">utils_help</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/articles/higher_order.html">higher_order</a></td>
+<td style="text-align: left;">higher_order</td>
+<td style="text-align: left;">Higher Order Functions</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">vignette</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/articles/hys_law.html">hys_law</a></td>
+<td style="text-align: left;">hys_law</td>
+<td style="text-align: left;">Hy’s Law Implementation</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">vignette</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/articles/imputation.html">imputation</a></td>
+<td style="text-align: left;">imputation</td>
+<td style="text-align: left;">Date and Time Imputation</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">vignette</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/impute_dtc_dt.html">impute_dtc_dt</a></td>
+<td style="text-align: left;">impute_dtc_dt</td>
+<td style="text-align: left;">Impute Partial Date Portion of a “–DTC” Variable</td>
+<td style="text-align: left;">com_date_time</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/impute_dtc_dtm.html">impute_dtc_dtm</a></td>
+<td style="text-align: left;">impute_dtc_dtm</td>
+<td style="text-align: left;">Impute Partial Date(-time) Portion of a “–DTC” Variable</td>
+<td style="text-align: left;">com_date_time</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/articles/lab_grading.html">lab_grading</a></td>
+<td style="text-align: left;">lab_grading</td>
+<td style="text-align: left;">Lab Grading</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">vignette</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/list_all_templates.html">list_all_templates</a></td>
+<td style="text-align: left;">list_all_templates</td>
+<td style="text-align: left;">List All Available ADaM Templates</td>
+<td style="text-align: left;">utils_examples</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/list_tte_source_objects.html">list_tte_source_objects</a></td>
+<td style="text-align: left;">list_tte_source_objects</td>
+<td style="text-align: left;">List all ‘tte_source’ Objects Available in a Package</td>
+<td style="text-align: left;">other_advanced</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/max_cond.html">max_cond</a></td>
+<td style="text-align: left;">max_cond</td>
+<td style="text-align: left;">Maximum Value on a Subset</td>
+<td style="text-align: left;">utils_fil</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/min_cond.html">min_cond</a></td>
+<td style="text-align: left;">min_cond</td>
+<td style="text-align: left;">Minimum Value on a Subset</td>
+<td style="text-align: left;">utils_fil</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/negate_vars.html">negate_vars</a></td>
+<td style="text-align: left;">negate_vars</td>
+<td style="text-align: left;">Negate List of Variables</td>
+<td style="text-align: left;">utils_quo</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/articles/occds.html">occds</a></td>
+<td style="text-align: left;">occds</td>
+<td style="text-align: left;">Creating an OCCDS ADaM</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">vignette</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/params.html">params</a></td>
+<td style="text-align: left;">params</td>
+<td style="text-align: left;">Create a Set of Parameters</td>
+<td style="text-align: left;">other_advanced</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/articles/pk_adnca.html">pk_adnca</a></td>
+<td style="text-align: left;">pk_adnca</td>
+<td style="text-align: left;">Creating a PK NCA or Population PK ADaM</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">vignette</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/print.adam_templates.html">print.adam_templates</a></td>
+<td style="text-align: left;">print</td>
+<td style="text-align: left;">Print ‘adam_templates’ Objects</td>
+<td style="text-align: left;">utils_print</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">internal</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/print.duplicates.html">print.duplicates</a></td>
+<td style="text-align: left;">print</td>
+<td style="text-align: left;">Print ‘duplicates’ Objects</td>
+<td style="text-align: left;">utils_print</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">internal</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/print.source.html">print.source</a></td>
+<td style="text-align: left;">print</td>
+<td style="text-align: left;">Print ‘source’ Objects</td>
+<td style="text-align: left;">utils_print</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">internal</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/print_named_list.html">print_named_list</a></td>
+<td style="text-align: left;">print_named_list</td>
+<td style="text-align: left;">Print Named List</td>
+<td style="text-align: left;">utils_print</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">internal</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/queries.html">queries</a></td>
+<td style="text-align: left;">queries</td>
+<td style="text-align: left;">Queries Dataset</td>
+<td style="text-align: left;">datasets</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">datasets</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/queries.html">queries</a></td>
+<td style="text-align: left;">queries</td>
+<td style="text-align: left;">Queries Dataset</td>
+<td style="text-align: left;">Datasets available by data()</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">datasets</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/articles/queries_dataset.html">queries_dataset</a></td>
+<td style="text-align: left;">queries_dataset</td>
+<td style="text-align: left;">Queries Dataset Documentation</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">vignette</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/queries_mh.html">queries_mh</a></td>
+<td style="text-align: left;">queries_mh</td>
+<td style="text-align: left;">Queries MH Dataset</td>
+<td style="text-align: left;">datasets</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">datasets</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/queries_mh.html">queries_mh</a></td>
+<td style="text-align: left;">queries_mh</td>
+<td style="text-align: left;">Queries MH Dataset</td>
+<td style="text-align: left;">Datasets available by data()</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">datasets</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/query.html">query</a></td>
+<td style="text-align: left;">query</td>
+<td style="text-align: left;">Create an ‘query’ object</td>
+<td style="text-align: left;">source_specifications</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/articles/questionnaires.html">questionnaires</a></td>
+<td style="text-align: left;">questionnaires</td>
+<td style="text-align: left;">Creating Questionnaire ADaMs</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">vignette</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/records_source.html">records_source</a></td>
+<td style="text-align: left;">records_source</td>
+<td style="text-align: left;">Create a ‘records_source’ Object</td>
+<td style="text-align: left;">source_specifications</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/restrict_derivation.html">restrict_derivation</a></td>
+<td style="text-align: left;">restrict_derivation</td>
+<td style="text-align: left;">Execute a Derivation on a Subset of the Input Dataset</td>
+<td style="text-align: left;">high_order_function</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/restrict_imputed_dtc_dt.html">restrict_imputed_dtc_dt</a></td>
+<td style="text-align: left;">restrict_imputed_dtc_dt</td>
+<td style="text-align: left;">Restrict Imputed DTC date to Minimum/Maximum Dates</td>
+<td style="text-align: left;">utils_impute</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">internal</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/restrict_imputed_dtc_dtm.html">restrict_imputed_dtc_dtm</a></td>
+<td style="text-align: left;">restrict_imputed_dtc_dtm</td>
+<td style="text-align: left;">Restrict Imputed DTC date to Minimum/Maximum Dates</td>
+<td style="text-align: left;">utils_impute</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">internal</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/set_admiral_options.html">set_admiral_options</a></td>
+<td style="text-align: left;">set_admiral_options</td>
+<td style="text-align: left;">Set the Value of Admiral Options</td>
+<td style="text-align: left;">admiral_options</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/signal_duplicate_records.html">signal_duplicate_records</a></td>
+<td style="text-align: left;">signal_duplicate_records</td>
+<td style="text-align: left;">Signal Duplicate Records</td>
+<td style="text-align: left;">internal</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">internal</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/slice_derivation.html">slice_derivation</a></td>
+<td style="text-align: left;">slice_derivation</td>
+<td style="text-align: left;">Execute a Derivation with Different Arguments for Subsets of the Input Dataset</td>
+<td style="text-align: left;">high_order_function</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/tte_source.html">tte_source</a></td>
+<td style="text-align: left;">tte_source</td>
+<td style="text-align: left;">Create a ‘tte_source’ Object</td>
+<td style="text-align: left;">source_specifications</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/use_ad_template.html">use_ad_template</a></td>
+<td style="text-align: left;">use_ad_template</td>
+<td style="text-align: left;">Open an ADaM Template Script</td>
+<td style="text-align: left;">utils_examples</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/articles/visits_periods.html">visits_periods</a></td>
+<td style="text-align: left;">visits_periods</td>
+<td style="text-align: left;">Visit and Period Variables</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">vignette</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="https://pharmaverse.github.io/admiral/reference/yn_to_numeric.html">yn_to_numeric</a></td>
+<td style="text-align: left;">yn_to_numeric</td>
+<td style="text-align: left;">Map ‘“Y”’ and ‘“N”’ to Numeric Values</td>
+<td style="text-align: left;">utils_fmt</td>
+<td style="text-align: left;">help</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">admiral</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

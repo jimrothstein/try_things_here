@@ -1,0 +1,39 @@
+
+---
+title: admiral
+format: 
+  html:
+    grid:
+      body-width: 1030px
+editor_options: 
+  chunk_output_type: console
+---
+# dverse - simple example
+
+```{r}
+library(dverse)
+library(admiral)
+
+
+# universe ----------------------------------------------------------------
+
+universe <- c("admiral")
+document_universe(universe)   # 186 x 7
+
+
+# manual ------------------------------------------------------------------
+
+manual <- "https://pharmaverse.github.io/{package}/reference/{topic}.html"
+document_universe(universe, url_template = manual)
+
+
+# vignette ----------------------------------------------------------------
+
+
+# Adding an explicit template for vignettes
+vignettes = "https://pharmaverse.github.io/{package}/articles/{topic}.html"
+docs <- document_universe(universe, url_template = c(manual, vignettes))
+knitr::kable(docs)
+```
+
+
