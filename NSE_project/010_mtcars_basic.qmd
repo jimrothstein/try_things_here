@@ -270,7 +270,24 @@ options(old)
 getOption("digits")
 ```
 
+### ggplot, using symbols, !!! in aes()
+```{r}
+library(ggplot2)
 
+# works
+ggplot(mtcars, aes(hp, mpg)) +
+ geom_point() 
+
+
+# and this works!
+arg1 = as.symbol("hp")
+arg2 = as.symbol("mpg")
+ggplot(mtcars, aes(x = !!arg1, y=!!arg2)) +
+ geom_point() 
+
+# so does this!
+l = list(x=arg1, y=arg2)
+ggplot(mtcars, aes(!!!l)) +
+ geom_point() 
 ```
 
-vim:conceallevel=0
