@@ -1,0 +1,35 @@
+```{r}
+# ------------------------  PURPOSE:
+# follow vignette:  begin with R table (iris) and convert to json
+library(datasetjson)
+
+# iris_items now exists (loads from data.R)
+is.null(iris_items)
+iris_items
+
+# but i don't see it
+ls()
+objects()
+
+search()
+# 
+
+# why getting error re: columns?
+ds_json <- datasetjson::dataset_json(head(iris, 5),
+                                   item_oid = "IG.IRIS",
+                                   name = "IRIS",
+                                   dataset_label = "Iris",
+                                   columns = iris_items
+                                   )
+
+
+
+ds_json
+
+
+# do not give file location
+js_text <- write_dataset_json(ds_json, pretty=TRUE)
+
+# SEE the json output
+cat(js_text)
+```
