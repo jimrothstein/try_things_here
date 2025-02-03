@@ -13,6 +13,8 @@ iris <- as_tibble(iris) |> print()
 # across() -----------------------------------------------------------------
 # Different ways to select the same set of columns
 # See <https://tidyselect.r-lib.org/articles/syntax.html> for details
+
+# apply fct round to two columns specified and modify columns
 iris |>
   mutate(across(c(Sepal.Length, Sepal.Width), round)) |>
   head()
@@ -20,14 +22,14 @@ iris |>
 iris
 iris %>%
   mutate(across(c(1, 2), round)) |>
-  print(n = 3)
+  head(n = 3)
 
 iris %>%
   mutate(across(1:Sepal.Width, round))
 iris %>%
   mutate(across(where(is.double) & !c(Petal.Length, Petal.Width), round))
 
-# Using an external vector of names
+# Use an external vector of names
 cols <- c("Sepal.Length", "Petal.Width")
 cols
 iris %>%
