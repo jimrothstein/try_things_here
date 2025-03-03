@@ -1,0 +1,44 @@
+# Chapter 20 - evaluation
+
+```{r}
+# eval( {expr}, {env})
+
+x = 10
+eval(x)  # 10
+expr(x)  # does not evalu
+eval(expr(x))  # now, we get 10
+
+
+eval(expr(x), env(x=1)) # now 1, b/c that is env
+```
+
+```{r}
+## Build local2()
+
+# Clean up variables created earlier
+rm(x, y)
+
+# x, y exist only inside
+foo <- local({
+  x <- 10
+  y <- 200
+  x + y
+})
+
+foo
+
+#> [1] 210
+# our rough equivalent
+local2 <- function(expr) {
+  env <- env(caller_env())
+  eval(enexpr(expr), env)
+}
+local2(2 + 2)
+
+x=10
+y=200
+local2({x+y})  # 210
+
+local2({x=1   # 201
+  x+y})
+```

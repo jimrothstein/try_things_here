@@ -8,6 +8,7 @@ f2 <- function(x) invisible(x)
 
 f1("This prints")
 
+
 f2("This does not print")
 (f2("This does not print"))
 z <- f2("This does not print")

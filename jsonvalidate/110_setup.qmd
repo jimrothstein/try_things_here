@@ -1,0 +1,33 @@
+
+### jsonvalidate::
+
+```
+# the JSON data file to check is  "910_schema_file.qmd"
+# the schema for this file is ..  "900_schema.qmd".
+```
+
+```{r}
+library(jsonvalidate)
+
+# read schema
+obj = jsonvalidate::json_schema$new("900_schema.qmd")
+obj
+
+is.function(obj$validate) #T
+```
+### validate
+```{r}
+obj$validate("910_json_file.qmd") #T
+
+
+# validate, or test, against schema
+obj$validate("{}") #F
+obj$validate("{}", verbose=T) #F
+
+{
+    "id": 1,
+    "name": "A green door",
+    "price": 12.50,
+    "tags": ["home", "green"]
+}
+```
