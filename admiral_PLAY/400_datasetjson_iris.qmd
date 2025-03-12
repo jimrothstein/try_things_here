@@ -1,20 +1,17 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
 ```{r}
 # ------------------------  PURPOSE:
 # follow vignette:  begin with R table (iris) and convert to json
 library(datasetjson)
 
-# iris_items now exists (loads from data.R)
-is.null(iris_items)
+# iris_items exists (loads from data.R), in metacore terms this is value_spec
 iris_items
 
-# but i don't see it
-ls()
-objects()
-
-search()
-# 
-
-# why getting error re: columns?
+# minimum terms to create dataset_json
 ds_json <- datasetjson::dataset_json(head(iris, 5),
                                    item_oid = "IG.IRIS",
                                    name = "IRIS",
@@ -25,6 +22,7 @@ ds_json <- datasetjson::dataset_json(head(iris, 5),
 
 
 ds_json
+glimpse(ds_json)
 
 
 # do not give file location

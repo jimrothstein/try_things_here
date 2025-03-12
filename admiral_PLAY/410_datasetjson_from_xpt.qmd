@@ -1,0 +1,61 @@
+---
+title: "Untitled"
+format: html
+---
+
+### REF: adsl <- haven::read_xpt(file.path(system.file(package='datasetjson'), "adsl.xpt"))
+### CONVERT from xpt to json
+
+
+#' Gather variable metadata in Dataset JSON compliant format
+#'
+#' @param n Variable name
+#' @param .data Dataset to gather attributes
+#'
+#' @returns Columns compliant data frame
+
+```{r}
+library(datasetjson)
+library(haven)
+
+# find,read adsl.xpt
+adsl <- haven::read_xpt(file.path(system.file(package='datasetjson'), "adsl.xpt"))
+adsl
+data(datasetjson)
+extract_xpt_meta <- function(n, .data) {
+  
+  attrs <- attributes(.data[[n]])
+  
+  out <- list()
+
+  # Identify the variable type
+  if (inherits(.data[[n]],"Date")) {
+    out$dataType <- "date"
+    out$targetDataType <- "integer"
+  } else if (inherits(.data[[n]],"POSIXt")) {
+    out$dataType <- "datetime"
+    out$targetDataType <- "integer"
+  } else if (inherits(.data[[n]],"numeric")) {
+    if (any(is.double(.data[[n]]))) out$dataType <- "float"
+    else out$dataType <- "integer"
+  }  else if (inherits(.data[[n]],"hms")) {
+    out$dataType <- "time"
+    out$targetDataType <- "integer"
+  } else {
+    out$dataType <- "string"
+    out$length <- max(purrr::map_int(.data[[n]], nchar))
+  }
+  
+  out$itemOID <- n
+  out$name <- n
+  out$label <- attr(.data[[n]], 'label')
+  out$displayFormat <- attr(.data[[n]], 'format.sas')
+  tibble::as_tibble(out)
+  
+}
+
+# Loop the ADSL columns
+adsl_meta <- purrr::map_df(names(adsl), extract_xpt_meta, .data=adsl)
+adsl_meta
+```
+

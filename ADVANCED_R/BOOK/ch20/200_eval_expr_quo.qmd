@@ -1,0 +1,107 @@
+
+
+
+
+# This version expect expressions for the `cond` argument
+
+library(rlang)
+library(dplyr)
+# f works
+f = function(dataset, cond) {
+  bind_rows(
+    dataset,
+    dataset %>% dplyr::filter(!!enexpr(cond)) %>% mutate(PARAMCD = "New parameter")
+  )
+}
+
+f(mtcars, carb==4 )
+
+g = function(dataset, param){
+browser()
+f (dataset, PARAMCD == param)
+}
+g(mtcars, carb==4)
+
+
+
+derive_param_expr <- function(dataset, cond) {
+  bind_rows(
+    dataset,
+    dataset %>% dplyr::filter(!!enexpr(cond)) %>% mutate(PARAMCD = "New parameter")
+  )
+}
+
+# This version expect quosures for the `cond` argument
+derive_param_quo <- function(dataset, cond) {
+  bind_rows(
+    dataset,
+    dataset %>% dplyr::filter(!!enquo(cond)) %>% mutate(PARAMCD = "New parameter")
+  )
+}
+
+#A user creates a project specific function which calls the admiral function:
+
+derive_param_project_expr <- function(dataset, param) {
+  cat("HI/n")
+  derive_param_expr(dataset, PARAMCD == param)
+}
+
+derive_param_project_quo <- function(dataset, param) {
+  derive_param_quo(dataset, PARAMCD == param)
+}
+
+# Now create some data to use the function:
+
+data_good <- tibble(
+  PARAMCD = c("A", "B", "C"),
+  AVAL = c(10, 12, 42)
+)
+data_bad <- tibble(
+  PARAMCD = c("A", "B", "C"),
+  AVAL = c(10, 12, 42),
+  param = c(1, 2, 3)
+)
+
+# Using the "expression" version usually fails (data_good) or produce wrong results (data_bad):
+
+browser()
+
+derive_param_project_expr(data_good, param == "B")
+
+derive_param_project_expr(mtcars, carb==4 )
+  
+  
+<!-- #lnror in `filter()`: -->
+<!-- ℹ In argument: `PARAMCD == param`. -->
+<!-- Caused by error: -->
+<!-- ! object 'param' not found -->
+<!-- Run `rlang::last_trace()` to see where the error occurred. -->
+
+<!-- > derive_param_project_expr(data_bad, "B") -->
+<!-- # A tibble: 3 × 3 -->
+<!--   PARAMCD  AVAL param -->
+<!--   <chr>   <dbl> <dbl> -->
+<!-- 1 A          10     1 -->
+<!-- 2 B          12     2 -->
+<!-- 3 C          42     3 -->
+
+<!-- Using the "quosure" version works in most cases (good_data) but produce wrong results in some cases (data_bad): -->
+
+<!-- > derive_param_project_quo(data_good, "B") -->
+<!-- # A tibble: 4 × 2 -->
+<!--   PARAMCD        AVAL -->
+<!--   <chr>         <dbl> -->
+<!-- 1 A                10 -->
+<!-- 2 B                12 -->
+<!-- 3 C                42 -->
+<!-- 4 New parameter    12 -->
+<!-- > derive_param_project_quo(data_bad, "B") -->
+<!-- # A tibble: 3 × 3 -->
+<!--   PARAMCD  AVAL param -->
+<!--   <chr>   <dbl> <dbl> -->
+<!-- 1 A          10     1 -->
+<!-- 2 B          12     2 -->
+<!-- 3 C          42     3 -->
+
+<!-- Both versions doesn't work correctly because param in PARAMCD == param is ambiguous. The difference is when the issue occurs. In the "expression" version it is most likely noticed when the project specific function is developed. In the "quosure" version it is most likely noticed by the user but not by the developer of the project specific function. -->
+
