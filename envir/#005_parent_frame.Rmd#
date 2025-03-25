@@ -94,6 +94,13 @@ detach(name = pharmaverseadam, character.only = T)
 detach(package:pharmaverseadam)
 ?detach
 
+
+is.expression(substitute(x+1))
+is.expression(substitute(x+1))
+?is.expression
+is.call(substitute(x+1))
+x=2
+eval(substitute(x+1, list(x=0)))
 ```
 
 

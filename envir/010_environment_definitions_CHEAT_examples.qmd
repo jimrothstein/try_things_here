@@ -1,6 +1,6 @@
 010_environment_definitions_CHEAT_examples.R
 
-### Environment consists of 
+### Environment consists of
   - frame:  set of named objects (is frame a `bag`? list?)
   - pointer:  to enclosing frame.
 
@@ -19,7 +19,8 @@ Scope: Rules R uses to find objects by name
 ```{r env}
 # e represents current environment
 
-e  <- environment()
+ls()
+e  <- environment() # current env!
 ls(e)
 is.list(e) # F
 
@@ -43,12 +44,26 @@ e.2  <- parent.env(e.1)
 e.2
 ```
 
+## understand this?
+```{r}
+x=1
+f = function() {
+  print (sys.frames()); print(sys.parents())
+
+  g = function() {print (sys.frames()); print(sys.parents())}
+
+  g()
+  }
+f()
+```
 
 Two environment equal if:
 ```{r identical}
 e  <- environment()
 f   <- environment()
 identical(e, f)
+
+identical(e, globalenv()) # TRUE
 ```
 
 Special Environments

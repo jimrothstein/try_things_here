@@ -1,0 +1,21 @@
+Differences found between the objects!
+
+Summary of BASE and COMPARE
+  ==================================================================
+    PROPERTY             BASE                       COMP            
+  ------------------------------------------------------------------
+      Name             test_data                 test_data2         
+     Class     "tbl_df, tbl, data.frame"  "tbl_df, tbl, data.frame" 
+    Rows(#)               30                         29             
+   Columns(#)             11                         11             
+  ------------------------------------------------------------------
+
+
+There are rows in BASE that are not in COMPARE !!
+  ===============
+   ..ROWNUMBER.. 
+  ---------------
+        30       
+  ---------------
+
+

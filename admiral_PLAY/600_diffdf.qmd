@@ -1,0 +1,46 @@
+## https://gowerc.github.io/diffdf/latest-tag/articles/diffdf-basic.html
+## -file
+## -suppressWarnings
+
+
+##  Setup
+```{r}
+library(diffdf)
+theDir = "admiral_PLAY"
+
+LENGTH <- 30
+
+#suppressWarnings(RNGversion("3.5.0"))
+set.seed(12334)
+
+test_data <- tibble::tibble(
+    ID          = 1:LENGTH,
+    GROUP1      = rep(c(1, 2), each = LENGTH / 2),
+    GROUP2      = rep(c(1:(LENGTH / 2)), 2),
+    INTEGER     = rpois(LENGTH, 40),
+    BINARY      = sample(c("M", "F"), LENGTH, replace = TRUE),
+    DATE        = lubridate::ymd("2000-01-01") + rnorm(LENGTH, 0, 7000),
+    DATETIME    = lubridate::ymd_hms("2000-01-01 00:00:00") + rnorm(LENGTH, 0, 200000000),
+    CONTINUOUS  = rnorm(LENGTH, 30, 12),
+    CATEGORICAL = factor(sample(c("A", "B", "C"), LENGTH, replace = TRUE)),
+    LOGICAL     = sample(c(TRUE, FALSE), LENGTH, replace = TRUE),
+    CHARACTER   = stringi::stri_rand_strings(LENGTH, rpois(LENGTH, 13), pattern = "[ A-Za-z0-9]")
+)
+
+test_data
+
+diffdf(test_data, test_data)
+```
+
+## run twice and file is overwritten
+```{r}
+diffdf(test_data, test_data, file = paste0(theDir, "/junk"))
+readLines(paste0(theDir, "/junk"))
+```
+
+##  remove last row (less output)
+```{r}
+test_data2 = test_data[1:nrow(test_data)-1,]
+diffdf(test_data, test_data2, file = paste0(theDir, "/junk"))
+readLines(paste0(theDir, "/junk"))
+```

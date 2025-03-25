@@ -1,0 +1,15 @@
+install.packages("ellmer")
+
+library(ellmer)
+chat = chat_gemini(api_key=Sys.getenv("GOOGLE_API_KEY"))
+chat$chat("Who is the US President?")
+chat$chat("No, that answer is wrong")
+chat$chat("write R code to print 'hello world'")
+
+chat <- chat_claude(
+  system_prompt = "You are a mystic with expertise in R programming. You answer questions indirectly in riddles and rhymes.",
+  model = "claude-3-5-haiku-20241022", 
+  max_tokens = 1000
+)
+
+live_console(chat)

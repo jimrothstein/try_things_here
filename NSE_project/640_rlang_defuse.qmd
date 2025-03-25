@@ -7,28 +7,24 @@ REF:   Advr v2  Chaptr 17+
 
 ```{r setup, include=FALSE		}
 knitr::opts_chunk$set(echo = TRUE,  
-											comment="      ##",  
-											error=TRUE, 
-											collapse=TRUE) 
+comment="      ##",  
+error=TRUE, 
+collapse=TRUE) 
+```
+# works by defusing expression and evaluating in env (from mtcars)
+```{r}
+base::with(mtcars, mean(cyl))                 # 6.19
+base::with(list(cyl=c(10, 20)), mean(cyl))    #15
 ```
 
-<!--  RENDER:  see bottom -->
 
-```{r library, include=FALSE		}
-``` 
 
 #### Not working
 ```{r simplest}
 
-mtcars
-mean(mtcars$mpg)
-# [1] 20.1
-
-#  [1] "mpg"  "cyl"  "disp" "hp"   "drat" "wt"   "qsec" "vs"   "am"   "gear"
-# [11] "carb"
-
-mean_col  <- function(db, col=substitute(col)){
-    print(db$col)
+mean_col  <- function(db, col) {
+    col =  enexpr(col)
+    eval(db$col)
 }
 mean_col(mtcars, mpg)
 

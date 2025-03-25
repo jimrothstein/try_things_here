@@ -1,0 +1,47 @@
+---
+title: "safely"
+output: html_document
+---
+
+file ="~/code/try_things_here/TIDYVERSE/177_safely.qmd" 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(purrr)
+```
+
+## r4ds_Ch21.6 (map & error)
+```{r}
+# result + error (if any)
+
+safe_log <- purrr::safely(log)
+
+glimpse(safe_log(10))
+
+glimpse(safe_log("a"))
+
+glimpse(safe_log(0))
+
+```
+
+####0x_same_using_map
+```{r}
+# result + error (if any)
+safe_log <- purrr::safely(log)
+x <- list(10,"a",0)
+
+y <- map(x, safe_log)   #  y is list  
+glimpse(y)
+
+z <- y %>% transpose() 
+z
+t = tibble(A = z$result, B=z$error)
+t
+pluck(z$result[[1]])
+map(z$result, pluck)
+
+
+as.vector(z$result)
+tibble(result = z$result, msg = z$error)
+```
+
