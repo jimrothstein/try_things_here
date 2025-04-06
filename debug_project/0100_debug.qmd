@@ -1,5 +1,5 @@
 ---
-title:  "00097_basic_trace_debug.Rmd"
+title:  "0100_debug.qmd"
 output: 
   pdf_document:
     toc: TRUE 
@@ -9,18 +9,44 @@ fontsize: 10pt
 geometry: margin=0.5in,top=0.25in
 TAGS:  traceback, debug
 ---
-#### REF:   Gillespie, Appendix E, PENG R programming, Ch18 
+
+##   COLLECT DEBUG examples/tools HERE
+##   TAGS:  trace, mtrace, purrr::walk(), purrr::auto_browse(), rlang::global_entrace()
+
+## REF:   
+- Gillespie, Appendix E, 
+- PENG R programming, Ch18 
+
+
+- n next line
+- c complete current function
 #### basic traceback, debug
 ```
  Tools:
 	base::browser()
 	base::debug(FUN)
 	base::undebug(FUN)
-	base::trace(FUN, exit=<action>)
+	base::trace(FUN, exit=<action>); also allows code insertion
 	rlang::trace_back()
+	rlang::global_entrace() # entire session
 	options(error= browser, trace_back etc)
+	
+	tryCatch - error thrown, handle the error, exit
+	withCallingHandlers - handle the error, but don' exit
+	call stack - refers to f,g,h calling in sequence
 ```
 
+```{r}
+rlang::global_entrace()
+
+log("a")
+rlang::trace_back()
+
+
+?withCallingHandlers
+withCallingHandlers(log("a"))
+rlang::last_trace()
+```
 
 ####	traceback()  WHERE is error
 ```{r traceback}
@@ -29,6 +55,8 @@ lm(y ~ x)
 
 #	run immediately, error occured 7 levels deep
 traceback()
+```
+
 
 
 ##	another example, no function bug()
@@ -80,20 +108,22 @@ first()
 ```
 
 ####	USE variable .DEBUG to indicate debug mode is on/off
-
-			REF:  !so 6286092
+		REF:  !so 6286092
 ```{r}
-
 ##	NEED: get/set function, plus function to check state
-#   
 # A slightly fancier version of Dirk's answer:
 
+# USAGE:   set_debug_mode(T)
+#  check:  is_debug_mode()
+#  OFF:    set_debug_mode(F)
 
 is_debug_mode <- function()
 {
   exists(".DEBUG", envir = globalenv()) && 
     get(".DEBUG", envir = globalenv())
 }
+is_debug_mode()
+
 
 set_debug_mode <- function(on = FALSE)
 {
@@ -101,25 +131,29 @@ set_debug_mode <- function(on = FALSE)
   .DEBUG <<- on
   invisible(old_value)
 }
+set_debug_mode(T)
+
 
 # Usage is, e.g.,
-
 if(is_debug_mode())
 {
   #do some logging or whatever
 }
 
-# and
-
-set_debug_mode(TRUE)   #turn debug mode on
-set_debug_mode(FALSE)  #turn debug mode off
-
 is_debug_mode()
-
 ```
+
 #### no bug
 ```{r 1 }
+##   TODO:
+-  BOOK/0830_custom
+-  BOOK/0820
+-  BOOK/0800_Ch8
+-  options(error = recover) or
+- options(error = debug)
+## 
 # there is no bug()
+```{r}
 {
 	print("jim")
 	first <- function() second()
@@ -248,6 +282,6 @@ l$trace
 
 class(l)
 
-```# 
+``` 
 
 

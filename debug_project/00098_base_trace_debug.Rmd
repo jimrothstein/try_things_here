@@ -16,26 +16,11 @@ TAGS:  trace, debug, trace
   *  c exits browser and continues
   *  f maintains browser and continues, tracking `context stack`
 
+The only difference that I can come up with is that ´f´ executes the
+code in browser mode until the end of the loop/function and then
+switches to normal execution. ´c´ in turn immediately exits the
+browser mode and then executes the rest of the lines.
 
-#### `c` vs `f` in debug()
-```{r c_f}
-test <- function() {
-  browser()
-  browser()
-}
-
-test()
-
-# Called from: test()
-# Browse[1]> c
-# Called from: test()
-# Browse[1]> c
-#
-# > test()
-# Called from: test()
-# Browse[1]> f
-# Browse[2]> f
-```
 
 
 #### loops:  Why `c` does not appear to work?

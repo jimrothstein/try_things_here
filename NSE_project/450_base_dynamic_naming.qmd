@@ -1,0 +1,34 @@
+# 450_base_dynamic_naming.qmd
+
+TAGS:   sapply, get 
+## store by "A",  retrieve full contents 
+```{r}
+A <- B <- C <- 1:4
+A;B
+
+# method 1
+L = list(A = A, B = B, C = C)
+L  # full contents
+
+# method 2
+nms = c("A", "B", "C")
+nms[[1]]   # "A"
+
+# get contents
+sapply(nms, get, simplify=F, USE.NAMES =  TRUE)
+```
+
+## now change contents of A
+```{r}
+A = 10:14
+
+
+# method 1
+L = list(A = A, B = B, C = C)
+L  # WRONG !
+
+
+# method 2
+# has new contents of A !  (dynamic)
+sapply(nms, get, simplify=F, USE.NAMES =  TRUE)
+```

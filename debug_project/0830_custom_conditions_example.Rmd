@@ -1,0 +1,224 @@
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+        mathjax: default
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+    extra_dependencies: ["amssymb", "bbm", "threeparttable", "forest"]
+fontsize: 11pt   
+geometry: margin=0.4in,top=0.25in   
+TRY:   advanced-R,condition
+---
+
+###  Example of custom condition,
+  *  Section    of Advanced R
+  *   https://stackoverflow.com/a/15442036/5057251
+  *  For my notes|tools on conditions see
+
+---
+
+\begin{forest}
+  for tree={
+    fit=band,% spaces the tree out a little to avoid collisions
+  }
+  [condition
+    [simpleCondition, tier=condition
+      [division_condition, tier=condition]
+    [error, tier=abstract
+      [simpleError, tier=error]
+      ]
+    [warning, tier=abstract
+      [simpleWarning, tier=warning]
+      ]
+  ]
+\end{forest}
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = T   ) # T easier to read
+
+library(sloop)
+```
+
+
+For 1., I think of simpleCondition as illustrating how one can construct custom conditions, e.g,.
+```{r from_stack }
+
+# returns custom condition
+
+ myCondition <-
+    function(message, call=NULL, type=c("overflow", "underflow", "zero"))
+{
+    type <- match.arg(type)             # only allowed types past here
+    class <- c(type, "my", "condition")
+    structure(list(message = as.character(message), call = call), 
+        class = class)
+}
+
+## is a constructor for making custom conditions
+
+  cnd  <- myCondition("oops") 
+  # <overflow: oops>
+  sloop::otype(cnd) 
+  class(cnd)
+
+  myCondition("oops", type="underflow")
+  # <underflow: oops>
+
+  # bug, this will throw nasty error
+  myCondition("oops", type="none")
+```
+
+
+These conditions can be used in tryCatch or withCallingHandlers
+```{r tryCatch}
+
+xx <- tryCatch({
+    signalCondition(myCondition("oops", type="underflow"))
+    }, 
+    underflow=function(e) {
+      message("underflow: ", conditionMessage(e))
+      NA # return value, assigned to xx
+    }
+)
+xx
+```
+
+These are S3 classes so can have a linear hierarchy -- bad and worse are both subclasses of error.
+```{r linear}
+
+myError <-
+    function(message, call=NULL, type=c("bad", "worse"))
+{
+    type <- match.arg(type)
+    class <- c(type, "error", "condition")
+    structure(list(message=as.character(message), call=call),
+              class=class)
+}
+```
+
+One might also create an error that extends the 'simpleError' S3 class as cond <- simpleError("oops"); class(cond) = c("myerr", class(cond)
+
+With tryCatch we just get access to a single handler, the first (in the sense described on ?tryCatch) to match the class of condition
+```{r }
+
+
+# class = worse 
+tryCatch({
+    stop(myError("oops", type="worse"))
+    }, 
+
+  bad = function(e) {
+      message("bad error: ", conditionMessage(e))
+  }, worse = function(e) {
+      message("worse error: ", conditionMessage(e))  # here's where we end up
+  }, error=function(e) {
+      message("error: ", conditionMessage(e))
+  }
+)
+
+# class = bad
+tryCatch({
+    stop(myError("oops", type="bad"))
+    }, 
+
+  bad = function(e) {
+      message("bad error: ", conditionMessage(e))
+  }, worse = function(e) {
+      message("worse error: ", conditionMessage(e))  # here's where we end up
+  }, error=function(e) {
+      message("error: ", conditionMessage(e))
+  }
+)
+# class =  "no class"
+tryCatch({
+    stop(myError("oops", type="no class"))
+    }, 
+
+  bad = function(e) {
+      message("bad error: ", conditionMessage(e))
+  }, worse = function(e) {
+      message("worse error: ", conditionMessage(e))  
+  }, error=function(e) {
+      message("error: ", conditionMessage(e))   # <--- end up here
+  }
+)
+
+```
+
+With withCallingHandlers we have the opportunity to hit multiple handlers, provided we don't invoke a restart
+```{r withCallingHandler}
+
+withCallingHandlers({
+    stop(myError("oops", type="bad"))
+}, bad = function(e) {                             # here...
+    message("bad error: ", conditionMessage(e))
+}, worse = function(e) {
+    message("worse error: ", conditionMessage(e))
+}, error=function(e) {                             # ...and here...
+    message("error: ", conditionMessage(e))
+})                                                 # ...and top-level 'error'
+
+withCallingHandlers({
+    stop(myError("oops", type="worse"))
+}, bad = function(e) {                             #  <-- not here
+    message("bad error: ", conditionMessage(e))
+}, worse = function(e) {
+    message("worse error: ", conditionMessage(e))
+}, error=function(e) {                             # <-- here and ...
+    message("error: ", conditionMessage(e))
+})                                                 # <-- here, top-level 'error'
+
+```
+```{r warning}
+
+withCallingHandlers({
+    x <- 1
+    warning(myError("oops", type="bad"))
+    "OK"
+}, bad = function(e) {                     # here, but continue at the restart
+    message("bad warning: ", conditionMessage(e))
+    invokeRestart("muffleWarning")
+}, worse = function(e) {
+    message("worse warning: ", conditionMessage(e))
+})
+
+I'm not so sure about your question 2; I think this is the situation that calling handlers are designed to address -- the entire frame where the condition was invoked is poised waiting to continue, once you invoke the restart. 
+```
+
+
+
+```{r render, eval=FALSE, include=FALSE 	} 
+# from ~/.Renviron
+output_dir  <- Sys.getenv("OUTPUT_DIR")
+output_dir
+{
+file  <- "/home/jim/code/book_advanced_R/R/008_custom_conditions.Rmd" 
+file  <- basename(file)
+file  <- here("ADVANCED_R", "R", file)
+file
+}
+
+
+## Want github to display nicely rendered output?
+##  *  include md_format
+#   *  include output_dir = "out"
+#   *  if .gitignore balks,  then add !out/**   to close .github
+
+rmarkdown::render(file,
+    output_dir = output_dir,
+    output_format = "pdf_document")
+
+)
+```

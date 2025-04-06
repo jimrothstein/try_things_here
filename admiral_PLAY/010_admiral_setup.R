@@ -1,6 +1,7 @@
-#  Getting Started Vignette
+#  Getting Started Vignette:
 
 # Uncomment line below if you need to install these packages
+##:
 
 # install.packages(c("dplyr", "lubridate", "stringr", "tibble", "pharmaversesdtm", "admiral"))
 

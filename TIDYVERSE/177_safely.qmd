@@ -3,7 +3,11 @@ title: "safely"
 output: html_document
 ---
 
+TAGS: function operators, safely, chatty
 file ="~/code/try_things_here/TIDYVERSE/177_safely.qmd" 
+
+- What is function operator?
+Takes a function as input and outputs another function (a wrapper)
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -12,16 +16,19 @@ library(purrr)
 
 ## r4ds_Ch21.6 (map & error)
 ```{r}
-# result + error (if any)
+# returns two: result + error (if any)
 
 safe_log <- purrr::safely(log)
 
-glimpse(safe_log(10))
+# $result
+# $error (if any)
+safe_log(10)
 
+# glimpse is a little cleaner
+safe_log("a")
 glimpse(safe_log("a"))
 
 glimpse(safe_log(0))
-
 ```
 
 ####0x_same_using_map

@@ -1,0 +1,145 @@
+                                        # Chapter 15_01
+Is it a true R expression?
+
+- syntax, how to write [ one hundred eleven is coded, ie syntax, as 111]
+- semantics, rules on how to evaluate (to a value number, string, image,...)
+First deal with syntax (not semantics).  mean() could just as well be nobody()
+
+Expressions are just list or sequences of
+- names (constants,  names or symbols),
+- calls ( (f,e1,e2,e3..) (unevaluated functions)
+
+         Don't try to read to much more;  terminology gets confusing
+
+# quote can create expressions or pieces of... , 
+
+```r
+library(lobstr)
+
+quote(spam)   # spam   ; typeof =  symbol, class = name
+quote(f(x))#  f(x);      typeof = "language" class = call
+quote(1+2+3*pi) #  1 +2 +3 + pi/2  typeof= "langage" class = call
+quote(1+2+3*pi) #  1 +2 +3 + pi/2  typeof= "langage" class = call
+```
+```r
+L = list(quote(spam), quote(f(x)), quote(1+2+3*pi/2))
+names(L) = c("a","b","c")
+
+sapply(L, is.symbol)
+sapply(L, typeof)# "symbol" "language" "laguage"
+sapply(L, class)
+sapply(L, is.expression) # F F F
+sapply(L, ast)
+sapply(L, parse, text) # error, accepts strings
+sapply(L, mode)# "name", "call", "call"
+```
+
+
+
+# convert string to name
+```r
+as.name("jim") # jim
+as.name("jim") |> class()    # name
+```
+
+
+# build calls  by progam
+
+```r
+call("sin", pi/2) 
+call("sin", quote(pi/2))
+call("c", 1, exp(1), quote(exp(1)), pi, quote(pi))
+```
+# Important!
+# true R expression, is list-like, can subset ...
+# use expression(); result has mode=expression;  does not evaluate args 
+```r
+(exprs <- expression(1, spam, mean(x)+2))
+exprs |> is.expression()  # T
+typeof(exprs)  # expression !
+
+length(exprs)  # 3
+mode(exprs)    # expression
+typeof(exprs)  # expression !
+sapply(L, ast)
+```
+
+## Exercise
+```r
+# tricky:  just evaluate as is, as a line of R code
+c(1, "two", sd, list(3, 4:5), expression(3+3))  # sd returns code
+
+# compare to
+c(1, "two", sd, list(3, 4:5), expression(3+3))  |> is.expression()  # TRUE!
+c(1, "two", sd, list(3, 4:5), expression(3+3)) |> ast()
+sapply(c(1, "two", sd, list(3, 4:5), expression(3+3)) , typeof)
+sapply(c(1, "two", sd, list(3, 4:5), expression(3+3)) , class)
+?typeof  #  all the internal C structures, as string
+?class   # related to S3, S4
+```
+
+## parse returns a true R expression, typeof expression
+## a call is NOT true R expression, it is a call
+## quote(...) is NOT true R expression
+```r
+parse(text=1) # expression(1) 
+parse(text='call("sin", pi)')
+parse(text=call("sin", pi))
+parse(text=quote(1+1))
+
+# yes, it is list-like !
+parse(text=quote(1+1))[1:length(parse(text=quote(1+1)))]
+
+# quote needs more work
+# What does quote(...) evaluate to?  NOT an expression!
+quote(1) |> is.expression() # F
+quote(1) |> typeof()  # double
+quote(1+ 1)  # does not evaluate args
+quote("mary") # "mary"  typeof=character
+quote(1 + 2 +x) # 1 + 2 + x, typeof="language"
+quote(sin(pi/2)) # sin(pi/2) typeof="language"
+
+## symbol v language (for typeof)
+L=list(quote(1), quote(x), quote(x+Y))
+is.symbol(L[[2]])  # TRUE
+L[[2]] |> typeof()  # symbol
+typeof(quote(x))   # symbol
+typeof(quote(1 + x) )   # language !
+
+L2=quote(list(quote(1), quote(x), quote(x+Y)))
+L
+L2
+L2 |> typeof()  # language
+lapply(L, quote)   # FAILS !
+lapply(L2, is.expression)  # all F
+
+# all are expressions
+sapply(list(
+    parse(text=1),     # all T 
+    parse(text='call("sin", pi)'),
+    parse(text=call("sin", pi)),
+    parse(text=quote(1+1))), is.expression)
+
+# ast returns <inline expression> for each (same for sapply, lapply)
+lapply(list(
+    parse(text=1),    
+    parse(text='call("sin", pi)'),
+    parse(text=call("sin", pi)),
+    parse(text=quote(1+1))),  ast )
+
+# but this works
+ast(parse(text=1))
+ast(parse(text='call("sin", pi)'))
+
+?ast
+```
+```r
+ast(x+y)
+ast(x+y + sin(pi/2))
+
+# this works, too
+ast(x+y + f(g(a)) + call("sin", pi/2) + quote("sin", pi/2))
+
+# make it an expression
+expression(x+y + f(g(a)) + call("sin", pi/2) + quote("sin", pi/2))
+```

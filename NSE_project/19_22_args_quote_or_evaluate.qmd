@@ -10,23 +10,21 @@ TAGS:   rlang, inject, !!, .env, Ch 19,
 Purpose:  Does a function quote or evaluate its arguments?
           Compare:   paste(a,b,c) to cement(a,b,c) (below)
 
-#### paste(a,b,c) when a, b, c are not defined b/c paste tries to evaluate.
-Compare cement to paste.
-First, I used tryCatch, then same thing but simpler ways
+## paste(a,b,c) when a, b, c are not defined;  FAILS paste tries to evaluate.
 ```{r}
 
-tryCatch( paste(a,b,c), 
+tryCatch(paste(a,b,c), 
   error = function(e) e,
   finally = {
     cat("FAILS, because paste evaluates args 1st\n")
   }
 )
-paste(a,b,c)   # ERROR, evaluates instead of quote
-paste("a", "b", "c") # we must quote # [1] "a b c"
 
 
-try( paste(a,b,c))
-try( { paste(a,b,c)})
+# as string, no problems
+paste("a", "b", "c") # [1] "a b c" 
+paste(quote(a), quote(b), quote(c))  # same
+identical(paste("a", "b", "c"), paste(quote(a), quote(b), quote(c))) #TRUE
 ```
 
 #### cement(a,b,c) quotes for us( ensyms)

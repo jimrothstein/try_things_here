@@ -8,6 +8,7 @@ TODO:       Clean up !   Make coherent
 - Substitute:  User calls function `f` \code{f};   what did user use as argument?
 - How `substitute` works is not easy to follow, since depends on environment.
 - substitute wants to return code, not value
+- `substitute` has typeof `special` (b/c does not evaluate arguments?)
 
 ```{r}
 x=5
@@ -588,4 +589,24 @@ f(sin(2) + cos(2))
 f(sin(x))
 ```
 
+## (1) formuala is call;  (2)  change  `b` to `B`, but keep as call
+
+```r
+ee  <- a ~ b + c
+ee |> typeof()  # language
+ee   #a ~ b + c  , typeof = call !
+
+# To change b to B, keep as call:
+# first, convert to string
+ff = deparse(ee)  #"a ~ b + c" (string)
+
+# then, sub to change piece of string
+ff  <- sub("b", "B",ff)
+ff
+
+# convert back to calll
+gg  <- str2lang(ff)
+gg |> typeof()   # language
+is.call(gg)   # T
+```
 

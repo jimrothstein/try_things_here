@@ -1,6 +1,14 @@
-
 REF: https://stackoverflow.com/questions/25235240/r-variable-names-symbols-names-or-something-else/25235365#25235365
 
+REF: https://cran.r-project.org/doc/manuals/R-lang.html
+
+- symbol refers to R object
+- name of R object is usally symbol 
+- create a symbol:  use as.name(), quote()
+- symbols appear naturally from parsed expressions
+
+- symbol to character:   as.character()
+- character to symbol:   as.symbol()
 
 ##  R allows string or symbol
 ```{r}
@@ -8,9 +16,31 @@ REF: https://stackoverflow.com/questions/25235240/r-variable-names-symbols-names
 rm(list = ls())
 ```
 
-####    Symbol, aka name
+## basics
 ```{r}
-q2  <- quote(x)                        # even though x DNE 
+# Create a symbol
+sym <- as.symbol("x")
+
+# Check if it's a symbol
+is.symbol(sym)  # TRUE
+
+# Use the symbol in an expression
+expr <- quote(x + 1)
+
+# Print the expression
+print(expr)  # x + 1
+
+# Evaluate the expression in an environment where x is defined
+x <- 10
+eval(expr)  # 11
+```
+
+##  Symbol, aka name; quote() returns symbol
+```{r}
+
+x    #ERROR, x DNE
+
+q2  <- quote(x)      
 is.symbol(q2)       #T
 ```
 # ----------------------------------------------------------------------
@@ -23,29 +53,107 @@ Constants, even variables are not symbols
 ```{r}
 is.symbol("hello") # [1] FALSE
 is.symbol(x=5) # [1] FALSE
-z=10
-is.symbol(z) # [1] FALSE
-
-# not
+z=10; is.symbol(z) # [1] FALSE
 is.symbol(pi) # [1] FALSE
 is.symbol(expression(pi)) # [1] FALSE
-
 
 # ---------------------
 ##  What is a symbol?
 ##  not appear in most regular code?
 # ---------------------
 #
-is.symbol(expr(pi)) # [1] TRUE
+is.symbol(+)  # errro
+is.symbol(`+`) # [1] FALSE
+is.symbol(rlang::expr(pi)) # [1] TRUE
 is.symbol(expr(x)) # [1] TRUE
 is.symbol(expr(2)) # [1] FALSE
 is.symbol(expr(x + y)) # [1] FALSE
-is.symbol(+)  # errro
-is.symbol(`+`) # [1] FALSE
 
 # not a function
 f = function() 3
 sapply(list(`+`, sin, `[`, f), is.symbol) # [1] FALSE FALSE FALSE FALSE
+
+# 
+z = as.symbol(x)   # ERROR
+
+```
+
+# What symbols
+```{r}
+
+rm(x)
+is.symbol(quote(x))   # T
+as.symbol(x)          # ERROR
+# 0405_is_symbol_is_name.R
+
+
+# PURPOSE:  Explain what `name` really is
+# SEE:  https://bityl.co/O4wK
+
+# Two things going on.   A variable points to object. That is NOT the name.
+#
+# First R, lookup up the object itself.
+# Second R reports if the object itself is a name or NOT.
+# Third,  this useful mostly when computing on the language.
+
+# ----------------------------------------------------------------
+#   First, is.name and is.symbol - ARE same function (check it!)
+# ----------------------------------------------------------------
+is.name
+# function (x)  .Primitive("is.symbol")
+is.symbol
+# function (x)  .Primitive("is.symbol")
+
+# ----------------------------------------------------------------
+# USE is.name in this file
+# ----------------------------------------------------------------
+
+# ------------------------------------
+# is.name is NOT what I think it is. | Study carefully ... this is key
+# ------------------------------------
+x <- "hello"
+is.name(x) # [1] FALSE
+is.character(x) # [1] TRUE
+
+#  Compare to this:
+y <- as.name("hello")
+is.name(y) # [1] TRUE
+is.character(y) # [1] FALSE
+# AND
+is.symbol(y)   # TRUE
+y
+get(y)
+
+print(x)
+# [1] "hello"
+
+print(y)
+# hello
+
+# --------------------------------------------------------------------
+# Not positive, but is.name refers to object that useful as language
+# --------------------------------------------------------------------
+identical(x, y)
+# [1] FALSE
+
+library(rlang)
+x=2
+
+paste0("AVAL.", x)
+sym(paste0("AVAL.", x))
+
+
+# evaluate sym("cyl") in context or environ of mtcars
+?sym
+eval(sym("cyl"), mtcars)
+eval(as.name("cyl"), mtcars) # base R
+eval(expr= as.name("cyl"), envir= mtcars) # base R
+
+
+# thinks "cyl" is just a string
+eval("cyl", mtcars)
+
+x <- 4; as.symbol(x)  # `4`
 
 #### Coerce to symbol, or name
 ##  By itself, x is variable, not symbol, not name

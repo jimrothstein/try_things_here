@@ -7,7 +7,7 @@ TAGS:   rlang, expr, enexpr, ast, lobstr
 ---
 ### Chapter 17.2, Code is data
 
-expr(), captured code is expression; composed of ~4 kinds of R language 
+rlang::expr(), captured code is expression; composed of ~4 kinds of R language 
 expression is NOT a string (use str())
 ```{r}
 library(rlang)

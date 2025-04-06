@@ -1,13 +1,12 @@
 010_environment_definitions_CHEAT_examples.R
 
-### Environment consists of
+## Environment consists of
   - frame:  set of named objects (is frame a `bag`? list?)
   - pointer:  to enclosing frame.
 
+assign, assign, 
 
 Visually, environemnts appear tree-like
-TODO:  insert latex
-
 
 <e> notation for environment
 
@@ -15,46 +14,48 @@ Scope: Rules R uses to find objects by name
   - R first looks in runtime <e>
   - Then to parent.env()
 
-### env is `container` that can hold objects, in a list-like structure
+## env is `container` that can hold objects, in a list-like structure
 ```{r env}
-# e represents current environment
-
 ls()
 e  <- environment() # current env!
 ls(e)
 is.list(e) # F
-
 ```
 ```{r add}
 x  <- 4
 ls(e)
 e$x
-
 ```
 
 ### env have hierarchy (varies based on attached packages)
 ```{r}
 search()
-parent.env(e)
+parent.env(e)   # parent of globalenv
+
+# climb up
 e.1  <- parent.env(e)
 e.1
-
-
 e.2  <- parent.env(e.1)
 e.2
 ```
 
-## understand this?
+# can not print environment(), can extract as list
+# sys.parent() returns integer; 0 = global; 1= first function; ...
 ```{r}
-x=1
+sprintf("in global %s", as.list(environment()))
 f = function() {
+  sprintf("Inside f")
+  cat("inside f \n")
   print (sys.frames()); print(sys.parents())
 
-  g = function() {print (sys.frames()); print(sys.parents())}
+  g = function() {
+    sprintf("Inside g")
+    print (sys.frames()); print(sys.parents())}
 
   g()
-  }
+  }  ## end f
 f()
+?sys.parents
 ```
 
 Two environment equal if:
@@ -110,13 +111,45 @@ is environment for it.
 f()
 
 ```
+## Simple assign, enclosure,based on Grolemund Chapter 8 (2014)
+```{r counter}
+counter <- function(x) {
+  N <- x # do not change N
 
+  # in globalenv(), set value of x 
+  get_number <- function() x
+  next_number <- function() {
+    assign("x", x + 1, envir = globalenv())
+    assign("x", x + 1, envir = parent.frame())   # how to change x in fct counter?
+  }
+  reset_number <- function() assign("x", N, envir = globalenv())
+  #  n <<- N this sets n in runtime env of counter!
 
+  # return list of functions 
+  list(
+    get_number = get_number,
+    next_number = next_number,
+    reset_number = reset_number
+  )
+}
 
+n <- 10
+x
+# returns list with 3 functions
+number <- counter(n)
+number
+
+number$get_number()
+
+number$next_number()
+x
+
+# but x in global does not change, TODO:
+number$next_number()
+x
+
+n
+l <- number$reset_number()
+l
+n
 ```
-
-
-
-
-
-
