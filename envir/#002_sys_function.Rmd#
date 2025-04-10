@@ -1,11 +1,13 @@
 ---
 In last post, traced what happens when a() calls b() and used nframe.
 
-
-
 Build upon sys.nframe():
 sys.function(which)  gives us actual function
 ```{r sys_function}
+
+one 
+
+
 a <- function() {
   browser()
   print("a------ ")

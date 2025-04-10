@@ -16,6 +16,7 @@ TAGS:  traceback, debug
 ## REF:   
 - Gillespie, Appendix E, 
 - PENG R programming, Ch18 
+- for trace, https://rstats.wtf/debugging-r#trace
 
 
 - n next line
@@ -284,4 +285,30 @@ class(l)
 
 ``` 
 
+### Use trace
+https://rstats.wtf/debugging-r#trace
+
+```r
+## be sure untrace
+untrace(f)
+untrace(g)
+
+f <- function(x) x + 1
+g <- function(x) f(x)
+g(4)
+g("a")   # returns error
+
+
+# just prints when f is entered
+trace(f)  # even if no error, reports entry to f
+g(4)
+
+# inserts code from 2nd argument
+trace(f,
+      quote(if (is.numeric(x) && x >= 3) cat("hi\n")), print = FALSE)
+g(4)   # get "hi"
+
+untrace(g)
+untrace(f)
+```
 

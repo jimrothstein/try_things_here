@@ -1,17 +1,13 @@
-
-
-
-
-
 ####	USE variable .DEBUG to indicate debug mode is on/off
 
-			REF:  !so 6286092
-```{r}
+------------------------  functions to get/set debug state
+REF:  !so 6286092
 
 ##	NEED: get/set function, plus function to check state
 #   
 # A slightly fancier version of Dirk's answer:
 
+```{r}
 
 is_debug_mode <- function()
 {
@@ -39,9 +35,9 @@ set_debug_mode(TRUE)   #turn debug mode on
 set_debug_mode(FALSE)  #turn debug mode off
 
 is_debug_mode()
-
 ```
-#### no bug
+
+#### exmple, no bug ---
 ```{r 1 }
 # there is no bug()
 {
@@ -96,7 +92,7 @@ rlang::last_trace()
 
 
 #### E4, debug(FUN), acts as browser() when entering FUN# 
-```
+```r
 debug(FUN)  - debug a FUN
 undebug(FUN) - turn off
 debugonce(FUN) - debug a FUN and turn if off
@@ -172,6 +168,6 @@ l$trace
 
 class(l)
 
-```# 
+```
 
 

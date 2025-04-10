@@ -1,28 +1,6 @@
----
-title: "`r knitr::current_input()`"
-date: "`r paste('last updated', 
-    format(lubridate::now(), ' %d %B %Y'))`"
-output:   
-  html_document:  
-        code_folding: show
-        toc: true 
-        toc_depth: 4
-        toc_float: true
-  pdf_document:   
-    latex_engine: xelatex  
-    toc: true
-    toc_depth:  4   
-fontsize: 11pt   
-geometry: margin=0.4in,top=0.25in   
-TAGS:  regression
----
 # ~/code/MASTER_INDEX.md
 # file="/home/jim/.config/nvim/templates/skeleton.R"
 
-# R
-#
-#
-  #
 ### CAUTION
 #'  rlang uses env();   base uses new.env()
 ###  remove rlang
@@ -35,17 +13,21 @@ TAGS:  regression
      */
 
 #+ simple_env
+```r
 E1  <- new.env()
 E2  <- new.env()
+ls()   # E1 E2
 
+# 
 environment(E2)  <- E1
 environment(E2)  
+ls()
 
+# put something in E2
 E2$a  <- 1
 ls(E1)
 ls(E2)
-
-
+```
 
 ### What does parent.env() do?
 
@@ -53,12 +35,16 @@ ls(E2)
      ‘parent.env’ returns the enclosing
      environment of its argument.
      */
-parent.env(E1)
-parent.env(E2)
-parent.env(.GlobalEnv)
+
+```r
+parent.env(E1)     # global()
+parent.env(E2)     # same
+parent.env(.GlobalEnv)   # next pkg in search()
+```
 
 
 
+```r
 ### Create E3
 E3  <- new.env(parent = E2)
 # <environment: 0x558f0f268fb0>
@@ -70,13 +56,9 @@ E4  <- new.env(parent = E3)
 
 my_ancester  <- function(e = NULL) {
   parent.env(e)
-
 }
+```
 
-str(E1)
-str(E2)
-str(E3)
-str(E4)
 #### Explain !
 my_ancester(E1)
 my_ancester(E2)

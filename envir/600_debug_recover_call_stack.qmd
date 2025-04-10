@@ -1,0 +1,24 @@
+
+- two ways to use recover()
+- option(error = recover) will trigger debug on error
+- or interactively, in debug, type recover()
+
+Use recover() interactively to add call stacks to inspet
+
+https://stackoverflow.com/a/9798347/5057251
+```{r}
+f <- function() {
+   x <-1
+   g(x+1)
+}
+g <- function(z) {
+   y = z+2
+   return(y)
+}
+```
+
+Inside g, run recover and choose frame to inspect, with ls()
+```r
+debugonce(g)
+g()
+```

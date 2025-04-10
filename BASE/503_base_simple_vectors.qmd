@@ -13,6 +13,7 @@
 # HELPER
 
 #' create simple character vector, individual characters
+```r
 library(styler)
 styler::style_file("~/code/try_things_here/BASE/503_base_simple_vectors.R")
 
@@ -22,7 +23,12 @@ create_s <- function() {
 }
 s <- create_s()
 s
+```
+## (TODO) flatten, unname vector
+!so clearly demonstrates
+https://stackoverflow.com/questions/53194184/remove-names-from-named-vector-and-get-only-the-values
 
+```r
 # -------------------
 ## strsplit  - break up 'words' into individual charcters
 # -------------------
@@ -230,3 +236,4 @@ x |>
 x |> diff() |> which.min()
 
 # And this index(3) corres to positions 3,4 in original sorted x (values 8,9)
+```

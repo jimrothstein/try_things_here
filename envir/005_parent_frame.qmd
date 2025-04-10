@@ -5,33 +5,42 @@ date: 2020-17-23T21:13:14-05:00
 categories: ["R"]
 tags: ["R Markdown", "plot", "regression"]
 ---
-
-```{r setup, eval = FALSE , include=FALSE}
-knitr::opts_chunk$set(collapse = TRUE)
-library(jimTools)
-library(blogdown)
-```
-
 ## Calling environment is found with base::parent.frame() 
   - parent.frame of R_GlobalEnv is itself
 
 ```{r simple}
-parent.frame() 
+parent.frame()    # global env
+
 f  <- function() print(parent.frame())  
 f()  # also R_GlobalEnv
+
+
+# returns frame, 1 up 
+g  <- function() print(sys.parent(n=1) )
+g()  # 0, also global_env
+
+# returns env
+h  <- function() print(parent.frame(n=1))
+h() # global_env
+
+x = 0 
+f  <- function() {
+  
+  x = 10
+} 
+
+
+f()
 ```
 
 ## OR, rlang::caller_env()
 ```{r}
 library(rlang)
-rlang::current_env()           ## global_en
 f <- function() print(caller_env())  ## global_env WHY?
 f()
 
 g <- function() caller_env()     ## global_env
 g()
-?print
-?caller_env
 ```
 
 ## Calling env of g is env for f
@@ -50,6 +59,16 @@ f()
 parent.frame()    ## global_env()
 print(parent.frame()) ## also global_env()
 ```
+```r
+x=0
+f = function() {
+x=10
+g = function() {
+ print(sys.nframe())
+ }
+ g()
+ }
+
 
 ## what is calling env for parentls() ?
 ```{r}

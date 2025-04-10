@@ -1,7 +1,7 @@
                                         # Chapter 15_01
 Is it a true R expression?
 
-- syntax, how to write [ one hundred eleven is coded, ie syntax, as 111]
+- syntax, how to write [ how `one hundred eleven` is coded, ie syntax, as 111]
 - semantics, rules on how to evaluate (to a value number, string, image,...)
 First deal with syntax (not semantics).  mean() could just as well be nobody()
 
@@ -85,7 +85,7 @@ sapply(c(1, "two", sd, list(3, 4:5), expression(3+3)) , class)
 parse(text=1) # expression(1) 
 parse(text='call("sin", pi)')
 parse(text=call("sin", pi))
-parse(text=quote(1+1))
+parse(text=quote(1+1)) |> is.expression()   #T
 
 # yes, it is list-like !
 parse(text=quote(1+1))[1:length(parse(text=quote(1+1)))]
