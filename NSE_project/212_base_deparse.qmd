@@ -21,24 +21,36 @@ https://statisticsglobe.com/parse-deparse-expression-r-function
 #### deparse:   R expression --> string (actually structure, not an inverse)
 NOT a usual USE CASE
 
+## Review
 ```{r}
 string <- "2^2"
 typeof(string) # [1] "character"
+res <- parse(text = string) # expression(2^2)
 
-res <- parse(text = string)
-res # expression(2^2)
+l = c("typeof", "is.expression", "is.call", "is.symbol")
+sapply(l, do.call, list(res))   # expression,  T, F,  F
+is.character(res)   # trivial, but take note!
 
-is.expression(res) # [1] TRUE
-is.character(res) # FALSE,  trivial, but take note.
-as.list(res)
-typeof(res) # [1] "expression"
+
 ```
+## instead of parse, use quote()
 ```{r}
 string <- "2^2"
 typeof(string) # [1] "character"
 
+is.call(quote(2*3))
+is.call(quote(parse(2*3)))
 res2 <- quote(string)
-res2 # call, not expression
+res3 <- quote(parse(text = string))
+sapply(l, do.call, list(res2))   # not expression, it is char
+sapply(l, do.call, list(res3))   # expression
+res3 |> is.call()
+
+is.call(res2)   # F
+is.call(res3)   # T
+
+l2 = list("typeof", "is.call")
+sapply(l2, do.call, list(res3)) 
 ```
 
 

@@ -71,3 +71,11 @@ advs <- vs %>%
     AVISIT = VISIT, AVISITN = VISITNUM
   )
 names(advs)
+
+
+# read or download *.rda file from github repo
+githubURL = "https://github.com/pharmaverse/pharmaverseadam/blob/main/data/adae.rda?raw=true"
+temf = tempfile("temp_adae", fileext=".rda")
+download.file(githubURL, temf, mode="wb")
+load(temf)
+

@@ -1,0 +1,53 @@
+#  100_cli_examples.qmd
+
+```r
+library(cli)
+
+?cli
+?cli_alert_info
+
+text="This is the message"
+
+     cli_alert_success(
+       text,
+       id = NULL,
+       class = NULL,
+       wrap = FALSE,
+       .envir = parent.frame()
+     )
+```
+```r
+pkgs <- c("foo", "bar", "foobar")
+cli_alert_success("Downloaded {length(pkgs)} packages.")
+
+```
+```r
+cli_text(cli:::lorem_ipsum())
+
+# mark as function or package
+cli_text("The {.fn cli_text} function in the {.pkg cli} package.")
+
+cli_text("Everyone's favorite {pi} ")
+cli_text("Everyone's favorite {.emph pi} ")
+
+```
+
+```r
+x=0
+f = function() {
+  x=10
+  g = function() {
+    x=100
+    }
+  }
+
+f()
+
+    cli_text("The value is {.emph x}")     # x
+    cli_text("The value is {.emph {x}}")   # 0
+```
+
+```r
+dlurl <- "https://httpbin.org/status/404"
+cli_alert_danger("Failed to download {.url {dlurl}}.")
+```

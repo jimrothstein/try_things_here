@@ -10,6 +10,18 @@ TODO:       Clean up !   Make coherent
 - substitute wants to return code, not value
 - `substitute` has typeof `special` (b/c does not evaluate arguments?)
 
+Fails:
+```r
+power <- function(p) function(x) x^p
+square <- power(2)
+square(3) # 9
+
+# FAILLS, why? should be x^x
+power2 <- function(p) substitute(function(x) x^p)
+square2 = power2(x)
+square2
+square2(3)   # error?
+```
 
 ```r
 substitute |> typeof()   # special
@@ -364,31 +376,6 @@ eval(g(a + 1), list(a = 1))
 # [1] 2
 ```
 
-#### parse:  string --> R expression
-```{r parse}
-## create expression
-create_expr <- function(string = "2^2") {
-  parse(text = string)
-}
-
-ex1 <- create_expr() # expression(2^2)
-## verify:
-
-is.expression(ex1) # [1] TRUE
-typeof(ex1) # [1] "expression"
-
-string <- "2^2"
-typeof(string) # [1] "character"
-
-res <- parse(text = string) # expression(2^2)
-is.expression(res) # [1] TRUE
-typeof(res) # [1] "expression"
-```
-
-#### eval:  R expression --> value?
-```{r eval}
-eval(res) # [1] 4
-```
 
 #### eval: R expression in different env, 2 results!
 ```{r env}

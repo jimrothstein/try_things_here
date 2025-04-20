@@ -1,0 +1,128 @@
+---
+title:
+author: jim
+---
+
+# This code plays with attr, attributes of vectors
+# See: http://adv-r.had.co.nz/Data-structures.html#vectors
+# See: http://adv-r.had.co.nz/Subsetting.html#subsetting-operators
+
+##  See: https://adv-r.hadley.nz/vectors-chap.html
+
+##      ATTRIBUTES
+##  Think of as key=value metadata, attached to vectors
+##
+
+```{r}
+x <- NULL
+attributes(x) # NULL
+attributes(mtcars) # $names, $row.names $class
+attributes(matrix()) # $dim
+f = function(x) x
+attributes(f)  # $srcref
+```
+
+```r
+x <- c("one", "two", "three", "four", "five")
+
+# ----- Set attributes: myName, age -----
+attr(x, "myName") <- "I am x"
+
+attr(x, "myName") # displays only value
+attributes(x) # displays attributes and value
+
+# set age
+attr(x, "age") <- 3
+attributes(x)
+attr(x, "age")
+
+str(attributes(x))
+
+
+# set junk
+attr(x, "junk") <- "999"
+# show all info:
+x
+attributes(x)
+
+##  Alternative way to create vector with attributes
+y <- structure(
+  c("one", "two", "three", "four", "five"),
+  age = 3,
+  myName = "I am x"
+)
+str(attributes(y))
+
+## ATTRIBUTES tend not to last
+attributes(length(x)) # NULL
+attributes(x[2]) # NULL
+
+##  But TWO attributes that linger:   dim, names
+
+
+# ----- set element names -----
+
+x <- 1:3; attributes(x) # NULL
+
+
+# name
+names(x) <- c("first", "second", "third"); attributes(x)   # $names
+names(x)
+str(x)
+attributes(x)
+str(attributes(x))
+x |> attributes() |> typeof() # list
+
+## 2nd way to set names
+y <- 1:3
+names(y) <- c("first", "second", "third")
+attributes(y)
+
+##
+y["third"]
+y[3]
+
+# extract one element
+y[["third"]]
+y[[3]]
+
+# ----- preserve -----
+y <- x[3]
+names(y) # "third"
+is_vector(y) # T
+is_atomic(y) # T
+is_list(y) # F
+attributes(y) # lost those attr for x as a whole
+str(y)
+typeof(y)
+y
+
+# ---- simplify ----
+y <- NULL
+y <- x[[3]]
+names(y) # NULL !
+is_vector(y) # T
+is_atomic(y) # T
+is_list(y) # F
+attributes(y) # NULL
+str(y) # nothing?
+typeof(y)
+is_vector(y) # T
+is_atomic(y) # T
+is_list(y) # F
+attributes(y) # lost those attr for x as a whole
+str(y)
+y # print name and value
+
+# ---- unname ----
+unname(y)
+y # NOT print name
+
+str(x)
+names(x)
+str(x)
+attributes(x)
+x["third"]
+x
+print(x)
+```

@@ -6,41 +6,106 @@ editor_options:
   chunk_output_type: console
 #   TAGS:   parse, getParseData
 ---
-
 base::parse() 
     -   takes string, returns object type `expression`
     -   also: str2lang(), str2
 getParse*() 
     -   can view AST components
 
-    #
-    # https://www.rostrum.blog/2023/03/03/getparsedata/
-    #   webD version: https://webr-parse-test.netlify.app/
-    # https://renkun.me/2020/11/08/using-parse-data-to-analyze-r-code/
-    # https://github.com/wch/r-source/blob/0ee550ff68f22b8a1807377e728f99f2775cc43c/src/main/gram.y#L2312-L235
-    #
-    #
-    # PURPOSE:  Basic intro to  parse, token,
-    #
-    #
-    x <- subset(mtcars, subset = carb == 8)
+
+PURPOSE:  Basic intro to  parse, token,
+x <- subset(mtcars, subset = carb == 8)
+
+\textcolor{red}{red}
+
+#### REF: 
+```
+https://statisticsglobe.com/parse-deparse-expression-r-function
+Murdoch, RJournal, Dec 2010
+https://journal.r-project.org/archive/2010/RJ-2010-010/index.html
+https://stackoverflow.com/questions/46834655/whats-the-difference-between-substitute-and-quote-in-r
+https://www.rostrum.blog/2023/03/03/getparsedata/
+   webD version: https://webr-parse-test.netlify.app/
+ https://renkun.me/2020/11/08/using-parse-data-to-analyze-r-code/
+ https://github.com/wch/r-source/blob/0ee550ff68f22b8a1807377e728f99f2775cc43c/src/main/gram.y#L2312-L235
+```
+
+#### parse:  string  -->    expression
+```{r parse}
+e <- parse(text = "2^2")  # expression(2^2)
+is.expression(e)   # TRUE
+
+## Rmk:  a is unknown, but fine for expression.
+e2 <- parse(text = "2*a")
+
+## Rmk2:  However, this fails because `2a` is not valid; ambiguous syntax
+tryCatch(
+  {
+    e3 <- parse(text = "2a")
+  },
+  error = function(e) e
+)
 
 
-```{r}
-parse(text = "1 + 1") # expression(1 + 1)
-parse(text = "1 + x") # expression(1 + x)
+##  An expression can have attributes.
+attributes(e)  # scref, scrfile, wholeSrcref
+length(e)   # 1
+e[[1]]      # 2^2
+```
+
+```r
+parse(text = "1 + 1")              # expression(1 + 1)
+parse(text = "1 + x")              # expression(1 + x)
+parse(text = "f <- function(x) x") # expression(f <- function(x) x) 
+z=8
 base::parse(text = "x = subset(mtcars, subset = carb == 8)")
 # expression(x = subset(mtcars, subset = carb == 8))
 
+# no substitution for z
+base::parse(text = "x = subset(mtcars, subset = carb == z)")
+# expression(x = subset(mtcars, subset = carb == z))
 
 y <- 2 # does no evaluation
 parse(text = "1 + y") # expression(1 + y)
 ```
+```{r more_detail}
+## in R, the language types are expression, call, symbol; use typeof() ...
+## Using character vector, sapply will provide name 
+l  <- c("class", "typeof", "attributes","is.language", "is.expression", "is.call", "is.pairlist")
+sapply(l, do.call, args=list(e))
+sapply(l, do.call, args=list(e[[1]]))
 
-#### examine result of parse , almost AST
+##  also works
+{
+    if (F) {
+    l  <- list(class, typeof, attributes, is.pairlist)
+    lapply(l, do.call, args=list(e))
+    } 
+}
+
+```
+####  parse, deparse  are not exact inverses.  Attributes are added.
+```{r inverse}
+e <- parse(text = "a   <-  sin(x)")
+str(e)
+
+identical(e, deparse(e))  # F
+
+# as always, no substitution
+f <- function() {
+  x
+}
+e <- parse(text = "f")   # expression(f) 
+is.expression(e)   # T
+is.call(e)   # F
+```
+
+#### utils::getParseData(); examine result of parse , almost AST
 ```{r}
 e <- parse(text = "1+1")
-getParseData(e)[, c("token", "text")] # almost AST
+utils::getParseData(e)[, c("token", "text")] # almost AST
+getParseData(e)
+
 df <- getParseData(e)[, c("token", "text")] # df
 
 # try for AST
@@ -51,27 +116,52 @@ e <- base::parse(text = "x = subset(mtcars, subset = carb == 8)")
 e
 getParseData(e)[, c("token", "terminal", "text")]
 ```
-#                     token terminal   text
-# 29 expr_or_assign_or_help    FALSE
-# 1                  SYMBOL     TRUE      x
-# 3                    expr    FALSE
-# 2               EQ_ASSIGN     TRUE      =
-# 26                   expr    FALSE
-# 5    SYMBOL_FUNCTION_CALL     TRUE subset
-# 7                    expr    FALSE
-# 6                     '('     TRUE      (
-# 8                  SYMBOL     TRUE mtcars
-# 10                   expr    FALSE
-# 9                     ','     TRUE      ,
-# 14             SYMBOL_SUB     TRUE subset
-# 15                 EQ_SUB     TRUE      =
-# 22                   expr    FALSE
-# 16                 SYMBOL     TRUE   carb
-# 18                   expr    FALSE
-# 17                     EQ     TRUE     ==
-# 19              NUM_CONST     TRUE      8
-# 20                   expr    FALSE
-# 21                    ')'     TRUE      )
+
+#### parse:  string --> R expression
+```{r parse}
+## create expression
+create_expr <- function(string = "2^2") {
+  parse(text = string)
+}
+ex1 <- create_expr() # expression(2^2)
+ex1 |> typeof()  # T
+l = c("is.expression", "is.call", "is.symbol")
+sapply(l, do.call, args=list(ex1)) # T,F, F
+
+string <- "2^2"
+res <- parse(text = string) # expression(2^2)
+l = c("is.expression", "is.call", "is.symbol")
+sapply(l, do.call, args=list(res))   # expression = T, is.call = F, is.symbol = F
+```
+
+#### eval:  R expression --> value?
+```{r eval}
+eval(res) # [1] 4
+```
+
+# BELOW - not about parse ------------------------  not parse()
+
+
+### quote
+```r
+x <- quote(5 + 5)
+x
+is.call(x) # T
+typeof(x) # language
+is.pairlist(x) # F
+as.list(x) # breaks the code
+
+z <- quote(x + y)
+is.call(z) # T
+
+e <- quote({
+  print(x)
+  x + y
+  x <- 3
+})
+
+as.list(e)
+```
 
 
 ```{r}
