@@ -4,3 +4,5 @@
 f <- ~x
 class(f)
 # [1] "formula"
+
+

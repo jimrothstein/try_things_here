@@ -1,5 +1,5 @@
-install.packages("ellmer")
-install.packages("ollamar")
+pak::pak("ellmer")
+pak::pak("ollamar")
 
 
 library(ellmer)

@@ -1,5 +1,3 @@
-	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
-
 --- 
 # Spaces, no Tabs
 title: "`r knitr::current_input()`" 
@@ -25,6 +23,7 @@ knitr::opts_chunk$set(echo = TRUE,
 											error=TRUE, 
 											collapse=TRUE) 
 library(jimTools) 
+1 + 1
 ```
 
 ```{r print_labels}

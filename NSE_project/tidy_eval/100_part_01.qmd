@@ -1,0 +1,52 @@
+```r
+library(rlang)
+
+I = c(1:3, NA)
+e = rlang::expr(sum(I))   # defuse
+e  #   sum(I) , note:  no eval, no substitute, e is call
+
+# view e as.list, components
+as.list(e)
+```
+
+Evaluate
+```r
+rlang::eval_tidy(e)  # NA
+
+# view e as.list
+as.list(e)
+```
+
+
+Fix
+```r
+e$na.rm = TRUE
+e   # sum(I, na.rm = T)
+
+# AND, make muliply
+e[[1]]  <- rlang::expr(prod)
+
+# view componentns
+as.list(e)
+e
+
+# evaluate
+rlang::eval_tidy(e)  # 6
+```
+
+Example 2
+REF: https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data
+
+```r
+setwd("NSE_project/tidy_eval")
+getwd()
+
+library(dplyr)
+dfAdult  <- read.csv("https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data", header=F)
+dfAdult
+
+saveRDS(dfAdult, file= "dfAdult.RDS")
+dir()
+readRDS("dfAdult.RDS")
+
+```

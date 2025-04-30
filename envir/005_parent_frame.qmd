@@ -1,35 +1,63 @@
 ---
-title: "parent.frame()"
+title: "005_parent.frame()"
 author: "jim"
 date: 2020-17-23T21:13:14-05:00
 categories: ["R"]
 tags: ["R Markdown", "plot", "regression"]
 ---
-## Calling environment is found with base::parent.frame() 
-  - parent.frame of R_GlobalEnv is itself
 
+set `error` option, get
+```r
+options(error = NULL)    # set error (normally not set)
+getOption("error")       # NULL
+```
+
+------------------------  CALL STACk
+
+debug g
+which = 0 global
+1 = f execution frame
+2 = g execution frame
+
+If in g's execution frame, has x been set?
+get("x", envir=sys.frame(which = 0)) # global
+get("x", envir=sys.frame(which = 1)) # f's execution frame 
+get("x", envir=sys.frame(which = 2)) # g's execution frame ,  or just get("x")
+
+Count frames back (if in g's execution environment)
+get("x", envir=sys.frame(which = -1 )) # f's execution frame
+get("x", envir=sys.frame(which = -2 )) # global 
+```r
+x  <- 0
+g  <- function() { x  = 100 }
+f  <- function() {
+  x  <- 10
+  g()
+}
+
+debugonce(g)
+f()
+```
+
+------------------------  STOP, do you understand the above?? 
+
+WHY use?   quickly confusing
+parent.frame(n = 1) ; returns env,  default 1
+sys.parent(n)  returns frame # ; n is number of frames back from current execution frame
 ```{r simple}
 parent.frame()    # global env
 
 f  <- function() print(parent.frame())  
 f()  # also R_GlobalEnv
 
-
-# returns frame, 1 up 
-g  <- function() print(sys.parent(n=1) )
-g()  # 0, also global_env
-
-# returns env
-h  <- function() print(parent.frame(n=1))
-h() # global_env
-
-x = 0 
+x  <- 0
+g  <- function() { x  = 100 }
 f  <- function() {
-  
-  x = 10
-} 
+  x  <- 10
+  g()
+}
 
-
+debugonce(g)
 f()
 ```
 

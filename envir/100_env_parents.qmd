@@ -1,8 +1,7 @@
 
+## Given nested functions, find set of environments beginning with current environment
 ### sys.parent() works opposite direction to nframe
 ```{r sys_parent}
-# file <- "chunk_sys_parent.Rmd "
-
 ## sys.parent() is helper function, by itself is not very useful.
 
 ## RECALL: frame number 0 is global and increase by +1 for each level down.
@@ -15,7 +14,6 @@
 ## INPUT:  n, which means number frames to go BACK.
 ##          o is current , 1 would be parent, 2 grandparent
 
-## RETURNS: int, representing that frame
 
 sys.parent(n = 0)
 sys.parent(n = 1)
@@ -24,9 +22,12 @@ f <- function(n = NULL) {
   sys.parent(n)
 }
 
-f(0)  # 1
-f(1)  # 0
+f(0)  # 1   # current env
+f(1)  # 0   # but one level up, is global
 f(2)  # 0 
+
+```
+```r
 f = function(n = NULL){
   g=function(n = NULL){
     sys.parent(n)
@@ -37,7 +38,10 @@ f(0) # 2
 f(1) # 1
 f(2) # 0
 
-## USEFUL
+```
+
+```r
+## USEFUL, work with actual environments  
 # To get environment of ancestor frame
 
 # g returns envir
@@ -51,6 +55,7 @@ g <- function(n = NULL) {
 
 ls(g(n = 0)) # current env
 
+# find x in various environments
 get("x", envir = g(n=0)) # 10, in current
 get("x", envir = g(n=1)) # 1, in global
 
