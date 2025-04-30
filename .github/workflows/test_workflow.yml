@@ -16,6 +16,6 @@ jobs:
       - name: cat
         run: cat("hello \n")
       
-      - name: Run test_workflow
+      #- name: Run test_workflow
         #run: source("R/test_workflow.R")
         #shell: Rscript {0}
