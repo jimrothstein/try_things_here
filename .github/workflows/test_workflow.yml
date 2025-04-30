@@ -1,0 +1,18 @@
+name: test_workflow
+
+on:
+  pull_request:
+    branches:
+      - 'main'
+
+jobs:
+  Check-post-tags:
+    runs-on: ubuntu-latest
+    container:
+      image: "rocker/tidyverse:4.2.1"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run test_workflow
+        run: source("R/test_workflow.R")
+        shell: Rscript {0}
+	
