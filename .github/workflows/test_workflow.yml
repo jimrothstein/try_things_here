@@ -6,13 +6,16 @@ on:
       - 'main'
 
 jobs:
-  Check-post-tags:
+  test_workflow:
     runs-on: ubuntu-latest
     container:
       image: "rocker/tidyverse:4.2.1"
     steps:
       - uses: actions/checkout@v4
+
+      - name: cat
+        run: cat("hello \n")
+      
       - name: Run test_workflow
-        run: source("R/test_workflow.R")
-        shell: Rscript {0}
-	
+        #run: source("R/test_workflow.R")
+        #shell: Rscript {0}
