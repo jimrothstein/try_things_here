@@ -47,6 +47,19 @@ f()
     cli_text("The value is {.emph {x}}")   # 0
 ```
 
+Run cli from INSIDE a function
+```r
+f <- function() {
+    ds = mtcars
+    x = deparse(substitute(ds))
+    x = substitute(ds)
+
+
+	cli_text("Name of ds is {x}")
+}	
+f()
+```
+
 ```r
 dlurl <- "https://httpbin.org/status/404"
 cli_alert_danger("Failed to download {.url {dlurl}}.")
