@@ -1,0 +1,60 @@
+
+TAGS:  graph, ggplot, ESS
+Hall of Fame, non-pitchers
+```r
+library(tidyverse)
+library(ggplot2)
+library(abdwr3edata)
+hof <- hof_batting
+```
+
+Based on MidCareer year, assign to baseball era
+```r
+?cut
+hof <- hof |>
+  mutate(
+    MidCareer = (From + To) / 2,
+    Era = base::cut(
+      MidCareer,
+      breaks = c(1800, 1900, 1919, 1941, 1960, 1976, 1993, 2050),
+      labels = c(
+        "19th Century", "Dead Ball", "Lively Ball", "Integration", 
+        "Expansion", "Free Agency", "Long Ball"
+      )
+    )
+  )
+```
+
+Count by Era
+```r
+hof_eras <- hof |>
+  group_by(Era) |>
+  utils::summarize(N = n())
+hof_eras
+```
+Plot
+```r
+ggplot(hof, aes(x = Era)) + geom_bar()
+```
+
+Fancier
+```r
+png(file="BASEBALL/graph1.png")
+ggplot(hof, aes(Era)) + 
+  geom_bar() +
+  xlab("Baseball Era") +
+  ylab("Frequency") +
+  ggtitle("Era of the Nonpitching Hall of Famers")
+dev.off()
+```
+
+```r
+	png(file="BASEBALL/graph2.png")
+  ggplot(hof_eras, aes(Era, N)) + 
+  geom_point(color = "red") +
+  xlab("Baseball Era") +
+  ylab("Frequency") +
+  ggtitle("Era of the Nonpitching Hall of Famers") +
+  coord_flip()
+dev.off()
+	```
