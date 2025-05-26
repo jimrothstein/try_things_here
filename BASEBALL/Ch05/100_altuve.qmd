@@ -1,0 +1,16 @@
+```r
+library(Lahman)
+altuve_id <- People |> 
+  dplyr::filter(nameFirst == "Jose", nameLast == "Altuve") |>
+  pull(retroID)
+altuve_id
+```
+
+```r
+retro2016 <- read_rds("BASEBALL/data/retro2016.rds")
+altuve <- retro2016 |> 
+  filter(
+    bat_id == altuve_id,
+    bat_event_fl == TRUE
+  )
+```
