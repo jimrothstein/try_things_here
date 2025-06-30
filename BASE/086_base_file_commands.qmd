@@ -4,6 +4,7 @@ title: "`r knitr::current_input()`"
 date: "`r paste('last updated', 
     format(lubridate::now(), '%H:%M, %d %B %Y'))`"
 output: 
+
   pdf_document: 
     latex_engine: xelatex
 toc: TRUE 
@@ -39,7 +40,7 @@ print(knitr::all_labels())
 ##  patterns are regex
 
 # the_dir  <- "~/mp3/from_youtube/"
-the_dir  <- "~/mp3_files"
+the_dir  <- "~/old_mp3_downloads"
 pat  <-  "^_[:digit:]{5}"
 
 # mp3 files only, R requires \\ to create literal

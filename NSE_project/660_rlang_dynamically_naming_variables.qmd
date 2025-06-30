@@ -1,0 +1,66 @@
+
+
+###  assign vs rlang (from gemini LLM)
+
+The short answer is yes, you can absolutely use metaprogramming techniques to construct variables dynamically in R, and in many modern R packages (especially those in the tidyverse), this is the preferred and more robust approach compared to assign() or eval(parse()).
+
+What is Metaprogramming in R?
+
+Metaprogramming involves writing code that writes or manipulates other code. In R, this often means working with "expressions" (unevaluated pieces of code) and then evaluating them. The core tools for this in base R are quote(), substitute(), parse(), and eval().
+
+More recently, the rlang package (a foundational package for the tidyverse) has introduced a powerful and safer framework for metaprogramming, often referred to as "tidy evaluation" or "quasiquotation." This is what you'll see in dplyr, ggplot2, etc.
+
+Why Metaprogramming over assign() (and eval(parse())) for Dynamic Variables?
+
+While assign() works, it operates directly on variable names as strings and can be less transparent about where and how variables are being created. eval(parse()) is even more dangerous because it literally executes arbitrary code from a string, making it a security risk and difficult to debug.
+
+Metaprogramming with rlang provides:
+
+    Safety: It gives you more control and transparency over what is being evaluated and in which environment, reducing the risk of unintended side effects or code injection.
+    Readability: Once you understand the concepts, metaprogramming constructs can be more readable and explicit about code manipulation.
+    Flexibility: It allows for more complex manipulations of code, not just simple variable assignments.
+    Integration: It integrates seamlessly with the non-standard evaluation (NSE) that many tidyverse functions use (e.g., dplyr::filter(my_column > 5) where my_column is used directly without quotes).
+
+Simple Example using rlang for Dynamic Variable Creation
+
+Let's revisit our data_1, data_2, data_3 example.
+
+```r
+library(rlang) # Essential for tidy evaluation / quasiquotation
+
+# --- Using rlang for dynamic variable creation ---
+
+for (i in 1:3) {
+  # Construct the variable name as a symbol (an unevaluated name)
+  # sym() creates a symbol from a character string
+  var_symbol <- sym(paste0("data_rlang_", i))
+
+  # Create an expression that assigns a value to the symbol
+  # `expr()` creates an expression.
+  # `!!` (unquote) tells expr() to evaluate `var_symbol` here,
+  # inserting its content (the symbol 'data_rlang_1', 'data_rlang_2', etc.)
+  # directly into the expression.
+  value_to_assign <- i * 100
+  assignment_expression <- expr(!!var_symbol <- !!value_to_assign)
+
+  # Evaluate the constructed expression in the current environment
+  eval_bare(assignment_expression, env = current_env())
+}
+
+# Now, you can access the dynamically created variables:
+print(data_rlang_1)
+print(data_rlang_2)
+print(data_rlang_3)
+
+# Confirm their existence
+print(exists("data_rlang_1"))
+```
+NOTE: left hand side will not evaluate, not what R expects
+```r
+#  paste0('my_data_', 'i') <-  10
+
+# but this does work
+assign(paste0('my_data', 'i'), 10)
+my_datai   # 10
+
+```
