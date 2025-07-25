@@ -28,7 +28,6 @@ small?
 ## List all datasets in `pharmaversesdtm`
 ```{r}
 data(package = "pharmaversesdtm")
-
 ```
 
 
@@ -265,6 +264,35 @@ getNamespaceExports("admiral")
 
 ```
 
+#### Example:  Given a `name` (or `symbol`) get value of object, get()
+```r
+# mtcars returns its value
+mtcars
+
+# but `mtcars` is not a name
+is.name(mtcars)  # FALSE
+is.name("mtcars") # FALSE
+
+# Lets set or assign Y as the name
+Y = as.name("mtcars")
+is.symbol(Y)  # T
+
+str(Y)   # symbol mtcars
+
+# so Y is symbol, its value retrieve by get()
+get(Y)
+
+
+# substitute returns symbol, deparse gives it as character
+f = function(z) deparse(substitute(z))
+X = mtcars
+# get accpts character and returns object
+get(f(X))  # returns value
+
+identical(get(Y), get(f(X)))   # TRUE
+```
+
+
 
 ## CASE: pharmaversesdtm
 Recently, we switched from data(ds) to pharmaversdtm::ds.
@@ -312,19 +340,26 @@ data(ae)
 head(ae)
 ```
 
-## Functional approach
-```{r}
-ds = "ae"
-ds = "dm"
 
-call("`::`", "pharmaversesdtm", sym(ds))
+## Given a tibble, change value in 1 column (by program)
+```r
+# :=  means evaluate and then set equal
+# Goal: change value of arbitrary column
+df = tribble(
+    ~year,   ~"first_col", ~"second_col", ~"third_col",
+    2019,     20,   30, 40)
 
-eval(call(`::`, "pharmaversesdtm", sym(ds)))
+df
+# here:   only first columnn
+key = "first"
 
+df |>
+    mutate(!! paste0(key, "_col") := 40)
 ```
 
+
 ## Break it down
-# Assemble a symbol from a string
+# Assemble a symbol (or name) from a string
 ```{r}
 var <- "foo"
 sym(var)   # foo
@@ -332,31 +367,78 @@ sym(var)   # foo
 # Assemble a call from strings, symbols, and constants
 call("mean", sym(var), na.rm = TRUE)
 
+# try
 ds = "ae"
 ds = "dm"
 # works
 
+call("print", ds)
 call("print", sym(ds))
 eval(call("print", sym(ds)))
 ```
 
-## Vectorize
-```{r}
-?`::`
-call("::", "pharmaversedtm", sym(ds))
-eval(call("::", "pharmaversesdtm", sym(ds)))
+## for admiral, works by creating call 1st, then eval
+```r
+# works (do not wrap :: in ` `)
+z=call("::", "pharmaverseadam", "adae")
+is.call(z) # T
+eval(z)  # prints database
 
-
-f = function(ds) { call("::", "pharmaversesdtm", ds)}
-eval(f("ae"))
-
-z=eval(lapply(c("ae", "dm"), f))
-eval(z[[1]])
+# works
+adam = "adae"
+z=call("::", "pharmaverseadam", adam)
 eval(z)
 
+f = function(adam) {call("::", "pharmaverseadam", adam)}
+f(adam)
+eval(f(adam))
 
-# fails
-`::`(pharmaversesdtm, ae, ts)
+
+adam = "adsl"
+eval(f(adam))
+
+```
+
+## Vectorize
+```{r}
+# THIS WORKS
+?`::`
+library(pharmaverseadam)
+ds = c("adae", "adsl")
+call("::", "pharmaversadam", sym(ds))
+eval(call("::", "pharmaversesdtm", sym(ds)))
+
+adam = "adae"
+f = function(ds) { call("::", "pharmaverseadam", ds)}
+g = function(ds) { call("::", "pharmaverseadam", sym(ds))}
+eval(f(adam))
+eval(g(adam))
+
+z=eval(lapply(c("adae", "advs"), f))
+w=eval(lapply(c("adae", "advs"), g))
+
+eval(z[[1]])
+eval(z[[2]])
+eval(z)
+
+eval(w)
+eval(w[[1]])
+eval(w[[2]])
+
+# ds singular
+f = function(ds) {
+    z = call("::", "pharmaverseadam", sym(ds))
+    }
+q = f("adae")
+save(q, file="junk.rda")
+dir()
+
+eval(get(load(file="junk.rda")))
+
+?save
+#    save(eval(z), file = "junk.rda") 
+## this will fail
+k`::`(pharmaversesdtm, ae, ts)
 sapply(c("ae", "ts"), `::`pharmaversesdtm)
 
 data(package = "pharmaversesdtm")  # no attach
@@ -390,7 +472,3 @@ as.env
 
 ```
 
-## Useful?
-```{r}
-
-```
