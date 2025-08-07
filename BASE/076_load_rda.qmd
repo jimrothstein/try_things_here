@@ -1,0 +1,79 @@
+##  Methods to load an *.rda file 
+# from Thomas Neitmann, 2022
+#Any datasets that ship with the package in the data folder have to be stored as .rda.
+
+# load puts in current environment (typically, not always globalenv)
+pharmaveseadam to make realistic
+```r
+library(pharmaverseadam)
+data(package="pharmaverseadam")
+the_dir = "./BASE"
+#the_file = file(paste0(the_dir, "/data.rda"), "r+b") # read + write
+the_file
+file.info(as.character(the_file))
+?file
+
+# # use adae
+ds = pharmaverseadam::adae
+
+ds |> dim() # 1191 x 105
+ds |> head()
+
+# 1 object, "ds"
+ls()
+
+```
+
+
+
+```r
+save(ds, file=file.path("./BASE", "XXX.rda"), compress="bzip2")
+rm(ds)
+
+list.files("./BASE")  # see data.rda
+```
+
+retrieve - method 1, also clobbers
+```r
+# returns ds to globalenv
+load(file.path("./BASE","XXX.rda"))
+x=get("ds")
+x
+```
+
+ ```r
+# returns ds to e 
+e = new.env()
+load(file.path("./BASE","XXX.rda"), envir= e ) 
+x=get("ds", envir = e)
+x
+rm(e)
+```
+
+from sdtmchecks, uses function
+```r
+#' eval=FALSE
+
+load_prior <- function() {
+    load("data/sdtmchecksmeta.RData")
+    existing_df <- sdtmchecksmeta
+    ## remove the old version that is part of the package
+prior <- load_prior()
+```
+
+roak_pilot
+```r
+#' invisible(lapply(rdas, load, envir = oak_pkg_env))
+```
+
+admiral data-raw/create-dose ...., alternative method to SAVE rda
+
+```
+#  create dose_freq_lookup.rda in data/
+usethis::use_data(dose_freq_lookup, overwrite = TRUE)
+```
+
+from tidytlg,  no bzip2?
+```r
+save(cdisc_adsl, file = "data/cdisc_adsl.rda")
+```
