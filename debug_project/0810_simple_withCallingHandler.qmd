@@ -1,0 +1,31 @@
+0810_simple_withCallingHandler
+
+## Unlike tryCatch, withCallingHandlers addresses the problem, but does not exit.
+
+```r
+warning("you are about to fail")
+```
+
+
+```r
+withCallingHandlers(
+  {
+     warning("you are about to fail")
+  },
+  warning = function(w) message("ignore and continue"),  # appears 2nd
+  print("not muffled, but continuing anyway ...")   # appears first !
+  )
+  
+```
+
+```r
+#| echo: false
+withCallingHandlers(
+  {
+     warning("you are about to fail")
+  },
+  warning = function(w) tryInvokeRestart("muffleWarning"),
+  print("muffled; now continuing ...")
+  )
+  
+```

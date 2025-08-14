@@ -227,4 +227,5 @@ ggplot(brewer_size, aes(n_of_brewers, total_barrels)) +
 
 ```{r source}
 source("008_misc_code.R")
+```
 
