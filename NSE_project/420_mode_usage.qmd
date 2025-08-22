@@ -1,8 +1,8 @@
 ##https://stat.ethz.ch/R-manual/R-devel/RHOME/library/base/html/mode.html
 
+420_mode_usage.qmd
+
 ```{r}
-
-
 e = quote(sin(pi))                  # call
 e = quote(sin(x))                  # call
 
@@ -14,52 +14,14 @@ formals(f = function(a,b,c) a+b+c)          ## pairlist $a, $b, $c
 typeof(formals(f = function(a,b,c) a+b+c))          ## pairlist $a, $b, $c
 
 
-####  NOTE !!!
-typeof(quote(a+b))                          ## language
+####  compare !!!
+q1 = quote(a+b) # call
+typeof(q1)                          ## language
+
 typeof(parse(text="quote(a+b)"))                          ## expression
+```
 
-
-##### parse
-
-typeof(quote(a+b))
-[1] "language"
-
-typeof(parse(text="quote(a+b)"))
-[1] "expression"
-
-> typeof(quote(a+b))
-[1] "language"
-
-> typeof(parse(text="quote(a+b)"))                          ## language
-[1] "expression"
-
-> x1=quote(a+b)
-> ast(x1)
-x1 
-> x2=parse(text=x1)
-> x2
-expression(+
-a, b)
-> x3=parse(text="quote(a+b)")
-> typeof(x3)
-[1] "expression"
-
-cex3 <- c("NULL", "1", "1:1", "1i", "list(1)", "data.frame(x = 1)",
-  "pairlist(pi)", "c", "lm", "formals(lm)[[1]]",  "formals(lm)[[2]]",
-  "y ~ x","expression((1))[[1]]", "(y ~ x)[[1]]",
-  "expression(x <- pi)[[1]][[1]]",
-  "quote(2+3)")
-
-cex3
-
-lex3 <- sapply(cex3, function(x) eval(str2lang(x)))             ## list, 15
-
-mex3 <- t(sapply(lex3,
-                 function(x) c(typeof(x), storage.mode(x), mode(x), is.language(x))))
-mex3
-dimnames(mex3) <- list(cex3, c("typeof(.)","storage.mode(.)","mode(.)"))
-mex3
-
+```
 ## This also makes a local copy of 'pi':
 storage.mode(pi) <- "complex"
 storage.mode(pi)

@@ -84,6 +84,9 @@ mtcars
 names(mtcars)
 str(mtcars)
 
+
+ALL work
+```r
 h  <- function(col) {
     y  <- substitute(col)
     mean(mtcars[[y]])
@@ -92,6 +95,35 @@ h  <- function(col) {
 (h("mpg"))
 (h(mpg))
 (h(hp))
+
+```
+```r
+
+# FACT
+mtcars |> dplyr::filter(mpg > 20)   # WORKS
+mtcars |> dplyr::filter("mpg > 20") # FAILS
+e = quote(mpg > 20)
+
+mtcars |> dplyr::filter(e) # FAILS
+mtcars |> dplyr::filter(!!e) # WORKS
+
+
+g <- function(dataset, cond){
+    y <- substitute(cond)
+    #cat(y, "\n")   # languge, cat can not handle
+    cat(deparse(y), "\n")
+    dataset |> dplyr::filter(!!cond) #WoRKS
+    dataset |> dplyr::filter(eval(cond)) #WoRKS
+    #dataset |> dplyr::filter(eval(deparse(y))) #FAILS
+    #dataset |> dplyr::filter(deparse(y))   # FAILS
+    #dataset |> dplyr::filter(y) # FAILS
+    #dataset |> dplyr::filter(eval(y)) # FAILS
+    }
+
+g(mtcars, mpg > 20)  # FAILS
+g(mtcars, quote(mpg > 20))  # WORKS
+?dplyr::filter
+```
 
 
 \section{select a column}

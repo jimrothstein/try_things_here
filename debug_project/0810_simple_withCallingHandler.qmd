@@ -2,8 +2,11 @@
 
 ## Unlike tryCatch, withCallingHandlers addresses the problem, but does not exit.
 
+
+Default handling ... print warning and contiue
 ```r
 warning("you are about to fail")
+print("got to here")
 ```
 
 
@@ -29,3 +32,56 @@ withCallingHandlers(
   )
   
 ```
+
+From Hadley, Ch8
+```r
+tryCatch(
+  message = function(cnd) cat("Caught a message!\n"),    # executes, ends
+  {
+    message("Someone there?")   # trigger to to run message  = function(cnd) ...
+    message("Why, yes!")
+  }
+)
+#> Caught a message!
+
+withCallingHandlers(
+  message = function(cnd) cat("Caught a message!\n"),  ## non-default handler
+  {
+    message("Someone there?")   ## hits immediately throws message; handler then returns flow to here
+    message("Why, yes!")
+  }
+)
+#> Caught a message!
+#> Someone there?
+#> Caught a message!
+#> Why, yes!
+
+##------------------------  fails
+
+withCallingHandlers(
+    joke = function(cnd) c("a joke \n"),
+    {
+        joke( "hi")
+        }
+    )
+    
+#> Error in joke("hi") (from #4) : could not find function "joke"
+```
+
+```r
+library(cli)
+the_function = function() warning("problem")
+handle_message = function(cnd) {
+    cli_inform("long text", class = class(cnd))
+    cnd_muffle(cnd)
+    }
+
+withCallingHandlers(
+    message = handle_message(cnd) ,
+    {
+    thefunction()
+   } 
+) 
+
+```
+
