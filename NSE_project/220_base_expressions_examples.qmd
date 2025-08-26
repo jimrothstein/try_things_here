@@ -7,16 +7,25 @@ editor_options:
 TAGS: expression
 ---
 
+expression()  
+no evaluation; no eval of arugments 
+as.expression() DOES eval its arguments
+no partial evaluation
+can convert to list-like
+must use eval() to evaluate
+
+- returns object of type = expression (usefu??)
 ##    Expression quotes, does not evaluate 
+
 ```{r}
 (e <- expression(x + y)) ## expression(x+y)
 
 (e <- expression(2 + 2)) ## expression(2+2)
 
-x <- a
 (e <- expression(x + y)) ## expression(x+y)
 as.expression(e) ## expression(x+y)
-
+mode(e)  # expression
+as.list(e)   # list [[1]] x + y
 
 is.expression(e) ## TRUE
 as.expression(e) ## expression(2+2)
@@ -25,6 +34,17 @@ as.expression(e) ## expression(2+2)
 expression(a + b) ## expression(a+b)
 expression("a+b") ## expression("a+b")
 expression("a" + b) ## expression("a" +b )
+
+
+x = "a"
+as.expression(x)  # expression("a")
+
+x=1
+if (F) as.expression(x + y)     # no partial substitution
+
+x=1
+y=2
+as.expression(x + y)   # expression(3) ;  arugment is evaluated
 ```
 
 ##    Not a function(closure)
@@ -34,22 +54,26 @@ is.expression(f) ## FALSE
 (e <- as.expression(f)) ## Error  (closure -> expression, no-no, why?)
 
 ## but works
-expression(f)
+e = expression(f)
+e |> typeof()   # "expression"
+e |> mode()     # "expressoin"
+
+e # expression(f)
+as.list(e)   # convert to list [[1]] f
+
+e = expression(x +y )
+as.list(e) # [[1]] x + y
+
+
+x=1
+e = expression(x +y )  # no substittion 
+as.list(e) # [[1]] x + y
+
+x=1
+y=2
+as.list(e) # [[1]] x + y  # no substittuion
 ```
 
-##    as list?
-```{r}
-x <- a
-(e <- expression(x + y)) ## expression(x+y)
-
-is.list(e) ## FALSE
-is.expression(e)
-
-is.list(e) ## FALSE
-(as.list(e))
-# [[1]]
-# x + y
-```
 
 
 ##    Compare expression()  to as.expression()
@@ -58,20 +82,22 @@ rm(x)
 as.expression(2 + 2)
 expression(2 + 2)
 
-as.expression(2 + x)
-expression(2 + x)
+if(F) as.expression(2 + x) # error, x not found
+e = expression(2 + x)   # OK !
+e |> typeof()  # R object type:  express
+as.list(e)   [[1]] 2 + x
+
 
 (as.expression(sin(x))) ## error 'x' not found
-(as.expression(sin(x = pi / 2))) ## looks evaluated to me
+e = (as.expression(sin(x = pi / 2))) ## 
+e   # expression(1)    has evaluated argument
+
+e = (as.expression(sin(x = pi / 2) + 27)) ## 
+e  # expression(28)
+as.list(e)   # [[1]][1] 28
+
 y <- pi / 2
 as.expression(sin(y)) ## expression(1)
-
-expression(sin(x))
-expression(sin(x = pi / 2))
-y <- pi / 2
-expression(sin(y))
-
-?as.expression
 ```
 
 

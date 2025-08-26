@@ -6,37 +6,70 @@
 ####    Quote
 # -------------
 ```r
-x <-6
-quote(x) |> typeof()  # symbol
-
-# does not evaluate/substitute
-y  <- quote(x); y    # x (not 6)
-identical(quote(x), y <- quote(x)) # [1] TRUE
 ```
 
 quote can be:
-- returns list-like
+- returns list-like,  
 - no evaluation
 - no substitution
 - print() will not force eval
 - not a char[], not atomic
 - often, not always a call
 ```r
-# here ... symbol
+x <-6
+e <- quote(x)
+e |> typeof()  # symbol
+e |> mode()    # name
+as.list(e)   # list [[1]] x
+
+
+x <- "hi"
+e <- quote(x)
+e |> typeof()  # symbol
+e |> mode()   # name
+as.list(e)    # [[1]] x
+
+x <- 6
+e <- quote(x + 2)
+e |> typeof()   # language
+e |> mode()  # call
+as.list(e)    # list [[1]] `+` [[2]] x [[3]][1] 2
+is.expression(e) # FALSE
+lobstr::ast(e)
+
+
+e <- quote(x + y + 2*z)  # typeof language, mode: call
+
+x = 6
+quote(x)   # x
+identical(quote(x), y <- quote(x)) # [1] TRUE   # no substitution
+
 z = letters[1:5]
 e = quote(z) # 
 e |> typeof()  # symbol
+e |> mode()  # name
+
 
 # but ... call
 e2 = quote(letters[1:5])
 e2 |> typeof()   # language
 is.call(e2)  # T
+mode(e2)   # "call"
 
+# assignment does change eval
+z = letters[1:5]
+e = quote(z)
 eval(e)   # a, b, c ...
-# eval context where z has changed
+identical(eval(e), eval(quote(letters[1:5])))   # TRUE
+
+
+# but context does change eval !
 eval(e, envir=list(z = letters[11:15])) # k, l, m ...
+```
 
+# Can is.expression(quote(...)) T?
 
+```r
 # quote can return different kinds of objects
 quote(5)  # 5
 quote(5) |> is.double()  #T
@@ -64,7 +97,7 @@ quote(plot(x,y))  # plot(x,y)
 quote(plot(x,y)) |> typeof()   # "language"
 quote(plot(x,y)) |> is.language()  # TRUE
 quote(plot(x,y)) |> is.call()  # TRUE
-quote(plot(x,y)) |> is.expression()  # FALSE
+quote(plot(x,y)) |> is.expression()  # FALSE 
 quote(plot(x,y)) |> is.symbol()  # FALSE
 quote(plot(x,y)) |> length()  # 3
 
