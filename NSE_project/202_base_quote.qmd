@@ -9,11 +9,14 @@
 ```
 
 quote can be:
-- returns list-like,  
+- convert to list:  use as.list()
+- returns typeof:   symbol, lanuage,   
+- returns mode(): name, call, 
+- does not return R object `expression`
 - no evaluation
 - no substitution
 - print() will not force eval
-- not a char[], not atomic
+- not a char[], not atomic  (unless arg is string, in quotes)
 - often, not always a call
 ```r
 x <-6
@@ -25,20 +28,28 @@ as.list(e)   # list [[1]] x
 
 x <- "hi"
 e <- quote(x)
+e   # x  # no eval of args
 e |> typeof()  # symbol
 e |> mode()   # name
 as.list(e)    # [[1]] x
 
 x <- 6
 e <- quote(x + 2)
+e   # x + 2
 e |> typeof()   # language
 e |> mode()  # call
 as.list(e)    # list [[1]] `+` [[2]] x [[3]][1] 2
-is.expression(e) # FALSE
 lobstr::ast(e)
+
+# quote returns list-like, but not a list                                        #
+is.list(e)   #F
+e[[1]]   # `+`  ie 1st elment
+
 
 
 e <- quote(x + y + 2*z)  # typeof language, mode: call
+e <- quote("x + y + 2*z")
+e |> typeof()   # character surprise?!   
 
 x = 6
 quote(x)   # x
@@ -56,7 +67,7 @@ e2 |> typeof()   # language
 is.call(e2)  # T
 mode(e2)   # "call"
 
-# assignment does change eval
+# environment does change eval
 z = letters[1:5]
 e = quote(z)
 eval(e)   # a, b, c ...
@@ -67,7 +78,7 @@ identical(eval(e), eval(quote(letters[1:5])))   # TRUE
 eval(e, envir=list(z = letters[11:15])) # k, l, m ...
 ```
 
-# Can is.expression(quote(...)) T?
+# Does quote(...) ever return typeof expression? 
 
 ```r
 # quote can return different kinds of objects
@@ -110,9 +121,10 @@ str(z)   # language a+b
 
 # but this kind
 length(z)  # 3
-z[[1]]
-z[[2]]
-z[[3]]
+z[[1]]   # `+`
+z[[2]]   # a
+z[[3]]   # b
+is.list(z)  # FALSE 
 
 rm(L)
 L=list()
@@ -125,6 +137,17 @@ is.call(L[[2]])   #F
 typeof(L)
 sapply(L, typeof)
 ```
+
+more complicated, look at components
+
+returns language (typeof) and call (mode)
+```r
+e = quote(plot(x=age, y= weight))
+e   # prints plot(x=age, y = weight)
+# list-like
+e$x
+e$y
+e$x |> typeof()   # symbol
 
 # ---------------------------
 ### quote, eval not inverse
