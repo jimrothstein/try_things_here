@@ -3,7 +3,7 @@ title: "safely"
 output: html_document
 ---
 
-TAGS: function operators, safely, chatty
+TAGS: function operators, safely, chatty, purrr::possibly, purrr::safely
 file ="~/code/try_things_here/TIDYVERSE/177_safely.qmd" 
 
 - What is function operator?
@@ -50,5 +50,24 @@ map(z$result, pluck)
 
 as.vector(z$result)
 tibble(result = z$result, msg = z$error)
+```
+
+### purrr::possibly, if error: do not stop, return different value
+
+Problem:
+```r
+L=list(1,2,"3", 4, 5)
+
+if (F) purrr::map(L, sqrt)   # error, non-numeric
+
+?purrr::possibly
+# adverb, modify .f, 
+map(L, purrr::possibly(sqrt, otherwise = NA))  # element 3 now "NA"
+
+```
+
+For each element, like possibly return value,   ALSO the error, if any - but do not stop
+```r
+map(L, purrr::safely(sqrt))
 ```
 
