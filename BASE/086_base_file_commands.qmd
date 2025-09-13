@@ -23,7 +23,6 @@ knitr::opts_chunk$set(echo = TRUE,
 											comment="      ##",  
 											error=TRUE, 
 											collapse=TRUE) 
-library(jimTools) 
 1 + 1
 ```
 
