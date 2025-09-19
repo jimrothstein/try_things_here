@@ -70,8 +70,10 @@ match.fun(f_list)
 
 ```{r}
 foo <- function(x) x
+match.fun("foo")  # returns function
 
-match.fun("foo")
+match.fun("f")
+
 f_list <- list("foo", "fooy")
 lapply(f_list, match.fun)
 ```
@@ -89,37 +91,16 @@ f <- function(x, y = c("Alice", "Bob")) {
   invisible(y)
 }
 
+print(f(5, "B"))   # Bob
 
-print(f(5, "B"))
+# ------------------------  
 
 # if arg NULL, algorithm chooses choices[[1]]
-print(f(5, NULL))
+print(f(5, NULL))   # Alice
+# ------------------------ 
 
 # errors
 print(try(f(5, "C"), silent = F))
 print(try(f(5, "C"), silent = TRUE))
 print(try(f(5, "Boy"), silent = TRUE))
 ```
-
-
-
-
-
-
-```{r render, eval=FALSE, include=F	} 
-setwd("~/code/book_advanced_R/")
-getwd()
-here()
-file <- "book_advanced_R/R/100_functions_match.Rmd"
-file <- basename(file)
-file
-dir <- "R"
-
-
-rmarkdown::render(
-  input = file,
-  output_format = "html_document",
-  output_file = "out"
-)
-```
-

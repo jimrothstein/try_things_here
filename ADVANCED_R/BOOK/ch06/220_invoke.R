@@ -48,11 +48,15 @@ args(lm)
 # NULL
 if (F) formals(lm)                     # lengthy list 
 
-# BEGIN HERE
+# each column
 lapply(mtcars, function(x) length(unique(x)))
 
-# base::Filter( FUN, x) returns whether predicate (logical) or not?
-Filter(function(x) !is.numeric(x), mtcars)
+# base::Filter( FUN, x), each element returns whether predicate (logical) is true
+Filter(function(x) !is.numeric(x), mtcars)  # no columns
+Filter(function(x) is.numeric(x), mtcars)   # all columns
+
+?Filter
+
 
 # integrate (FUN)
 integrate(function(x) sin(x) ^ 2, 0, pi)
@@ -74,7 +78,12 @@ funs$double(10)   # cute!
 # ----------------------------
 mean(1:10, na.omit=T)
 
+
+# but if args is mixed list, problem
 args  <- list(1:10, na.omit=T)
+mean(args)   # NA and warnings
+
+# use this
 do.call(mean, args) # I LIKE!
 
 

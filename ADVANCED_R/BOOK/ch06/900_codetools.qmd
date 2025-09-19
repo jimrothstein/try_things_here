@@ -1,0 +1,11 @@
+
+```r
+library(codetools)
+help("codetools")
+f <- function(x) z + x
+
+x  <- "hi"
+z  <- 5
+codetools::findGlobals(f)
+
+```

@@ -14,13 +14,18 @@ output:
     toc: true
     toc_depth:  3
     extra_dependencies: ["amssymb", "bbm", "threeparttable", "forest"]
+  knitr:
+    opts_chunk: 
+      collapse: true
+      comment: "#>" 
+      R.options:
+        knitr.graphics.auto_pdf: true
 fontsize: 10pt   
 geometry: margin=0.4in,top=0.25in   
 TAGS:  conditions,errors,simpleCondition, simpleError,handler
 ---
 
 <!--   KEEP as qmd -->
-
 
 ## To Do
 
@@ -102,7 +107,7 @@ library(rlang)
         function returns control.
 
 
-## start basic
+## start basic, tryCatch
 ```{r basic}
 
 ## blunt
@@ -113,6 +118,23 @@ library(rlang)
     error = function(e) e
   )
 
+```
+
+
+## try alone
+```{r}
+#| collapse: true
+
+try(2+3)
+# throw error
+#------------------------  
+
+try(log("a"))
+#------------------------  
+
+z  <- try(log("b"))
+# details in returned object
+z
 ```
 ## simpleCondition:  built-in subclass of condition object
   *  not much in book.
