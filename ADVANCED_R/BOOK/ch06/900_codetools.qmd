@@ -6,6 +6,6 @@ f <- function(x) z + x
 
 x  <- "hi"
 z  <- 5
-codetools::findGlobals(f)
+codetools::findGlobals(f)    # "+" "z"   (not x)
 
 ```

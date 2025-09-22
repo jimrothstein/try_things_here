@@ -19,6 +19,9 @@ TAGS:  modify-in-place,
 ---
 
 
+When R creates an object, a list for example, the object has no name.  Use its `memory address` to refer to it.   You can also `bind` that object to a name, say L.
+The object itself has no name.  The value of the name L is the object itself.
+
 ```{r setup, include=FALSE		}
 knitr::opts_chunk$set(echo = TRUE,
                       comment = "      ##",
@@ -31,65 +34,17 @@ knitr::opts_chunk$set(echo = TRUE,
 # print all labels
 file  <- knitr::current_input() 
 print(knitr::all_labels())
-library(jimTools)
 library(lobstr)
 ``` 
 ### 002_binding.R
 
 ```{r Ch2}
-
 verify  <- function(obj){
-# ==========================
-list(obj_size(obj),
-obj_addr(obj),
-mem_used(),
-ref(obj)
+    list(obj_size(obj),
+    obj_addr(obj),
+    mem_used(),
+    ref(obj)
 ) }
-
-# examples of typeof and class
-# ==============================
-quote(x)
-
-g  <- function(x) { paste(quote(x)," = ", typeof(x)) }
-)
-# typeof - examples
-# ===================
-ex  <- list( subset = `[`,`[[`, 
-						cat = `c`,`+`,sum,c(1,2),
-						c(TRUE,FALSE	 ),  function(x) {x+1},  
-						"abcd", e=environment())
-
-
-
-sapply(ex,g ) # returns char[]  # simplified version of lapply
-lapply(ex, typeof)
-lapply(ex,class)
-
-t  <- tibble::tibble(ex = ex, typeof=lapply(ex,typeof)[[]])
-t
-# ===================================
-
-
-# STUDY
-# =======
-# $ alias for [[ - extract elment of list
-# [ is to sub-list
-
-l  <- list(first = "a", "b")
-names(l)
-
-# all return contents ( char[])
-l$first
-l[[1]]
-l[["first"]]
-
-l[[2]]
-
-
-# return sub-list ( char[])
-l[1]
-l["first"]
-l[2]
 
 
 # TEXT
@@ -99,8 +54,36 @@ y  <- x
 
 # not ggod verify(x)
 verify(x)
-verify(y)
 
+```
+verify(x)
+[[1]]
+80 B
+
+[[2]]
+[1] "0x56143aaa3798"
+
+[[3]]
+69.94 MB
+
+[[4]]
+[1:0x56143aaa3798] <dbl> 
+```
+
+
+# 2.2 Binding Basics
+
+Create object, and bind it to `name` x.  x is reference to object. Value of `x` is object.
+```{r}
+x  <- c(1,2,3)
+y  <- x
+
+
+# Find identifiers, note the same.   One object, both x, y bound to it.
+obj_addr(x)
+obj_addr(y)
+
+```
 # 2.3.2 Functions
 # =================
 f <- function(a) { a }
@@ -122,18 +105,19 @@ reprex( {
 l1 <- list(1,2,3)
 l2 <- l1
 
-# SAME 
-identical(lobstr::ref(l1),lobstr::ref(l2))
+# l1, l2 refer to same object 
+identical(lobstr::ref(l1),lobstr::ref(l2))   # T
 ref(l1,l2)
 ref(l2)
 
-# ...and indeed refernces are SAME, for example first elment in each
+# Obtain identifier of object (remember object has no name)
 lobstr::obj_addr(l1[[1]])
 
 # BUT... not so for subsets of list
 # ========================
 s1  <- l1[1]
 s2  <- l2[1]
+ref(s1,s2)
 identical(s1,s2) # TRUE
 
 identical(lobstr::obj_addr(l1[1]), lobstr::obj_addr(l2[1]))  # FALSE	 

@@ -79,8 +79,10 @@ if (FALSE) {
 }
 
 
-## assign object to <e> (advantage:  easier to program assign)
+## assign an object to <env> (advantage:  easier to program assign)
 assign("x", "hello", envir = globalenv())
+x # [1] "hello"
+x |> typeof()   # character
 ls(globalenv())
 
 # shortcut  or e$y  <- 10

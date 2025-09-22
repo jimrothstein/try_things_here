@@ -20,9 +20,12 @@ rm(list = ls())
 ```{r}
 # Create a symbol
 sym <- as.symbol("x")
+sym   # x
 
 # Check if it's a symbol
 is.symbol(sym)  # TRUE
+
+quote(x) |> is.symbol()   ## T
 
 # Use the symbol in an expression
 expr <- quote(x + 1)
@@ -37,11 +40,6 @@ eval(expr)  # 11
 
 ##  Symbol, aka name; quote() returns symbol
 ```{r}
-
-x    #ERROR, x DNE
-
-q2  <- quote(x)      
-is.symbol(q2)       #T
 ```
 # ----------------------------------------------------------------------
 ####    Symbol represents value or stored object (Hadley, tidyr cheat)
@@ -212,6 +210,8 @@ eval(`4`)
 
 ####    cast to vector of type symbol
 ```{r}
+x="hi"
+x=c(2)
 z = as.vector(x, "symbol")
 z
 is.symbol(z)
@@ -221,7 +221,9 @@ typeof(z)
 
 ####    Not symbol
 ```{r not_symbol}
-is.symbol(4)
+is.symbol(4)   # F
+as.symbol(4) |> is.symbol()  # T
+as.symbol(4)   # `4`
 
 ## ??
 is.symbol(as.name(4))

@@ -10,15 +10,21 @@ Humans like names.   So we assign a name like `f`.
 
 Promises, **are not R code**,  so can not be maniuplated with R code.
 Chapter 20:  convert promises to `quosures` (ie objects)
+
+No error because `x` never used
 ```{r}
 rm("x")
 h01 <- function(x) {
-  10
+  10 
 }
 h01(stop("This is an error!")) #> [1] 10
 
-# explain
+# none of these puts x and value into global env
 h01(x <- 100)
+h01(x = 100)
+h01(100)
+a=2
+b=3
 x   # error
 ```
 # ---------------

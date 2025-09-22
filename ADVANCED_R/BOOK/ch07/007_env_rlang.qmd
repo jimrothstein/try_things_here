@@ -121,40 +121,36 @@ env_print(where(name = "lm"))  # use string
 ## 7.4 Special Environments
 
 
-### Compare names vs env themself
+### Compare environment names vs environment themself
 ```{r}
-search() # returns strings
-search_envs()  # returns envs, in a list?  rlang_env
-class(search_envs())  # "rlang_envs" 
+search() # returns name of loaded packages environments, character vector
+rlang::search_envs()  # returns the env themselves list
 
-one = search_envs()[1]  # returns chain  
-search_envs()[[1]]   # return <env>
-
-
-is_environment(one[1])  # F
-is_environment(one[[1]])  # T 
-
-class(search_envs()[1])  # rlang_envs, chain
-str(search_envs()[1])
+# example returns 3 env in search plath (here stats)
+e  <- rlang::search_envs()[[3]]
+e   # env stats, attr 
 ```
 
 
-## 7.4.2 fn env
+## 7.4.2 function environment
 
-What value for x prints?
 ```{r}
-# value of x depends upon <env> sent to f
-f  <- function(env = global_env()){
-	env$x
-}
+rm(list =  ls())
+y  <- 1
+f  <- function(x) x + y
+rlang::fn_env(f)
+environment(f)   # same
 
-rm(x)
-x  <- 5
-f()
+lobstr::ast(expr(function(x) x + y))
+lobstr::ast(function(x) x + y)
 
-e  <- env(base_env(), x = 500)
-f(e)
 
+# new env; new function g
+e  <- env()
+e$g  <- function() 1
+
+ls()
+ls(envir = e)
 
 parent <- child_env(NULL, foo = "foo")
 env <- child_env(parent, bar = "bar")
