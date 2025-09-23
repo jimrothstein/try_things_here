@@ -35,7 +35,7 @@ f <- function(df, string_or_symbol) {
 }
 
 # ------
-# WORK
+# WORKS
 # ------
 f(mtcars, hp)
 f(mtcars, "hp")
@@ -88,8 +88,28 @@ map(c("my_col"), \(x) f(!!x))
 x = letters[1:5]
 names(x)   <- LETTERS[1:5]
 x
-x[["A"]]
+x[["A"]]   # "a"
 x[[sym("A")]]
 y = "A"	                            
 x[[sym(y)]]
 x[[y]]
+
+
+
+# sym, {{}} 
+# NEXT:  Suppose we do not know in advance what the criteria will be
+
+# Pass column to filter, but which column is unknown till run-time
+
+# filter based on column `birth_year == 19`
+dplyr::filter(starwars, birth_year == 19)
+
+
+s = rlang::sym("birth_year")
+
+dplyr::filter(starwars, !!s == 19)
+dplyr::filter(starwars, !!s > 19)
+
+# {{}} notation
+dplyr::filter(starwars, {{s}} > 19)
+
