@@ -1,6 +1,15 @@
 # Chapter 9 - Functionals
 
 #
+
+
+# Examples - same -
+map_dbl(mtcars, function(x) length(unique(x)))
+map_dbl(mtcars, \(x) length(unique(x)))
+
+map_dbl(mtcars, ~length(unique(.x)))   # use .x
+map_dbl(mtcars, ~length(unique(..1)))   # use  ..1
+
 library(purrr)
 
 # ======================
@@ -300,3 +309,13 @@ reduce("a", `*`, .init=1) # shows error (which want)
 9.5.4 MULTIPLE INPUTS
 # =====================
 
+
+## NOTE:  functor laws, map id to id; and preserve composition
+
+# https://en.wikipedia.org/wiki/Functor_(functional_programming)
+## modify(.x, .f, ...) vs map:   return object of same type as input
+?purrr::modify
+
+
+# split (by grouping)
+split(mtcars, mtcars$cyl)

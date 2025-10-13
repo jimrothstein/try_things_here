@@ -1,7 +1,11 @@
-"# 
+---
+---
+
+tags: setNames, structure
 
 #	basic structure
 # =================
+```r
 explain  <- function(x){
 	list(
 	 	"x" = x,
@@ -30,6 +34,9 @@ NROW(mm)
 
 length(
 
+  ```
+
+  ```
 # list
 # ======
 x  <- list(a="apple", b="bite", c="carrot")
@@ -84,4 +91,44 @@ x[0]
 x["hello"]
 x[4]
 })
+
+
+```
+
+setNames:   given an object, set names of elements
+```r
+x = setNames(object=1:3, letters[1:3])
+x   # now named
+# a b c 
+# 1 2 3 
+
+dput(x)   # 
+
+# rename
+x  <- setNames(x, letters[24:26])
+x y z 
+1 2 3 
+```
+
+
+```r
+x  <- mtcars
+names(x)
+length(x)   # 11
+
+
+# change names of columns
+x  <- setNames(x, letters[1:11])
+head(x)
+
+```
+```
+
+head(x)
+                     a b   c   d    e    f    g h i j k
+Mazda RX4         21.0 6 160 110 3.90 2.62 16.5 0 1 4 4
+Mazda RX4 Wag     21.0 6 160 110 3.90 2.88 17.0 0 1 4 4
+Datsun 710        22.8 4 108  93 3.85 2.32 18.6 1 1 4 1
+Hornet 4 Drive    21.4 6 258 110 3.08 3.21 19.4 1 0 3 1
+```
 
