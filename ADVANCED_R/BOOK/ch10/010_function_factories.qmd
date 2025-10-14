@@ -17,24 +17,9 @@ params:
 **To Render** 
 
 ```{r render, eval=FALSE, echo=FALSE	, include=FALSE }		
-library(here)
 library(ggplot2)
 library(scales)
 
-ren <- function() {
-  rmarkdown::render(here::here("book_advanced_R", "R", "010_functional_factories.Rmd"),
-    output_dir = "~/Downloads/print_and_delete"
-  )
-}
-ren()
-
-ren2 <- function() {
-  rmarkdown::render(here::here("book_advanced_R", "R", "010_functional_factories.Rmd"),
-    output_format = "github_document",
-    output_dir = "~/Downloads/print_and_delete"
-  )
-}
-ren2()
 ```
 
 ```{r one, include=FALSE} 
@@ -53,7 +38,45 @@ power1 <- function(exp) {
     x^exp
   }
 }
-square(2)
+square  <- power1(2)
+cube  <- power1(3)
+
+square(10)
+```
+
+
+factory functions to change column names
+```r
+x  <- c("jim", "rothstein")
+y <- c("a", "b")
+z  <- c(first = c("jim"))
+
+setNames(x,y)
+res  <- setNames(x,y)
+str(res)
+str(z)
+
+# do not change x,  function chnanges new object
+change  <- function(x) {
+  function(out) setNames(object = x, y)
+  }
+
+change1  <- change(x)
+change1(y)
+y  <- c("apple", "cherry")
+change1(y)
+
+# no change
+x
+y
+
+# mtcars unchanged 
+length(names(mtcars))
+q  <- setNames(mtcars, letters[1:11])
+names(q)
+names(mtcars)
+
+
 ```
 
 ````
