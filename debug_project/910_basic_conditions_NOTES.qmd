@@ -36,6 +36,17 @@ TAGS:  conditions,errors,simpleCondition, simpleError,handler
 
 SEE also: ~/code/try_things_here/ADVANCED_R/BOOK/0800_Ch8_*
 
+- cat() requires `\n`, immediate; 
+- message() is cat plus `\n`, goes to `std.err`, useful to explain default settings
+- author of function signals a condition
+- user of function must handle
+- warnings()  are cached, then prints together
+- if `try()` throws error, the error is printed and execution conditions after the `try`
+- if `trycatch()` throws error, function user must handle.  Execution *does not* continue.
+- message, warning, error have DEFAULT behavior, to modify this behavior use exit or calling handler.
+- to suppress:  `suppressMessages, Warnings()...`:w
+- Base R has conditions, but rlang has several methods to handle, probe, etc.
+
 ## Diagram
 
 \begin{forest}
@@ -109,10 +120,6 @@ library(rlang)
 
 ## start basic, tryCatch
 ```{r basic}
-
-## blunt
-  sqrt("abc")
-
 ## better
   tryCatch( sqrt("abc"),
     error = function(e) e
@@ -136,6 +143,27 @@ z  <- try(log("b"))
 # details in returned object
 z
 ```
+
+stop(...) 0,1,n args
+```r
+stop(..., call. = TRUE)  # throws error
+
+# error includes function `f`, concatenates
+f  <- function() {
+  stop("Throw error", "includes function")
+}
+
+f()
+```
+
+Last error/trace info
+```r
+f()
+traceback()
+rlang::last_error()
+rlang::last_trace()
+```
+
 ## simpleCondition:  built-in subclass of condition object
   *  not much in book.
 ```{r simpleCondition}
