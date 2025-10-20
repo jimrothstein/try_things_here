@@ -153,3 +153,45 @@ l <- number$reset_number()
 l
 n
 ```
+
+
+function factory
+```r
+x <- 0
+f  <- function(x) {
+         function(y) x + y
+      }
+
+res <- f(x)
+if (FALSE) ls.str(environment(res))
+x <- 1
+res(10)  # 11
+ls.str(environment(res))  # x =1
+```
+
+parent of res environment?
+```r
+# binding env, where variable (res)  bound to object
+find("res") [1] ".GlobalEnv"
+
+# enclosing env  (find unbound variables)
+environment(res) # <environment: 0x5585a26d0270>
+
+# no name: (execution envir of f)
+rlang::env_name(environment(res))   # ""
+
+
+# its parent is global
+env_parent(env = environment(res), n=1) <environment: R_GlobalEnv>
+
+  ```
+  
+  namespace
+```r
+rlang::ns_env("rlang") # <environment: package:rlang>
+
+# path to local source
+rlang::pkg_env("rlang")
+
+```
+
