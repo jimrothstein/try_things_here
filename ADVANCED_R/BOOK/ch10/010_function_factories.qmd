@@ -19,7 +19,6 @@ params:
 ```{r render, eval=FALSE, echo=FALSE	, include=FALSE }		
 library(ggplot2)
 library(scales)
-
 ```
 
 ```{r one, include=FALSE} 
@@ -144,9 +143,56 @@ power2 <- function(exp) {
 x <- 2
 square <- power2(2)
 square # code still shows "exp" but env now knows
-fn_env(square)$exp
-x <- 3
-square(2)
+
+# check environment (when created)
+fn_env(square)$exp  # 2
+environment(square)$exp # same, 2
+
+# eval
+x <- 4
+square(x)   # 16, the exp was already set
+```
+
+another force example
+```r
+
+h  <- function(y) {
+  function() y    # inner
+  }
+La = vector("list", 5)
+
+for (i in seq_along(L)) {
+  La[[i]]  <- h(i)
+  }
+
+# Because did not force(y);  each value for y in anon (or inner) function changes with each element and the now the last value (5) is in enclosing env
+
+# Each time eval, inner function finds y=5 in its enclosed env
+La[[1]]()   # 5
+La[[2]]()   # 5 
+
+# ------------------------  separate
+
+g  <- function(y) {
+  force(y)
+  function() y    # inner
+  }
+
+# NOTE: without force 
+g
+fn_env(g(2))$y  #2; force eval; y = 2 in anon (or inner) function enclosing env
+fn_env(g(3))$y  #3; force eval  y = 3 in ""     ""      ""        ""
+
+Lb = vector("list", 5)
+
+for (i in seq_along(L)) {
+  Lb[[i]]  <- g(i)
+  }
+
+# each element of L has different env
+Lb[[1]]() # 1
+Lb[[2]]() # 2
+
 ```
 
 ```
@@ -209,4 +255,3 @@ info()
 ```
 
 
-\pagebreak
