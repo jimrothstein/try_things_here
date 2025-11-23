@@ -1,0 +1,27 @@
+# Compare magrittr and native pipe 
+
+# first, use magrittr, more features
+x %>% f(y) is f(x,y)
+y %>% f(x, .) is f(x,y) same
+```r
+library(magrittr)
+
+f  <- function(x,y) x + 2*y
+
+#x %>% f(y)
+
+1 %>% f(10)   # 21,  ie f(x, y) f(1,10)
+
+
+10 %>% f(1, .) # 21  ie f(x,y) f(1,10)
+
+```
+
+# But native pipe, only 1st way
+```r
+1 |> f(10)   #21
+
+#error, fails
+10 |> f(1, .)
+
+```
