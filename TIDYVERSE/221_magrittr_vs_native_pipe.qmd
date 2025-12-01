@@ -1,12 +1,29 @@
 # Compare magrittr and native pipe 
 
+
 # first, use magrittr, more features
 x %>% f(y) is f(x,y)
 y %>% f(x, .) is f(x,y) same
 ```r
 library(magrittr)
 
+# define function of two variables:
 f  <- function(x,y) x + 2*y
+
+f(1,10)   # 21
+
+# both pipes work fine for first position of f `x`
+
+1 |>  f(10)    # 21
+1 %>% f(10)    # 21
+
+
+# but only magrittr works for 2nd position, `y`
+
+
+10 |> f(1, .)   # error, `unused argument (.)
+10 %>% f(1, .)  # 21
+
 
 #x %>% f(y)
 
