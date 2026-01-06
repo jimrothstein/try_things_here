@@ -16,16 +16,18 @@ REF: https://cran.r-project.org/doc/manuals/R-lang.html
 rm(list = ls())
 ```
 
-## basics
+## basics: take string; return symbol
 ```{r}
 # Create a symbol
 sym <- as.symbol("x")
-sym   # x
+sym   # x, ie no quote signs
 
 # Check if it's a symbol
 is.symbol(sym)  # TRUE
 
 quote(x) |> is.symbol()   ## T
+
+identical(sym, quote(x))  ## T
 
 # Use the symbol in an expression
 expr <- quote(x + 1)

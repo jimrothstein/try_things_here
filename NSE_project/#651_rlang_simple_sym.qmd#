@@ -1,0 +1,59 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+# 651_rlang_simple_sym.qmd
+
+# Source - https://stackoverflow.com/a/57417926
+# Posted by moodymudskipper, modified by community. See post 'Timeline' for change history
+# Retrieved 2025-12-20, License - CC BY-SA 4.0
+ 
+ !!sym(variable as string)
+
+USE CASE:  pass string to function (such as colname, but unknown till run-time).  
+!!sym(string) converts to string to symbol, then evaluates before R uses it in tidyverse function.
+ 
+GOAL:  Create new tibble from iris, with one of columns doubled.  This column may not be know till run-time.
+```r
+rm(list = ls())
+
+nm <- "Sepal.Width"   # string, colname but unknown till run-time
+x <- rlang::sym(nm)   # x is symbol
+x #> Sepal.Width  prints without quote marks
+
+
+# dplyr can do this:
+dplyr::mutate(head(iris), Sepal.Width*2)
+
+# can not do this: (errors)
+if (FALSE) {
+# not this
+dplyr::mutate(head(iris), x*2)
+dplyr::mutate(head(iris), nm*2)
+  }
+```
+
+Solution:   eval, or use injection operator (!!) before R evaluates
+```r
+
+dplyr::mutate(head(iris), !!x * 2)
+dplyr::mutate(head(iris), !!sym(nm) * 2)
+dplyr::mutate(head(iris), eval(x) * 2)
+```
+
+BACKGROUND
+```r
+typeof(x) #> [1] "symbol"
+identical(x, as.symbol(nm)) #> [1] TRUE
+
+# NOTE:  error  b/c no such object, 'Sepal.Width'
+eval(x)
+
+
+# but of course: can create such object
+Sepal.Width = 100
+eval(x)
+```
+
+

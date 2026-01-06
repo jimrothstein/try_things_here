@@ -1,0 +1,68 @@
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: hide
+        toc: true 
+        toc_depth: 4
+        toc_float: false
+        number_sections:  true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  4    
+    number_sections:  true
+fontsize: 10pt   
+geometry: margin=0.4in,top=0.15in, bottom=.15in
+TAGS: purrr 
+editor_options: 
+  chunk_output_type: console
+---
+\tiny
+PURPOSE:   a few purr functions 
+  *
+
+
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(
+                      echo = TRUE,
+                      eval=F,
+                      include=F,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = T   ) # easier to read
+
+
+```
+```r
+f  <- function(x) x + 2
+g  <- function(x) x + 2
+h  <- function(x) x + 2      # 6
+
+purrr::compose(h,g,f)(0)
+```
+```r
+0 %>%
+  h %>%
+  g %>%
+  f            # 6
+```
+```r
+k  <- purrr::partial(`+`, 2)
+0 %>%
+  k() %>%
+  k() %>%
+  k()         # 6
+```
+
+```r
+quote(\(x) x^2)                 # function(x) x^2, call 
+quote(\(x) x^2) %>% class()     # "call"
+```
+
+
+
+

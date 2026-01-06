@@ -35,6 +35,7 @@ Use ast to probe inside expression
 ```{r}
 library(lobstr)
 z <- rlang::expr(mean(x, na.rm = TRUE)) # aka defuse
+z  # mean(x, na.rm = TRUE) 
 
 # hmm, z is expression, right?
 lobstr::ast(rlang::expr(mean(x, na.rm = TRUE))) # aka defuse
@@ -45,3 +46,57 @@ z <- capture_it(a + b + c)
 lobstr::ast(z)
 ```
 
+Why not the same?
+```r
+z=rlang::expr(x-10)
+ast(rlang::expr(x-10))
+ast(z)
+```
+
+```r
+x=10
+eval(z)
+
+y=9
+x=y+1
+eval(z)   # evaluates several, but ast only shows z 
+```
+
+What object is returned by ast()?
+```r
+w = ast(rlang::expr(x-10))
+typeof(w) # character?
+class(w) # lobstr_raw
+length(w) # 6
+w[[1]]   # terminal codes?
+w[[2]]
+
+str(w)    # terminal codes ??
+
+deparse(w)
+?ast
+!!w   # error
+
+
+```
+constant vs symbol
+```r
+ast(x + 2+3)
+
+?is_syntactic_literal
+
+x <- NULL
+is_syntactic_literal(x)     # TRUE
+is_syntactic_literal(2)     # TRUE
+is_syntactic_literal(x+2)   # FALSE
+is_syntactic_literal(c(1))   # TRUE
+is_syntactic_literal(c(1,2))   # FALSE
+is_syntactic_literal(function)  # error
+
+L = list(x, 2, x+2, c(1), "dog")
+lapply(L, is_syntactic_literal)
+```
+```r
+L = list(x, 2, x+2)
+lapply(L, rlang::expr)
+expr(x+2)

@@ -61,37 +61,34 @@ summarise_groups <- function(dataframe, grouping_var, column_name){
 }
 ```
 
+Example:  !! injects, not evaluate.  Just inserts code into code.   
+Thus we have chance to CHANGE code before actual evaluation.
+```r
+f = function(ds, col) {
+  colname = enquo(col)   # as original
+  colname = expr(hp)     # change !
+  # dplyr::select, not !!,  evaluates in context of ds; else colname or 'hp' or 'mpg' means nothing
+  ds |> dplyr::select(!!(colname))     }
 
-##    ast first quotes argument, so must !! to unquote
-```{r}
-x=quote(a+b+c)        ## x is a call
-as.list(x)
-
-ast(x)    ## double quoting
-ast({{x}})
-ast(!!x)
-
-## but
-ast(x=substitute(a+b+c))
-ast(x=quote(a+b+c))
-ast(x=a+b+c)
-
-## how to use !! ?
-identical(`!!` x, {{x}})
+debugonce(f)
+f(mtcars, col = expr(mpg) )
 ```
 
+EXAMPLE:
 ## Pass a tibble and expr containing criteria (to filter row)
 Admiral has this kind of function
 ```{r}
-f = function(ds,
-             criteria)
-{
-  # uncomment to change the criteria !
-  # criteria = expr(cyl == 8)
+f = function(ds, criteria) {
 
-  # apply criteria user specified, unless modified in line above 
-    ds |> dplyr::filter(!!criteria)  # unquote
+   # inside f, possible to manipulate criteria !
+    criteria = expr(cyl == 8)
+
+   cat("inside \n")
+   # otherwise, apply criteria as user specified
+   ds |> dplyr::filter(!!criteria) |> select(1:4)  # unquote
   }
 
+
+debugonce(f)
 f(mtcars, criteria=expr(mpg <20))
 ```
