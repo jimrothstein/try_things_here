@@ -48,3 +48,4 @@ results_obj <- pk.nca(data_obj)
 ## cmax, tmax, half.life....
 ## Summarize the results
 summary(results_obj)
+as.data.frame(results_obj)
