@@ -1,20 +1,29 @@
 library(PKNCA)
 
-?vignette
-
 # list all, plus link
 browseVignettes("PKNCA")
 
 # COPIED
 
 
+# region d_conc
+# Obtain from dataset
+
+
 ## Load the PK concentration data (each subject: dose, time => conc )
 class(d_conc) # [1] "nfnGroupedData" "nfGroupedData"  "groupedData"    "data.frame"
 
-d_conc <- datasets::Theoph
 
+# list of 5 lists, but 3 attributes
+d_conc <- datasets::Theoph
+# endregion
+
+
+# region dose object
 ## Generate the dosing data
 d_dose <- d_conc[d_conc$Time == 0, ]
+
+
 
 #   (adds columns:  exclude, volume, duration)
 ## Create a concentration object specifying the concentration, time, and
@@ -25,6 +34,9 @@ conc_obj <-
     d_conc,
     conc ~ Time | Subject
   )
+
+# endregion
+
 ## Create a dosing object specifying the dose, time, and subject
 ## columns.  (Note that the grouping factors should be the same as or a
 ## subset of the grouping factors for concentration, and the grouping
@@ -35,6 +47,8 @@ dose_obj <-
     d_dose,
     Dose ~ Time | Subject
   )
+# endregion
+
 ## (list of lists:   data, formula, columns
 ## Combine the concentration and dosing information both to
 ## automatically define the intervals for NCA calculation and provide
