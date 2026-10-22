@@ -1,0 +1,73 @@
+---
+title: "safely"
+output: html_document
+---
+
+TAGS: function operators, safely, chatty, purrr::possibly, purrr::safely
+file ="~/code/try_things_here/TIDYVERSE/177_safely.qmd" 
+
+- What is function operator?
+Takes a function as input and outputs another function (a wrapper)
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(purrr)
+```
+
+## r4ds_Ch21.6 (map & error)
+```{r}
+# returns two: result + error (if any)
+
+safe_log <- purrr::safely(log)
+
+# $result
+# $error (if any)
+safe_log(10)
+
+# glimpse is a little cleaner
+safe_log("a")
+glimpse(safe_log("a"))
+
+glimpse(safe_log(0))
+```
+
+####0x_same_using_map
+```{r}
+# result + error (if any)
+safe_log <- purrr::safely(log)
+x <- list(10,"a",0)
+
+y <- map(x, safe_log)   #  y is list  
+glimpse(y)
+
+z <- y %>% transpose() 
+z
+t = tibble(A = z$result, B=z$error)
+t
+pluck(z$result[[1]])
+map(z$result, pluck)
+
+
+as.vector(z$result)
+tibble(result = z$result, msg = z$error)
+```
+
+### purrr::possibly, if error: do not stop, return different value
+
+Problem:
+```r
+L=list(1,2,"3", 4, 5)
+
+if (F) purrr::map(L, sqrt)   # error, non-numeric
+
+?purrr::possibly
+# adverb, modify .f, 
+map(L, purrr::possibly(sqrt, otherwise = NA))  # element 3 now "NA"
+
+```
+
+For each element, like possibly return value,   ALSO the error, if any - but do not stop
+```r
+map(L, purrr::safely(sqrt))
+```
+

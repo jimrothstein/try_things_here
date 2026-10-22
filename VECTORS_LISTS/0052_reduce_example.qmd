@@ -1,0 +1,86 @@
+
+---
+title: skeleton.qmd
+date: last-modified
+# Quarto requires title, if want date to appear
+# ~/.config/kickstart/skeleton/skeleton.qmd
+---
+#   TAGS:   purrr, reduce, accumulate, ..1 
+SEE: https://rfordatascience.slack.com/archives/C04LH661EUX/p1698939455705209
+
+Simple reduce
+```{r}
+library(purrr)
+
+paste2 <- function(x, y, sep = ".") paste(x, y, sep = sep)
+paste2("a","b") # [1] "a.b"
+letters[1:4] |> reduce(paste2) # [1] "a.b.c.d"
+```
+
+accumulate to show intermediates
+```{r}
+.x = 1:4
+accumulate(.x,.f = \(x,y) x+y ) # [1]  1  3  6 10
+
+letters[1:4] |> accumulate(paste2) # [1] "a"       "a.b"     "a.b.c"   "a.b.c.d"
+```
+
+Using ... and ..1
+```{r}
+#
+f = function(x,y, ...){..1}
+f(2,3,4) # [1] 4
+
+
+# WRONG
+g = function(x,y) {..1}
+g(2,3)
+
+```
+
+More complicated
+```{r}
+library(purrr)
+
+# some character string several of whose values will be modified
+text_to_modify <- "a b a c"
+
+# count how many matches there are for the target content to replace
+# this is needed for `purrr::reduce()` below
+(num_a <- stringr::str_count(text_to_modify, "a"))
+
+# iteratively modify the text, replacing each instance
+# return the final modified text, rather than the intermediary steps
+# let's pretend stringr::replace_all() doesn't exist, since my actual use case is complicated enough that that function won't work (I think)
+# reduce has `...`
+modified_text <- purrr::reduce(
+    .x = seq(1, num_a),
+    .f = ~ stringr::str_replace(
+        string = ..1,
+        pattern = stringr::fixed("a"),
+        replacement = "-"
+    ),
+    .init = text_to_modify
+)
+
+```{r}
+purrr::accumulate(
+                  .x = seq(1, num_a),
+                  .f = ~ stringr::str_replace(
+                                              string = ..1,
+                                              pattern = stringr::fixed("a"),
+                                              replacement =  "-"
+                                              ),
+                  .init = text_to_modify)
+
+```
+[1] "a b a c" "- b a c" "- b - c"
+```
+        a
+  b
+      c
+
+
+
+
+vim:linebreak:nospell:nowrap:cul tw=78 fo=tqlnrc foldcolumn=1 cc=+1 filetype=r

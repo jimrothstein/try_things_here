@@ -1,0 +1,87 @@
+---
+title: "/home/jim/code/book_advanced_R/R/011_function_operators.Rmd"
+output: 
+  pdf_document:
+    latex_engine: xelatex
+fontsize: 12pt
+geometry: margin=0.5in,top=0.25in
+#  md_document:
+#  html_document:
+#    toc: true
+#  	toc_float: true
+#    css: styles.css
+---
+
+### Chapter 11 - Function Operators
+Take 1 (or more) FUN, return single, modified FUN
+
+
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(
+  echo = TRUE, comment = "      ##",
+  error = TRUE, collapse = TRUE
+)
+library(purrr)
+here()
+source(here("book_advanced_R", "R", "000_useful_functions.R"))
+```
+
+```{r render, eval=FALSE	, echo =FALSE	 }
+file <- "R/011_function_operators.Rmd"
+dir <- "book_advanced_R"
+ren_pdf(file, dir)
+ren_github(file, dir)
+```
+
+### Chapter 11.1 chatty
+```{r 11.1_code}
+# probe internals of functonal, like purrr::map_int()
+
+## Given FUN f, chatty returns a new function which modifies behavior.
+## (here:  to supplement output ...)_
+## Goal:   enhance f
+
+
+chatty <- function(f) {
+  # not run
+  print(pryr::promise_info(f))
+
+  # force(f) not necessary?
+  # cat(x) error, no x (at this point)
+
+  # purpose of ... ?
+  function(x, ...) {
+    r <- f(x, ...)
+    # next line is extra ... ie benefit of chatty to modify f
+    cat("Processing ", x, "\n", sep = "")
+    r
+  }
+}
+
+# EXAMPLE
+f <- function(x, ...) x^2
+s <- c(3, 2, 1)
+purrr::map_dbl(s, chatty(f))
+
+# NOTE:   error in text
+# not run - errors - convert double to int
+
+# s1  <- 3:1
+# typeof(s1)
+# purrr::map_int(s1, f)
+```
+### safely, example of function operator
+```{r 11.2_code}
+# safetly catches errors throw by f
+# more details?   see 011_misc
+
+f <- function(x, y) x + y
+safe_f <- safely(f)
+safe_f
+
+# EXAMPLE
+safe_f(x = 1, y = 2)
+safe_f(x = NA, y = 2)
+safe_f(x = "a", y = 2)
+```
+

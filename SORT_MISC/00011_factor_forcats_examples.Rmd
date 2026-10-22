@@ -1,0 +1,296 @@
+
+	 vim:linebreak:nowrap:nospell:cul tw=78 fo=tqlnr foldcolumn=3 
+
+--- 
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+    fontsize: 11pt   
+    geometry: margin=0.5in,top=0.25in   
+---
+
+<!-- 
+set cul   "cursorline
+cc=+1			"colorcolumn is 1 more than tw
+
+vim: to format all urls for md
+s/https.*/[&]()/g
+-->
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = "      ##",
+  error = TRUE,
+  collapse = FALSE
+) # easier to read
+```
+
+
+```{r library, include=FALSE		}
+file <- knitr::current_input()
+
+library(jimTools)
+library(forcats)
+``` 
+
+
+```{r begin}
+print(file)
+```
+
+from Grolemund - categorical variables
+Ref: https://rstudio-education.github.io/hopr/r-objects.html Ch 5.5.2
+
+>To make a factor, pass an atomic vector into the factor function. R will
+>recode the data in the vector as integers and store the results in an integer
+>vector. R will also add a levels attribute to the integer, which contains a
+>set of labels for displaying the factor values, and a class attribute, which
+>contains the class factor:
+```{r factors, collapse=TRUE}
+# recode chr[] as integer
+gender <- factor(c("male", "female", "female", "male"))
+
+typeof(gender)
+attributes(gender) # levels, class
+
+# internally, stored as integer
+unclass(gender) # as  integers, with level attr
+
+
+# R uses the levels attribute when it displays the factor, as you will see.
+
+# displays as levels
+gender
+```
+
+
+#### 0050_factors (r4ds: Chapter 15, forcats)
+#### factor: Peng, think ints with each having a label
+```{r factors2, collapse=TRUE}
+# create factors
+levels <- c("a", "b")
+
+# "c" becomes "NA"  NO ERROR
+x <- c("a", "b", "b", "b", "c")
+
+x <- c("a", "b", "b", "b") # chr[]
+
+
+# factor: closer look
+# store as integer, use levels for display
+y <- factor(x, levels = levels)
+y
+
+typeof(y)
+attributes(y) # levels, class
+
+# also
+
+levels(y)
+class(y)
+str(y)
+
+# nice features
+table(y)
+names(y)
+labels(y)
+
+unclass(y) # underneath, stored as ints
+names(unclass(y))
+labels(unclass(y))
+```
+
+####10_base sort
+```{r base}
+# create data another way
+x <- rep(c("a", "b"), 6) # chr[]
+x
+
+# turn into factora
+levels <- c("a", "b")
+y <- factor(x, levels = levels)
+y
+
+
+sort(y) # sort the underlying ints, then display with levels
+```
+https://forcats.tidyverse.org/index.html
+#### forcats::fct_*
+```{r forcats1}
+# create random data from 0:9
+x <- 0:9
+x
+
+# Create sample of 100 by:
+# Choose 1 value from x, then replace it.
+# Repeat 100 times
+
+set.seed(2021)
+y <- sample(x, size = 100, replace = TRUE)
+y # int[100]
+
+
+# only change is create factor
+z <- factor(y, levels = 0:9)
+z
+
+# nice freq table  5 is most common (17)
+table(z)
+
+####
+# Data internally or display, does not change, added class and levels
+# Only change:  order of factors
+####
+
+# order factors by freq
+forcats::fct_infreq(z)
+# keep largest 3, lump rest into "other"
+forcats::fct_lump(z, n = 3)
+forcats::fct_lump(z, n = 3, other_level = "Z")
+
+
+
+# order factors by 1st appearance 6 5 ...
+forcats::fct_inorder(z)
+
+# shuffle, again no change to underlying data or display, only factors
+forcats::fct_shuffle(z)
+
+# again
+a <- forcats::fct_shuffle(z)
+a
+```
+
+```{r forcats2 }
+f <- factor(c("a", "b", "c"))
+f
+
+fct_rev(f) #> [1] a b c
+g <- fct_rev(f)
+g
+levels(g)
+
+fct_inseq(g)
+```
+## Begin examples from FORCATS:: cheat sheet
+```{r begin_cheat}
+library(forcats)
+f <- base::factor(c("a", "c", "b", "a"),
+  levels = c("a", "b", "c")
+)
+f
+
+levels(f)
+
+unclass(f) # structure
+```
+
+```{r fct_count}
+fct_count(f)
+fct_count(f, sort = FALSE)
+```
+
+```{r fct_unique}
+fct_unique(f)
+```
+Concatenate data
+```{r combine}
+f1 <- factor(c("a", "c"))
+f1
+f2 <- factor(c("b", "a"))
+f2
+
+fct_c(f1, f2)
+```
+
+manually, reorder factors
+```{r fct_relevel}
+fct_relevel(f, c("b", "c", "a"))
+```
+
+highest is first
+```{r fct_infreq}
+f
+fct_infreq(f)
+
+f3 <- factor(c("c", "c", "a"))
+f3
+fct_infreq(f3)
+```
+
+set factors in order of appearance in data
+```{r fct_inorder}
+f2
+fct_inorder(f2)
+```
+
+fct_reorder
+```{r fct_reorder}
+str(iris) # Species is categorical (factor)
+
+# initial ordering
+levels(iris$Species)
+head(iris$Species, n = 20L)
+
+pdf("~/Downloads/print_and_delete/forcats.pdf")
+# plot(x, r, col = 2, ylim = c(-5, 5))
+# abline(h = 0)
+boxplot(data = iris, Sepal.Width ~ Species)
+# boxplot(data = iris, Sepal.Width ~ fct_reorder(Species, Sepal.Width))
+dev.off()
+```
+## Redo boxplot but  in asc or desc order
+```{r reorder}
+# .f = factor
+# for each .f, group .x (a variable) and apply .fun
+# sort based on .fun(.x) in asc order
+# fct_reorder(.f, .x, .fun=median, .desc = FALSE)
+
+f <- iris$Species # a factor
+x <- iris$Sepal.Width
+library(dplyr)
+
+x <- fct_reorder(iris$Species, iris$Sepal.Width)
+levels(x)
+pdf("~/Downloads/print_and_delete/forcats.pdf")
+boxplot(data = iris, Sepal.Width ~ fct_reorder(Species, Sepal.Width))
+dev.off()
+```
+
+  
+
+
+***
+
+```{r knit_exit(), include = FALSE  , eval=FALSE } 
+# knitr::knit_exit()
+```
+
+/newpage
+
+```{r render, eval=FALSE	} 
+# TODO:  file is found when knitr runs (see above)
+
+# file must be of form:
+# dir/name_of_this_file    where dir is relative to project root
+
+file <- here("", "")
+file
+
+# in general, pdf will look nicer
+rmarkdown::render(file,
+  # output_format = "pdf_document",
+  output_format = "html_document",
+  output_file = "~/Downloads/print_and_delete/out"
+)
+```

@@ -1,0 +1,263 @@
+  NOTE:  Example taken from updating R packages, where .libPaths()[[2]] is read-only
+-- /home/jim/code/try_things_here/DT/570_DT_update_R_TOY_EXAMPLE.qmd
+<!-- TODO
+- quarto, double column for simple vertical lists, tibbles, etc/
+
+-->
+
+##    Toy Example
+
+
+###  Create toy example
+
+<!-- {{{ -->
+
+
+When I update my R packgaes, I have a problem:  my site directory is read-only.  
+In a separate post, I will show how I navigate this without opening the
+permissions. 
+
+In this post, I use a toy example to illustrate the use of joins to accomplish this.
+
+The toy example simplifies results of  `installed.packages()` and `old.packages()`
+
+- **inst**;  currently installed packages, using installed.packages
+- **cand**;  packages R thinks are old, using old.packages
+- **x**;     represents pkg
+- **y**;     represents directory (1 or 2)      (.libPaths() has only 2 entries)
+
+<!-- }}} -->
+
+<!--
+###  Prepare toy example of what `installed.packages` reports:
+-->
+<!-- {{{ -->
+```{r}
+#| include: false
+#| eval: true
+
+library(data.table)
+(inst = data.table(x=(LETTERS[1:4]),
+       y= c(rep(1,4))
+       ))
+#   add 4 packages in 2
+(inst = rbind(inst, data.table(x = LETTERS[5:8],y= c(rep(2,4))) ))
+(inst= rbind(inst, data.table(x=c("E","H"), y=c(1,1))))
+setorder(inst)
+dput(inst)
+#     x y
+#  1: A 1
+#  2: B 1
+#  3: C 1
+#  4: D 1
+#  5: E 2
+#  6: F 2
+#  7: G 2
+#  8: H 2
+#  9: E 1
+# 10: H 1
+```
+<!-- }}} -->
+
+
+<!--
+### Prepare Candidates  or old.packages for toy examples
+-->
+<!-- {{{ -->
+
+```{r }
+#| include: false
+#| eval: true
+s = "x, y
+A, 1
+B, 1
+E, 1 
+F, 2
+E, 2
+H, 2"
+cand = data.table::fread(s)
+dput(cand)
+# structure(list(x = c("A", "B", "E", "F", "E", "H"), y = c(1L, 
+# 1L, 1L, 2L, 2L, 2L)), row.names = c(NA, -6L), class = c("data.table", 
+# "data.frame"), .internal.selfref = <pointer: 0x55578dd18740>)
+#    x y
+# 1: A 1
+# 2: B 1
+# 3: E 1
+# 4: F 2
+# 5: E 2
+# 6: H 2
+```
+<!-- }}} -->
+
+:::: {.columns}
+
+### Create installed packages for toy example:
+::: {.column width="50%"}
+<!-- {{{ -->
+
+
+```{r create_inst, style="background: lightgreen;" }
+inst  <- structure(
+      list(x = c("A", "B", "C", "D", "E", "F", "G", "H", "E", "H"), 
+           y = c(1, 1, 1, 1, 2, 2, 2, 2, 1, 1)), 
+      row.names = c(NA, -10L), 
+      class = c("data.table", "data.frame")
+      )
+```
+<!-- }}} -->
+:::
+
+::: {.column width="20%"}
+
+```{r collapse = TRUE, bg-success, class.source="bg-success"}
+setorder(inst)[]
+```
+:::
+
+::::
+### Examine install packages
+
+<!-- {{{ -->
+From inspecting inst: you can see   
+
+- pkgs A-E  are all in directory 1;  
+- pkgs E-H are in directory 2;  
+- Note:  pkg **E and H are in BOTH 1 and 2**.  
+
+This occurs in my setup when E,H in the past were upgraded.   R alerted me that
+directory 2 was read only and allowed me to choose another directory.  I chose
+1.
+<!-- }}} -->
+
+### Create update candidates (old.packages)
+<!-- {{{ -->
+
+```{r}
+cand  <-  structure(list(x = c("A", "B", "E", "F", "E", "H"), y = c(1L, 1L, 1L,
+                                                                    2L, 2L,
+                                                                    2L)),
+                    row.names = c(NA, -6L), class = c("data.table",
+                                                      "data.frame"))
+cand
+```
+<!-- }}} -->
+
+### Examine candidate packages
+<!-- {{{ -->
+
+
+- dir 1, A,B,E are update candidates
+- dir 2, E,F,H are update candidates
+- Note:  E is in both 1 and 2.
+- F is candidate, but not in directory 1
+(- G is not candidate, so ignored.)
+<!-- }}} -->
+
+### Which packages will update?
+<!-- {{{ -->
+
+- In dir 1, all candidates will update (A,B,E,H)
+- In dir 2, candidate F will update (to dir 1)
+
+- Pkgs C,D will not update (no candidate)
+- Pkgs G will not update (no candidate)
+<!-- }}} -->
+
+### Update process: cases
+
+<!-- {{{ -->
+**Case** **1** 
+If the candidates are in directory 1, we can update these as is.
+
+```{r case_1}
+cand[y==1, ] 
+```
+
+However, if the candidates are in directory 2, there are a few cases.
+
+**Case** **2A**
+ If candidate was never installed in 1, upgrade to directory 1.
+ Select only candidates in 2 that were NOT previously installed in 1 (anti-join).
+```{r}
+cand[y== 2, ][!inst[y==1, ], on=.(x)]
+```
+
+**Case** **2B**
+If the candidate package is currently installed in 1, there is nothing more to check. Any update, if any, will be done in CASE I. (details below)
+Case 1 will any candidate in 2 that was previously installed in 1. 
+```{r}
+cand[y ==2, ][inst[y == 1], on=.(x), nomatch=NULL]
+```
+<!-- }}} -->
+
+***
+
+<!--
+### Actual update:
+
+:::: {.columns}
+
+::: {.column width="40%"}
+```{r}
+print("installed")
+inst
+```
+
+:::
+
+::: {.column width="60%"}
+```{r}
+print("cand")
+cand
+```
+:::
+
+::::
+-->
+```{r}
+#| include: false
+knitr::knit_exit()
+```
+
+### Details for Case 2B:
+<!-- {{{ -->
+  Case 2B   is really 2 cases.
+  If the candidate is also a candidate in 1 then case 1 will handle and nothing more to be done.
+```{r}
+  cand[y==1,][cand [y == 2, ], on = .(x), nomatch=NULL]
+```
+And if candidate pkg is currently installed in 1, but NOT candidate in 1, then there is nothing to do.
+ If the candidate is not a now candidate in 1 but was previously installed in  1 (ie past upgrade)
+ false positive, ignore
+```{r}
+cand[y == 2] [!cand[y ==1],  on=.(x)][inst[y == 1,], on = .(x), nomatch=NULL]
+```
+
+```{r}
+
+
+cand[y ==2, ][!inst[y == 1, ], on=.(x)]
+```
+<!-- }}} -->
+
+```{r}
+#| include: false
+knitr::knit_exit()
+```
+```{r}
+
+`A new "!" prefix on i signals 'not-join' (a.k.a. 'not-where'), #1384.
+DT[-DT["a", which=TRUE, nomatch=0]]   # old not-join idiom, still works
+DT[!"a"]                              # same result, now preferred.
+DT[!J(6),...]                         # !J == not-join
+DT[!2:3,...]                          # ! on all types of i
+DT[colA!=6L | colB!=23L,...]          # multiple vector scanning approach
+DT[!J(6L,23L)]                        # same result, faster binary search
+'!' has been used rather than '-' :
+* to match the 'not-join' and 'not-where' nomenclature
+* with '-', DT[-0] would return DT rather than DT[0] and not be backwards
+compatibile. With '!', DT[!0] returns DT both before (since !0 is TRUE in
+base R) and after this new feature.
+* to leave DT[+...] and DT[-...] available for future use``
+```

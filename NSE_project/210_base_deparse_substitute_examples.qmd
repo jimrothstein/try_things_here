@@ -1,0 +1,612 @@
+--- 
+title: "210_base_deparse_substitute_examples.qmd"
+---
+
+PURPOSE:    Collect basic examples of substitute
+TODO:       Clean up !   Make coherent
+
+- Substitute:  User calls function `f` \code{f};   what did user use as argument?
+- How `substitute` works is not easy to follow, since depends on environment.
+- substitute wants to return code, not value
+- `substitute` has typeof `special` (b/c does not evaluate arguments?)
+
+Fails:
+```r
+power <- function(p) function(x) x^p
+square <- power(2)
+square(3) # 9
+
+# FAILLS, why? should be x^x
+power2 <- function(p) substitute(function(x) x^p)
+square2 = power2(x)
+square2
+square2(3)   # error?
+```
+
+```r
+substitute |> typeof()   # special
+```
+```{r}
+x=5
+substitute(x+10)    # x + 10, in globalenv() ignores environment!
+substitute(1+10)    # 1 + 10
+```
+## substitute with a variable 
+## https://stackoverflow.com/questions/47780150/use-variable-in-r-substitute
+```{r}
+library(rlang)
+## works
+substitute(expression(10 + x + y), list(x = 2)) ## expression(10 + 2 + y)
+
+## fails
+a = expression(10 + x + y)
+substitute(a, list(x=2))   ## a
+```
+
+Example:  substitute() substitutes X with symbol, no evaluation
+
+```{r}
+f = function(X){
+  substitute(X)
+}
+
+x=10
+f(10)    # 10
+f(a)     # a
+f("a")   # "a"
+f(x)     # x
+f(x+1)     # x + 1
+f(expression(x+1))  # expression(x+1)
+```
+
+Example: substitute - substitutes X with symbol, as string, no evaluation
+deparse = T (character string)
+deparse = F (expression)
+```{r}
+f <- function(X) {
+  deparse(substitute(X))
+}
+
+x=10
+f(10)    # "10"   (string)
+f(a)     # "a"
+f("a")   # "\"a\""
+f(x)     # "x"
+f(x+1)     # "x + 1"
+f(expression(x+1))  # "expression(x+1)"
+
+f(mean) ## [1] "mean" as character
+f(a+b)  ##  "a + b" as char
+f(1+b)  ## " "1 + b"
+f(1+2) ## "1 + 2"
+is.call(f(1+2)) ## TRUE
+```
+
+```{r}
+ls()
+e <- new.env()
+
+# create valible `a` in eenvironment e and has value 1.  There is no `x` (just  formal arugment in fct assign)
+assign(x = "a",value = 1,envir = e)
+ls(envir=e)
+
+# checks parse tree for `a`, sees it has  a value, substtittes value
+substitute(a,env = e)
+```
+
+```{r}
+f <- function(argX) {
+        substitute(argX)
+}
+
+X = 100     
+f(X)   # X
+b=1
+f(a+b)  # a + b
+a = 10
+f(a+b)   # a + b
+eval(f(a+b))  # 11
+
+f(1 + 2)    # 1 + 2
+f(z = 2+1)   # unused arg
+f(expr(2+1)) # expr(2 +1)
+
+eval(f(1+2))  # 3
+eval(f(expr(2+1)))   # 2 + 1
+f(argX = 2 + 1)   # 2 + 1
+eval(f(argX = 2 + 1) )  # 3
+
+str(f(argX = 2 + 1))  # lanuage 2 + 1
+
+is.call(f(1 +2))   # T
+
+
+```
+
+```{r}
+
+f = function() current_env()
+f()
+f = function() caller_fn()
+f = function() caller_env()
+
+f = function() parent.env(current_env())
+f()
+
+?current_env
+```
+
+```{r}
+a = 1
+b = 2
+
+# same if remove 2nd argument, current_env()
+g = function(x,y) {substitute(x + y)}
+f = function(x,y) {substitute(x+y, current_env())} 
+g(1,2)
+f(1,2) # 1 + 2
+
+g(a,b)
+f(a,b)  # a + b
+
+is.expression(f(a,b)) # F
+deparse(f(a,b))   # "a + b"
+eval(f(a,b)) # 3
+
+g = function(x,y) {substitute(x+y, list(x=10, y=20)) }
+g(1,2) # 10 + 20
+g(a,b) # 10 + 20
+
+h = function(x,y) {substitute(x+y, globalenv()) }
+h(1,2) # x + y
+h(a,b) # x + y
+h(X+a,b) #x + y
+h(1+2, b) # x + y
+
+
+## double check this one
+k = function(x,y) {
+  x=2
+  substitute(x+y, caller_env()) }
+  #substitute(x+y) }
+k(1,2)# x + y 
+k(a,b)# x + y
+  ```
+Example: without deparse, substitute - returns call
+```{r}
+f <- function(x) substitute(x)
+f("a+b")
+f(a+b)
+f(a+b) |> class()   # call
+f(a+b) |> lobstr::ast()   # diagram of the call
+f(1+2) |> class()   # call
+f(sin(x) + sin(y)) # call
+```
+
+## NEXT:
+#### do.call
+```{r}
+##  USAGE
+do.call("mean", list(1:10))  ## 5.5
+do.call(mean, list(1:10))   ## 5.5  
+
+do.call(f(mean), list(1:10)) ##  5.5
+do.call(f(max), list(1:10)) ##  10
+do.call(f(length), list(1:10)) ##  10
+```
+What did this create? nothing?
+```{r}
+is.expression(f(mode)) ## FALSE
+is.call(f(mode)) ## FALSE
+is.function(f(mode)) ## F
+is.function(mode) ## TRUE
+is.symbol(f(mode)) ## F
+
+
+call(f(mean), list(1:10)) ## mean(list(1:10))
+eval(f(mean), list(1:10)) ## "mean"
+
+eval(f(mode, list(x = 1:10))) ## [1] "mode"
+eval(f(mode), list(x = 1:10)) ## [1]  "mode"
+```
+***
+
+### Compare (REF:   Hadley, Adv, v.1)
+```{r}
+w <- function(arg) print(arg) ## normal
+f <- function(arg) substitute(arg) ## substitute
+
+w(1:10) #  1 2 3 ... 10
+(res <- f(1:10)) ## 1:10, res is a call.
+
+x <- 10
+w(x) # 10
+f(x) # x
+
+x <- 10
+y <- 100
+f(x + y^2) # x + y^2
+
+# z does not exist        # x + y + z
+f(x + y + z)
+```
+##  Compare quote and substitute
+```{r}
+r1 <- quote(x + 5 * 3)
+r2 <- substitute(x + 5 * 3)
+is.call(r1) ##  T
+is.call(r2) ## T
+
+eval(r1) ## 25
+eval(r2) ## 25
+```
+
+##  Study   
+```{r}
+f <- function(argX) {
+  list(
+    argX,
+    quote(argX),
+    substitute(argX)
+  )
+}
+
+suppliedArgX <- 100
+f(argX <- suppliedArgX)
+f(argX = suppliedArgX)
+f(suppliedArgX)
+```
+
+##  Compare substitute with/without depars
+```{r}
+##  Use deparse to convert to string
+g <- function(arg) deparse(substitute(arg))
+
+g(1:10) # "1:10"
+g(x) # "x"
+g(x + y^2) # [1] "x + y^2"
+g(x + y + z) # "x + y + z"
+```
+
+```{r}
+##  surprise, f(arg) returns the code user submitted:  arg  , it does Not allow evaluate and so does not see 1:10
+## 'substitute returns the parse tree for the (unevaluated) expression expr, substituting any variables bound in env.'
+
+f <- function(arg) substitute(arg)
+f(arg)
+f(arg + 5 * 3)
+
+g1 <- function(arg) deparse(f(arg + 3))
+h <- function(arg) {
+  print(arg)
+  deparse(f(arg))
+}
+
+g(x) # "arg"
+g(2 * 5) # "arg"
+g(2 * 5 + x) # "arg"
+
+g(1:10) ## "arg"
+
+g1(x)
+g1(2 * 5 + x)
+
+## do not understand
+h(x) # error
+h(2 * 5) # arg)
+eval(h(2 * 5))
+
+## do not understand
+play <- function(x) cat(x)
+play(2)
+play(z)
+```
+
+##  TODO:  explain !
+```{r}
+## substitute return a call (unevaluated) - TODO how to evaluate???!!
+expr <- substitute(suppliedArgX <- 100)
+is.call(expr) ## TRUE
+eval(expr) ## eval(expr)
+is.symbol(expr) ## FALSE
+deparse(expr) ## "suppliedArgX <- 100"
+as.character(expr) ## list turned to character ???
+as.list(expr) ## STUDY
+as.call(expr) ##
+
+## quote returns a symbol, which is NOT a call.
+expr2 <- quote(suppliedArgX)
+typeof(expr2) ## symbol
+is.call(expr2) ## FALSE
+is.expression(expr2) ## FALSE
+is.symbol(expr2) ## TRUE
+expr2 ## suppliedArgX
+
+## but easy to evaluate:
+eval(expr2) ## 100
+```
+
+####  String can not be 'evaluated', quote first! (becomes a call)
+```{r call}
+s <- "5+5"
+
+##  Not 10
+eval(s) # "5+5"
+is.call(s) ## FALSE
+is.expression(s) ## FALSE
+
+##  But quote will allow eval
+(s <- quote(5 + 5)) ## 5+5
+eval(s) ## 10
+
+## because it is a call
+is.call(s) ## TRUE
+is.expression(s) ## FALSE
+```
+
+```{r simplest??}
+rm(x)
+
+## x undefined, which is fine.
+## quote captures the UNEVALUATED expression.
+quote(x + 1)
+
+
+## But in FUN, need to use substitute() to capture unevaluated content of call.
+f <- function(x) {
+  y <- quote(x)
+}
+
+(f(a + 1))
+
+
+g <- function(x) {
+  y <- substitute(x)
+}
+
+(g(a + 1))
+# a + 1
+
+## ERROR
+if (F) {
+  g(a + 1)(1)
+}
+
+eval(g(a + 1), list(a = 1))
+# [1] 2
+```
+
+
+#### eval: R expression in different env, 2 results!
+```{r env}
+e1 <- create_expr("x + 1")
+## create
+# expression(x + 1)
+
+
+## eval fail because no x
+x <- NULL
+if (!is.null(x)) {
+  if (exists("x")) eval(e1)
+}
+
+## create 2 env
+env1 <- new.env()
+env1$x <- 10
+
+env2 <- new.env()
+env2$x <- 100
+
+## eval e1 in both
+eval(e1, envir = env1)
+# [1] 11
+eval(e1, envir = env2)
+# [1] 101
+
+##  Note: a difference, if x exists or is NULL
+rm(x)
+if (F) eval(e1) # error
+
+x <- NULL
+eval(e1) # numeric(0)
+```
+
+### sin(x=1)
+```{r is.call}
+is.call(sin(1))
+# [1] FALSE
+
+typeof(sin(x = 1)) # [1] "double"
+
+{
+  substitute(sin(1)) # sin(1)
+
+  substitute(sin(x = 1)) # sin(x = 1)
+
+  typeof(substitute(sin(x = 1))) # [1] "language"
+
+  is.expression(sin(x = 1)) # [1] FALSE
+  is.expression(substitute(sin(x = 1))) # [1] FALSE
+  is.call(substitute(sin(x = 1))) # [1] TRUE
+  is.call(substitute(sin(x))) # [1] TRUE
+  is.call(substitute(sin(1))) # [1] TRUE
+}
+```
+```{r }
+f <- function(x) {
+  res <- substitute(x) #
+  return(list(
+    res = res,
+    deparse = deparse(res),
+    typeof = typeof(res),
+    is.call = is.call(res),
+    as.character = as.character(res)
+    # expression = parse(text = as.character(res))
+  ))
+}
+
+(f(a))
+(f(a + b))
+(f(a + 1))
+(f(1 + 2))
+
+
+typeof((f(function(e) e^2))[[1]])
+is.call((f(function(e) e^2))[[1]])
+(f(function(e) b + e^2))
+```
+
+#### deparse:   R expression --> string (actually structure, not an inverse)
+NOT a usual USE CASE
+
+```{r deparse}
+d <- deparse(res)
+d
+# [1] "structure(expression(2^2), srcfile = <environment>, wholeSrcref = structure(c(1L, "
+# [2] "0L, 2L, 0L, 0L, 0L, 1L, 2L), srcfile = <environment>, class = \"srcref\"))"
+
+typeof(d)
+# [1] "character"
+
+## guarantees character of length=1
+deparse1(d)
+```
+
+#### substitute --> 
+```{r basics}
+x <- 1
+y <- 2
+z <- 3
+
+
+## substitute
+substitute(x) # returns what ever was in the call; in this case just x.
+# x
+
+
+is.symbol(substitute(x))
+# [1] TRUE
+
+substitute(2)
+# [1] 2
+
+substitute(x + y)
+# x + y
+
+is.expression(substitute(x + y))
+# [1] FALSE
+
+
+## deparse(substitute)
+deparse(substitute(x))
+# [1] "x"
+
+deparse(substitute(x + y))
+# [1] "x + y"
+
+
+is.character(deparse(substitute(x)))
+# [1] TRUE
+```
+
+#### Adv-R, 1st Editiion, 
+  *  Roughly:  substitute returns code
+  *  deparse returns string
+```{r hadley}
+f <- function(x) deparse(x)
+g <- function(x) f(substitute(x))
+
+g(1:10)
+# [1] "1:10"
+unlist(strsplit("1 + 2", split = ""))
+# [1] "1" " " "+" " " "2"
+g(x)
+# [1] "x"
+
+g(x + y^2 / z + exp(a + sin(b)))
+# [1] "x + y^2/z + exp(a + sin(b))"
+```
+
+
+
+```{r advanced}
+f <- function(a, ...) {
+  # browser()
+  # substitute(a) returns x, unquoted, ie symbol
+  # arg is "x", dots is NULL,
+  arg <- deparse(substitute(a))
+  dots <- substitute(list(...))[-1]
+  c(arg, sapply(dots, deparse))
+}
+
+x <- 1
+y <- 2
+z <- 3
+
+substitute(x)
+# x
+is.symbol(substitute(x))
+# [1] TRUE
+
+
+deparse(substitute(x))
+# [1] "x"
+
+is.character(deparse(substitute(x)))
+# [1] TRUE
+
+f(x)
+# [[1]]
+# [1] "x"
+#
+
+f(x, y, z)
+# [1] "x" "y" "z"
+```
+
+Return the unevaluated expression, deparsed (not a call?)
+```{r}
+f <- function(x = {
+                2 * x
+              }) {
+  as.character(rlang::enexpr(x))
+}
+
+
+
+f(2 + 2)
+f(sin(2))
+f(sin(2) + cos(2))
+f(sin(x))
+```
+
+## (1) formuala is call;  (2)  change  `b` to `B`, but keep as call
+
+```r
+ee  <- a ~ b + c
+ee |> typeof()  # language
+ee   #a ~ b + c  , typeof = call !
+
+# To change b to B, keep as call:
+#
+# Method 1 ------------------------  Method 1
+
+# first, convert to string
+ff = deparse(ee)  #"a ~ b + c" (string)
+
+# then, sub to change piece of string
+ff  <- sub("b", "B",ff)
+ff
+
+# convert back to calll
+gg  <- str2lang(ff)
+gg |> typeof()   # language
+is.call(gg)   # T
+
+
+# ------------------------  Method 2
+do.call("substitute", list(ee, list(b=quote(B))))   # a ~ B + c
+?do.call
+
+```
+

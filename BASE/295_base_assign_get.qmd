@@ -1,0 +1,87 @@
+--- 
+title: "295_base_assign_get.qmd"
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  4 
+fontsize: 10pt 
+geometry: margin=0.4in,top=0.25in 
+TAGS:  get, assign 
+---
+
+```{r}
+?assign
+?get
+```
+
+assign binds a value to variable (as string) in chosen envirnment
+```{r}
+rm(list = ls())
+
+# binds x  to value `hello`
+assign("x", "hello")
+x
+assign("x", "bye")
+ls()
+
+
+get() returns value of named object (as string or symbol)
+```{r}
+x  <- 5
+get("x")
+
+
+y  <-  2+1
+get("y")   # 3
+```
+
+
+```r
+x  <- 5
+get("x")   # [1] 5
+
+# these fail - explain
+# note:   neither `x` nor `"x"` are objects ??
+get(as.name(x))
+get(as.character(x))
+
+# these work
+get(as.character(quote(x)))
+get(quote(x))
+```
+
+
+```r
+rm(list = ls())
+f  <- function(x) {
+  x}
+
+f(2)   # 2
+
+f(x=2) # 2
+
+
+f(z=30) # error
+
+
+
+# 1. What is actually passed to `f` ? `10`, `z <- 10`?
+#
+
+ret = f(z  <- 10) # nothing printed
+z  # 10,   because evaluated in calling environment (globalenv)?
+ret   # 10
+
+
+
+a = 2
+b = 3
+
+ret  <- f(x  <- a + b)
+x
+ret
+
+```

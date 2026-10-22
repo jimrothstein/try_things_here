@@ -1,0 +1,22 @@
+#!/usr/bin/env Rscript
+
+# at commnad line
+# 
+# =================================
+# SELF-CONTAINED
+# USAGE:  ./<file.R>
+# chmod +x <file.R>
+#
+# OTHER CLI:
+#	-	Run R 									# loads whole thing
+#	-	Rscript -e "8*8"  			# returns answer only
+#	
+# =================================
+#
+
+# print("hello")
+# args <- commandArgs(trailingOnly = F)
+# print(args)
+
+date()
+version  # not a function

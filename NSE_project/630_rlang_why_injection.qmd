@@ -1,0 +1,40 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+TAGS:  rlang, expr, call2, ast
+editor_options: 
+  chunk_output_type: console
+---
+
+## practical use of rlang for injection, inside a function 
+summarize is defuse function 
+The problem is mean is NOT.
+
+```{r}
+my_mean <- function(data, var1, var2) {
+  #browser()    var1 reports cyl and that this is not defined.
+  dplyr::summarise(data, mean(var1 + var2))
+}
+
+my_mean(mtcars, cyl, am)
+```
+
+## a fix, embrace operator
+```{r}
+my_mean <- function(data, var1, var2) {
+  dplyr::summarise(data, mean({{ var1 }} + {{ var2 }}))
+}
+
+my_mean(mtcars, cyl, am)
+
+```
+
+```{r}
+my_mean <- function(data, var1, var2) {
+  dplyr::summarise(data, mean(data.var1 + data.var2))
+}
+
+my_mean(mtcars, cyl, am)
+
+```

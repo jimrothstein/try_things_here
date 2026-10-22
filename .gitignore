@@ -1,0 +1,8 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+# don't keep large bookmark files 
+rrapply/*.html
+

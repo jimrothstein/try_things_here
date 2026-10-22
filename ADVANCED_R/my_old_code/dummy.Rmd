@@ -1,0 +1,30 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+evaluate, but include no output
+```{r test, eval=TRUE, include=FALSE}
+print("hi")
+x <- 4
+var <- FALSE
+```
+
+will not run (but still outputs code)
+```{r check, eval=FALSE}
+print(x)
+```
+
+nothing!
+```{r check1, eval=FALSE, include=FALSE}
+print(x + 2)
+```
+
+evaluate, but output depends!
+```{r check3, include=var}
+print("check3")
+```

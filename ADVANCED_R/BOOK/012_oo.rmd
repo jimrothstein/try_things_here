@@ -1,0 +1,58 @@
+---
+title:  ""
+output: 
+  pdf_document:
+    toc: TRUE 
+    toc_depth: 2
+    latex_engine: xelatex
+fontsize: 12pt
+geometry: margin=0.5in,top=0.25in
+#  md_document:
+#  html_document:
+#  github_document:
+#   toc: true
+#  	toc_float: true
+#    css: styles.css
+params:
+  date: !r lubridate::today()
+---
+`r params$date`
+
+#### Chapter 12
+#### setup
+```{r one, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, comment = "      ##", error = TRUE, collapse = TRUE)
+library(purrr)
+library(sloop)
+source(here("book_advanced_R/R", "000_useful_functions.R"))
+```
+
+```{r render, eval=FALSE,	 include=FALSE, echo=FALSE	}
+# To Render
+file <- "010_oo.Rmd"
+dir <- "book_advanced_R/R"
+ren_pdf(file, dir)
+ren_github(file, dir)
+
+# knitr::knit_exit()
+```
+```{r 12.2_code}
+l <- list(1:10, mtcars, sin(3.14 / 2), x <- matrix(1:4, nrow = 2))
+map_lgl(l, base::is.object)
+map_chr(l, sloop::otype)
+
+# book says class(x) not as reliable as s3_class
+## NOTE:  different from book
+x <- matrix(1:4, nrow = 2)
+base::class(x) # book: matrix array
+
+base::class(l[[4]])
+sloop::s3_class(l[[4]])
+```
+#### every object has typeof()
+#### base ~25  (vectors, closure, env, language ..)
+```{r 12.3_code}
+l <- list(1:10, mtcars)
+map_chr(l, typeof)
+```
+

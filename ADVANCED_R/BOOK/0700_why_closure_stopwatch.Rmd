@@ -1,0 +1,72 @@
+---
+title:  "0700_why_closure_stopwatch.Rmd"
+output: 
+  pdf_document:
+    toc: TRUE 
+    toc_depth: 2
+    latex_engine: xelatex
+fontsize: 12pt
+geometry: margin=0.5in,top=0.25in
+---
+
+####  Why Closure, StopWatch example:
+  *  REF:  Gillespie, Lovelace   pg63
+  *  One use:  closure (function + env) is way to CACHE variables.
+
+
+When I first started hearing words `closure`, `environment` or even `lambda` I
+startd getting confused.   Actually, the basic ideas can be grasped without
+needed to understand the fancy words.   
+
+
+All we need to know is that the variable `start_time` remains available to
+self$stop, when ever this function is called, ie `start_time` is cached.
+
+Normally, when a function finishes execution like `stopwatch` below all of its
+variables disappear.   So if self$stop is run much later, it normally would not
+have access to `start_time`.   
+
+
+```{r stopwatch}
+# cache start_time
+stopwatch <- function() {
+  start_time <- NULL
+  current_time <- NULL
+
+  self <- list()
+
+  self$start <- function() start_time <<- Sys.time()
+
+  self$current <- function() difftime(Sys.time(), start_time)
+
+  self$stop <- function() difftime(Sys.time(), start_time)
+
+  return(self)
+}
+```
+
+```{r invoke}
+watch1 <- stopwatch()
+watch1$start()
+
+watch <- stopwatch()
+watch$start()
+watch$current()
+watch$stop()
+
+
+watch1$stop()
+```
+
+Looking under the hood, there is a little more complexity that a programmer use
+efficiently. That is where the fancy words come in. 
+
+I found these couple of stackoverflow answers clarified many of the meanings.
+Then things became much clearer.
+
+  *    https://stackoverflow.com/a/36879264/5057251
+
+
+
+Below, the variable start_time is cached for future use by the function
+self$stop().   Normally, once a 

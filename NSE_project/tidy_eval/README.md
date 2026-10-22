@@ -1,0 +1,3 @@
+PURPOSE:   Follow video series on tidy_eval, metaprogramming ...
+
+REF: https://www.youtube.com/watch?v=4jAZ50IK9vM 

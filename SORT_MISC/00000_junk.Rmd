@@ -1,0 +1,128 @@
+
+
+<!-- comment 
+
+-->
+
+# =========================
+                 JUNK:
+Do anything you want here
+# =========================
+
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = T   ) # T easier to read
+```
+
+### Symbol
+ *  Lisp calls it symbol
+ *  S calls it name
+```{r symbol}
+
+getOption("browser")
+ [1] "/usr/bin/xdg-open"
+x  <- 5
+s  <- as.symbol(x)
+# `5`
+typeof(s)
+# [1] "symbol"
+eval(s) #error
+
+y  <- 5
+name  <- as.name(y)
+# `5`
+typeof(name)
+# [1] "symbol"
+eval(name)  #error
+
+{
+    identical(s, name)
+    # [1] TRUE
+}
+
+
+
+
+
+ z  <- 5
+ name  <- quote(z)
+
+
+# z
+typeof(name)
+# [1] "symbol"
+
+eval(name)
+# [1] 5
+```
+
+
+### print line numbers (pdf only?)
+```{r, attr.source='.numberLines'}
+if (TRUE) {
+  x <- 1:10
+  x + 1
+}
+```
+
+```{r library 		}
+# print all labels
+file <- knitr::current_input()
+print(knitr::all_labels())
+library(jimTools)
+``` 
+
+```{r style, eval=F, include=F}
+# REF  style.tidyverse.org
+
+# args MUST line up
+sample_function(
+  a = xxxx,
+  b = xxxx,
+  c = xxxx
+)
+
+# OR
+verylongfunctions_indent_like_this(
+  a = xxxx,
+  b = xxx,
+)
+```
+
+```{r knitr::knit_exit(), include = FALSE  , eval=FALSE } 
+# knitr::knit_exit()
+```
+
+\newpage
+
+
+```{r skeleton, include=F, eval=F}
+file <- "/home/jim/.config/nvim/templates/skeleton.Rmd"
+```
+
+```{r render, eval=FALSE, include=FALSE 	} 
+#  [For technical notes]: (~/docs/technical_notes/001_render_output.md)
+getwd()
+{
+  file <- "rmd/00000_junk.Rmd"
+  file <- basename(file)
+  file <- here("rmd", file)
+  file
+}
+{
+  output_dir <- Sys.getenv("OUTPUT_DIR")
+  output_dir
+}
+
+
+rmarkdown::render(file,
+  # output_format = "pdf_document",
+  output_format = "html_document",
+  # output_format=c("html_document", "md_document"),
+  output_dir = output_dir
+)
+# output_file = "out")
+```

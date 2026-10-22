@@ -1,0 +1,83 @@
+
+---
+title: Template for .Rmd
+output: 
+  pdf_document:
+    latex_engine: xelatex
+fontsize: 12pt
+geometry: margin=0.5in,top=0.25in
+#  md_document:
+#  html_document:
+#    toc: true
+#  	toc_float: true
+#    css: styles.css
+---
+
+## Chapter 11 - Function Operators
+Take 1 more FUN, return single FUN
+
+---
+# PATTERN:
+#````
+text & open fold marker
+#````
+
+#```{r code}
+#codde
+end fold markers
+#```
+--- 
+
+````
+To Render# {{{  
+````
+```{r render, eval=FALSE, echo=FALSE	}
+# To Render
+ren  <- function() {
+	file  <- 011_function_operators.Rmd
+rmarkdown::render(
+									here("book_advanced_R","R",file), 
+									output_dir="~/Downloads/print_and_delete") 
+}
+ren()
+
+ren2  <- function() {
+	file  <- 011_function_operators.Rmd
+rmarkdown::render(
+									here("book_advanced_R","R",file), 
+									output_format="github_document",
+									output_dir="~/Downloads/print_and_delete") 
+}
+ren2()
+```
+
+```{r one, include=FALSE} 
+knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE, collapse=TRUE)
+library(purrr)
+library(memoise)
+library(here) 
+# }}}
+
+```
+
+````
+EXPLAIN
+create list, of tibbles 
+````
+
+```{r 1}
+
+library(tidyverse)
+df1 <- tibble(a=1)
+df2 <- tibble(b=2)
+ll <- list()
+
+appendDf <- function(l, name, tdf) {
+  l[[name]] <- tdf
+  l
+}
+ll
+ll <- appendDf(ll, 'df1', df1)
+
+ll
+````

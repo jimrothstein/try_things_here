@@ -1,0 +1,45 @@
+---
+title: admiral
+format: 
+  html
+#    grid:
+#      body-width: 1030px
+editor_options: 
+  chunk_output_type: console
+---
+# dverse - simple example
+
+```{r}
+#| echo: true
+library(dverse)
+library(admiral)
+
+
+# universe ----------------------------------------------------------------
+
+universe <- c("admiral")
+head(document_universe(universe), n=3)   # 186 x 7
+
+
+
+# manual ------------------------------------------------------------------
+
+manual <- "https://pharmaverse.github.io/{package}/reference/{topic}.html"
+head(document_universe(universe, url_template = manual), n=3)
+```
+
+
+
+
+Both manual and vignettes
+(see: https://quarto.org/docs/authoring/article-layout.html )
+```{r}
+#| column: page
+# vignette ----------------------------------------------------------------
+# Adding an explicit template for vignettes
+vignettes = "https://pharmaverse.github.io/{package}/articles/{topic}.html"
+docs <- document_universe(universe, url_template = c(manual, vignettes))
+knitr::kable(docs)
+```
+
+

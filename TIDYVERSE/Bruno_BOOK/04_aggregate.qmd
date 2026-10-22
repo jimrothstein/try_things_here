@@ -1,0 +1,64 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+##  Bruno_Book  Chapter 04
+
+```{r}
+library(dplyr)
+data("starwars")
+```
+aggregate is a pain
+```{r}
+?stats::aggregate
+
+
+# grouping
+stats::aggregate(starwars$height, 
+          by = list(sex = starwars$sex),
+          FUN=mean, 
+    #      na.action = na.omit)
+          na.rm = TRUE)
+```
+
+```{r pipe}
+quote(10 |> log())
+##  log(10)
+```
+
+
+```{r quote}
+with(starwars,
+     mean(height, na.rm = TRUE))
+
+quote(with(starwars,
+     mean(height, na.rm = TRUE)))
+```
+c
+```{r}
+```
+
+
+```{r}
+starwars |>
+  subset(!is.na(sex)) |>
+  with(aggregate(height,
+                 by = list(Species = species,
+                           Sex = sex),
+                 mean))
+
+``
+
+###   Using data.table
+```{r data.table}
+library(data.table)
+dt <- data.table(starwars)
+dt <- as.data.table(starwars)
+dt
+
+dt[!is.na(height), ]
+x <- dt[!is.na(height), .(ht = mean(height)), by=c("sex") ]
+head(x)
+print(x)
+```

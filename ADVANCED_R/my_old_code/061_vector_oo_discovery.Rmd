@@ -1,0 +1,106 @@
+---
+title: "061_vector_oo_discovery.Rmd"    
+output: html_document
+toc:  TRUE
+params:
+    x:  5
+    name:  "jim"
+    date:   !r lubridate::ymd("2019-07-27")
+---
+
+
+Sources:
+http://r4ds.had.co.nz/vectors.html
+https://adv-r.hadley.nz/vectors-chap.html
+-  Chapter 3,12
+
+```{r setup }
+knitr::opts_chunk$set(include = FALSE, comment = "     ##")
+```
+
+```{r message=FALSE}
+library(tidyverse)
+library(sloop)
+```
+
+Future:
+z <- '['  ## can't do
+methods(as_tibble)  # several
+isS4(as_tibble)     # F
+
+1-Begin with list of objects to check
+```{r}
+print(params$date)
+test_objects <- list(
+  a = c(1:3),
+  b = mtcars,
+  c = Sys.Date(),
+  d = environment()
+)
+t <- tibble::tibble(
+  col1 =
+    c(
+      "integer vector",
+      "data.frame",
+      "double",
+      "environment"
+    )
+)
+```
+
+2-Examine gather attributes or object types or methods,
+for instance here "class" attribute:
+
+```{r}
+f <- function(x) {
+  if (is.null(attr(x, "class"))) {
+    return("NULL")
+  } else {
+    return(attr(x, "class"))
+  }
+}
+l <- map_chr(test_objects, f)
+```
+
+NOTE c(1:3) has no "class" attribute, ie NULL
+
+```{r}
+g <- function(x) is.object(x)
+m <- map_chr(test_objects, g) # character v
+
+
+h <- function(x) typeof(x)
+n <- map_chr(test_objects, h)
+
+
+h2 <- function(x) sloop::otype(x)
+n2 <- map_chr(test_objects, h2)
+
+h3 <- function(x) {
+  if (is.null(attributes(x))) {
+    return(list(x = "NULL"))
+  } else {
+    return(attributes(x))
+  }
+}
+
+n3 <- map(test_objects, h3)
+typeof(n3)
+```
+
+# 4-tibble
+```{r, include=TRUE}
+print(params$date)
+answer <- t %>% mutate(
+  attr_class = l,
+  object = m,
+  typeof = n,
+  attributes = n3
+)
+answer
+```
+
+column attributes, 2nd row (mtcars)
+```{r, include=TRUE}
+pluck(pluck(answer, "attributes"), "b")
+```

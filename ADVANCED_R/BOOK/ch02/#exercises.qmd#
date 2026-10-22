@@ -1,0 +1,49 @@
+Exercises 2.2.2
+1.
+
+
+```r
+library(rlang)
+library(lobstr)
+L = list(
+a <- 1:10,
+b <- a,
+c <- b,
+d <- 1:10
+)
+
+
+# ans:
+sapply(L, rlang::obj_address)
+# [1] "0x55edc7b01068" "0x55edc7b01068" "0x55edc7b01068" "0x55edc7b011b8"
+# a,b,c ref to same object;  d refers to different object 
+```
+
+
+2.
+Do these reference to same function ?
+```r
+mean
+base::mean
+get("mean")
+evalq(mean)
+match.fun("mean")
+```
+
+```r
+mean
+base::mean
+get("mean")
+evalq(mean)
+match.fun("mean")
+
+L = list(
+mean,
+base::mean,
+get("mean"),
+evalq(mean),
+match.fun("mean")
+)
+
+sapply(L, lobstr::obj_addr)
+```

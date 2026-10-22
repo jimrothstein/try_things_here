@@ -1,0 +1,30 @@
+##https://stat.ethz.ch/R-manual/R-devel/RHOME/library/base/html/mode.html
+
+420_mode_usage.qmd
+
+```{r}
+e = quote(sin(pi))                  # call
+e = quote(sin(x))                  # call
+
+length(options())
+sapply(options(), mode)
+
+## formals, pairlist (not for primitive functions, sin)
+formals(f = function(a,b,c) a+b+c)          ## pairlist $a, $b, $c
+typeof(formals(f = function(a,b,c) a+b+c))          ## pairlist $a, $b, $c
+
+
+####  compare !!!
+q1 = quote(a+b) # call
+typeof(q1)                          ## language
+
+typeof(parse(text="quote(a+b)"))                          ## expression
+```
+
+```
+## This also makes a local copy of 'pi':
+storage.mode(pi) <- "complex"
+storage.mode(pi)
+rm(pi)
+```
+

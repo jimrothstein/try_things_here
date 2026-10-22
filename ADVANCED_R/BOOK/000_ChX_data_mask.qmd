@@ -1,0 +1,55 @@
+---
+title: "Untitled"
+format: html
+editor: source
+editor_options: 
+  chunk_output_type: console
+collapse: true
+---
+
+::: {.content-visible unless-format="pdf"}
+
+\section{ Data Masking}
+:::
+
+###   Data Masking (edition 1 - not fully covered)
+SEE:      https://search.r-project.org/CRAN/refmans/rlang/html/topic-data-mask.html
+
+https://rlang.r-lib.org/reference/topic-data-mask-ambiguity.html
+
+```{r}
+#|  echo: true
+#|  results: false
+library(dplyr)
+```
+
+```{r}
+#| collapse: true
+x <- 100
+mtcars %>% dplyr::summarise(mean(disp / x))
+ls()
+```
+
+
+Simplest thing I can think of is to add a new environment, e, and add object of same name, but differnt value
+```{r}
+#| collapse: true
+e <- new.env()
+e$x <- 1000
+ls()
+search()
+```
+
+
+attach
+```{r}
+#| collapse: true
+attach(e)
+ls()
+x
+```
+
+```{mermaid }
+flowchart BT 
+    .globalenv --> env1 -->env2 --> ... 
+```

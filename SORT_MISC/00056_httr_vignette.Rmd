@@ -1,0 +1,189 @@
+---
+title: "020_"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+## httr:: Examples
+Ref: https://httr.r-lib.org//reference/GET.html
+* vignette - uses httpbin.org as practice
+* Wiki for REST (an architet using, using HTTP, URIs, payloads ....)
+* Study various options, httr_options()
+* Specific option:   curl_docs("useragent")
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(magrittr)
+library(httr)
+library(jsonlite)
+```
+
+## simple google search
+```{r}
+r<- GET("http://google.com/", 
+        path = "search", 
+        query = list(q = "falwell"))
+
+# many ways to examine response
+
+# two ways to look at header
+r$headers %>% str(max.level=1 )
+httr::headers(r)
+
+# no error
+httr::http_error(r)
+httr::status_code(r)
+httr::cookies(r)
+content(r)
+content(r, "text")
+```
+
+
+## httr::modify_url()
+```{r}
+the_base  <- "https://httpbin.org"
+r  <- httr::GET(the_base)
+
+# usually, we have some kind of path or endpoint
+the_url  <- modify_url(the_base, path="/get")
+GET(the_url)
+```
+
+variety of curl options, and how to use in R.
+```{r change}
+ua  <- user_agent("httr")
+GET(the_url, ua )
+
+# now without ua
+GET(the_url)
+
+#  with ua
+GET(the_url, config=ua)
+
+
+# without ua
+GET(the_url)
+
+# hmmm,  adds to default user_agent()
+with_config(GET(the_url), config=config(user_agent("httr")))
+
+```
+temporarily change config
+```{r with_config}
+GET(the_url, user_agent("httr"))
+with_config(the_url, user_agent("httr"))
+```
+
+
+Focus on httpbin.org practice
+## headers
+```{r}
+# add header
+base_url <- "http://httpbin.org"
+r <- httr::GET("http://httpbin.org/get", 
+               add_headers(a="ONE_header", b="TWO_header"))
+r
+```
+
+```{r debug}
+Verbose, useful to debug
+'<-' header in
+'<<' data in
+'*'  msg from curl
+```
+## verbose, content
+```{r verbose}
+r  <- httr::GET(base_url, verbose())
+http_type(r)
+r
+
+# vector
+content(r)
+
+# stream of text
+content(r, "text")
+```
+
+Add query, parameters relatd to useful to the api
+```{r query}
+# http:://httbgin.org/?name=jim&occupation=student
+# Note:  ? begins qery, & separates
+r  <- httr::GET(base_url, query=list(name="jim", occupation="student"))
+r
+```
+
+## Return json and process
+```{r json}
+# api says add /json
+r  <- GET(modify_url(base_url, path="/json"))
+http_type(r)
+names(r)
+content(r, as="text") %>% jsonlite::fromJSON()
+
+```
+
+verbose, body
+```{r}
+Use body, to pass parameters
+r  <- with_verbose(GET(base_url, body=list(name="jim", encode="json"),
+                       content_type_json()))
+```
+
+## Use S3 to examine response
+```{r S3}
+# make function
+httpbin_api  <- function(path){
+  # path = "/json"
+  r  <- GET(modify_url(base_url, path=path))
+  http_type(r)
+  names(r)
+  parsed  <- content(r, as="text") %>% jsonlite::fromJSON()
+
+  # Make a structure
+  structure (
+           list(content = parsed,
+                path    = "/json",
+                response = r
+                ),
+           class = "httpbin_api"
+           )
+}
+
+print.httpbin_api<- function(x, ...) {
+  cat("<httpbin ", x$path, ">\n", sep = "")
+  str(x$content)
+  invisible(x)
+} 
+
+httpbin_api("/json")
+
+
+```
+```{r}
+
+endpoint <- "https://api.noopschallenge.com/hexbot"
+
+
+## get a single color, and display on screen
+
+random.color <- function() {
+    hexbot <- GET(endpoint)
+    content(hexbot)$colors[[1]]$value
+}
+
+rcol <- random.color()
+barplot(1, col=rcol, main=rcol, axes=FALSE)
+## --------
+## get n colors at once
+## get n colors at once
+
+random.colors <- function(n) {
+    hexbot <- GET(endpoint, query=list(count=n))
+    unlist(content(hexbot)$colors)
+}
+
+ncol <- 5
+barplot(rep(1,ncol),col=random.colors(ncol), axes=FALSE)
+
+```

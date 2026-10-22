@@ -1,0 +1,126 @@
+---
+editor_options: 
+  chunk_output_type: console
+---
+
+PURPOSE:   Scratch area.   Goal is to annotate 70_ and hoist
+#
+#  0430_tidyr_firefox_bookmarks_WORKS.R
+##  Compare to base::rapply
+##  TODO
+##  2023-06-06
+##  -     using dput, pluck ... can sketch out tree ... need paper sketch
+##  -     pluck and `accessor`
+##  2023-06-05
+##  -     add remarks to x1, x2, x3, (length of each list)
+
+##  -     
+
+
+```{r}
+library(tibble)
+library(jsonlite)
+library(dplyr)
+library(listviewer)
+library(tidyr)
+library(rlang)
+```   
+
+```{r}
+the_dir <- "~/code/try_things_here/rrapply/bookmarks"
+the_file <- paste0(the_dir, "/", "bookmarks-2023-05-24_FF.json")
+the_dir
+the_file
+
+##  no attempt to simplify; x is list of lists
+x <- jsonlite::read_json(the_file)
+
+# ----------
+# an aside
+# ----------
+enframe(x$children[[1]])
+str(x$children[[1]], max.level = 1)
+str(x$children[[1]]$children[[1]], max.level = 1, vec.len = 1)
+# ----------
+menu <- x$children[[1]]
+toolbar <- x$children[[2]]
+unfiled <- x$children[[3]]
+mobile <- x$children[[4]]
+```
+
+# --------------------------------  MUCH BETTER ----------------------------------
+# ------------------------------------------------------------------
+###  Much better is capture lists in the very top list
+###  And use various tools  (tidyr, hoist etc  and NOT with lists)
+# ------------------------------------------------------------------
+```{r}
+x1 <- x$children %>% tibble()
+x1
+#   <list>
+# 1 <named list [10]>
+# 2 <named list [10]>
+# 3 <named list [10]>
+# 4 <named list [10]>
+dput(x1, "x1_output.txt")
+##  each of 4 chlidren holds another list of 10
+str(x1, max.depth = 1, list.len = 4)
+```
+```{r}
+x2 <- x1 %>% hoist(".", # pull out from list-column
+  title = "title",
+  ##  id = "id",
+  children = "children"
+)
+x2
+# # A tibble: 4 × 3
+#   <chr>   <list>         <list>
+#   title   children       .
+# 1 menu    <list [87]>    <named list [8]>
+# 2 toolbar <list [14]>    <named list [8]>
+# 3 unfiled <list [1,196]> <named list [8]>
+# 4 mobile  <list [212]>   <named list [8]>
+
+
+x3 <- x2 %>% unnest_longer("children")
+x3 |> head(n = 4L)
+
+## remarks no surprise
+length(x3$children) # [1] 1509
+names(x3)
+unique(x3$title)
+
+x4 <- x3 %>% hoist("children",
+  uri = "uri",
+  title1 = "title"
+)
+
+head(x4)
+tail(x4)
+
+
+x4 %>%
+  dplyr::select(c("title", "uri", "title1")) |>
+  head(4)
+# # A tibble: 4 × 3
+#   title uri                                                  title1
+#   <chr> <chr>                                                <chr>
+# 1 menu  <NA>                                                 Mozilla Fire…
+# 2 menu  https://github.com/jarun/Buku                        jarun/buku: …
+# 3 menu  https://github.com/r-lib/remotes                     r-lib/remote…
+# 4 menu  https://usethis.r-lib.org/articles/pr-functions.html pr github! r…
+
+x4 %>%
+  select(c("title1")) |>
+  nrow() # [1] 1509
+
+x4 %>%
+  select(c("title1")) |>
+  head(4)
+# # A tibble: 4 × 1
+#   title1
+#   <chr>
+# 1 Mozilla Firefox
+# 2 jarun/buku: |  bookmark manager
+# 3 r-lib/remotes: Install R packages from GitHub, GitLab, Bitbucket, git, …
+# 4 pr github! r helpers
+```

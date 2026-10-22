@@ -1,0 +1,70 @@
+--- 
+# Spaces, no Tabs
+title: Template for .Rmd 
+date: "`r paste('last updated', 
+    format(lubridate::now(), '%H:%M, %d %B %Y'))`"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+toc: TRUE 
+toc_depth:  1 
+fontsize: 12pt 
+geometry: margin=0.5in,top=0.25in 
+TAGS:  lintr
+---
+lintr:: Ref manual:
+https://cran.r-project.org/web//packages/lintr/lintr.pdf
+
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = TRUE)
+
+library(jimTools)
+library(lintr)
+```
+
+
+
+```{r begin, attr.source='.numberLines'}
+x  <- 1 + 1
+x
+
+# run code to find suggestions
+lint(here("rmd", "00001_lintr.Rmd"))
+```
+learn about lintr::
+```{r learn}
+length(default_settings)
+default_settings   # lenght 9
+
+
+```
+change defaults?
+```{r with}
+my_linters <- with_defaults(line_length_linter = line_length_linter(120))
+my_linters <- with_defaults(trailing_white_space = FALSE)
+
+```
+
+
+***
+
+```{r knit_exit()} 
+knitr::knit_exit()
+```
+
+/newpage
+
+```{r render, eval=FALSE	} 
+file <- ""
+file  <- basename(file)
+dir <- "rmd"
+
+jimTools::ren_pdf(file,dir)
+jimTools::ren_github(file, dir)
+rmarkdown::render("~/docs/misc_files/00020_contents_storage_locker.md",
+                )
+# ```

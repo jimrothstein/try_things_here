@@ -1,0 +1,713 @@
+---
+title: "502_DT_basic_joins.qmd"
+author: "jr"
+date: "5/22/2023"
+code-fold: true
+---
+
+----------------------------------------
+
+PURPOSE:    Simple (!)  DT join examples, using fake data. \
+(For example using R update, see 570_anti-join.qmd)
+
+### Another way to use anti-join
+installed:  10 rows,  6 have 1, 4 have 2
+
+```{r}
+library(data.table)
+library(knitr)
+(dt = data.table(x=(LETTERS[1:4]),
+           y= c(rep(1,4))
+           ))
+
+#   add 4 packages in 2
+    (dt = rbind(dt, data.table(x = LETTERS[5:8],y= c(rep(2,4))) ))
+#
+
+(dt= rbind(dt, data.table(x=c("E","H"), y=c(1,1))))
+setorder(dt)
+```
+
+
+***
+
+### toy example:   installed
+```{r}
+dput(dt)
+# structure(list(x = c("A", "B", "C", "D", "E", "F", "G", "H", 
+# "E", "H"), y = c(1, 1, 1, 1, 2, 2, 2, 2, 1, 1)), row.names = c(NA, 
+# -10L), class = c("data.table", "data.frame"), .internal.selfref = <pointer: 0x560cb46fd740>)
+#     x y
+#  1: A 1
+#  2: B 1
+#  3: C 1
+#  4: D 1
+#  5: E 2
+#  6: F 2
+#  7: G 2
+#  8: H 2
+#  9: E 1
+# 10: H 1
+``` 
+
+
+
+***
+
+### Summary of Installed
+```{r}
+install  <- dt
+# entries for each pkg
+    dt[, .N, by=x]
+
+# split into 
+
+    install1 = dt[y == 1]
+    install2 = dt[y == 2]
+install1
+install2
+```
+***
+
+### example joins with dt1,dt2
+```{r}
+## pkg in 2, NOT in 1
+  install2[!install1, on=.(x)]
+#    x y
+# 1: F 2
+# 2: G 2
+
+## pkg in 1,  NOT in 2
+  install1[!install2, on=.(x)]
+#    x y
+# 1: A 1
+# 2: B 1
+# 3: C 1
+# 4: D 1
+
+## Other
+# pkg in 1, with entry in 2  (inner join)
+    install2[install1, on=.(x=x),  nomatch=NULL]
+
+# pkg in 2, with entry in 1
+    install1[install2, on=.(x=x), nomatch=NULL] 
+    install1[install2, on=.(x=x), nomatch=0] # same as NULL
+
+# pkg in 2, with NO entry in 1
+    install1[install2, on=.(x=x)] [is.na(y)]
+    install1[install2, on=.(x=x)] 
+    install2[!install1, on=.(x=x)]
+```
+
+####  FAKE Candidates
+```{r}
+#   all pkgs, EXCEPT "C" are candidates
+cand=data.table(x=c(LETTERS[1:2], LETTERS[4:10]))
+cand
+
+## Update 1, immediately (make unique!)
+    dt[y==1, ][cand, on=.(x=x), .(x),nomatch=NULL]
+
+## pkgs from 2, that have no pkg in 1
+    dt[!cand]
+
+
+### of these, 
+# fake cand1
+c1 = data.table(x=LETTERS[1:3], y=rep(1,3))
+c1
+
+# fake cand from dir 2, previously updated
+dt[y == 2,]
+c2 = data.table(x=LETTERS[1:3], y=rep(1,3))
+```
+
+
+LEGACY
+
+####	PURPOSE:   Collect DT merge/join examples \
+REF: <https://stackoverflow.com/questions/54864132/intuition-for-data-table-join-syntax>
+
+Simple example:
+-dt is observations, uses an abbrev for each state
+-lookup gives full state name
+```{r}
+library(data.table)
+
+# data observations
+dt = data.table(abbrev = c("NJ" , "NY", 'NM', 'CA', 'TX'))
+dt
+
+lookup = data.table(long_name = c('New Jersey', 'New York', 'New Mexico',  'California', 'Florida' ),
+                    abbrev = c("NJ" , "NY", 'NM', 'CA', 'FL'))
+
+lookup
+
+#   optional, but good habit
+setkey(dt, abbrev)
+setkey(lookup, abbrev)
+
+# inner join, ignore if no match
+lookup[dt, nomatch=0]
+lookup[dt, nomatch=NULL]  # same
+
+
+# Our observation, for TX is missing
+lookup[dt, nomatch=NA]
+lookup[dt]   # same
+#     long_name abbrev
+# 1: California     CA
+# 2: New Jersey     NJ
+# 3: New Mexico     NM
+# 4:   New York     NY
+# 5:       <NA>     TX
+
+
+dt[lookup, nomatch=0] # ignore TX,FL  
+dt[lookup] # include ALL from lookup (TX not in lookup)
+# include every row in lookup, skip TX b/c it is NOT in lookup
+#    abbrev  long_name
+# 1:     CA California
+# 2:     FL    Florida
+# 3:     NJ New Jersey
+# 4:     NM New Mexico
+# 5:     NY   New York
+
+```
+
+```{r}
+knitr::knit_exit()
+```
+### Inner join is easist to understand.  Merge creates a new table with cols x and y.
+The rows include only where a common value exisits. 
+```{r simplest}
+
+A  <- data.table(x=c(1,2,3,4))
+#    x
+# 1: 1
+# 2: 2
+# 3: 3
+# 4: 4
+B  <- data.table(y=c(2,3,4,5))
+#    y
+# 1: 2
+# 2: 3
+# 3: 4
+# 4: 5
+
+setkey(A,x)
+setkey(B,y)
+
+# the values 1 and 5 are NOT in both tables
+
+## inner
+A[B, nomatch=0]
+#    x
+# 1: 2
+# 2: 3
+# 3: 4
+
+
+And even if there is NO 
+## right outer 
+A[B]   
+#    x
+# 1: 2
+# 2: 3
+# 3: 4
+# 4: 5
+
+
+## left
+B[A]
+#    y
+# 1: 1
+# 2: 2
+# 3: 3
+# 4: 4
+
+```
+###	STOP, understand these before proceeding
+```{r}
+##	Which columns?
+##  Then which rows?
+
+DT  <-  data.table(r=rep(c("b","a","c"),each=3), s=c(1,3,6), t=1:9)
+DT
+#    r s t
+# 1: b 1 1
+# 2: b 3 2
+# 3: b 6 3
+# 4: a 1 4
+# 5: a 3 5
+# 6: a 6 6
+# 7: c 1 7
+# 8: c 3 8
+# 9: c 6 9
+
+X  <-  data.table(x=c("c","b"), y=8:7, z=c(4,2))
+#    x y z
+# 1: c 8 4
+# 2: b 7 2
+
+
+if (F) DT[X]   ## error
+
+#	all elments of X; all columns of X except col match DT
+DT[X, on=.(r=x)]
+#    r s t y z
+# 1: c 1 7 8 4
+# 2: c 3 8 8 4
+# 3: c 6 9 8 4
+# 4: b 1 1 7 2
+# 5: b 3 2 7 2
+# 6: b 6 3 7 2
+
+
+#	To prove this is NOT an inner join try
+	Y  <- data.table(x=c("c","z"), y=8:7, z=c(4,2))
+	DT[Y, on = .(r = x)]
+
+
+##  TODO:   label as X.x, X.x, X.z
+# insist on column for x
+	DT[X, on=.(r=x), .(r,s, t, x, y, z)]
+#    r s t x y z
+# 1: c 1 7 c 8 4
+# 2: c 3 8 c 8 4
+# 3: c 6 9 c 8 4
+# 4: b 1 1 b 7 2
+# 5: b 3 2 b 7 2
+# 6: b 6 3 b 7 2
+
+DT[X, on =.(r=x,  s < y)]
+#    r s t z
+# 1: c 8 7 4
+# 2: c 8 8 4
+# 3: c 8 9 4
+# 4: b 7 1 2
+# 5: b 7 2 2
+# 6: b 7 3 2
+
+DT[X, on =.(r=x,  s > y)]
+#    r s  t z
+# 1: c 8 NA 4
+# 2: b 7 NA 2
+
+DT  <- data.table(r = c(1), s=NA, t=NA)
+#    r  s  t
+# 1: 1 NA NA
+
+X  <- data.table(x=c(1,2),y = c(NA, NA), z=c(NA,NA))
+#    x  y  z
+# 1: 1 NA NA
+# 2: 1 NA NA
+
+DT[X, on =.(r=x)]
+#    r  s  t  y  z
+# 1: 1 NA NA NA NA
+# 2: 1 NA NA NA NA
+
+DT[X, on =.(r==x, s > y), nomatch=NULL]
+#    r  s  t  z
+# 1: 1 NA NA NA
+# 2: 1 NA NA NA
+
+```	
+-------------------- Intro ONE-------------------- --------------------
+When you have a X[Y] join it means: "For every value in Y try to join a value
+from X", hence, basically this is a left join to Y and the result will be the
+length of Y (I agree it's kind of counter-intuitive). – David Arenburg Feb 25 '19 at 11:17
+
+####	Introductory Example
+  *  DT[X, on= .(x, y <= foo)]
+	*  `key`  means whatever we are matching on, whether or not table is actually
+		keyed.
+	*  Go through each row of X, find all rows matche in DT. st. c(c,b)
+	*  on= means
+	*  (always read left to right) DT$x == X$x and
+	*  DT$y  <= X$foo
+```{r simple_join1}
+
+DT  <-  data.table(x=rep(c("b","a","c"),each=3), y=c(1,3,6), z=1:9)
+#    x y z
+# 1: b 1 1
+# 2: b 3 2
+# 3: b 6 3
+# 4: a 1 4
+# 5: a 3 5
+# 6: a 6 6
+# 7: c 1 7
+# 8: c 3 8
+# 9: c 6 9
+
+X  <-  data.table(a=c("c","b"), b=8:7, c=c(4,2))
+#    a b c
+# 1: c 8 4
+# 2: b 7 2
+
+# Work through this:  yields understanding !
+DT[X, .(x, y, z, DT.a = a, DT.b = b, DT.c = c), on= .(x=a, y <= c)]
+#    x y z DT.a DT.b DT.c
+# 1: c 4 7    c    8    4
+# 2: c 4 8    c    8    4
+# 3: b 2 1    b    7    2
+
+DT[X]
+DT[X, on=.(x=a)]
+
+```
+
+```
+TIP:	  do not think inner, outer ... or SQL ... 
+
+DT[X
+means go through X row by row, select those only rows of DT which match  (aka WHERE)
+
+.(x, y, z, DT.a = a, DT.b = b, DT.c = c) 
+refers to columns in find result.
+
+on= .(x=a, y <= c)   
+criteria for match:  DT.x == X.a && DT.y == X.c (always left to right)
+
+
+## -------------------- ---------  Intro TWO ?----------- --------------------B
+
+#### simple DT join
+
+  *  DT[X] is a right-join (odd, yes) on X.
+  *  REF:  https://gist.github.com/nacnudus/ef3b22b79164bbf9c0ebafbf558f22a0
+  *  REF:  https://stackoverflow.com/questions/67261777/data-table-join-is-hard-to-understand
+
+ ```{r  simple_join}
+
+DT  <-  data.table(x=rep(c("b","a","c"),each=3), y=c(1,3,6), v=1:9)
+X  <-  data.table(x=c("c","b"), v=8:7, foo=c(4,2))
+
+#    x y v
+# 1: b 1 1
+# 2: b 3 2
+# 3: b 6 3
+# 4: a 1 4
+# 5: a 3 5
+# 6: a 6 6
+# 7: c 1 7
+# 8: c 3 8
+# 9: c 6 9
+
+#    x v foo
+# 1: c 8   4
+# 2: b 7   2
+
+DT[X, on= .(x, y <= foo)]
+#    x y v i.v
+# 1: c 4 7   8
+# 2: c 4 8   8
+# 3: b 2 1   7
+
+
+## error, join on what??
+   if (F) DT[X]
+
+##  DEFAULT is right outer join
+    DT[X, on = "x"] 
+    #    x y v i.v foo
+    # 1: c 1 7   8   4
+    # 2: c 3 8   8   4
+    # 3: c 6 9   8   4
+    # 4: b 1 1   7   2
+    # 5: b 3 2   7   2
+    # 6: b 6 3   7   2
+
+
+##
+# =============================
+    X  <- data.table(x = "c")
+
+    DT[X, on=.(x)]
+#    x y v
+    #
+vignette("datatable-secondary-indices-and-auto-indexing")
+          vignette("datatable-keys-fast-subset")
+vignette("Joins and rolling joins")
+# 1: c 1 7
+# 2: c 3 8
+# 3: c 6 9
+
+# =============================
+##
+    X  <- data.table(x = "c", y=c(1,3))
+    DT[X, on=.(x)]
+#    x y v i.y
+# 1: c 1 7   1
+# 2: c 3 8   1
+# 3: c 6 9   1
+# 4: c 1 7   3
+# 5: c 3 8   3
+# 6: c 6 9   3
+
+# =============================
+##
+    DT[X, on=.(x,y)]
+#    x y v
+# 1: c 1 7
+# 2: c 3 8
+
+# =============================
+##
+    X  <- data.table(x = "c", y=c(1,3), foo=c(4,2)) 
+#    x y foo
+# 1: c 1   4
+# 2: c 3   2
+
+##
+    DT[X, on=.(x)]
+#    x y v i.y foo
+# 1: c 1 7   1   4
+# 2: c 3 8   1   4
+# 3: c 6 9   1   4
+# 4: c 1 7   3   2
+# 5: c 3 8   3   2
+# 6: c 6 9   3   2
+    #
+# =============================
+    #
+   DT[X, on=.(x,y)] #
+#    x y v foo
+# 1: c 1 7   4
+# 2: c 3 8   2
+
+# =============================
+    
+
+##
+    DT[X, on = .(x, y <=foo)]
+#    x y v i.v
+# 1: c 4 7   8
+# 2: c 4 8   8
+# 3: b 2 1   7
+
+
+```
+
+##  ---- TODO --------------------------------------
+
+
+```{r so}
+library(data.table)
+A <- data.table(id = letters[1:10], amount = rnorm(10)^2)
+B2 <- data.table(
+  id = c("c", "d", "e", "e"), 
+  ord = 1:4, 
+  comment = c("big", "slow", "nice", "nooice")
+)
+A
+#     id amount
+#  1:  a 0.0667
+#  2:  b 0.0834
+#  3:  c 0.8062
+#  4:  d 2.1857
+#  5:  e 1.2807
+#  6:  f 0.3719
+#  7:  g 0.0872
+#  8:  h 0.5281
+#  9:  i 0.8966
+# 10:  j 0.9682
+#
+B2
+#    id ord comment
+# 1:  c   1     big
+# 2:  d   2    slow
+# 3:  e   3    nice
+# 4:  e   4  nooice
+
+# preferred way
+
+A[, comments := B2[A, on=.(id), x.comment]]
+```
+
+### [REF](https://stackoverflow.com/questions/21435339/data-table-vs-dplyr-can-one-do-something-well-the-other-cant-or-does-poorly/27718317#27718317)
+```{r DT}
+
+library(data.table)
+example(data.table)
+
+dt.a  <- data.table(a)
+dt.b  <- data.table(b)
+
+
+# best to key 1st
+# setkey(DT1, x, y)
+
+ # 1. normal join
+dt.a[dt.b, ,on="one"]  ## data.table syntax
+#left_join(dt.b, dt.a) ## dplyr syntax
+
+
+ # 2. select columns while join    
+ DT1[DT2, .(z, i.mul)]
+# left_join(select(DT2, x, y, mul), select(DT1, x, y, z))
+
+ # 3. aggregate while join
+ DT1[DT2, .(sum(z) * i.mul), by = .EACHI]
+ DF1 %>% group_by(x, y) %>% summarise(z = sum(z)) %>% 
+     inner_join(DF2) %>% mutate(z = z*mul) %>% select(-mul)
+
+ # 4. update while join
+ DT1[DT2, z := cumsum(z) * i.mul, by = .EACHI]
+ ??
+
+ # 5. rolling join
+ DT1[DT2, roll = -Inf]
+ ??
+  
+```
+
+
+## Suppose (lost)
+```{r  more_tries}
+dt1  <- data.table(A = c(1,2,3,2), 
+                   B = c(4, 5,6, 20),
+                   C = c(7, 8, 9, 21)
+                   )
+
+dt2  <- data.table(E = c(1,3,2),
+                   F = c(10,12,11),
+                   G = c(13, 15, 14),
+                   H = c(16, 18, 17)
+                   )
+dt1
+#    A  B  C
+# 1: 1  4  7
+# 2: 2  5  8
+# 3: 3  6  9
+# 4: 2 20 21
+#
+
+dt2
+#    E  F  G  H
+# 1: 1 10 13 16
+# 2: 3 12 15 18
+# 3: 2 11 14 17
+
+
+# how to join/merge to get this?
+dt3
+A   B   C   H
+1   4   7   16
+2   5   8   17
+3   6   9   18
+2   20  21  17      
+
+
+dt1[dt2, on= c(A = "E")]
+dt1[dt2, on= c("A" = "E")]
+
+# Why fails?
+if (F)
+  dt1[dt2, on= c(A = E)]
+
+```
+
+##  TODO   Another repeat?
+### REF:  https://gist.github.com/nacnudus/ef3b22b79164bbf9c0ebafbf558f22a0
+library(data.table)
+
+?`[.data.table`
+?data.table::":="
+
+DT <- data.table(x=rep(c("b","a","c"),each=3), y=c(1,3,6), v=1:9)
+#    x y v
+# 1: b 1 1
+# 2: b 3 2
+# 3: b 6 3
+# 4: a 1 4
+# 5: a 3 5
+# 6: a 6 6
+# 7: c 1 7
+# 8: c 3 8
+# 9: c 6 9
+#
+X  <- data.table(x=c("c","b"), v=8:7, foo=c(4,2))
+#    x v foo
+# 1: c 8   4
+# 2: b 7   2
+
+colnames(DT)
+# [1] "x" "y" "v"
+
+colnames(X)
+# [1] "x"   "v"   "foo"
+
+DT[X, on="x"]            # * right join (DT is left, X is right)
+                         # * SELECT DT RIGHT JOIN X ON DT$x = x$x
+                         # * X$v is renamed i.v to avoid conflict with DT$v.
+                         #     The i comes from the fact that X is given as the
+                         #     'i' argument
+
+X[DT, on="x"]            # left join  (DT is left, X is right)
+                         # SELECT X RIGHT JOIN DT ON X$x = DT$x
+
+DT[X, on="x", nomatch=0] # inner join
+                         # SELECT DT INNER JOIN X ON DT$x = X$x
+
+DT[!X, on="x"]           # not join   (DT is left)
+                         # SELECT DT LEFT JOIN X ON DT$x != X$x
+
+DT[X,   on=.(y<=foo)]      # NEW: non-equi join (v1.9.8+)
+                         # SELECT DT RIGHT JOIN X ON DT$y <= X$foo
+# * i.x and i.v are new names for the X$x and X$v, which is given as the i
+#     argument, that conflict with column names in DT.  You can prove this to
+#     yourself by observing that there is no row in DT where x=b and v=7.
+# * X$foo isn't returned at all, which is annoying, but is consistent with the
+# right-hand column being dropped in merges, where it becomes redundant in the
+# output.  You can select it manually (along with any other column) like so:
+DT[X, .(x, y, v, i.x, i.v, i.foo), on=.(x, y>=foo)]  # Select columns to return, including ones that would otherwise be dropped
+
+DT[X, on="y<=foo"]                          # same as above
+DT[X, on=c("y<=foo")]                       # same as above
+
+DT[X, on=.(y>=foo)]                         # NEW non-equi join (v1.9.8+)
+DT[X, on=.(y>=foo)]                         # NEW non-equi join (v1.9.8+)
+
+DT[X, .(x,y,x.y,v,i.foo), on=.(x, y>=foo)]  # Select x's join columns as well
+
+DT[X, on=.(x, y<=foo)]                      # NEW non-equi join (v1.9.8+)
+# SELECT DT RIGHT JOIN X ON DT$x = X$x AND DT$y <= x$foo
+
+DT[X, on=.(x, v>=v), sum(y)*foo, by=.EACHI] # NEW non-equi join with by=.EACHI (v1.9.8+)
+# Is this doing GROUP BY DT$x, DT$v?
+#
+#
+#
+### Even simpler: (write SQL)
+dt  <- data.table( id = c(1,2,3), a = c("a1", "a2", "a3"))
+dt
+#    id  a
+# 1:  1 a1
+# 2:  2 a2
+# 3:  3 a3
+
+X  <- data.table( id = c(1,2,4), b = c("b1", "b2", "b3"))
+X
+#    id  b
+# 1:  1 b1
+# 2:  2 b2
+# 3:  4 b3
+
+
+
+## inner join, equi-join
+   dt[X, on = .(id), nomatch=0]
+#    id  a  b
+# 1:  1 a1 b1
+# 2:  2 a2 b2
+
+## select X right outer join DT on (all X rows)
+   dt[X, on = .(id) ]
+   dt[X, .(id, b), on = .(id)]
+
+
+## select dt right outerjoin X (all dt rows)
+   X[dt, on = .(id) ]
+   X[dt, .(id, a),on = .(id) ]

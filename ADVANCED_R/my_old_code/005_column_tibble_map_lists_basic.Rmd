@@ -1,0 +1,113 @@
+---
+title: "005_column_tibble_map_lists_basic"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+
+### Motivation:  
+-  Some basic objects, map lists
+-  Not part of Hadley
+-  Misc for objects, mapping, transpose
+-  Key objective (at moment) for given function f can we determine args and return objects?
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+###02_setup
+run chunk, suppress output
+```{r message=FALSE}
+library(gapminder)
+library(tidyverse)
+```
+
+```{r}
+# create tibble, by row:
+t <- tribble(
+  ~x, ~y,
+  0, 1,
+  2, 3,
+  4, 5
+)
+t
+s <- t %>% transpose()
+s[1]
+s[2]
+
+ls()
+objects()
+```
+###00_tibble is really lists, assembled by column
+```{r}
+t[1]  # 1st col
+typeof(t[1])  # list
+```
+
+####0x_r4ds_Ch21.6 (map & error)
+```{r}
+# result + error (if any)
+safe_log <- purrr::safely(log)
+glimpse(safe_log(10))
+
+glimpse(safe_log("a"))
+
+glimpse(safe_log(0))
+
+```
+
+####0x_same_using_map
+```{r}
+# result + error (if any)
+safe_log <- purrr::safely(log)
+x <- list(10,"a",0)
+
+y <- map(x, safe_log)   #  y is list  
+glimpse(y)
+
+z <- y %>% transpose() 
+pluck(z$result[[1]])
+map(z$result, pluck)
+
+
+as.vector(z$result)
+tibble(result = z$result, msg = z$error)
+```
+####0x_make z look nice?
+
+```{r}
+flatten(z$result)
+y %>% transpose %>%()
+## tibble (fct, fct, tibble)
+by_country <- gapminder %>%
+    group_by(continent, country) %>%
+    nest()
+    
+country_model <- function(df)
+  lm(lifeExp ~ year, data=df)
+  
+# ? how does function country_model carry df=data ?
+models <- by_country %>%
+    mutate(mod = map(data, country_model ))
+    
+```
+
+```{r}    
+models
+```
+
+```{r} 
+## Afganistan  
+mean(sqrt(sum(models$mod[[1]]$residuals^2)))
+```    
+
+```{r}
+mse <- function(mod)
+    mean(sqrt(sum(mod$residuals^2)))
+
+models <- models %>%
+    mutate(mse = map(mod, mse))
+```    
+    

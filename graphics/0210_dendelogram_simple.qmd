@@ -1,0 +1,41 @@
+##      /home/jim/code/try_things_here/graphics/0210_dendelogram_simple.qmd
+##      PURPOSE:  find 'dist' between 2 rows (observatoins)
+##      NOTE:  Start with CLOSEST 2 points
+##      METHOD:   Examine each data point, find 2 closest and put into 1 cluster; find 3rd data point, closest to this cluster; combine.
+#       REF: https://www.r-bloggers.com/2016/01/hierarchical-clustering-in-r-2/
+#
+dim(iris) # 150 x 5;   4 numeric predictors and 1 outcome (factor of 3)
+str(iris)
+# 'data.frame':	150 obs. of  5 variables:
+#  $ Sepal.Length: num  5.1 4.9 4.7 4.6 5 5.4 4.6 5 4.4 4.9 ...
+#  $ Sepal.Width : num  3.5 3 3.2 3.1 3.6 3.9 3.4 3.4 2.9 3.1 ...
+#  $ Petal.Length: num  1.4 1.4 1.3 1.5 1.4 1.7 1.4 1.5 1.4 1.5 ...
+#  $ Petal.Width : num  0.2 0.2 0.2 0.2 0.2 0.4 0.3 0.2 0.2 0.1 ...
+#  $ Species     : Factor w/ 3 levels "setosa","versicolor",..: 1 1 1 1 1 1 1 1 1 1 ...
+
+# --------------------------
+##      First,  a few rows
+# --------------------------
+
+iris[1:10, 3:4]
+## simplicty, use 10 rows only
+## obs 2 and obs 1 are same
+dist <- dist(iris[1:10, 3:4])
+#        1     2     3     4     5     6     7     8     9
+# 2  0.000
+# 3  0.100 0.100
+# 4  0.100 0.100 0.200
+# 5  0.000 0.000 0.100 0.100
+# 6  0.361 0.361 0.447 0.283 0.361
+# 7  0.100 0.100 0.141 0.141 0.100 0.316
+# 8  0.100 0.100 0.200 0.000 0.100 0.283 0.141
+# 9  0.000 0.000 0.100 0.100 0.000 0.361 0.100 0.100
+# 10 0.141 0.141 0.224 0.100 0.141 0.361 0.224 0.100 0.141
+
+plot(hclust(dist))
+
+# ------------------
+##      Next, all the rows
+# ------------------
+dist <- dist(iris[, 3:4])
+plot(hclust(dist))

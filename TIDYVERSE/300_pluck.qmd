@@ -1,0 +1,151 @@
+/home/jim/code/try_things_here/TIDYVERSE/300_pluck.qmd
+
+TAGS: pluck, purrr 
+
+PURPOSE:    
+USE pluck notation.   This is also used in tidyr::hoist and unnesting list-columns.
+REF:	https://purrr.tidyverse.org/reference/pluck.html
+
+pluck(.x, ..., .default=NULL)
+
+NOTE:
+
+When using BASE R `[[`,  dput makes much more readable:
+
+TODO:
+2023-06-06
+-   compare pluck and map (below)
+
+```{r}
+library(purrr)
+library(tidyr)
+```
+
+### use dput to make nested lists easier to read
+```{r}
+?`[[`
+
+obj1 <- list("a", list(1, elt = "foo"))
+obj2 <- list("b", list(2, elt = "bar"))
+x <- list(obj1, obj2)
+
+#   compare 
+
+x[[2]][[2]][2]
+# $elt
+# [1] "bar"
+dput( x[[2]][[2]][2])
+# list(elt = "bar")
+
+```
+
+### Pluck [REF](https://purrr.tidyverse.org/reference/pluck.html)     
+```{r review_purrr_pluck}
+# [REF](https://purrr.tidyverse.org/reference/pluck.html)     
+
+obj1 <- list("a", list(1, elt = "foo"))
+obj2 <- list("b", list(2, elt = "bar"))
+x <- list(obj1, obj2)
+dput(x)
+# list(
+    list("a", list(1, elt = "foo")), 
+    list("b", list(2, elt = "bar"))
+   )
+
+##  Two identical ways to pull 1 element from list
+##  I prefer dput notation!
+dput(purrr::pluck(x,1))
+dput(x[[1]])
+identical(dput(x[[1]]), dput(purrr::pluck(x, 1)))   #T
+
+# 
+# 
+##  Examples
+pluck(x,1,2)   # from 1st element, pluck 2nd item (a list)
+dput(pluck(x,1,2))
+# list(1, elt = "foo")
+
+pluck(x,1,2,"elt") # [1] "foo"
+identical(pluck(x,1,2,"elt"), pluck(x,1,2,2)) #  [1] TRUE
+```
+
+```{r}
+# compare pluck to map, find 2nd element of each
+map(x, 2)
+map(x, list(2, "elt"))  # just walk the hierarchy
+
+# mix and match!  (just walk ....)
+# Recall:   map(.x, .f, ...),  where ... are args for .f
+map(x, pluck, 2, "elt")
+```
+
+### Accssor (return certain element of list)
+```{r accessor_function}
+# pluck() also supports accessor functions:
+my_element <- function(x) x[[2]]$elt
+
+pluck(x, 1, my_element)	# grab 1st elment, then apply my_element to it
+pluck(x, 2, my_element)
+
+# compare to:     cool!
+map(x, my_element)
+base::Map(my_element, x)
+#base::Map(x, my_element)  NO
+```
+
+```{r pluck_my_example}
+l1  <- list(a="a", b="b", c="c")
+l2  <- list(a=1, b=2, c=3)
+l3  <- list(a="joe", b="john", c="moe")
+l  <- list(l1=l1, l2=l2, l3=l3)
+
+# crawls the hierachy ....
+pluck(l, 1) # first 1st element (a list)
+pluck(l, 2 )
+pluck(l, 1, 2) # second element of first item
+pluck(l, 3, "c")
+# pluck(l,c(1,2,3), "c")
+
+```
+```{r}
+
+# GIVEN named list of strings, flatten list into single string
+format_single_string  <- function(l) {
+	map2_chr(names(l), l, ~ paste0(.x ,": ",pluck(.y), "\t\t")  )
+}
+
+
+# EXAMPLE: 
+l  <- list(one="a", two="b", three="c")
+single  <- format_single_string(l)
+```
+
+### example from httr2, youtube-api, simplify list 
+```{r}
+L=list(id="123", list(title="abc", description="describe"))
+L
+L1 = unlist(L, recursive=F, use.names=T)   # list, but flattened
+dput(L1)
+# list(id = "123", title = "abc", description = "describe")
+```
+
+### want:   c("id", "title", "descrption")
+```{r}
+
+L=list(id="123", list(title="abc", description="describe"))
+pluck(L, \(x) "id")
+pluck(L, 2, \(x) x[["title"]])
+pluck(L, 2,  \(x) x[["description"]])
+
+pluck(L, \(x) c( x[["id"]], x[[2]][["title"]]))
+# [1] "123" "abc"
+
+
+
+
+## no need pluck !
+L1 = unlist(L, recursive=F, use.names=T)   # list, but flattened
+dput(L1)
+
+```
+

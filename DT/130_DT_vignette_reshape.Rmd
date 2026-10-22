@@ -1,0 +1,147 @@
+
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+fontsize: 11pt   
+geometry: margin=0.5in,top=0.25in   
+TAGS:  data.table,Lahman,
+---
+Future:
+Vignette::Normalize and de-Normalize Data
+REF:  https://rdatatable.gitlab.io/data.table/library/data.table/doc/datatable-reshape.html
+  * melt/dcast
+  * Follow the tutorial
+  * Conent here is LIMITED annotation, follow the tuturial
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = FALSE   ) # easier to read
+library(jimTools)
+library(data.table)
+```
+
+### non-normalized data
+```{r}
+# sloppy way to input data!
+s1 <- "family_id age_mother dob_child1 dob_child2 dob_child3
+1         30 1998-11-26 2000-01-29         NA
+2         27 1996-06-22         NA         NA
+3         26 2002-07-11 2004-04-05 2007-09-02
+4         32 2004-10-10 2009-08-27 2012-07-21
+5         29 2000-12-05 2005-02-28         NA"
+
+if (F) s1
+
+dt <- fread(s1)
+dt
+str(dt)
+```
+
+
+### melt (wide to long)
+```{r melt}
+# id.vars = copy these var
+# measure.vars = new `variable` (melt col_names into factors) and `value`
+# (content of those col)
+
+dt.m1 = melt(dt, id.vars = c("family_id", "age_mother"),
+                measure.vars = c("dob_child1", "dob_child2", "dob_child3"))
+str(dt.m1)
+`variable.name = "child", value.name = "dob"``
+
+
+```
+```{r melt2}
+
+# by default, id.vars assumes all non-measure columns
+# give the variable and value new names
+dt.m1 = melt(dt, 
+                measure.vars = c("dob_child1", "dob_child2", "dob_child3"),
+                variable.name = "child",
+                value.name = "dob")
+)
+head(dt.m1)
+```
+
+variable.name = "child", value.name = "dob"
+### reverse: dcast (long to wide)
+```{r dcast}
+# dcast knows to use `variable` with prefix `dob` and suffix `child` to make
+# columns
+#
+dcast(dt.m1, family_id + age_mother ~ child, value.var = "dob")
+
+#    family_id age_mother dob_child1 dob_child2 dob_child3
+#        <int>      <int>     <IDat>     <IDat>     <IDat>
+# 1:         1         30 1998-11-26 2000-01-29       <NA>
+# 2:         2         27 1996-06-22       <NA>       <NA>
+# 3:         3         26 2002-07-11 2004-04-05 2007-09-02
+# 4:         4         32 2004-10-10 2009-08-27 2012-07-21
+# 5:         5         29 2000-12-05 2005-02-28       <NA>
+```
+
+## my way uses list_column
+```{r list_column}
+dt[, .(age_mother, 
+       .(dob = .(dob_child1, dob_child2, dob_child3))),
+       by = family_id]
+
+
+
+```
+### convert to normalized, NORMALIZE DT
+```{r normalize}
+dt[, .(age_mother, 
+       dob = .(dob_child1, dob_child2, dob_child3)),
+       by = family_id]
+```
+***
+
+```{r knit_exit(), include = FALSE  , eval=FALSE } 
+# knitr::knit_exit()
+```
+
+\newpage
+
+
+```{r render, eval=FALSE, include=FALSE 	} 
+# TODO:  file is found when knitr runs (see above)
+
+# file must be of form:
+# dir/name_of_this_file    where dir is relative to project root
+
+## In doubt?   USE  knitr and do not waste time!
+
+## Want to embed Latex, stick to pdf output (html?   never sure!)
+
+# NOTE:   .tex only works with PDF
+# NOTE:    tex will NOT work with html
+# in general, pdf will look nicer
+
+file  <-  "/home/jim/code/try_things_here/rmd/0088_base_package_commands.Rmd"
+file  <- "rmd/00299_DT_reshape.Rmd"
+file  <- basename(file)
+file  <- here("rmd", file)
+file
+
+rmarkdown::render(file,
+                  #output_format = "pdf_document",
+                  output_format = "md_document",
+                  #output_format = "html_document",
+                  output_dir = "md",
+#                  output_file = "out"
+)
+```

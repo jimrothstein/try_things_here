@@ -1,0 +1,198 @@
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+fontsize: 11pt   
+geometry: margin=0.5in,top=0.25in   
+TAGS: data.table,flights14
+---
+
+
+<!--
+
+-----------------
+SPECIAL NOTE:  
+-----------------
+
+LHS := RHS
+Vignette REF Semantics is important!
+But uses flights14
+
+SEE 0291 for basic examples of LHS := RHS
+(probably delete this file)
+-->
+
+
+
+```{r setup, include=FALSE		}
+#knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = FALSE   ) # easier to read
+library(data.table)
+```
+
+
+
+### Trival example modify-in-place, :=
+```{r trival}
+X  <- data.table(a = c(1,2,3))
+X
+
+X[, .(c = 3*a)]
+X[, .(a, c=3*a)]
+
+# no c here
+X
+
+
+# permanently alters X
+X[, b := .(2 * a)]
+X
+
+```
+### Get flights14.csv
+```{r begin}
+
+if (file.exists(here("data", "flights14.csv"))) {
+   input  <- here("data","flights14.csv")
+   flights  <- fread(input)
+} else {
+  input  <- "https://raw.githubusercontent.com/Rdatatable/data.table/master/vignettes/flights14.csv"
+  flights  <- fread(input)
+  fwrite(flights,file = here("data","flights14.csv"))
+
+}
+
+flights
+
+
+```
+
+
+## Section 1 - Reference Symantecs
+(skip for now)
+
+
+## Section 2 - Add/Delete/Modify - by reference
+  *  DT has problem with continuation on 2 lines?
+  *  `:=`  operator form solves this
+```{r}
+# add 2 fields, modify-in-place
+flights[, `:=` (speed = distance / (air_time/60), # speed in mph (mi/h)
+               delay = arr_delay + dep_delay)]   # delay in minutes
+# check: 2 new fields
+str(flights)
+```
+
+
+
+### Section 2b, modify-in-place
+```{r section_2b}
+# example hours:
+# get all 'hours' in flights, note both 0 and 24
+flights[, sort(unique(hour))]
+
+# remove 24L in underlying table?
+flights[ hour==24L, hour := 0]
+
+# has underlying table changed? yes
+flights[, sort(unique(hour))]
+
+# this is not working!
+flights[, .(unique(hour))][order(v1)]
+flights[, .(order(unique(hour)))]
+```
+
+## Section 2d - group
+  *  Note:  if tie, DT recycles to include all ties
+```{r 2d}
+flights[, max_speed := max(speed), by = .(origin, dest)]
+# to view: 
+flights[]
+# seems easier, to me.
+head(flights)
+
+flights[, max_speed := max(speed), by = .(origin, dest)]
+flights[max_speed > 620 & air_time < 100,] 
+
+[, c(carrier, origin,
+                                                             dest, max_speed) ]
+```
+
+### Section 2e - multiple columns, :=
+  *  repeat section 2d, but also group by month
+  *  Notes:  c(out_cols) or just (out_cols) tell DT that not creating a new
+    column, but just updating existing multi-columns (in-place)
+  *  .SDCols = tells DT which columns to work on
+
+
+```{r section_2e}
+in_cols  = c("dep_delay", "arr_delay")
+out_cols = c("max_dep_delay", "max_arr_delay")
+
+
+flights[, c(out_cols) := lapply(.SD, max), 
+        by = month, .SDcols = in_cols]
+flights[]
+flights[, .(month,day,carrier,max_dep_delay,max_arr_delay)]
+head(flights, n=10L)
+```
+
+## Section 3 := and copy
+
+### functions 
+  *  using := wil  change every reference to DT, even in different
+    environment(check)
+  *  using = does not
+```{r}
+
+
+foo <- function(DT) {
+  DT[, speed := distance / (air_time/60)]   # changes all refernces to DT
+  DT[, .(max_speed = max(speed)), by = month] # this env only, return copy
+  only.
+}
+
+ans = foo(flights)
+tables()  # now two
+identical(flights, ans)
+
+str(flights)
+str(ans)
+
+```
+
+
+```{r knit_exit(), include = FALSE  , eval=FALSE } 
+# knitr::knit_exit()
+```
+
+
+```{r render, eval=FALSE, include=FALSE 	} 
+# TODO:  file is found when knitr runs (see above)
+
+# file must be of form:
+# dir/name_of_this_file    where dir is relative to project root
+
+# NOTE:   .tex only works with PDF
+# NOTE:    tex will NOT work with html
+# in general, pdf will look nicer
+
+file  <-  "/home/jim/code/try_things_here/rmd/0088_base_package_commands.Rmd"
+
+rmarkdown::render(file,
+                  #output_format = "pdf_document",
+                  output_format = "html_document",
+                  output_file = "~/Downloads/print_and_delete/out")
+```

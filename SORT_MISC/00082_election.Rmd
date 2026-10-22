@@ -1,0 +1,23 @@
+---
+title: "Untitled"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+Ref: http://blog.yhat.com/posts/predicting-the-presidential-election.html
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(politicaldata)
+library(tidyverse)
+```
+```{r}
+f <- "https://raw.githubusercontent.com/chris-taylor/USElection/master/data/electoral-college-votes.csv"
+electoral.college <- read.csv(f, header = FALSE)
+```
+
+```{r}
+t <- as_tibble(politicaldata::pres_results)
+t %>% head()
+```
+

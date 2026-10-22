@@ -1,0 +1,226 @@
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+        mathjax: default
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+    extra_dependencies: ["amssymb", "bbm", "threeparttable", "forest"]
+fontsize: 11pt   
+geometry: margin=0.4in,top=0.25in   
+TAGS:  latex, trees, forest, condition
+---
+
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = T   ) # T easier to read
+```
+
+
+### Probe condition
+---
+
+\begin{forest}
+  for tree={
+    fit=band,% spaces the tree out a little to avoid collisions
+  }
+  [condition
+    [simpleCondition, tier=condition
+      [division_condition, tier=condition]
+      ]
+    [error, tier=abstract
+      [simpleError, tier=error]
+      ]
+    [warning, tier=abstract
+      [simpleWarning, tier=warning]
+      ]
+  ]
+\begin{forest}
+  for tree={
+    fit=band,% spaces the tree out a little to avoid collisions
+  }
+  [condition
+    [simpleCondition, tier=condition
+      [division_condition, tier=condition]
+      ]
+    [error, tier=abstract
+      [simpleError, tier=error]
+      ]
+    [warning, tier=abstract
+      [simpleWarning, tier=warning]
+      ]
+  ]
+\end{forest}
+
+\begin{forest}
+  for tree={
+    fit=band,% spaces the tree out a little to avoid collisions
+  }
+  [things
+    [cabbages, tier=vegetables
+      [peaches, tier=fruits]
+    ]
+    [kings, tier=aristocrats]
+    [sealing wax
+      [queens, tier=aristocrats
+        [carrots, tier=vegetables]
+        [pineapple, tier=fruits]
+        [aubergine, tier=vegetables]
+      ]
+    ]
+  ]
+\end{forest}
+
+
+#### Probe
+```{r probe}
+## constructors of class with same name
+  warning
+  message
+
+  simpleCondition
+  simpleError
+  simpleWarning
+  simpleMessage
+
+## but these have no constructor
+  condition
+  error
+
+## find 4 methods associated with class = 'condition'
+ sloop::s3_methods_class(x = "condition")
+
+## generic functions + print + as.character
+  sloop::ftype(conditionCall)
+  sloop::ftype(conditionMessage)
+
+## internal functions
+  sloop::ftype(warning)
+  sloop::ftype(signalCondition)
+
+## methods
+  methods(conditionCall)
+  methods(conditionMessage)
+
+f  <- function(...) {
+  cat(nargs(), "\n")
+  args  <- list(...)}
+
+r  <- f("one")
+r
+## SimpleCondition
+ methods(simpleCondition)
+ ftype(simpleCondition)
+
+ is.object(simpleCondition)
+# [1] FALSE
+
+
+## find all methods associated with a class
+
+ args(sloop::s3_methods_class )
+
+ sloop::s3_methods_class(x = "factor")
+ sloop::s3_methods_class(x = "error")
+ sloop::s3_methods_class(x = "condition")
+
+
+ # why nothing?
+
+ sloop::s3_methods_class(x = "warning")
+ sloop::s3_methods_class(x = "message")
+ sloop::s3_methods_class(x = "simpleCondition")
+ sloop::s3_methods_class(x = "simpleError")
+ sloop::s3_methods_class(x = "simpleWarning")
+ sloop::s3_methods_class(x = "simpleMessage")
+
+
+
+
+
+sloop::s3_dispatch(conditionCall( signalCondition(stop())))
+sloop::s3_dispatch(conditionCall( signalCondition(stop())))
+sloop::s3_dispatch(warning())
+
+
+## Constructor
+  simpleMessage
+
+```
+
+###
+```{r objects}
+
+## S3 simpleCondition
+    s  <- simpleCondition("example: simpleCondition ", call = T)
+    class(s)
+    attributes(s)
+    sloop::otype(s)
+    s$message
+    s$call
+
+    x  <- sloop::s3_methods_generic("simpleCondition")
+    str(x)
+    sloop::s3_methods_class("simpleCondition")
+    sloop::s3_methods_class("simpleError")
+    sloop::s3_methods_class("factor")
+    
+
+    simpleCondition
+
+
+
+s  <- simpleError("error")
+class(s)
+sloop::otype(s)
+
+
+
+```
+
+
+
+
+### UseMethod  - wrong!
+```{r UseMethod}
+h  <- function(generic,object ) {
+  UseMethod(generic,  object) 
+}
+
+```{r skeleton, include=F, eval=F}
+file="/home/jim/.config/nvim/templates/skeleton.Rmd"
+```
+
+```{r render, eval=FALSE, include=FALSE 	} 
+#  [For technical notes]: (~/docs/technical_notes/001_render_output.md)
+
+
+{
+file <- "ADVANCED_R/R/008_condition_probe.Rmd"
+file  <- basename(file)
+file  <- here("ADVANCED_R","R", file)
+file
+}
+output_dir  <- Sys.getenv("OUTPUT_DIR")
+output_dir
+
+
+
+rmarkdown::render(file,
+    output_format = "pdf_document",
+    #output_format = "html_document",
+    #output_format=c("html_document", "md_document"),
+    output_dir = output_dir)
+    #output_file = "out")
+```

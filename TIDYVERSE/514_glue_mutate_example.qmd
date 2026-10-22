@@ -1,0 +1,91 @@
+
+---
+title: skeleton.qmd
+date: last-modified
+# Quarto requires title, if want date to appear
+# ~/.config/kickstart/skeleton/skeleton.qmd
+---
+#   TAGS:   glue, mutate, :=, injection, env_var
+## REF: 
+<https://rfordatascience.slack.com/archives/C060QC7G7L1/p1705375605430819>
+
+<https://dplyr.tidyverse.org/articles/programming.html?q=:=#name-injection>
+
+```{r}
+library(dplyr)
+library(glue)
+
+
+gen_train  <- function() {
+  tibble(x = rnorm(n=  6),
+         y = rnorm(n = 6)
+         )
+}
+train  <- gen_train()
+train
+```
+###
+```{r}
+train  <- gen_train()
+for (i in 1:6) {
+  train <- train |>
+    mutate("sin_x{i}" := sin(2 * pi * i * x / 12))
+}
+train
+```
+# -------------
+## Background
+# -------------
+
+## simple mutute
+```{r}
+  train  <- train |> 
+    mutate(z = sin(2 * pi *2 * x / 12))
+train
+```
+
+##  mutate + glue
+```{r}
+train  <- gen_train()
+#  i is env-variable
+  i = 10
+train  <- train |>
+#  mutate("z_{i}" = sin(2 * pi *2 * i / 12)) # almost
+  #mutate(z_{i} = sin(2 * pi *2 * i / 12))   # fails
+  mutate("z_{i}" := sin(2 * pi *2 * i / 12)) # WORKS !
+  
+train
+```
+##  BONUS
+## Reduce(f, list, init) # apply binary function f, repeatedly to list
+
+```{r}
+Reduce(`+`, list(1,2,3), init=100)
+# 100  1 2 3
+# 101, 2, 3
+# 103, 3
+# 106
+
+train  <- get_train()
+
+
+# data 
+# i is env_var
+# col is data_var (ie part of tibble) 
+#my_mutate <- function(data, i, col = x){  # uses x in prefix
+
+my_mutate <- function(data, i, col = y){   # uses y
+    dplyr::mutate(
+        data,
+        # name uses the reference column as well as i
+        "{{col}}_times_{i}" := i*{{col}},
+        # name only references i
+        "sin_x{i}" := sin(i*{{col}})
+    )
+}
+
+Reduce(f = my_mutate, 1:6, init = head(mtcars))
+Reduce(f = my_mutate, x=1:6,  init = head(train)) # magically, train is passed
+as `data`
+```
+vim:linebreak:nospell:nowrap:cul tw=78 fo=tqlnrc foldcolumn=1 cc=+1

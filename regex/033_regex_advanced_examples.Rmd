@@ -1,0 +1,202 @@
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+    keep_md:  true 
+fontsize: 10pt   
+geometry: margin=0.4in,top=0.25in   
+TAGS:  regex,lookback, lookahead
+---
+
+<!--
+
+
+# -----------------------------------
+MOVE BETTER EXAMPLES:   TO MP3 PROJECT
+# -----------------------------------
+
+-->
+
+### PURPOSE:   Build examples of `advanced regex`. 
+  *   Use base R.  
+  *   Include lookback and lookahead, multiple groups.  
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "      ##",
+                      error = TRUE,
+                      collapse = T   ) # T easier to read
+```
+
+####  look back
+
+```{r advanced_regex}
+#  letter o (1 or more) preceded by f 
+    x  <- c("foo","boo", "faa", "fstool", "fo", "foooo")
+    grep(x, pattern="(?<=f)(o+)", value = T, perl=T)
+
+    sub(x=x, pattern="(?<=f)(o+)", replacement="X", perl=T)
+```
+
+#### sub | replacement | 
+```{r}
+  x  <- "foo"
+  sub(x=x, pattern="(f)(o+)", replacement="\\1_\\2_")
+```
+
+```{r future, include=F, eval=F}
+
+    # if (T) (
+    # tryCatch (
+    # invalid expression
+    # sub(x=x, pattern="(?<=f)(o+)", replacement="X", perl=T)
+    # error  = function(e) print("error:")
+    # )
+```
+
+#### o (1 or more) preceded by f, replace with group
+```{r explain, eval=F, include=F}
+  sub(x=x, pattern="(?<=f)(o+)", replacement="\\1", perl=T, fixed=F)
+  sub(x=x, pattern="(?<=f)(o+)", replacement="\\2", perl=T, fixed=F)
+  sub(x=x, pattern="(?<=f)(o+)", replacement="\\3", perl=T, fixed=F)
+```
+
+#### available languages  
+
+```{r available_engines}
+##  zsh, bash, awk, sed, Rscript on list
+names(knitr::knit_engines$get())
+```
+
+#### example with zsh  
+
+```{r, engine="zsh", zsh_example}
+ls -la **/*.pdf
+ls * | head
+```
+
+```{zsh}
+echo foo  | grep -P '(?<=f)(o+)'
+echo foo  | grep -oP '(?<=f)(o+)'
+```
+
+
+```{r str_extract_all, eval=F, include=F}
+
+## Look back (?<=)
+  x  <- "foo"
+  stringr::str_extract(x,"(?<=f)(o+)")
+  # [1] "oo"
+
+
+## Followed by (?=)
+  x  <- "bacad"
+  # a followed by c
+  stringr::str_extract(x, "a(?=c)")
+# [1] "a"
+
+## Not folowed by (?!)  - WRONG
+  stringr::str_extract(x, "a(?!)c")
+
+## Preceded by (?<=)
+  x  <- c("foo", "bacad")
+  stringr::str_extract(x,c("(?<=f)(o+)", "(?<=b)a"))
+# [1] "oo" "a" 
+
+```
+
+```{r fancy, eval=F, include=F}
+
+## NOT working
+    x  <- "Capture first word.   Of each sentence.   In this string."
+    the_pattern  <- "(?:(\\w+).*?[\\.\\?!] {2}?)"
+    stringr::str_extract_all(x, pattern=the_pattern)
+
+
+  x  <- "This is a     sentence."
+  sub(x=x, pattern="(\\w)(\\s+)", replacement="\\1_")
+
+
+## REF: https://stackoverflow.com/questions/28786405/regex-capture-repeated-phrases
+## Find duplicate phrases
+x <- c(
+    "this is a big is a Big deal",
+    "I want want to see",
+    "I want, want to see",
+    "I want...want to see see how",
+    "this is a big is a Big deal for those of, those of you who are.",
+    "I like it. It is cool"
+    )
+
+
+the_pattern  <- 
+regmatches(x, gregexpr("(?i)\\b(\\S.*\\S)[ ,.]*\\b(\\1)", 
+                    x, perl = TRUE))
+
+```
+
+#### Peng, Ch17 regular expresssions  
+
+REF:  https://bookdown.org/rdpeng/rprogdatascience/regular-expressions.html
+```{r peng, include=F, eval=F}
+## homicide data
+x  <- readLines("~/code/try_things_here/data/homicides.txt")
+
+the_pattern  <- "[F|f]ound(.*)"
+regexpr(text = x, pattern  = the_pattern)
+# [1] 7 9   # where found
+# attr(,"match.length")
+# [1] 15 16
+# attr(,"index.type")
+# [1] "chars"
+# attr(,"useBytes")
+# [1] TRUE
+
+
+## Pulls out matches
+## m is object with 
+regmatches(x, m = regexpr(text = x, pattern  = the_pattern))
+```
+
+REF:  https://getpocket.com/read/3146111029  
+```{r lookaround, include=F, eval=F}
+## GOAL extract price of animals, not my money  
+lookaround <- "A penguin costs 2.99, a whale costs 5.99, I only have 3.50 left."
+
+# WORKS
+prices <- stringr::str_extract_all(lookaround, 
+                                   "(?<=costs)\\s\\d\\.\\d{2}")
+prices
+
+
+# now try base R, must use perl (or "Invalid regrep")
+## works but need it to be GREEDY !k
+the_pattern  <- "(?<=costs)\\s\\d\\.\\d{2}"
+r  <- regexpr(text = lookaround, pattern = the_pattern, perl=T)
+regmatches(lookaround, m=r)
+```
+
+```{r render, include=F, eval=F}
+output_dir  <- Sys.getenv("OUTPUT_DIR")
+output_dir
+
+{
+file <- "/home/jim/code/try_things_here/rmd/00033_regex_advanced_examples.Rmd"
+the_dir  <- dirname(file)
+file  <- basename(file)
+# instead of here
+
+file  <- file.path(the_dir, file)
+file
+}
+
+rmarkdown::render(file,
+                  output_format = "pdf_document",
+                  #output_format = "html_document",
+                  output_dir = output_dir)
+
+```
+vim:linebreak:nospell:nowrap:cul tw=78 fo=tqlnr foldcolumn=3 cc=+1

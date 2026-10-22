@@ -1,0 +1,278 @@
+---
+---
+##  TODO: 
+##    2023-05-26
+-     collect examples from elsewhere
+-     str:  review args
+-     dput: keep list(...), but remove other output
+
+####	PURPOSE:
+str:  THIS IS MAIN COLLECTECTION
+Consolidate str() examples here:
+###		-	basic syntax of str()
+###		- examples drawn from elsewhere (
+###
+###
+###		- REF https://rdrr.io/r/utils/str.html
+###
+###		TO DO
+###		-	example from gh, VECTOR, from purrr
+###
+
+##		-----------------------------------
+```{r}
+library(tibble)
+library(constructive) # alternative to dput, experimental:  see  remotes::install_github("cynkra/constructive")
+```
+
+##	atomic, data.frame
+
+```{r}
+v <- letters[1:10] #  [1] "a" "b" "c" "d" "e" "f" "g" "h" "i" "j"
+str(v) #  chr [1:10] "a" "b" "c" "d" "e" "f" "g" "h" "i" "j"
+
+
+df <- data.frame(
+  x = v,
+  y = v,
+  z = v
+)
+
+df
+str(df)
+# 'data.frame':	10 obs. of  3 variables:
+#  $ x: chr  "a" "b" "c" "d" ...
+#  $ y: chr  "a" "b" "c" "d" ...
+#  $ z: chr  "a" "b" "c" "d" ...
+```
+ -------------------------------------------------- 
+##  list.len, for sibblings(a one level) number to display
+```{r}
+L <- list(1, 2, 3, 4, 5)
+str(L)
+# List of 5
+#  $ : num 1
+#  $ : num 2
+#  $ : num 3
+#  $ : num 4
+#  $ : num 5
+
+str(L, list.len = 2)
+#  $ : num 1
+# List of 5
+#  $ : num 2
+#   [list output truncated]
+```
+ -------------------------------------------------- 
+##  vec.len TODO
+```{r}
+str(letters[1:11], vec.len = 3)
+#  chr [1:11] "a" "b" "c" ...
+
+str(list(1, 2, letters[1:11], list(1, 2, 3, 4, 5)), vec.len = 3)
+# List of 4
+#  $ : num 1
+#  $ : num 2
+#  $ : chr [1:11] "a" "b" "c" ...
+#  $ :List of 5
+#   ..$ : num 1
+#   ..$ : num 2
+#   ..$ : num 3
+#   ..$ : num 4
+#   ..$ : num 5
+# NULL
+```
+
+##  Probe
+```{r}
+probe <- function(x, max.depth = 1, list.len = 3, vec.len = 1) str(x, max.depth, list.len, vec.len)
+
+#   even simple gets messy
+L <- list(1, c(2), list(3, list(4, list(5))))
+probe(L)
+probe(L, max.depth = 2)
+probe(L, max.depth = 3)
+```
+
+##  dput (control = ??)
+
+##  Pop off outer list
+```{r}
+L[1] # subset
+# [[1]]
+# [1] 1
+#
+dput(L[1]) # get suppress line2 , 3?
+# list(1)
+# [[1]]
+# [1] 1
+#
+#
+#
+## easier way to see effect of [[]]
+dput(L[[1]], control = NULL) # remove line 2
+# 1
+# [1] 1
+#
+#
+#
+dput(as.data.frame(L[[1]]))
+# structure(list(`L[[1]]` = 1), row.names = c(NA, -1L), class = "data.frame")
+#   L[[1]]
+# 1      1
+dput(tibble(L[[1]]))
+# structure(list(`L[[1]]` = 1), class = c("tbl_df", "tbl", "data.frame"
+# ), row.names = c(NA, -1L))
+# # A tibble: 1 × 1
+#   `L[[1]]`
+#      <dbl>
+# 1        1
+```
+
+
+
+
+##	df more complicated
+
+
+
+###	Giant structure, Hadley
+{
+hadley_repos <- jsonlite::fromJSON("https://api.github.com/users/hadley/repos")
+hadley_repos
+
+
+#	learn 30 x 70; list.len is # of cols
+str(hadley_repos, 
+		list.len=5,
+		max.level=1, 
+		vec.len=1      
+)
+
+f(hadley_repos, 5)
+
+length(hadley_repos)
+# [1] 78
+#
+str(hadley_repos, 
+		list.len=78,
+		max.level=1, 
+		vec.len=0      
+)
+
+X=hadley_repos$topics
+length(X)
+str(X,
+		max.level=1,
+		vec.len=1
+		)
+
+
+#### opensecrets (error)
+###
+apikey  <- Sys.getenv("API_KEY")
+nj  <- jsonlite::fromJSON( 
+paste0("http://www.opensecrets.org/api/?method=getLegislators&id=NJ&apikey=", 
+       apikey, "&output=json"))
+nj
+
+
+###
+###
+devtools::install_github("jennybc/repurrrsive")
+library(repurrrsive)
+data(package = "repurrrsive") # lists in new tab
+browseVignettes(package="repurrrsive") # none
+help.search("repurrrsive") # opens help
+
+library(purrr)
+data(package = "purrr") # none
+# browser opens!
+browseVignettes(package="purrr") # none
+help.search("purrr") # opens help
+
+#	-------------------------------------------
+###	root object
+x  <- discog
+
+## too huge
+if (F) str(x)
+
+###	# elements
+str(x, max.level=0)
+# List of 155
+
+length(x)
+# [1] 155
+#
+#
+-------------------------------------------
+####	poke, each is list of 5 elments
+str(x[[1]])
+str(x[[2]])
+str(x[[155]])
+
+
+#	function to help poke!
+f  <- function(x, a,b,c) {
+	str(x, 
+			max.level=a,
+			list.len=b, 
+			vec.len=c
+	)
+
+}
+
+#	
+f(x, 0,0,0)
+# List of 155
+
+
+#	show all 155 elements, but .. listtle of each
+f(x, 1,155,1)
+
+
+# now include singletons (ie to level 2)
+f(x, 2,155,1)
+
+
+# examine 'base_information"  a list
+#
+f(x = x[[1]], 1, 3, 1)
+
+#	all elements of this x[[1]], no further
+f(x = x[[1]], 1, 5, 1)
+
+
+#	all 5 elment of x[[1]], but 1 level deeper
+f(x = x[[1]], 2, 5, 2)
+
+
+f(x = x[[1]], 3, 5, 2)
+
+f(x = x[[1]], 5, 5, 2)
+
+-------------------------------------------
+
+
+#	assemble list of lists
+A = list("one", "two")
+B = letters[1:5]
+C = character()
+D = matrix(1:9, ncol=3)
+
+L3 = letters[1:3]
+E = data.frame(item=1:10, value=sample(L3, 10, replace = TRUE))
+
+X = list(A,B,C,D, E)
+str(X)
+str(X, max.level = 0)
+str(X, max.level = 2, vec.len=1)
+
+# assign something to 3rd element
+X[[3]]  <- c("hello", "bue")
+
+#	walk the tree, find 3 element then its 2nd element
+X[[c(3,2)]]
+
+

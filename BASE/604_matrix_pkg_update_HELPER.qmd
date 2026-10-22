@@ -1,0 +1,247 @@
+### /home/jim/code/try_things_here/BASE/604_matrix_pkg_update_HELPER.qmd
+
+PURPOSE:
+HELPER:   update packages, using matrix tools (and not dt)
+
+
+TODO:
+  *   fix comments
+  *   LEGACY:   pick out useful
+
+Updating R packages should be a routine task, but my setup has a little twist:  the directory for site packages is read-only.
+
+In this post, I show how I use old.packages() to update R packages and work around this problem.
+`old.packages` finds packages that have a newer version and returns a matrix with
+the packages, along with its directory, version, etc,
+
+(There are many workarounds for a read-only library.  RStudio seems to handle
+the updates fine.  Of course, I could change the linux permissions on the
+*site* directory, but I do not want to.)
+
+This post uses matrix returned by old.packages(); in the next post I will show
+the same using data.table version.   data.table simplifies the logic but also
+requires conversion between matrix and data.table.
+
+Terminology:
+I have two libraries: `r .libPaths()` one for standard & recommended packages, which I call "sys",  and second directory for user-installed packages, which I call "user".  
+
+"R comes with a single library, R_HOME/library which is the value of the R object ‘.Library’ containing the standard and recommended packages."
+https://cran.r-project.org/doc/manuals/r-patched/R-admin.html#Managing-libraries
+
+The twist is that the "sys" library is read-only. When R  tries to update a package in this directory, which it can't, R gives the user the option to use user directory. 
+
+The result, however, is that a package can listed in both libraries, ie  in  sys can also in user, but a newer version.
+
+
+The work-around is probably over the top, but I good  exercise in  comparing two sets of packages before upgrading.
+
+Notation:
+  *   lib_sys refers to .libPaths()[2] for standard and recommended packages;
+  *   lib_user refers to .libPaths()[1] for user
+  *   "libraries" or "directories" here refer to the same thing:  folder on my local drive.
+
+##  The update process
+
+###   First,  gather the packages currently installed in each library.  
+```{r}
+lib_user = installed.packages(lib.loc = .libPaths()[[1]])
+head(lib_user[, 1:3])
+lib_sys = installed.packages(lib.loc = .libPaths()[[2]])
+head(lib_sys[, 1:3])
+```
+
+### Note these are matrix objects and not data.frame
+```{r}
+is.matrix(lib_user)
+is.matrix(lib_sys)
+```
+### Also note: normally, these directories would hold distinct packages.   Not in my case.
+```{r}
+# expect NULL, but not in my setup 
+lib_user[lib_user[, "Package"] %in% lib_sys[,1],1:2, drop=F]
+
+# For example, `class` is in both libraries 
+"class" %in% lib_user[, 1] && "class" %in% lib_sys[, 1]
+```
+
+
+### Second use  `old.packages` to find upgrade `candidates`, ie R packages with an available update. 
+I say candidates because some packages are  the duplicates.
+```{r}
+cand_user = old.packages( instPkgs = installed.packages(lib.loc = .libPaths()[[1]]))
+cand_sys = old.packages( instPkgs = installed.packages(lib.loc = .libPaths()[[2]]))
+cand_user
+cand_sys
+is.matrix(cand_sys) && is.matrix(cand_user)
+
+
+## check:  update candidates should already be installed: 
+cand_user[, 1] %in% lib_user[, 1]
+cand_sys[, 1] %in% lib_sys[, 1]
+```
+
+### Third:  Update candidates in `user` can be updated immediately.
+```{r}
+if (!is.null(cand_user[, 1])){
+update.packages(ask=F, old = cand_user )
+}
+```
+
+### Four:  However, update candidates in `sys` should be checked.
+
+Case I 
+For those pkgs in candidates in `sys` but not installed in `user: (ie never were upgraded)
+Upgrade 
+
+```{r}
+# Good is candidate only found in `sys`
+good = cand_sys[!cand_sys[, "Package"] %in% rownames(lib_user),, drop=F]
+is.matrix(good)
+
+if (nrow(good) != 0) { 
+  update.packages(old = good, instlib = .libPaths()[[1]]
+)
+}
+
+#check
+"KernSmooth" %in% lib_user[,"Package"]
+```
+Finally, if candidate in `sys` previously upgraded at least once it will have newer version in `user`.  So this package was handled in the updating `user` packages.
+This case is a false positive and nothing else needs to be done.
+
+```{r}
+bad = cand_sys[cand_sys[, "Package"] %in% rownames(lib_user),, drop=F]
+nrow(bad)
+
+if( F) 
+update.packages(old = cand_sys, instlib = .libPaths()[[1]]
+)
+knitr::knit_exit()
+```
+
+
+# --------------
+#       LEGACY  - extract useful only
+# --------------
+### Examine candidate packages against what is currently installed.
+```{r}
+
+## Candidate
+(cand_packages = z[, 1])
+is.matrix(cand_packages)
+is.character(cand_packages)
+
+# check all installed 
+ins = installed.packages()
+
+# check candidate packages to see installed
+ins[ins[, "Package"] %in% cand_packages, 1:2, drop=F]
+
+# CASES: compare candidate to installed
+# Any candidates in [1] and NOT in [2] .. upgrade
+# Any candidates NOT in [1], but in [2], .. upgrade
+# Any candidates in BOTH [1] and [2]  ... upgrade only [1]
+
+z[, "LibPath"] == .libPaths()[[1]]  |
+z[, "LibPath"] == .libPaths()[[2]],1:2,drop=F]
+
+# candidates installed in both [1] and [2]
+# "Matrix" in [2] and also [1], prior upgrade
+z[
+z[, "LibPath"] == .libPaths()[[1]]  &
+z[, "LibPath"] == .libPaths()[[2]],1:2,drop=F]
+
+
+# candidates installed in either [1] , not [2]
+z[
+z[, "LibPath"] == .libPaths()[[1]]  |
+!z[, "LibPath"] == .libPaths()[[2]],1:2,drop=F]
+
+# candidates installed in [2], but not [1]  (updade)
+(u = z[
+!z[, "LibPath"] == .libPaths()[[1]]  |
+z[, "LibPath"] == .libPaths()[[2]],1:2,drop=F])
+
+# in [2], but not in [1] update
+update.packages(lib.loc = .libPaths()[[2]], 
+                ask = F,    ## TRUE means asks for each pkg
+                oldPkgs = u,         # ONLY these packages updated
+                instlib = .libPaths()[[1]],       # gives WARNING that R_HOME not writable
+                checkBuilt=T)
+
+# check
+
+
+is.matrix(
+z[z[, "LibPath"] == .libPaths()[[2]],1:2, drop=F] 
+  )
+is.matrix(
+z[z[, "LibPath"] == .libPaths()[[2]],1:2 ]
+)
+
+
+```
+### installed.packages
+```{r}
+
+e = installed.packages()
+is.matrix(e)
+
+## Check any of these packages installed more than once?
+e[e[, "Package"] %in% c("Matrix", "KernSmooth", "mgcv", "nlme", "spatial"),1:2, drop=F]
+```
+
+
+
+<!-- BEGIN HERE:  subset matrices, based on condition -->
+
+
+
+
+### EXAMPLE:  Finally, subset installed
+```{r}
+x = installed.packages()
+x
+
+# matrix Subset 
+
+res  <- x[x[, "Package"] == "yaml",,  drop=F ]
+is.matrix(res)
+rownames(res)
+colnames(res)
+attributes(res)
+
+dimnames(res)
+dimnames(res)[[1]]
+dimnames(res)[[2]]
+```
+
+```{r}
+
+# "gert" package installed on in user dir
+(res  <- x[x[, "Package"] == "gert", , drop=F ])
+
+
+
+```{r}
+(res  <- x[x[, "Package"] == "class", , drop=F ])
+
+## from these 2 rows, choose is sys
+(res2  <- res[res[, "LibPath"] == .libPaths()[[2]], , drop=F])
+
+## this is the row  to upgrade !   user
+(res2  <- res[res[, "LibPath"] == .libPaths()[[1]], , drop=F])
+
+# about 29, standard packages  in sys
+
+(res  <- x[x[, "LibPath"] == .libPaths()[[2]], c("Package", "LibPath"), drop=F])
+
+```
+
+
+
+
+
+
+
+

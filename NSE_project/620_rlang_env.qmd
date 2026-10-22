@@ -1,0 +1,34 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+TAGS:  rlang, expr, call2, ast
+editor_options: 
+  chunk_output_type: console
+---
+
+## practical use of rlang to find contents of environments
+
+## caller_env(n=1)
+```{r}
+library(rlang)
+f = function() {
+  rlang::caller_env(n=1)
+  }
+f()    # Global env
+```
+
+## current_env, env_parent and list elements
+```{r}
+# parent of f executation envir = just Globalenv
+f = function() {
+  x=1
+  rlang::current_env()
+  }
+e = f()
+rlang::env_parent(e)
+# elements in execution envir
+ls(envir=e)
+ls()   # and in globalenv
+```
+  

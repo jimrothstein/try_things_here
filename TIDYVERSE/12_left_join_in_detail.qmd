@@ -1,0 +1,77 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+## Purpose:    Examine dplyr::left_join in detail.  Includes various arguments of this function.
+
+## Path:     
+- Follow ?left_join help and examples (using dplyr::band_members)
+- More complex dataset
+- Understand the various arguments, including several in ...
+- Set up call examples, but using value or expressions passed during call
+          
+```{r setup}
+
+library(cli)
+library(dplyr)
+?left_join
+args(dplyr::left_join)
+formals(left_join)
+left_join    # S3 function (left_join.<class>)
+```
+
+
+## SEE  https://tidyr.tidyverse.org/articles/rectangle.html
+- unnest_wider
+- unnest_longer
+- rectangle
+- hoist (drop cols, unnest others)
+- gh_users
+- gh_repos
+
+```{r}
+band_members
+data(package = "dplyr")
+band_instruments
+band_instruments2
+```
+
+```{r}
+
+band_members |> left_join(band_instruments)
+band_members |> left_join(band_instruments2, by = join_by(name == artist))
+band_members |> left_join(band_instruments2, by = c("name" =  "artist"))
+
+band_members |> left_join(band_instruments2, by = c("name" =  "artist"), keep=NULL,)
+band_members |> left_join(band_instruments2, by = c("name" =  "artist"), keep=,)
+band_members |> left_join(band_instruments2, by = c("name" =  "artist"), keep=T,)
+band_members |> left_join(band_instruments2, by = c("name" =  "artist"), keep=F)
+```
+
+## 1:n
+```{r}
+band_instruments
+df2 = quote(band_instruments |> dplyr::bind_rows(tibble(name="Paul", plays="voice" )))
+eval(df2)
+
+
+
+band_members |> left_join(eval(df2), relationship = NULL )
+try(
+band_members |> left_join(eval(df2), relationship = "one-to-one" )
+)
+
+# when one-to-one fais
+tryCatch(
+band_members |> left_join(eval(df2), relationship = "one-to-one" ),
+error = function(e) {cli::cli_inform(message="yes, throws error")}
+)
+
+
+
+
+
+```
+

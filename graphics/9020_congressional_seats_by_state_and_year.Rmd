@@ -1,0 +1,235 @@
+
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+        mathjax: default
+  pdf_document:   
+    latex_engine: lualatex  
+    toc: true
+    toc_depth:  4   
+fontsize: 11pt   
+geometry: margin=0.4in,top=0.25in   
+TAGS:  
+---
+
+https://rstudio-pubs-static.s3.amazonaws.com/7953_4e3efd5b9415444ca065b1167862c349.html
+
+```{r}
+library(tibble)
+library(data.table)
+t  <- tribble(
+    ~state, ~year, ~seats,
+    "NY", 1913, 43,
+    "NY", 2003, 29,
+    "NY", 2013, 27,
+    "NY", 2023, 26,
+    "CA", 1913, 11,
+    "CA", 2003, 53,
+    "CA", 2013, 53,
+    "CA", 2023, 52,
+    "TX", 1913, 18,
+    "TX", 2003, 32,
+    "TX", 2013, 36,
+    "TX", 2023, 38,
+    "FL", 1913, 4 ,
+    "FL", 2003, 25,
+    "FL", 2013, 27,
+    "FL", 2023, 28,
+    "PA", 1913, 36,
+    "PA", 2003, 19, 
+    "PA", 2013, 18,
+    "PA", 2023, 17,
+    "IL", 1913, 27,
+    "IL", 2003, 19, 
+    "IL", 2013, 18,
+    "IL", 2023, 17
+    )
+
+dt  <- as.data.table(t)
+dt
+
+
+####	some fixes
+{	
+	dt[, year:= as.integer(year)]
+	dt[, seats:= as.integer(seats)]
+	dt[, state:= factor(state)]
+}
+
+
+###	coplot, quick
+{
+if (F){
+
+##	crude, what for each factor state, graphs seats against year (x-axis)
+coplot(dt$seats ~ dt$year | dt$state, 
+			 panel=lines,								#	can be function controls each panel display
+			 xlab = "Decade",
+			 ylab = "Total Seats",
+			 col = "blue", # line color
+)
+
+}
+
+####	1 plot, several y-values, 
+{
+	##	Use X11 ?
+plot(x=dt$year, y=dt$seats, col=dt$state, 
+			 type="p", pch=, main="House Seats")
+
+
+pairs(dt$seats ~ dt$year, col=dt$state)
+
+legend("topleft",
+			 legend=levels(dt$state),		  # names
+			 col=c(1:length(dt$state)),
+			 #col=dt$state,
+			 #col=dt$state,								# actual colros
+			 pch=16	,
+			 )
+
+dev.off()
+}
+
+
+####	X11, 2 plots in 1 window
+{
+#	graphs 1 x 2	
+par(mfrow=c(1,2))
+
+dt_CA  = dt[state == "CA"]
+	plot(x=dt_CA$year, y=dt_CA$seats, type="p", pch=19, main="House Seats,
+			 Calif", col="blue")
+		
+
+dt_TX  = dt[state == "TX"]
+dt_TX
+	plot(x=dt_TX$year, y=dt_TX$seats, type="p", pch=18, main="House Seats,
+			 TeXas", col="red")
+
+dev.off()		# poof, all gone with this.
+}
+
+####	png, 2 plots in 1 window
+{
+
+filename  <- "~/Downloads/print_and_delete/STATES.png"
+png(filename, width = 900, height = 500, res = 72)
+
+#	graphs 1 x 2	
+par(mfrow=c(1,3))
+
+dt_CA  = dt[state == "CA"]
+	plot(x=dt_CA$year, y=dt_CA$seats, 
+			 type="b",     #	both points/lines
+			 pch=19, 
+			 main="House Seats, Calif", 
+			 col="blue", 
+			 ylim=c(10,60))
+		
+
+dt_TX  = dt[state == "TX"]
+dt_TX
+	plot(x=dt_TX$year, y=dt_TX$seats, type="b", pch=18, main="House Seats, TeXas", 
+			 col="red", ylim=c(10,60))
+
+dt_NY  = dt[state == "NY"]
+dt_NY
+	plot(x=dt_NY$year, y=dt_NY$seats, type="b", pch=16, main="House Seats,NY", col="black", ylim=c(10,60))
+
+dev.off()		# poof, all gone with this.
+}
+
+##  a bit fancier, with png()
+##	Finish:  all states on 1 grpah
+
+{
+filename  <- "~/Downloads/print_and_delete/STATES.png"
+
+png(filename = filename,
+         width = 1960, height = 480, units = "px", pointsize = 12)
+
+plot(x=dt$year, y=dt$seats, col=dt$state, 
+			 type="p", pch=19, main="House Seats")
+
+legend("topleft",
+			 legend=levels(dt$state),		  # names
+			 col=c(1:length(dt$state)),
+			 #col=dt$state,
+			 #col=dt$state,								# actual colros
+			 pch=16	)
+
+dev.off()
+}
+
+{	
+	x  <- dt$year
+	for (s in c("NY", "CA")) {
+		y  <- dt[state==s, seats]
+		x
+		y
+		#plot(y ~x, type="p")
+	}
+	y
+
+	state = "CA"
+	y  <- dt[state=="CA"]	
+	y
+
+	plot(y~x, type=p,
+
+{
+     x <- 0:12
+     y <- sin(pi/5 * x)
+     op <- par(mfrow = c(3,3), mar = .1+ c(2,2,3,1))
+     for (tp in c("p","l","b",  "c","o","h",  "s","S","n")) {
+        plot(y ~ x, type = tp, main = paste0("plot(*, type = \"", tp, "\")"))
+        if(tp == "S") {
+           lines(x, y, type = "s", col = "red", lty = 2)
+           mtext("lines(*, type = \"s\", ...)", col = "red", cex = 0.8)
+        }
+     }
+     par(op)
+	}
+##	Each state is separate
+{
+filename  <- "~/Downloads/print_and_delete/STATES.png"
+
+#	graphs 1 x 2	
+par(mfrow=c(1,2))
+
+png(filename = filename,
+         width = 960, height = 480, units = "px", pointsize = 12)
+
+dt_CA  = dt[state == "CA"]
+	plot(x=dt_CA$year, y=dt_CA$seats, type="p", pch=19, main="House Seats,
+			 Calif", col="blue")
+		
+
+dt_TX  = dt[state == "TX"]
+dt_TX
+	plot(x=dt_TX$year, y=dt_TX$seats, type="p", pch=18, main="House Seats,
+			 TeXas", col="red")
+
+dev.off()
+}
+
+
+##  Use r-graphics cookbook (mostly ggplot2), works best for multi-y values
+{
+library(ggplot2)
+
+
+ggplot(data=dt, aes(x=year, y=seats, group=state, shape=state, color=state )) +
+    geom_point()
+ggsave(filename= "~/Downloads/print_and_delete/states_ggplot.png", device="png")
+}
+```
+
+

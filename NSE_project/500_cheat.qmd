@@ -1,0 +1,99 @@
+---
+title: cheat
+editor_options: 
+  chunk_output_type: console
+---
+
+### !! inserts value, but expression is still not computed (or evaluated)
+Goal:  not have to defuse, then evaluate
+
+```{r}
+library(rlang)
+
+a <- 1
+b <- 2
+rlang::expr(a + b) ## a + b
+
+rlang::expr(a + !!b) ## a + 2
+eval(rlang::expr(a + !!b)) ## 3
+
+rlang::expr(!!a + !!b) ## 1 + 2
+rlang::expr(a + {{ b }}) ## a + ~2
+```
+
+---
+
+capture with expr()
+```{r}
+q <- rlang::expr(a + b)
+q ## a+b
+
+b = 10
+expr(a + !!b)   # a + 10
+{{ q }} ## a+b
+expr(log(q))   # log(q)
+expr(log(!!q)) # log(a + b)
+expr(log({{q}} )) #log(~a + b)
+expr(log(a + !!b)) # log(a + 10)
+if (F) eval(expr(log(!!q))) # error, a not found
+if (F) eval(q) ##    # error 
+
+
+## 
+e = exp(1)
+e
+expr(log(e)) ##  log(e)
+expr(log(!!e)) ##  log(2.718..)
+expr(log({{ e }})) ##  log(~2.718...)
+eval(expr(log(!!e))) ## 1 
+
+if (F) eval(expr(log({{ e }}))) ## Error
+
+expr(log(eval(e))) ##   log(eval(e))
+```
+
+```{r}
+# y<- x * 10
+
+# how to capture expression BEFORE evaluated?
+z <- rlang::expr(y <- x * 10)
+z
+
+z <- expr(1 + 1)
+as.list(z)
+eval(z)
+
+x <- 2
+z <- expr(1 + .(x))
+z
+eval(z)
+
+name <- "jim"
+eval(print("hello", {{ name }}))
+```
+
+### FAILS
+```r
+library(rlang)
+derive_param_expr1 <- function(dataset, cond) { 
+dataset |> dplyr::filter(!!enexpr(cond))
+}
+?enexpr
+e <- expression(mpg > 20)
+e <- quote(mpg > 20)
+e <- "mpg > 20"
+derive_param_expr(mtcars, e)
+
+mtcars
+
+f = quote("mpg > 20")
+f = expression(mpg >20)
+is.expression(f)
+derive_param_expr2(mtcars, f) 
+?expression
+derive_param_expr2 <- function(dataset, cond) { 
+#dataset |> dplyr::filter(deparse(substitute(cond)))
+    dataset |> dplyr::filter("mpg > 20")
+}
+dplyr::filter(mtcars, f)
+```

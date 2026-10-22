@@ -1,0 +1,32 @@
+---
+title: "068_usethis_examples.Rmd"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+TAGS:  usethis::, 
+---
+0 - devtools includes usethis package
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, comment = "    ...## ")
+library(devtools)
+```
+
+http://usethis.r-lib.org examples
+
+1 - project info
+```{r}
+## NOT RUN - opens new R session/window {
+# usethis::proj_activate(".")
+# }
+
+# use local project/display
+usethis::proj_get()
+usethis::proj_sitrep()
+```
+
+2 - edit config files
+```{r}
+## NOT RUN (use console)
+# usethis::edit_r_environ()
+# usethis::edit_r_profile()
+```

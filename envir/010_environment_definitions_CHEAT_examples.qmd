@@ -1,0 +1,197 @@
+010_environment_definitions_CHEAT_examples.R
+
+## Environment consists of
+  - frame:  set of named objects (is frame a `bag`? list?)
+  - pointer:  to enclosing frame.
+
+assign, assign, 
+
+Visually, environemnts appear tree-like
+
+<e> notation for environment
+
+Scope: Rules R uses to find objects by name
+  - R first looks in runtime <e>
+  - Then to parent.env()
+
+## env is `container` that can hold objects, in a list-like structure
+```{r env}
+ls()
+e  <- environment() # current env!
+ls(e)
+is.list(e) # F
+```
+```{r add}
+x  <- 4
+ls(e)
+e$x
+```
+
+### env have hierarchy (varies based on attached packages)
+```{r}
+search()
+parent.env(e)   # parent of globalenv
+
+# climb up
+e.1  <- parent.env(e)
+e.1
+e.2  <- parent.env(e.1)
+e.2
+```
+
+# can not print environment(), can extract as list
+# sys.parent() returns integer; 0 = global; 1= first function; ...
+```{r}
+sprintf("in global %s", as.list(environment()))
+f = function() {
+  sprintf("Inside f")
+  cat("inside f \n")
+  print (sys.frames()); print(sys.parents())
+
+  g = function() {
+    sprintf("Inside g")
+    print (sys.frames()); print(sys.parents())}
+
+  g()
+  }  ## end f
+f()
+?sys.parents
+```
+
+Two environment equal if:
+```{r identical}
+e  <- environment()
+f   <- environment()
+identical(e, f)
+
+identical(e, globalenv()) # TRUE
+```
+
+Special Environments
+```{r special}
+emptyenv()
+baseenv()
+globalenv()
+identical(e, globalenv())
+
+```
+
+See objects in Environment
+```{r ls}
+ls(envir = environment())
+ls(envir = emptyenv())
+head(ls(envir = baseenv()), n = 10L)
+ls(envir = parent.env(environment() ))
+```
+
+### Hierarchy extends below:
+###  To see that active function has its own environment:
+```{r function_env}
+
+g  <- function() {
+  # identify current, active environemnt
+  e  <- environment()
+}
+
+e  <- g()
+e
+environment()
+parent.env(e)
+current.env()
+```
+### Practice Examples
+```{r}
+f  <- function() { print(x) }
+
+environment(f)
+identical(globalenv(), environment(f))  # T
+
+# What this means is that if f is looking for an object, it can look find it
+is environment for it.
+f()
+
+```
+## Simple assign, enclosure,based on Grolemund Chapter 8 (2014)
+```{r counter}
+counter <- function(x) {
+  N <- x # do not change N
+
+  # in globalenv(), set value of x 
+  get_number <- function() x
+  next_number <- function() {
+    assign("x", x + 1, envir = globalenv())
+    assign("x", x + 1, envir = parent.frame())   # how to change x in fct counter?
+  }
+  reset_number <- function() assign("x", N, envir = globalenv())
+  #  n <<- N this sets n in runtime env of counter!
+
+  # return list of functions 
+  list(
+    get_number = get_number,
+    next_number = next_number,
+    reset_number = reset_number
+  )
+}
+
+n <- 10
+x
+# returns list with 3 functions
+number <- counter(n)
+number
+
+number$get_number()
+
+number$next_number()
+x
+
+# but x in global does not change, TODO:
+number$next_number()
+x
+
+n
+l <- number$reset_number()
+l
+n
+```
+
+
+function factory
+```r
+x <- 0
+f  <- function(x) {
+         function(y) x + y
+      }
+
+res <- f(x)
+if (FALSE) ls.str(environment(res))
+x <- 1
+res(10)  # 11
+ls.str(environment(res))  # x =1
+```
+
+parent of res environment?
+```r
+# binding env, where variable (res)  bound to object
+find("res") [1] ".GlobalEnv"
+
+# enclosing env  (find unbound variables)
+environment(res) # <environment: 0x5585a26d0270>
+
+# no name: (execution envir of f)
+rlang::env_name(environment(res))   # ""
+
+
+# its parent is global
+env_parent(env = environment(res), n=1) <environment: R_GlobalEnv>
+
+  ```
+  
+  namespace
+```r
+rlang::ns_env("rlang") # <environment: package:rlang>
+
+# path to local source
+rlang::pkg_env("rlang")
+
+```
+

@@ -1,0 +1,30 @@
+
+---
+title: skeleton.qmd
+date: last-modified
+# Quarto requires title, if want date to appear
+# ~/.config/kickstart/skeleton/skeleton.qmd
+---
+
+## Chapter 17.5 
+# Given an expr (howerver created), we can evaluate by using `eval` plus `env`
+to find non-local variables.
+
+z=expr(x+y)
+eval(z, env(x=1, y=2))
+
+5/0 should trigger errors; 
+By capturing arg of joke before eval, create a new env to evaluate with a `new` f
+```{r}
+joke <- function(x) {
+  e <- env(
+    rlang::caller_env(),
+    f = function(x) 0
+  )
+
+  eval(enexpr(x), e)
+}
+
+joke(f(5 / 0))
+```
+

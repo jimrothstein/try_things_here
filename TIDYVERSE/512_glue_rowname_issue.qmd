@@ -1,0 +1,84 @@
+---
+title: /home/jim/code/try_things_here/TIDYVERSE/510_glue_examples.qmd
+date: last-modified
+# Quarto requires title, if want date to appear
+# ~/.config/kickstart/skeleton/skeleton.qmd
+#   TAGS:   glue
+---
+---
+
+
+```{verbatim}
+My question is whether or not to create an `issue` in the GLUE Github repo. (links at bottom)
+
+Please see the reprex below, taken from `glue.R`  in the GLUE repo.   The
+magrittr `%>%` works fine, but not when  I tried with the native R pipe `|>`
+
+This is not new and has already been reported in Issue #278.
+
+But please pay attention to  Hadley's comments:
+
+| I don't think you do want to use glue() with the pipe? (either magrittr or base). Is this s a common pattern you see somewhere?
+|
+| glue_data() is what I'd expect you to use with a pipe, and here your challenge is *because there's data in the row names, which we don't generally recommend*. So I'd solve that problem by making a regular column:   (emphasis added)
+
+
+
+Here now is my question:
+  The example code (and in the Vignette, I think) continues to use rownames(), presumably a bad practice.
+  Does this rise to  level of `issue` that I should open (or come up with better example)?
+
+  Comments welcome.
+  
+```
+
+### Base R fix for row.names
+```{r}
+library(reprex)
+reprex(
+  {
+    library(glue)
+
+    # `glue_data()` is useful in magrittr pipes
+    if (require(magrittr)) {
+      mtcars %>%
+        glue_data("{rownames(.)} has {hp} hp") %>%
+        head()
+    }
+
+    # then I tried the base R pipe
+    mtcars |> glue_data("{rownames(.)} has {hp} hp")
+  },
+  session_info = T
+)
+```
+
+
+### fix for rownames not a column
+```{r}
+x <- row.names(mtcars)
+typeof(x)
+z <- cbind(mtcars, x)
+glue_data(z, " {hp} for car type {x}")
+```
+
+reprex & qmd ??
+
+
+# REFERENCES
+# line 73-76
+# https://github.com/tidyverse/glue/blob/main/R/glue.R
+# 
+# 
+# Issue 278 
+# https://github.com/tidyverse/glue/issues/278
+# 
+# row.names
+# https://stat.ethz.ch/R-manual/R-devel/library/base/html/row.names.html
+# 
+# magrittr
+# https://magrittr.tidyverse.org/index.html
+# 
+# Article:
+# https://www.tidyverse.org/blog/2023/04/base-vs-magrittr-pipe/
+

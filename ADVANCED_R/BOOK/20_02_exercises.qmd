@@ -1,0 +1,40 @@
+
+```{r}
+getwd()
+setwd("~/code/try_things_here/ADVANCED_R/BOOK")
+
+# local = F (default) env is globalenv
+# local = T, then environment is where called from (not created)
+source
+formals(source)
+args(source)
+?source
+```
+
+### source a file
+
+```{r}
+?source
+# source_file contains x + x
+x=0
+
+f = function() {
+  x=10
+  source("source_file", local=F) # use global
+  source("source_file", local=T, echo=T) # use env where called from 
+
+  }
+res = f()
+res
+```
+
+```{r}
+expr(2 + 2) # 2 + 2
+eval(expr(2 + 2)) # 4
+expr(eval(expr(2 + 2)))
+eval(expr(eval(expr(2 + 2)))) # eval ALL
+
+eval(eval(expr(eval(expr(2 + 2)))))
+expr(eval(eval(expr(eval(expr(2 + 2)))))) # one long expression
+
+```

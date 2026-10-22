@@ -1,0 +1,101 @@
+---
+title: Template for .Rmd
+output: 
+  pdf_document:
+    latex_engine: xelatex
+    toc:  TRUE
+    toc_depth:  1
+fontsize: 12pt
+geometry: margin=0.5in,top=0.25in
+#  md_document:
+#  html_document:
+#    toc: true
+#  	toc_float: true
+#    css: styles.css
+---
+Hannay - Chapter 5	 : Clustering
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE, collapse=TRUE)
+```
+
+```{r library, include=FALSE} 
+## don't install;  just study text book.
+#library(HannayIntroStats)
+library(cluster)
+library(ggplot2)
+
+#data(food_college)
+```
+
+```{r NULL}
+# Adv R 3.7, 6.5.3
+# NULL is 0-length vector
+# vector w/o dim attibute set = vector of NULL dim
+
+is.null() # ERRor
+is.null("") #F
+
+x  <- NULL
+is.null(x)  # T
+
+
+```
+
+```{r NULL_in_function}
+foo  <- function(y = NULL) is.null(y)
+
+foo()  # T
+foo("") # F
+foo(NULL) # T
+
+z  <- NULL
+foo(z) # T
+z  <- 5
+foo(z)  #F
+
+foo(undeclared_variable)  # ERROR
+
+```
+
+```{r stopifnot()}
+
+# CLAIM:  assertthat package ?? is dropin replacement for stopifnot?
+#         But this is hadly package and OLD
+stopifnot(2 <3, 3 <4, 4 <5  )  # ok
+
+stopifnot(2 <3, 3 <4, 4 <5,  3>5)  # ERROR
+
+```
+
+
+
+```{r render, eval=FALSE, echo=FALSE	}
+p  <- fs::path()
+w  <- fs::path_wd()
+w
+here()
+file="098_hannay_categorical.Rmd"
+dir="rmd"
+
+ren_pdf(file,dir)
+ren_github(file, dir)
+
+#knitr::knit_exit()
+
+# To Render
+ren_pdf  <- function(file, dir) {
+rmarkdown::render(
+									here( dir, file), 
+									output_dir="~/Downloads/print_and_delete") 
+}
+ren_pdf(file, dir)
+
+ren_github  <- function(file, dir) {
+rmarkdown::render(
+									here(dir, file) 
+									output_format="github_document",
+									output_dir="~/Downloads/print_and_delete") 
+}
+ren_github(file, dir)
+```
+
